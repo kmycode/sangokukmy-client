@@ -1,2 +1,4 @@
-# sangokukmy-client
-三国志nET KMY Version 9のくらいあんとあぷりだぴょん。完成するかわからんけど作りかけのを置いとく
+# 三国志NET KMY Version クライアント
+Node.jsとVue.jsとTypeScriptとSCSSでつくったる！！！！！！（フラグ）
+
+サーバは[こちら](https://github.com/kmycode/sangokukmy)へ
