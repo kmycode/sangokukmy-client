@@ -17,4 +17,4 @@ mapbg.gif
 o.gif
 ~~~
 
-コピー先は `/public/img/sangoku-originals` フォルダ内です。
+コピー先は `/src/assets/images/sangoku-originals` フォルダ内です。

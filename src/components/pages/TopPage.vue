@@ -1,0 +1,76 @@
+<template>
+  <div id="top-page">
+    <div class="container">
+      <div class="row">
+        <div class="top-table top-title-logo col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+          <h1>三国志NET KMY Version 9</h1>
+          <h2>第1期 ※1期限り</h2>
+          [<span class="number">000</span>年<span class="number">00</span>月]<br>
+          来月まであと <span class="number">00</span>分<span class="number">00</span>秒
+        </div>
+      </div>
+      <div class="row">
+        <div class="top-login-form col-sm-6 offset-sm-3">
+          <button type="button" class="btn btn-primary">新規登録</button>
+          <button type="button" class="btn btn-default">ログイン</button>
+        </div>
+      </div>
+      <div class="row">
+        <div class="top-content col-sm-12">
+          <ul class="nav nav-tabs nav-fill">
+            <li class="nav-item"><a class="nav-link active" href="#">トップページ</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">説明書</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">勢力図</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">武将一覧</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li>
+          </ul>
+        </div>
+      </div>
+      <div id="app-index" class="row">
+        <div class="col-sm-12">
+          <!--マップログ（細字）-->
+          <div class="top-table-flat">
+            <span v-for="mlog in mlogs" :key="mlog">
+              <span style="color:#080">●</span><span v-html="mlog.message"></span><br>
+            </span>
+          </div>
+          <!--マップログ（太字）-->
+          <div class="top-table-flat">
+            <span v-for="mlog in m2logs" :key="mlog">
+              <span style="color:#008">●</span><span v-html="mlog.message"></span><br>
+            </span>
+          </div>
+          <div class="top-table-flat">
+            ●<br>
+            ●<br>
+            ●<br>
+            ●<br>
+            ●<br>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue } from 'vue-property-decorator';
+
+@Component({
+  components: {
+  },
+})
+export default class TopPage extends Vue {}
+</script>
+
+<style lang="scss" scoped>
+span.number { font-weight: bold; }
+
+h1 { color: #420; }
+
+.top-table { background-color: #efe0c0; border: #deccab solid 1px; color: #8e4c28; }
+.top-table-flat { background-color: #efe0c0; margin-bottom: 4px; padding: 4px; color: #8e4c28; }
+.top-title-logo { margin-top: 20px; padding: 8px; text-align: center; }
+.top-login-form { margin-top: 20px; text-align: center; }
+.top-content { margin-top: 40px; }
+</style>
