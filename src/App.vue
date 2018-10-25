@@ -1,16 +1,19 @@
 <template>
   <div id="app">
     <TopPage/>
+    <Footer/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
+import Footer from './components/common/Footer.vue';
 
 @Component({
   components: {
     TopPage,
+    Footer,
   },
 })
 export default class App extends Vue {}
