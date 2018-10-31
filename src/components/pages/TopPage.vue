@@ -30,22 +30,24 @@
         <div class="col-sm-12">
           <!--マップログ（細字）-->
           <div class="top-table-flat">
-            <span v-for="mlog in mlogs" :key="mlog">
-              <span style="color:#080">●</span><span v-html="mlog.message"></span><br>
-            </span>
+            <ul class="map-log-list">
+              <li v-for="mlog in mlogs" :key="mlog.id"><span v-html="mlog.toHtml()"></span></li>
+            </ul>
           </div>
           <!--マップログ（太字）-->
           <div class="top-table-flat">
-            <span v-for="mlog in m2logs" :key="mlog">
-              <span style="color:#008">●</span><span v-html="mlog.message"></span><br>
-            </span>
+            <ul class="map-log-list-important">
+              <li v-for="mlog in m2logs" :key="mlog.id"><span v-html="mlog.toHtml()"></span></li>
+            </ul>
           </div>
           <div class="top-table-flat">
-            ●<br>
-            ●<br>
-            ●<br>
-            ●<br>
-            ●<br>
+            <ul class="character-update-log-list">
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+              <li></li>
+            </ul>
           </div>
         </div>
       </div>
@@ -55,12 +57,23 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import * as api from './../../api/api';
+
+api.Api.getMapLogs(5);
 
 @Component({
   components: {
   },
 })
-export default class TopPage extends Vue {}
+export default class TopPage extends Vue {
+  private mlogs = new Array<api.MapLog>();
+  private m2logs = new Array<api.MapLog>();
+
+  private async created() {
+    this.mlogs = await api.Api.getMapLogs(5);
+    this.m2logs = await api.Api.getImportantMapLogs(5);
+  }
+}
 </script>
 
 <style lang="scss" scoped>

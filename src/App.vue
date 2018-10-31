@@ -27,4 +27,31 @@ body {
   background: #ca8 url('./assets/images/sangoku-originals/o.gif');
   font-size: 14pt;
 }
+
+// マップログのリスト
+ul.map-log-list {
+  list-style: none;
+  margin: 0;
+  margin-left: 1em;
+  padding: 0;
+  li::before {
+    content: '●';
+    margin-left: -1em;
+    color: #080;
+  }
+}
+// 重要マップログリスト
+.map-log-list-important {
+  @extend ul.map-log-list;
+  li::before {
+    color: #008;
+  }
+}
+// 武将更新ログリスト
+.character-update-log-list {
+  @extend ul.map-log-list;
+  li::before {
+    color: inherit;
+  }
+}
 </style>
