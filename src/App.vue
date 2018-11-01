@@ -10,6 +10,11 @@ import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
 import Footer from './components/common/Footer.vue';
 
+// フィルタ
+Vue.filter('zeroformat', (value: number, length: number): string | null => {
+  return ('0000000000' + value).slice(-length);
+});
+
 @Component({
   components: {
     TopPage,
@@ -43,6 +48,7 @@ ul.map-log-list {
 // 重要マップログリスト
 .map-log-list-important {
   @extend ul.map-log-list;
+  font-weight: bold;
   li::before {
     color: #008;
   }

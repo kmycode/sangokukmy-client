@@ -11,8 +11,10 @@
       </div>
       <div class="row">
         <div class="top-login-form col-sm-6 offset-sm-3">
-          <button type="button" class="btn btn-primary">新規登録</button>
+          ID: <input type="text">
+          PASS: <input type="password"><br>
           <button type="button" class="btn btn-default">ログイン</button>
+          <button type="button" class="btn btn-primary">新規登録</button>
         </div>
       </div>
       <div class="row">
@@ -31,22 +33,25 @@
           <!--マップログ（細字）-->
           <div class="top-table-flat">
             <ul class="map-log-list">
-              <li v-for="mlog in mlogs" :key="mlog.id"><span v-html="mlog.toHtml()"></span></li>
+              <li v-for="mlog in mlogs" :key="mlog.id">
+                <MapLogLine v-bind:log="mlog"/>
+              </li>
             </ul>
           </div>
           <!--マップログ（太字）-->
           <div class="top-table-flat">
             <ul class="map-log-list-important">
-              <li v-for="mlog in m2logs" :key="mlog.id"><span v-html="mlog.toHtml()"></span></li>
+              <li v-for="mlog in m2logs" :key="mlog.id">
+                <MapLogLine v-bind:log="mlog"/>
+              </li>
             </ul>
           </div>
+          <!-- 武将更新ログ -->
           <div class="top-table-flat">
             <ul class="character-update-log-list">
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
-              <li></li>
+              <li v-for="clog in updateLogs" :key="clog.id">
+                {{ clog.characterName }} (<RealDateTime v-bind:date="clog.date"/>)
+              </li>
             </ul>
           </div>
         </div>
@@ -57,21 +62,28 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import MapLogLine from '../parts/MapLogLine.vue';
+import RealDateTime from '../parts/RealDateTime.vue';
+import AsyncUtil from '../../models/common/AsyncUtil';
 import * as api from './../../api/api';
-
-api.Api.getMapLogs(5);
 
 @Component({
   components: {
+    MapLogLine,
+    RealDateTime,
   },
 })
 export default class TopPage extends Vue {
   private mlogs = new Array<api.MapLog>();
   private m2logs = new Array<api.MapLog>();
+  private updateLogs = new Array<api.CharacterUpdateLog>();
 
-  private async created() {
-    this.mlogs = await api.Api.getMapLogs(5);
-    this.m2logs = await api.Api.getImportantMapLogs(5);
+  private created() {
+    AsyncUtil.tryTimes(3, async () => {
+      this.mlogs = await api.Api.getMapLogs(5);
+      this.m2logs = await api.Api.getImportantMapLogs(5);
+      this.updateLogs = await api.Api.getCharacterLogs(5);
+    }, () => undefined);
   }
 }
 </script>
