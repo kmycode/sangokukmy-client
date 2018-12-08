@@ -30,27 +30,15 @@
         <div class="col-sm-12">
           <!--マップログ（細字）-->
           <div class="top-table-flat">
-            <ul class="map-log-list">
-              <li v-for="mlog in mlogs" :key="mlog.id">
-                <MapLogLine v-bind:log="mlog"/>
-              </li>
-            </ul>
+            <MapLogList :logs="mlogs" :type="'normal'"/>
           </div>
           <!--マップログ（太字）-->
           <div class="top-table-flat">
-            <ul class="map-log-list-important">
-              <li v-for="mlog in m2logs" :key="mlog.id">
-                <MapLogLine v-bind:log="mlog"/>
-              </li>
-            </ul>
+            <MapLogList :logs="m2logs" :type="'important'"/>
           </div>
           <!-- 武将更新ログ -->
           <div class="top-table-flat">
-            <ul class="character-update-log-list">
-              <li v-for="clog in updateLogs" :key="clog.id">
-                {{ clog.characterName }} (<RealDateTime v-bind:date="clog.date"/>)
-              </li>
-            </ul>
+            <MapLogList :logs="updateLogs" :type="'character-update-log'"/>
           </div>
         </div>
       </div>
@@ -62,6 +50,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Footer from '..//common/Footer.vue';
+import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
@@ -72,6 +61,7 @@ import * as api from './../../api/api';
 
 @Component({
   components: {
+    MapLogList,
     MapLogLine,
     RealDateTime,
     Footer,

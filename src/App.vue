@@ -2,7 +2,8 @@
   <div id="app">
     <component :is="currentPage"
       @login-start="startLogin"
-      @login-abort="abortLogin"/>
+      @login-abort="abortLogin"
+      @login-succeed="enterStatusPage"/>
   </div>
 </template>
 
@@ -10,6 +11,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
 import LoginPage from './components/pages/LoginPage.vue';
+import StatusPage from './components/pages/StatusPage.vue';
 
 // フィルタ
 Vue.filter('zeroformat', (value: number, length: number): string | null => {
@@ -20,6 +22,7 @@ Vue.filter('zeroformat', (value: number, length: number): string | null => {
   components: {
     TopPage,
     LoginPage,
+    StatusPage,
   },
 })
 export default class App extends Vue {
@@ -31,6 +34,10 @@ export default class App extends Vue {
 
   public abortLogin() {
     this.currentPage = 'TopPage';
+  }
+
+  public enterStatusPage() {
+    this.currentPage = 'StatusPage';
   }
 }
 </script>
@@ -46,33 +53,5 @@ body {
 
 * {
   box-sizing: border-box;
-}
-
-// マップログのリスト
-ul.map-log-list {
-  list-style: none;
-  margin: 0;
-  margin-left: 1em;
-  padding: 0;
-  li::before {
-    content: '●';
-    margin-left: -1em;
-    color: #080;
-  }
-}
-// 重要マップログリスト
-.map-log-list-important {
-  @extend ul.map-log-list;
-  font-weight: bold;
-  li::before {
-    color: #008;
-  }
-}
-// 武将更新ログリスト
-.character-update-log-list {
-  @extend ul.map-log-list;
-  li::before {
-    color: inherit;
-  }
 }
 </style>
