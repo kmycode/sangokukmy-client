@@ -1,5 +1,6 @@
-import axios from 'axios';
+import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import Enumerable from 'linq';
+import * as current from '../common/current';
 
 /**
  * 月日・時刻
@@ -81,7 +82,40 @@ export class CharacterUpdateLog {
   }
 }
 
+/**
+ * ログイン結果
+ */
+export class LoginResultData {
+  public static readonly typeId = 5;
+
+  constructor(public isSucceed: boolean,
+              public errorCode: number,
+              public accessToken: string) {
+  }
+}
+
 export class Api {
+
+  /**
+   * 認証のときに利用するヘッダ
+   */
+  private static get authHeader(): AxiosRequestConfig {
+    return {
+      headers: {
+        Authorization: current.authorizationToken,
+      },
+    };
+  }
+
+  /**
+   * IDとパスワードでログインする
+   * @param id ID
+   * @param password パスワード
+   */
+  public static async loginWithIdAndPassword(id: string, password: string): Promise<LoginResultData> {
+    // dummy
+    return new LoginResultData(true, 0, 'test-token');
+  }
 
   /**
    * 武将更新ログを取得する
