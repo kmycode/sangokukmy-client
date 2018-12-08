@@ -11,7 +11,7 @@
       </div>
       <div class="row">
         <div class="top-login-form col-sm-6 offset-sm-3">
-          <button type="button" class="btn btn-default">ログイン</button>
+          <button type="button" class="btn btn-light" @click="login">ログイン</button>
           <button type="button" class="btn btn-primary">新規登録</button>
         </div>
       </div>
@@ -55,11 +55,13 @@
         </div>
       </div>
     </div>
+    <Footer/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import Footer from '..//common/Footer.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
@@ -72,12 +74,17 @@ import * as api from './../../api/api';
   components: {
     MapLogLine,
     RealDateTime,
+    Footer,
   },
 })
 export default class TopPage extends Vue {
   private mlogs = new Array<api.MapLog>();
   private m2logs = new Array<api.MapLog>();
   private updateLogs = new Array<api.CharacterUpdateLog>();
+
+  public login() {
+    this.$emit('login-start');
+  }
 
   private created() {
     AsyncUtil.tryTimes(3, async () => {
@@ -86,8 +93,12 @@ export default class TopPage extends Vue {
       this.updateLogs = await api.Api.getCharacterLogs(5);
     }, () => undefined);
 
-    ApiStreaming.status.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addItem(this.m2logs, log, 5));
-    ApiStreaming.status.start();
+    ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addItem(this.m2logs, log, 5));
+    ApiStreaming.top.start();
+  }
+
+  private destroyed() {
+    ApiStreaming.top.stop();
   }
 }
 </script>

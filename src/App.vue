@@ -1,14 +1,15 @@
 <template>
   <div id="app">
-    <TopPage/>
-    <Footer/>
+    <component :is="currentPage"
+      @login-start="startLogin"
+      @login-abort="abortLogin"/>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
-import Footer from './components/common/Footer.vue';
+import LoginPage from './components/pages/LoginPage.vue';
 
 // フィルタ
 Vue.filter('zeroformat', (value: number, length: number): string | null => {
@@ -18,10 +19,20 @@ Vue.filter('zeroformat', (value: number, length: number): string | null => {
 @Component({
   components: {
     TopPage,
-    Footer,
+    LoginPage,
   },
 })
-export default class App extends Vue {}
+export default class App extends Vue {
+  private currentPage = 'TopPage';
+
+  public startLogin() {
+    this.currentPage = 'LoginPage';
+  }
+
+  public abortLogin() {
+    this.currentPage = 'TopPage';
+  }
+}
 </script>
 
 <style lang="scss">
@@ -31,6 +42,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #ca8 url('./assets/images/sangoku-originals/o.gif');
   font-size: 14pt;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 // マップログのリスト
