@@ -11,8 +11,6 @@
       </div>
       <div class="row">
         <div class="top-login-form col-sm-6 offset-sm-3">
-          ID: <input type="text">
-          PASS: <input type="password"><br>
           <button type="button" class="btn btn-default">ログイン</button>
           <button type="button" class="btn btn-primary">新規登録</button>
         </div>
@@ -65,6 +63,9 @@ import { Component, Vue } from 'vue-property-decorator';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
+import ArrayUtil from '../../models/common/arrayutil';
+import Streaming from './../../api/streaming';
+import ApiStreaming from './../../api/apistreaming';
 import * as api from './../../api/api';
 
 @Component({
@@ -84,6 +85,9 @@ export default class TopPage extends Vue {
       this.m2logs = await api.Api.getImportantMapLogs(5);
       this.updateLogs = await api.Api.getCharacterLogs(5);
     }, () => undefined);
+
+    ApiStreaming.status.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addItem(this.m2logs, log, 5));
+    ApiStreaming.status.start();
   }
 }
 </script>

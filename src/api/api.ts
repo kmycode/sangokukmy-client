@@ -1,11 +1,12 @@
 import axios from 'axios';
 import Enumerable from 'linq';
 
-
 /**
  * 月日・時刻
  */
 export class DateTime {
+  public static readonly typeId = 1;
+
   public constructor(public year: number,
                      public month: number,
                      public day: number,
@@ -19,6 +20,7 @@ export class DateTime {
  * マップログの種類
  */
 export class MapLogType {
+  public static readonly typeId = 2;
 
   /**
    * 空のタイプ
@@ -58,6 +60,8 @@ export class MapLogTypes {
  * マップログ
  */
 export class MapLog {
+  public static readonly typeId = 4;
+
   constructor(public id: number,
               public message: string,
               public type: MapLogType,
@@ -69,6 +73,8 @@ export class MapLog {
  * 武将更新ログ
  */
 export class CharacterUpdateLog {
+  public static readonly typeId = 3;
+
   constructor(public id: number,
               public characterName: string,
               public date: DateTime) {
