@@ -38,6 +38,7 @@ export class DateTime {
  */
 export class ApiError {
   public static readonly typeId = 7;
+  public static readonly serverConnectionFailed = new ApiError(ErrorCode.serverConnectionFailed);
 
   public constructor(public code: number,
                      public data?: any) {}
@@ -129,6 +130,14 @@ export class Api {
     };
   }
 
+  private static pickException(ex: any) {
+    if (ex.response) {
+      return ex.response.data;
+    } else {
+      return { data: ApiError.serverConnectionFailed };
+    }
+  }
+
   /**
    * IDとパスワードでログインする
    * @param id ID
@@ -142,7 +151,7 @@ export class Api {
       const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', params);
       return result.data;
     } catch (ex) {
-      throw ex.response.data;
+      throw Api.pickException(ex);
     }
   }
 

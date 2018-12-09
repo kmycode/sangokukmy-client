@@ -16,6 +16,7 @@ export default class LoginService {
       return LoginResult.succeed;
     } catch (ex) {
       switch (ex.data.code) {
+        case api.ErrorCode.serverConnectionFailed:
         case api.ErrorCode.databaseError:
         case api.ErrorCode.internalError:
           return LoginResult.cannotConnect;
