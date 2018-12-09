@@ -1,6 +1,23 @@
 import axios, { AxiosPromise, AxiosRequestConfig } from 'axios';
 import Enumerable from 'linq';
 import * as current from '../common/current';
+import * as def from '../common/definitions';
+
+/**
+ * エラーコード
+ */
+export enum ErrorCode {
+  serverConnectionFailed = -1,
+  succeed = 32767,
+  internalError = 1,
+  databaseError = 2,
+  databaseTimeout = 3,
+  lockFailed = 4,
+  loginCharacterNotFound = 5,
+  loginParameterMissing = 6,
+  loginParameterIncorrect = 7,
+  loginTokenIncorrect = 8,
+}
 
 /**
  * 月日・時刻
@@ -13,8 +30,17 @@ export class DateTime {
                      public day: number,
                      public hours: number,
                      public minutes: number,
-                     public seconds: number) {
-  }
+                     public seconds: number) {}
+}
+
+/**
+ * エラー
+ */
+export class ApiError {
+  public static readonly typeId = 7;
+
+  public constructor(public code: number,
+                     public data?: any) {}
 }
 
 /**
@@ -30,8 +56,7 @@ export class MapLogType {
 
   constructor(public id: number,
               public text: string,
-              public color: string) {
-  }
+              public color: string) {}
 }
 
 /**
@@ -66,8 +91,7 @@ export class MapLog {
   constructor(public id: number,
               public message: string,
               public type: MapLogType,
-              public date: DateTime) {
-  }
+              public date: DateTime) {}
 }
 
 /**
@@ -78,20 +102,18 @@ export class CharacterUpdateLog {
 
   constructor(public id: number,
               public characterName: string,
-              public date: DateTime) {
-  }
+              public date: DateTime) {}
 }
 
 /**
- * ログイン結果
+ * 認証データ
  */
-export class LoginResultData {
-  public static readonly typeId = 5;
+export class AuthenticationData {
+  public static readonly typeId = 6;
 
-  constructor(public isSucceed: boolean,
-              public errorCode: number,
-              public accessToken: string) {
-  }
+  constructor(public accessToken: string,
+              public characterId: number,
+              public expirationTime: DateTime) {}
 }
 
 export class Api {
@@ -112,9 +134,16 @@ export class Api {
    * @param id ID
    * @param password パスワード
    */
-  public static async loginWithIdAndPassword(id: string, password: string): Promise<LoginResultData> {
-    // dummy
-    return new LoginResultData(true, 0, 'test-token');
+  public static async loginWithIdAndPassword(id: string, password: string): Promise<AuthenticationData> {
+    try {
+      const params = new URLSearchParams();
+      params.append('id', id);
+      params.append('password', password);
+      const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', params);
+      return result.data;
+    } catch (ex) {
+      throw ex.response.data;
+    }
   }
 
   /**

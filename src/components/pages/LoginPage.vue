@@ -53,9 +53,10 @@ export default class LoginPage extends Vue {
 
   public login() {
     this.isLogining = true;
+    this.isError = false;
+    this.isWarning = false;
     LoginService.loginWithIdAndPasswordAsync(this.loginId, this.loginPassword)
       .then((result) => {
-        this.isWarning = false;
         switch (result) {
           case LoginResult.cannotConnect:
             this.errorMessage = 'サーバへの接続に失敗しました';
@@ -75,7 +76,7 @@ export default class LoginPage extends Vue {
             this.errorMessage = '';
             break;
           default:
-            this.errorMessage = '定義されていない結果です';
+            this.errorMessage = '不明なエラーが発生しました';
             break;
         }
         if (result === LoginResult.succeed) {

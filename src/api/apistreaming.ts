@@ -69,19 +69,19 @@ export default class ApiStreaming {
   private onReceiveObject(obj: any) {
     switch (obj.typeId) {
       case api.DateTime.typeId:
-        this.fire(obj.typeId, obj as api.DateTime);
+        this.fire(obj.typeId, obj.data as api.DateTime);
         break;
       case api.MapLogType.typeId:
-        this.fire(obj.typeId, obj as api.MapLogType);
+        this.fire(obj.typeId, obj.data as api.MapLogType);
         break;
       case api.MapLog.typeId:
-        this.fire(obj.typeId, obj as api.MapLog);
+        this.fire(obj.typeId, obj.data as api.MapLog);
         break;
       case api.CharacterUpdateLog.typeId:
-        this.fire(obj.typeId, obj as api.CharacterUpdateLog);
+        this.fire(obj.typeId, obj.data as api.CharacterUpdateLog);
         break;
       default:
-        this.fire(obj.typeId, obj);
+        this.fire(obj.typeId, obj.data);
         break;
     }
   }

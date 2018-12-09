@@ -12,14 +12,20 @@ export default class LoginService {
     }
     try {
       const result = await api.Api.loginWithIdAndPassword(id, password);
-      if (result.isSucceed) {
-        current.setAuthorizationToken(result.accessToken);
-        return LoginResult.succeed;
-      } else {
-        return LoginResult.wrongIdOrPassword;
-      }
+      current.setAuthorizationToken(result.accessToken);
+      return LoginResult.succeed;
     } catch (ex) {
-      return LoginResult.cannotConnect;
+      switch (ex.data.code) {
+        case api.ErrorCode.databaseError:
+        case api.ErrorCode.internalError:
+          return LoginResult.cannotConnect;
+        case api.ErrorCode.loginCharacterNotFound:
+          return LoginResult.wrongIdOrPassword;
+        case api.ErrorCode.loginParameterIncorrect:
+          return LoginResult.wrongIdOrPassword;
+        default:
+          return LoginResult.unknown;
+      }
     }
   }
 
@@ -32,4 +38,5 @@ export const enum LoginResult {
   wrongIdOrPassword,
   emptyId,
   emptyPassword,
+  unknown,
 }
