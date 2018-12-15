@@ -145,10 +145,10 @@ export class Api {
    */
   public static async loginWithIdAndPassword(id: string, password: string): Promise<AuthenticationData> {
     try {
-      const params = new URLSearchParams();
-      params.append('id', id);
-      params.append('password', password);
-      const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', params);
+      const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', {
+        id: id,
+        password: password,
+      });
       return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
