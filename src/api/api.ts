@@ -20,6 +20,14 @@ export enum ErrorCode {
 }
 
 /**
+ * APIデータ
+ */
+class ApiData<T> {
+  public constructor(public type: number,
+                     public data: T) {}
+}
+
+/**
  * 月日・時刻
  */
 export class DateTime {
@@ -126,11 +134,11 @@ export class Api {
    */
   public static async loginWithIdAndPassword(id: string, password: string): Promise<AuthenticationData> {
     try {
-      const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', {
+      const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'authenticate', {
         id,
         password,
       });
-      return result.data;
+      return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

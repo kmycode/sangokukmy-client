@@ -13,12 +13,12 @@ export default class ApiStreaming {
   /**
    * トップ画面のストリーミング
    */
-  public static top = new ApiStreaming(def.API_HOST + 'api/values/streaming', 'GET');
+  public static top = new ApiStreaming(def.API_HOST + 'test/streaming', 'GET');
 
   /**
    * ステータス画面のストリーミング
    */
-  public static status = new ApiStreaming(def.API_HOST + 'api/values/streaming', 'GET');
+  public static status = new ApiStreaming(def.API_HOST + 'streaming/status', 'GET');
 
   private listeners: ApiStreamingListener[] = [];
   private streaming: Streaming = new Streaming();
@@ -26,9 +26,6 @@ export default class ApiStreaming {
   private constructor(uri: string,
                       method: string) {
     // ストリーミングを初期化
-    this.streaming.header = {
-      Authorization: current.authorizationToken,
-    };
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
     this.streaming.uri = uri;
     this.streaming.method = method;
@@ -38,6 +35,9 @@ export default class ApiStreaming {
    * ストリーミングを開始
    */
   public start() {
+    this.streaming.header = {
+      Authorization: 'Bearer ' + current.authorizationToken,
+    };
     this.streaming.start();
   }
 
@@ -67,21 +67,21 @@ export default class ApiStreaming {
   }
 
   private onReceiveObject(obj: any) {
-    switch (obj.typeId) {
+    switch (obj.type) {
       case api.DateTime.typeId:
-        this.fire(obj.typeId, obj.data as api.DateTime);
+        this.fire(obj.type, obj.data as api.DateTime);
         break;
       case api.MapLogType.typeId:
-        this.fire(obj.typeId, obj.data as api.MapLogType);
+        this.fire(obj.type, obj.data as api.MapLogType);
         break;
       case api.MapLog.typeId:
-        this.fire(obj.typeId, obj.data as api.MapLog);
+        this.fire(obj.type, obj.data as api.MapLog);
         break;
       case api.CharacterUpdateLog.typeId:
-        this.fire(obj.typeId, obj.data as api.CharacterUpdateLog);
+        this.fire(obj.type, obj.data as api.CharacterUpdateLog);
         break;
       default:
-        this.fire(obj.typeId, obj.data);
+        this.fire(obj.type, obj.data);
         break;
     }
   }
