@@ -120,25 +120,6 @@ export class AuthenticationData {
 export class Api {
 
   /**
-   * 認証のときに利用するヘッダ
-   */
-  private static get authHeader(): AxiosRequestConfig {
-    return {
-      headers: {
-        Authorization: current.authorizationToken,
-      },
-    };
-  }
-
-  private static pickException(ex: any) {
-    if (ex.response) {
-      return ex.response.data;
-    } else {
-      return { data: ApiError.serverConnectionFailed };
-    }
-  }
-
-  /**
    * IDとパスワードでログインする
    * @param id ID
    * @param password パスワード
@@ -146,8 +127,8 @@ export class Api {
   public static async loginWithIdAndPassword(id: string, password: string): Promise<AuthenticationData> {
     try {
       const result = await axios.post<AuthenticationData>(def.API_HOST + 'authenticate', {
-        id: id,
-        password: password,
+        id,
+        password,
       });
       return result.data;
     } catch (ex) {
@@ -210,5 +191,24 @@ export class Api {
   }
 
 //#endregion
+
+  /**
+   * 認証のときに利用するヘッダ
+   */
+  private static get authHeader(): AxiosRequestConfig {
+    return {
+      headers: {
+        Authorization: current.authorizationToken,
+      },
+    };
+  }
+
+  private static pickException(ex: any) {
+    if (ex.response) {
+      return ex.response.data;
+    } else {
+      return { data: ApiError.serverConnectionFailed };
+    }
+  }
 
 }
