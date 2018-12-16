@@ -27,6 +27,7 @@ class NotificationItemClassName {
 class NotificationItem {
   private static num: number = 0;
   public id: number;
+  public removeTimerId: number = 0;
   constructor(public readonly title: string,
               public readonly message: string,
               public readonly className: string) {
@@ -61,6 +62,7 @@ export default class Notification extends Vue {
     this.notifications.some((item, index) => {
       if (item.id === id) {
         this.notifications.splice(index, 1);
+        clearTimeout(item.removeTimerId);
         return true;
       }
       return false;
@@ -69,7 +71,7 @@ export default class Notification extends Vue {
 
   private addNotification(item: NotificationItem) {
     this.notifications.push(item);
-    setTimeout(() => this.notifications.shift(), 8000);
+    item.removeTimerId = setTimeout(() => this.notifications.shift(), 8000);
   }
 }
 </script>
