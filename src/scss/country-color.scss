@@ -1,0 +1,19 @@
+
+$country-colors-deep : (#666666, #800000, #000080, #006000, #404000, #0f6080, #ac8a3a, #400040);
+$country-colors-light: (#f1f1f1, #ffcfcf, #cfefff, #c8ffc8, #cccca8, #efffff, #fffff8, #fff0ff);
+
+@mixin country-color-light($property-name) {
+  @for $i from 0 through length($country-colors-light) - 1 {
+    .country-color-#{$i} &, &.country-color-#{$i} {
+      #{$property-name}: nth($country-colors-light, $i + 1);
+    }
+  }
+}
+
+@mixin country-color-deep($property-name) {
+  @for $i from 0 through length($country-colors-deep) - 1 {
+    .country-color-#{$i} &, &.country-color-#{$i} {
+      #{$property-name}: nth($country-colors-deep, $i + 1);
+    }
+  }
+}

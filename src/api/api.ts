@@ -33,20 +33,22 @@ export class ApiData<T> {
 export class DateTime {
   public static readonly typeId = 1;
 
-  public constructor(public year: number,
-                     public month: number,
-                     public day: number,
-                     public hours: number,
-                     public minutes: number,
-                     public seconds: number) {}
+  public constructor(public year: number = 0,
+                     public month: number = 0,
+                     public day: number = 0,
+                     public hours: number = 0,
+                     public minutes: number = 0,
+                     public seconds: number = 0) {}
 }
 
 /**
  * ゲーム内の月日
  */
 export class GameDateTime {
-  public constructor(public year: number,
-                     public month: number) {}
+  public static readonly typeId = 12;
+
+  public constructor(public year: number = 0,
+                     public month: number = 0) {}
 }
 
 /**
@@ -139,29 +141,29 @@ export class AuthenticationData {
 export class Character {
   public static readonly typeId = 9;
 
-  public constructor(public id: number,
-                     public aliasId: string,
-                     public name: string,
-                     public countryId: number,
-                     public strong: number,
-                     public strongEx: number,
-                     public intellect: number,
-                     public intellectEx: number,
-                     public leadership: number,
-                     public leadershipEx: number,
-                     public popularity: number,
-                     public popularityEx: number,
-                     public soldierType: number,
-                     public soldierNumber: number,
-                     public proficiency: number,
-                     public money: number,
-                     public rice: number,
-                     public contribution: number,
-                     public classValue: number,
-                     public deleteTurn: number,
-                     public townId: number,
-                     public message: number,
-                     public lastUpdated: DateTime) {}
+  public constructor(public id: number = 0,
+                     public aliasId: string = '',
+                     public name: string = '',
+                     public countryId: number = 0,
+                     public strong: number = 0,
+                     public strongEx: number = 0,
+                     public intellect: number = 0,
+                     public intellectEx: number = 0,
+                     public leadership: number = 0,
+                     public leadershipEx: number = 0,
+                     public popularity: number = 0,
+                     public popularityEx: number = 0,
+                     public soldierType: number = 0,
+                     public soldierNumber: number = 0,
+                     public proficiency: number = 0,
+                     public money: number = 0,
+                     public rice: number = 0,
+                     public contribution: number = 0,
+                     public classValue: number = 0,
+                     public deleteTurn: number = 0,
+                     public townId: number = 0,
+                     public message: number = 0,
+                     public lastUpdated: DateTime = new DateTime()) {}
 }
 
 /**
@@ -170,11 +172,11 @@ export class Character {
 export class Country {
   public static readonly typeId = 10;
 
-  public constructor(public id: number,
-                     public name: string,
-                     public colorId: number,
-                     public established: GameDateTime,
-                     public capitalTownId: number) {}
+  public constructor(public id: number = 0,
+                     public name: string = '',
+                     public colorId: number = 0,
+                     public established: GameDateTime = new GameDateTime(),
+                     public capitalTownId: number = 0) {}
 }
 
 /**
@@ -188,25 +190,25 @@ export class Town {
   public static readonly typeFortress = 3;
   public static readonly typeLarge = 4;
 
-  public constructor(public id: number,
-                     public type: number,
-                     public countryId: number,
-                     public name: string,
-                     public x: number,
-                     public y: number,
-                     public people: number,
-                     public agriculture: number,
-                     public agricultureMax: number,
-                     public commercial: number,
-                     public commercialMax: number,
-                     public technology: number,
-                     public technologyMax: number,
-                     public wall: number,
-                     public wallMax: number,
-                     public wallguard: number,
-                     public wallguardMax: number,
-                     public security: number,
-                     public ricePrice: number) {}
+  public constructor(public id: number = 0,
+                     public type: number = 0,
+                     public countryId: number = 0,
+                     public name: string = '',
+                     public x: number = 0,
+                     public y: number = 0,
+                     public people: number = 0,
+                     public agriculture: number = 0,
+                     public agricultureMax: number = 0,
+                     public commercial: number = 0,
+                     public commercialMax: number = 0,
+                     public technology: number = 0,
+                     public technologyMax: number = 0,
+                     public wall: number = 0,
+                     public wallMax: number = 0,
+                     public wallguard: number = 0,
+                     public wallguardMax: number = 0,
+                     public security: number = 0,
+                     public ricePrice: number = 0) {}
 }
 
 export class Api {

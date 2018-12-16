@@ -85,6 +85,9 @@ export default class ApiStreaming {
       case api.DateTime.typeId:
         this.fire(obj.type, obj.data as api.DateTime);
         break;
+      case api.GameDateTime.typeId:
+        this.fire(obj.type, obj.data as api.GameDateTime);
+        break;
       case api.MapLogType.typeId:
         this.fire(obj.type, obj.data as api.MapLogType);
         break;
@@ -96,6 +99,12 @@ export default class ApiStreaming {
         break;
       case api.Character.typeId:
         this.fire(obj.type, obj.data as api.Character);
+        break;
+      case api.Country.typeId:
+        this.fire(obj.type, obj.data as api.Country);
+        break;
+      case api.Town.typeId:
+        this.fire(obj.type, obj.data as api.Town);
         break;
       default:
         this.fire(obj.type, obj.data);
