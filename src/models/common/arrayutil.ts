@@ -19,8 +19,6 @@ export default class ArrayUtil {
       }
       return false;
     });
-    console.dir(item);
-    console.log(i);
     if (i >= 0) {
       Vue.set(items, i, item);
     } else {
