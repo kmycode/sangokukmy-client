@@ -1,6 +1,6 @@
 <template>
   <div id="notification-service">
-    <transition name="notification-alert">
+    <transition-group name="notification-alert" tag="div">
       <div
           v-for="notification in notifications" :key="notification.id"
           :class="'alert alert-' + notification.className"
@@ -8,7 +8,7 @@
         <h4 class="alert-heading">{{ notification.title }}</h4>
         <p>{{ notification.message }}</p>
       </div>
-    </transition>
+    </transition-group>
   </div>
 </template>
 
@@ -69,7 +69,7 @@ export default class Notification extends Vue {
 
   private addNotification(item: NotificationItem) {
     this.notifications.push(item);
-    setTimeout(() => this.notifications.shift(), 4000);
+    setTimeout(() => this.notifications.shift(), 8000);
   }
 }
 </script>
@@ -97,5 +97,9 @@ div#notification-service {
 
 .notification-alert-enter, .notification-alert-leave-to {
   opacity: 0;
+}
+
+.notification-alert-move {
+  transition: transform .3s;
 }
 </style>
