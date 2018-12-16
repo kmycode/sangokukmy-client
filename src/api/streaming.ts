@@ -1,4 +1,8 @@
 
+import Enumerable from 'linq';
+import * as api from './api';
+import NotificationService from '@/services/notificationservice';
+
 /**
  * ストリーミングを行うクラス
  */
@@ -37,7 +41,7 @@ export default class Streaming {
   /**
    * 受信でエラーが発生したとき
    */
-  public onError: ((statusCode: number) => void) | null = null;
+  public onError: ((statusCode: number, error: api.ApiError | null) => void) | null = null;
 
   private ajax: XMLHttpRequest | null = null;
 
@@ -61,7 +65,21 @@ export default class Streaming {
             break;
           default:
             if (this.onError !== null) {
-              this.onError(this.ajax.status);
+              let errobj: api.ApiError | null = null;
+              if (this.ajax.responseText.length > 0) {
+                const line = Enumerable
+                  .from(this.ajax.responseText.split('\n'))
+                  .last((ln) => ln.length > 0);
+                try {
+                  const obj = JSON.parse(line) as api.ApiData<api.ApiError>;
+                  if (obj.type === api.ApiError.typeId) {
+                    errobj = obj.data;
+                  }
+                } catch (ex) {
+                  NotificationService.empty();
+                }
+              }
+              this.onError(this.ajax.status, errobj);
             }
             break;
         }

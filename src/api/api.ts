@@ -22,7 +22,7 @@ export enum ErrorCode {
 /**
  * APIデータ
  */
-class ApiData<T> {
+export class ApiData<T> {
   public constructor(public type: number,
                      public data: T) {}
 }
@@ -39,6 +39,14 @@ export class DateTime {
                      public hours: number,
                      public minutes: number,
                      public seconds: number) {}
+}
+
+/**
+ * ゲーム内の月日
+ */
+export class GameDateTime {
+  public constructor(public year: number,
+                     public month: number) {}
 }
 
 /**
@@ -123,6 +131,82 @@ export class AuthenticationData {
   constructor(public accessToken: string,
               public characterId: number,
               public expirationTime: DateTime) {}
+}
+
+/**
+ * 武将
+ */
+export class Character {
+  public static readonly typeId = 9;
+
+  public constructor(public id: number,
+                     public aliasId: string,
+                     public name: string,
+                     public countryId: number,
+                     public strong: number,
+                     public strongEx: number,
+                     public intellect: number,
+                     public intellectEx: number,
+                     public leadership: number,
+                     public leadershipEx: number,
+                     public popularity: number,
+                     public popularityEx: number,
+                     public soldierType: number,
+                     public soldierNumber: number,
+                     public proficiency: number,
+                     public money: number,
+                     public rice: number,
+                     public contribution: number,
+                     public classValue: number,
+                     public deleteTurn: number,
+                     public townId: number,
+                     public message: number,
+                     public lastUpdated: DateTime) {}
+}
+
+/**
+ * 国
+ */
+export class Country {
+  public static readonly typeId = 10;
+
+  public constructor(public id: number,
+                     public name: string,
+                     public colorId: number,
+                     public established: GameDateTime,
+                     public capitalTownId: number) {}
+}
+
+/**
+ * 都市
+ */
+export class Town {
+  public static readonly typeId = 11;
+
+  public static readonly typeAgriculture = 1;
+  public static readonly typeCommercial = 2;
+  public static readonly typeFortress = 3;
+  public static readonly typeLarge = 4;
+
+  public constructor(public id: number,
+                     public type: number,
+                     public countryId: number,
+                     public name: string,
+                     public x: number,
+                     public y: number,
+                     public people: number,
+                     public agriculture: number,
+                     public agricultureMax: number,
+                     public commercial: number,
+                     public commercialMax: number,
+                     public technology: number,
+                     public technologyMax: number,
+                     public wall: number,
+                     public wallMax: number,
+                     public wallguard: number,
+                     public wallguardMax: number,
+                     public security: number,
+                     public ricePrice: number) {}
 }
 
 export class Api {

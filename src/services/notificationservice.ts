@@ -108,11 +108,30 @@ export default class NotificationService {
     'サーバ接続再開',
     'これまでエラーによりサーバ接続に失敗していましたが、接続が再開されました。一部の情報が更新されていない可能性がありますので、ページを再読込してください',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly serverApiFailed = new NotificationServiceItem(
+    'サーバAPI呼び出し失敗',
+    'サーバのAPI呼び出しに失敗しました。HTTPステータスコード: {0}, URI: {1}, エラーコード: {2}, 追加データ: {3}',
+    NotificationServiceItemDefaultType.error);
+  public static readonly serverDatabaseFailed = new NotificationServiceItem(
+    'サーバAPI呼び出し失敗',
+    'サーバのデータベース接続異常により、サーバのAPI呼び出しに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly authenticationFailed = new NotificationServiceItem(
+    '認証失敗',
+    '認証に失敗しました。再ログインを試みてください',
+    NotificationServiceItemDefaultType.error);
 
   public static onError: ((title: string, message: string) => void) | null = null;
   public static onWarning: ((title: string, message: string) => void) | null = null;
   public static onInformation: ((title: string, message: string) => void) | null = null;
   public static onSucceed: ((title: string, message: string) => void) | null = null;
+
+  public static empty() {
+    if (NotificationService.onEmpty !== null) {
+      NotificationService.onEmpty('EMPTY', 'EMPTY');
+    }
+  }
+  private static onEmpty: ((title: string, message: string) => void) | null = null;
 
   private constructor() {}
 }

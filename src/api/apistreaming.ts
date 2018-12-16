@@ -34,7 +34,7 @@ export default class ApiStreaming {
                       method: string) {
     // ストリーミングを初期化
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
-    this.streaming.onError = (code) => this.onError(code);
+    this.streaming.onError = (code, err) => this.onError(code, err);
     this.streaming.uri = uri;
     this.streaming.method = method;
   }
@@ -94,28 +94,44 @@ export default class ApiStreaming {
       case api.CharacterUpdateLog.typeId:
         this.fire(obj.type, obj.data as api.CharacterUpdateLog);
         break;
+      case api.Character.typeId:
+        this.fire(obj.type, obj.data as api.Character);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;
     }
   }
 
-  private onError(code: number) {
+  private onError(code: number, error: api.ApiError | null) {
     switch (code) {
-      case 0:
       case 401:
       case 403:
+        NotificationService.authenticationFailed.notify();
+        break;
+      case 0:
       case 404:
         NotificationService.serverConnectionFailed.notify();
         this.isLastError = true;
-      default:
-        setTimeout(() => {
-          if (this.isStreaming) {
-            this.start();
-          }
-        }, 5000);
+        break;
+      case 500:
+        const errorCode: number = error === null ? -1 : error.code;
+        const additionalData: any = error === null ? {} : error.data;
+        NotificationService.serverApiFailed.notifyWithParameter(
+          code.toString(),
+          this.streaming.uri,
+          errorCode.toString(),
+          JSON.stringify(additionalData));
+        break;
+      case 503:
+        NotificationService.serverDatabaseFailed.notify();
         break;
     }
+    setTimeout(() => {
+      if (this.isStreaming) {
+        this.start();
+      }
+    }, 5000);
   }
 }
 
