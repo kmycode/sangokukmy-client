@@ -1,9 +1,11 @@
 <template>
   <div id="app">
-    <component :is="currentPage"
-      @login-start="startLogin"
-      @login-abort="abortLogin"
-      @login-succeed="enterStatusPage"/>
+    <transition name="component-fade" mode="out-in">
+      <component :is="currentPage"
+        @login-start="startLogin"
+        @login-abort="abortLogin"
+        @login-succeed="enterStatusPage"/>
+    </transition>
     <Notification/>
   </div>
 </template>
@@ -56,5 +58,17 @@ body {
 
 * {
   box-sizing: border-box;
+}
+
+.component-fade-enter-active, .component-fade-leave-active {
+  transition: opacity .1s ease, transform .1s ease;
+}
+.component-fade-enter {
+  opacity: 0;
+  transform: translateX(20vw);
+}
+.component-fade-leave-to {
+  opacity: 0;
+  transform: translateX(-20vw);
 }
 </style>
