@@ -104,6 +104,10 @@ export default class NotificationService {
     'サーバ接続失敗',
     'サーバとの接続に失敗しました。サーバが落ちているか、ネット接続に問題がある可能性があります',
     NotificationServiceItemDefaultType.error);
+  public static readonly serverReconnectionSucceed = new NotificationServiceItem(
+    'サーバ接続再開',
+    'これまでエラーによりサーバ接続に失敗していましたが、接続が再開されました。一部の情報が更新されていない可能性がありますので、ページを再読込してください',
+    NotificationServiceItemDefaultType.succeed);
 
   public static onError: ((title: string, message: string) => void) | null = null;
   public static onWarning: ((title: string, message: string) => void) | null = null;

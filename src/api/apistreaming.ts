@@ -21,6 +21,11 @@ export default class ApiStreaming {
    */
   public static status = new ApiStreaming(def.API_HOST + 'streaming/status', 'GET');
 
+  /**
+   * 前回接続でエラーが発生していたか
+   */
+  private isLastError: boolean = false;
+
   private listeners: ApiStreamingListener[] = [];
   private streaming: Streaming = new Streaming();
 
@@ -69,6 +74,10 @@ export default class ApiStreaming {
   }
 
   private onReceiveObject(obj: any) {
+    if (this.isLastError) {
+      this.isLastError = false;
+      NotificationService.serverReconnectionSucceed.notify();
+    }
     switch (obj.type) {
       case api.DateTime.typeId:
         this.fire(obj.type, obj.data as api.DateTime);
@@ -95,6 +104,7 @@ export default class ApiStreaming {
       case 403:
       case 404:
         NotificationService.serverConnectionFailed.notify();
+        this.isLastError = true;
       default:
         setTimeout(() => this.start(), 5000);
         break;
