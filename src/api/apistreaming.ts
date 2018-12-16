@@ -26,6 +26,7 @@ export default class ApiStreaming {
    */
   private isLastError: boolean = false;
 
+  private isStreaming: boolean = false;
   private listeners: ApiStreamingListener[] = [];
   private streaming: Streaming = new Streaming();
 
@@ -46,6 +47,7 @@ export default class ApiStreaming {
       Authorization: 'Bearer ' + current.authorizationToken,
     };
     this.streaming.start();
+    this.isStreaming = true;
   }
 
   /**
@@ -53,6 +55,7 @@ export default class ApiStreaming {
    */
   public stop() {
     this.streaming.stop();
+    this.isStreaming = false;
   }
 
   /**
@@ -106,7 +109,11 @@ export default class ApiStreaming {
         NotificationService.serverConnectionFailed.notify();
         this.isLastError = true;
       default:
-        setTimeout(() => this.start(), 5000);
+        setTimeout(() => {
+          if (this.isStreaming) {
+            this.start();
+          }
+        }, 5000);
         break;
     }
   }
