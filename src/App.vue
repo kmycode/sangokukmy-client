@@ -4,6 +4,7 @@
       @login-start="startLogin"
       @login-abort="abortLogin"
       @login-succeed="enterStatusPage"/>
+    <Notification/>
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
 import LoginPage from './components/pages/LoginPage.vue';
 import StatusPage from './components/pages/StatusPage.vue';
+import Notification from './components/services/Notification.vue';
 
 // フィルタ
 Vue.filter('zeroformat', (value: number, length: number): string | null => {
@@ -23,6 +25,7 @@ Vue.filter('zeroformat', (value: number, length: number): string | null => {
     TopPage,
     LoginPage,
     StatusPage,
+    Notification,
   },
 })
 export default class App extends Vue {

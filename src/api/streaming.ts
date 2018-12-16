@@ -34,6 +34,11 @@ export default class Streaming {
    */
   public onFinished: ((statusCode: number) => void) | null = null;
 
+  /**
+   * 受信でエラーが発生したとき
+   */
+  public onError: ((statusCode: number) => void) | null = null;
+
   private ajax: XMLHttpRequest | null = null;
 
   /**
@@ -47,8 +52,19 @@ export default class Streaming {
 
     // 受信がすべて完了したとき
     this.ajax.onreadystatechange = () => {
-      if (this.ajax != null && this.ajax.readyState === 4 && this.onFinished !== null) {
-        this.onFinished(this.ajax.status);
+      if (this.ajax != null && this.ajax.readyState === 4) {
+        switch (this.ajax.status) {
+          case 200:
+            if (this.onFinished !== null) {
+              this.onFinished(this.ajax.status);
+            }
+            break;
+          default:
+            if (this.onError !== null) {
+              this.onError(this.ajax.status);
+            }
+            break;
+        }
       }
     };
 

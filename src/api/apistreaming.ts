@@ -3,6 +3,7 @@ import * as def from '../common/definitions';
 import * as current from '../common/current';
 import * as api from './api';
 import Streaming from './streaming';
+import NotificationService from '@/services/notificationservice';
 
 /**
  * ストリーミングを、三国志NETのAPIにとって使いやすい形式で利用できるクラス。
@@ -27,6 +28,7 @@ export default class ApiStreaming {
                       method: string) {
     // ストリーミングを初期化
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
+    this.streaming.onError = (code) => this.onError(code);
     this.streaming.uri = uri;
     this.streaming.method = method;
   }
@@ -82,6 +84,19 @@ export default class ApiStreaming {
         break;
       default:
         this.fire(obj.type, obj.data);
+        break;
+    }
+  }
+
+  private onError(code: number) {
+    switch (code) {
+      case 0:
+      case 401:
+      case 403:
+      case 404:
+        NotificationService.serverConnectionFailed.notify();
+      default:
+        setTimeout(() => this.start(), 5000);
         break;
     }
   }
