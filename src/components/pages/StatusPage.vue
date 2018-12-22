@@ -17,11 +17,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import ArrayUtil from '../../models/common/arrayutil';
-import Streaming from './../../api/streaming';
-import ApiStreaming from './../../api/apistreaming';
 import Map from './../parts/Map.vue';
 import * as api from '@/api/api';
+import StatusModel from '../../models/statusmodel';
 
 @Component({
   components: {
@@ -29,31 +27,29 @@ import * as api from '@/api/api';
   },
 })
 export default class StatusPage extends Vue {
-  public gameDate: api.GameDateTime = new api.GameDateTime();
-  public towns: api.Town[] = [];
-  public countries: api.Country[] = [];
+  public model: StatusModel = new StatusModel();
 
   public created() {
-    ApiStreaming.status.on<api.GameDateTime>(
-      api.GameDateTime.typeId,
-      (obj) => this.gameDate = obj);
-    ApiStreaming.status.on<api.Town>(
-      api.Town.typeId,
-      (obj) => ArrayUtil.addUniquelyItem(this.towns, obj, (t) => t.id));
-    ApiStreaming.status.on<api.Country>(
-      api.Country.typeId,
-      (obj) => ArrayUtil.addUniquelyItem(this.countries, obj, (t) => t.id));
-    ApiStreaming.status.start();
+    this.model.onCreate();
   }
 
   public destroyed() {
-    ApiStreaming.status.stop();
+    this.model.onDestroy();
   }
 }
 </script>
 
 <style lang="scss" scoped>
 $current-display-height: 36px;
+$nav-tab-height: 40px;
+$left-side-fixed-height: $current-display-height + $nav-tab-height;
+$right-side-fixed-height: $nav-tab-height;
+ul.nav {
+  font-size: 1rem;
+  li {
+    height: 40px;
+  }
+}
 #current-display {
   text-align: center;
   height: $current-display-height;
