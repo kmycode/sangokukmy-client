@@ -20,10 +20,10 @@
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click="selectedInformationTab = 0" href="#">都市</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 1 }" @click="selectedInformationTab = 1" href="#">武将</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click="selectedInformationTab = 2" href="#">国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click="selectedInformationTab = 3" href="#">情勢</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 1 }" @click.prevent.stop="selectedInformationTab = 1" href="#">武将</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
           </ul>
         </div>
         <!-- 都市情報 -->
@@ -50,7 +50,7 @@
             <li class="nav-item"><a class="nav-link active" href="#">コマンド</a></li>
             <li class="nav-item"><a class="nav-link" href="#">手紙</a></li>
             <li class="nav-item"><a class="nav-link" href="#">全国宛</a></li>
-            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu ? ' active' : '')" href="#" @click="isOpenRightSidePopupMenu ^= true">会議室</a>
+            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">会議室</a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#">会議室</a>
                 <div class="dropdown-divider"></div>
