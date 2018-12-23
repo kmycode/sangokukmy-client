@@ -181,7 +181,7 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
-  min-height: 200px;
+  min-height: 140px;
   border-width: 1px;
   border-style: solid;
   @include country-color-deep('border-color');
