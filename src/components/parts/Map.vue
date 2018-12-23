@@ -3,7 +3,7 @@
     <div
         v-for="town in towns"
         :key="town.id"
-        :class="'map-cell country-color-' + getTownColor(town)"
+        :class="'map-cell country-color-' + getTownColor(town) + (isSelected(town) ? ' selected' : '')"
         :style="{ top: town.y + '0%', left: town.x + '0%', }">
       <div :class="'town-type town-type-' + town.type"></div>
       <span class="town-name">{{ town.name }}</span>
@@ -23,6 +23,13 @@ import * as api from '@/api/api';
 export default class Map extends Vue {
   @Prop() public towns!: api.Town[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: () => new api.Town(-1),
+  }) public town!: api.Town;
+
+  private isSelected(current: api.Town): boolean {
+    return this.town.id === current.id;
+  }
 
   private getTownColor(town: api.Town): number {
     const country = Enumerable
@@ -55,30 +62,35 @@ export default class Map extends Vue {
 
     position: absolute;
 
+    text-align: center;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    cursor: pointer;
 
     @include country-color-deep('background-color');
     @include country-color-light('color');
 
+    &.selected {
+      outline: 3px solid #f4d;
+      z-index: 1;
+    }
+
     .town-type {
       width: 16px;
       height: 16px;
-      margin-right: 4px;
+      margin: 0 auto;
       &.town-type-1 {
-        background-image: url('../../assets/images/sangoku-originals/m_1.gif');
+        background-image: url('../../assets/images/sangoku-originals/m_4.gif');
       }
       &.town-type-2 {
-        background-image: url('../../assets/images/sangoku-originals/m_2.gif');
-      }
-      &.town-type-3 {
         background-image: url('../../assets/images/sangoku-originals/m_3.gif');
       }
+      &.town-type-3 {
+        background-image: url('../../assets/images/sangoku-originals/m_2.gif');
+      }
       &.town-type-4 {
-        background-image: url('../../assets/images/sangoku-originals/m_4.gif');
+        background-image: url('../../assets/images/sangoku-originals/m_1.gif');
       }
     }
     .town-name {

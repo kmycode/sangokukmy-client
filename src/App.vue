@@ -49,7 +49,7 @@ export default class App extends Vue {
 
 <style lang="scss">
 body {
-  font-family: "Hiragino Kaku Gothic", "Yu Gothic", "Meiryo";
+  font-family: Arial, "游ゴシック体", "Yu Gothic", YuGothic, "Meiryo";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #ca8 url('./assets/images/sangoku-originals/o.gif');

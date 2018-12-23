@@ -20,6 +20,13 @@ export enum ErrorCode {
 }
 
 /**
+ * IDをもった要素
+ */
+export interface IIdentitiedEntity {
+  id: number;
+}
+
+/**
  * APIデータ
  */
 export class ApiData<T> {
@@ -39,6 +46,10 @@ export class DateTime {
                      public hours: number = 0,
                      public minutes: number = 0,
                      public seconds: number = 0) {}
+
+  public toString(): string {
+    return this.year + '年' + this.month + '月' + this.day + '日 ' + this.hours + ':' + this.minutes + ':' + this.seconds;
+  }
 }
 
 /**
@@ -49,6 +60,19 @@ export class GameDateTime {
 
   public constructor(public year: number = 0,
                      public month: number = 0) {}
+
+  public toNumber(): number {
+    return this.year * 12 + this.month;
+  }
+
+  public toString(): string {
+    return this.year + '年' + this.month + '月';
+  }
+
+  public toRealDate(): DateTime {
+    // TODO
+    return new DateTime(2018, 12, 1, 20, 0, 0);
+  }
 }
 
 /**
@@ -63,60 +87,20 @@ export class ApiError {
 }
 
 /**
- * マップログの種類
- */
-export class MapLogType {
-  public static readonly typeId = 2;
-
-  /**
-   * 空のタイプ
-   */
-  public static empty = new MapLogType(-1, '', 'black');
-
-  constructor(public id: number,
-              public text: string,
-              public color: string) {}
-}
-
-/**
- * デフォルトのマップログの種類
- */
-export class MapLogTypes {
-
-  /**
-   * IDからログタイプを取得する
-   * @param id ログタイプのID
-   * @returns 指定したIDにあったログタイプ
-   */
-  public static fromId(id: number): MapLogType | null {
-    const type = Enumerable.from(this.types).singleOrDefault((t) => t.id === id);
-    return type || null;
-  }
-
-  private static types = [
-    new MapLogType(1, 'イベント', 'red'),
-  ];
-
-  private constructor() {}
-
-}
-
-/**
  * マップログ
  */
-export class MapLog {
+export class MapLog implements IIdentitiedEntity {
   public static readonly typeId = 4;
 
   constructor(public id: number,
               public message: string,
-              public type: MapLogType,
               public date: DateTime) {}
 }
 
 /**
  * 武将更新ログ
  */
-export class CharacterUpdateLog {
+export class CharacterUpdateLog implements IIdentitiedEntity {
   public static readonly typeId = 3;
 
   constructor(public id: number,
@@ -138,7 +122,7 @@ export class AuthenticationData {
 /**
  * 武将
  */
-export class Character {
+export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
   public constructor(public id: number = 0,
@@ -182,7 +166,7 @@ export class Country {
 /**
  * 都市
  */
-export class Town {
+export class Town implements IIdentitiedEntity {
   public static readonly typeId = 11;
 
   public static readonly typeAgriculture = 1;
@@ -209,6 +193,14 @@ export class Town {
                      public wallguardMax: number = 0,
                      public security: number = 0,
                      public ricePrice: number = 0) {}
+}
+
+export class CharacterCommand {
+  public constructor(public commandNumber: number = 0,
+                     public characterId: number = 0,
+                     public type: number = 0,
+                     public name: string = '',
+                     public gameDate: GameDateTime = new GameDateTime()) {}
 }
 
 export class Api {
@@ -261,7 +253,6 @@ export class Api {
     for (let i = 0; i < count; i++) {
       result.push(new MapLog(i + 1,
         'てすとろぐ',
-        MapLogTypes.fromId(1) || MapLogType.empty,
         new DateTime(2018, 1, 1, 12, 0, 0)));
     }
     return result;
@@ -278,7 +269,6 @@ export class Api {
     for (let i = 0; i < count; i++) {
       result.push(new MapLog(i + 1,
         'てすとろぐ（太字）',
-        MapLogTypes.fromId(1) || MapLogType.empty,
         new DateTime(2018, 1, 1, 12, 0, 0)));
     }
     return result;

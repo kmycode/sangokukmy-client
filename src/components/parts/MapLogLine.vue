@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-bind:style="{'color':log.type.color}">【{{ log.type.text }}】</span>{{ log.message }} (<RealDateTime v-bind:date="log.date"/>)
+    <!--<span v-bind:style="{'color':log.type.color}">【{{ log.type.text }}】</span>-->{{ log.message }} (<RealDateTime v-bind:date="log.date"/>)
   </span>
 </template>
 

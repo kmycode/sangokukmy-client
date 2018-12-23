@@ -83,7 +83,7 @@ export default class TopPage extends Vue {
       this.updateLogs = await api.Api.getCharacterLogs(5);
     }, () => undefined);
 
-    ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addItem(this.m2logs, log, 5));
+    ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addLog(this.m2logs, log, 5));
     ApiStreaming.top.start();
   }
 

@@ -38,6 +38,7 @@ ul.map-log-list {
     content: '●';
     margin-left: -1em;
     color: #080;
+    font-family: "Hiragino Kaku Gothic", "Hiragino Kaku Gothic ProN";
   }
 }
 // 重要マップログリスト

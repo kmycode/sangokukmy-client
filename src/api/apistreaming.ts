@@ -88,9 +88,6 @@ export default class ApiStreaming {
       case api.GameDateTime.typeId:
         this.fire(obj.type, obj.data as api.GameDateTime);
         break;
-      case api.MapLogType.typeId:
-        this.fire(obj.type, obj.data as api.MapLogType);
-        break;
       case api.MapLog.typeId:
         this.fire(obj.type, obj.data as api.MapLog);
         break;
