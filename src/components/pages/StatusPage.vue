@@ -26,45 +26,10 @@
             <li class="nav-item"><a class="nav-link" href="#">情勢</a></li>
           </ul>
         </div>
-        <!-- 都市 -->
+        <!-- 都市情報 -->
         <div :class="'information-content information-town country-color-' + model.townCountryColor">
           <h4 :class="'country-color-' + model.townCountryColor">{{ model.town.name }}</h4>
-          <div class="parameters parameters-town">
-            <div class="item" v-for="param in model.townParameters" :key="param.name">
-              <div v-if="param.type === 1" class="item-container">
-                <div class="bar-background"></div>
-                <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
-                <div class="name">{{ param.name }}</div>
-                <div class="value value-ranged">
-                  <span class="current">{{ param.value }}</span>
-                  <span class="split">/</span>
-                  <span class="max">{{ param.max }}</span>
-                </div>
-              </div>
-              <div v-if="param.type === 2" class="item-container">
-                <div class="name">{{ param.name }}</div>
-                <div class="value value-norange">
-                  <span class="current">{{ param.value }}</span>
-                </div>
-              </div>
-              <div v-if="param.type === 3" class="item-container">
-                <div class="name">{{ param.name }}</div>
-                <div class="value value-text">
-                  <span class="current">{{ param.value }}</span>
-                </div>
-              </div>
-            </div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-            <div class="item item-empty"></div>
-          </div>
+          <StatusParametersPanel :parameters="model.townParameters"/>
           <div class="commands">
             <button type="button" class="btn btn-info">武将</button>
           </div>
@@ -135,12 +100,15 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
+import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import * as api from '@/api/api';
-import StatusModel, { StatusParameterType } from '@/models/statusmodel';
+import StatusModel from '@/models/status/statusmodel';
+import { StatusParameter } from '@/models/status/statusparameter';
 
 @Component({
   components: {
     Map,
+    StatusParametersPanel,
   },
 })
 export default class StatusPage extends Vue {
@@ -219,90 +187,6 @@ ul.nav {
       font-weight: bold;
       @include country-color-deep('background-color');
       @include country-color-light('color');
-    }
-  }
-  .parameters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    align-content: flex-start;
-    padding: 4px;
-    height: calc(100% - 2rem - 48px);
-    overflow: auto;
-    .item {
-      width: 100px;
-      height: 54px;
-      border-radius: 12px;
-      margin: 4px;
-      background: white;
-      text-align: center;
-      overflow: hidden;
-      .item-container {
-        position: relative;
-        width: 100%;
-        height: 100%;
-      }
-      &.item-empty {
-        height: 0;
-        background: none;
-        margin-top: 0;
-        margin-bottom: 0;
-        padding-top: 0;
-        padding-bottom: 0;
-      }
-    }
-    &.parameters-town {
-      .item-container {
-        .bar-background {
-          position: absolute;
-          height: 12px;
-          width: 100%;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          background: #fde;
-        }
-        .bar {
-          position: absolute;
-          height: 12px;
-          bottom: 0;
-          left: 0;
-          background: #56e;
-          &.bar-max {
-            background: #596;
-          }
-          &.bar-many {
-            background: #6bd;
-          }
-        }
-        .name {
-          margin-top: 4px;
-          font-weight: bold;
-          font-size: 0.8rem;
-          line-height: 0.9rem;
-          height: 0.9rem;
-          color: #888;
-        }
-        .value {
-          .current {
-            font-size: 1.2rem;
-            font-weight: bold;
-          }
-          .split {
-            font-size: 0.7rem;
-            margin: 0 2px 0 4px;
-          }
-          .max {
-            font-size: 0.9rem;
-          }
-          &.value-norange, &.value-text {
-            margin-top: 4px;
-          }
-          &.value-text .current {
-            font-size: 0.9rem;
-          }
-        }
-      }
     }
   }
   .commands {

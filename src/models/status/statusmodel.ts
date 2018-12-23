@@ -3,65 +3,10 @@ import Streaming from '@/api/streaming';
 import ApiStreaming from '@/api/apistreaming';
 import * as api from '@/api/api';
 import Enumerable from 'linq';
-
-export enum StatusParameterType {
-  /**
-   * 最大値が存在する値（農業、商業など）
-   */
-  ranged = 1,
-  /**
-   * 値だけ（武力、知力など）
-   */
-  noRange = 2,
-  /**
-   * テキスト値
-   */
-  text = 3,
-}
-
-export abstract class StatusParameter {
-  public abstract get type(): StatusParameterType;
-
-  public constructor(public readonly name: string) {}
-}
-
-class RangedStatusParameter extends StatusParameter {
-  public get type(): StatusParameterType {
-    return StatusParameterType.ranged;
-  }
-
-  public get valueRatio(): number {
-    if (this.max !== 0) {
-      return this.value / this.max * 100;
-    } else {
-      return 0;
-    }
-  }
-
-  public constructor(name: string, public value: number, public max: number) {
-    super(name);
-  }
-}
-
-class NoRangeStatusParameter extends StatusParameter {
-  public get type(): StatusParameterType {
-    return StatusParameterType.noRange;
-  }
-
-  public constructor(name: string, public value: number) {
-    super(name);
-  }
-}
-
-class TextStatusParameter extends StatusParameter {
-  public get type(): StatusParameterType {
-    return StatusParameterType.text;
-  }
-
-  public constructor(name: string, public value: string) {
-    super(name);
-  }
-}
+import { StatusParameter,
+  NoRangeStatusParameter,
+  RangedStatusParameter,
+  TextStatusParameter } from '@/models/status/statusparameter';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -70,16 +15,15 @@ export default class StatusModel {
   public town: api.Town = new api.Town(-1);
   public townParameters: StatusParameter[] = [];
   public character: api.Character = new api.Character(-1);
+  public characterParameters: StatusParameter[] = [];
   public commands: api.CharacterCommand[] = [];
 
   public get townCountryColor(): number {
-    if (this.town !== undefined) {
-      const country = ArrayUtil.find(this.countries, this.town.countryId);
-      if (country !== undefined) {
-        return country.colorId;
-      }
-    }
-    return 0;
+    return this.getCountry(this.town.countryId).colorId;
+  }
+
+  public get characterCountryColor(): number {
+    return this.getCountry(this.character.countryId).colorId;
   }
 
   public onCreate() {
@@ -155,6 +99,14 @@ export default class StatusModel {
         (townParameter as TextStatusParameter).value = country.name;
       }
     }
+  }
+
+  private getCountry(countryId: number): api.Country {
+    const country = ArrayUtil.find(this.countries, countryId);
+    if (country) {
+      return country;
+    }
+    return api.Country.default;
   }
 
   private updateCharacter(character: api.Character) {

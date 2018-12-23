@@ -155,6 +155,7 @@ export class Character implements IIdentitiedEntity {
  */
 export class Country {
   public static readonly typeId = 10;
+  public static readonly default = new Country(0, '無所属', 0);
 
   public constructor(public id: number = 0,
                      public name: string = '',
