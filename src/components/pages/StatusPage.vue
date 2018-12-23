@@ -65,6 +65,7 @@
         <div class="right-side-content content-command">
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a class="nav-link active" href="#">内政</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">増強</a></li>
             <li class="nav-item"><a class="nav-link" href="#">軍事</a></li>
             <li class="nav-item"><a class="nav-link" href="#">計略</a></li>
             <li class="nav-item"><a class="nav-link" href="#">個人</a></li>
