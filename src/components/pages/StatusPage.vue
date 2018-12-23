@@ -20,18 +20,26 @@
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a class="nav-link active" href="#">都市</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">武将</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">国</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">情勢</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click="selectedInformationTab = 0" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 1 }" @click="selectedInformationTab = 1" href="#">武将</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click="selectedInformationTab = 2" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click="selectedInformationTab = 3" href="#">情勢</a></li>
           </ul>
         </div>
         <!-- 都市情報 -->
-        <div :class="'information-content information-town country-color-' + model.townCountryColor">
+        <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor">
           <h4 :class="'country-color-' + model.townCountryColor">{{ model.town.name }}</h4>
           <StatusParametersPanel :parameters="model.townParameters"/>
           <div class="commands">
             <button type="button" class="btn btn-info">武将</button>
+          </div>
+        </div>
+        <!-- 武将情報 -->
+        <div v-show="selectedInformationTab === 1" :class="'information-content information-character country-color-' + model.characterCountryColor">
+          <h4 :class="'country-color-' + model.characterCountryColor">{{ model.character.name }}</h4>
+          <StatusParametersPanel :parameters="model.characterParameters"/>
+          <div class="commands">
+            <button type="button" class="btn btn-info">部隊</button>
           </div>
         </div>
       </div>
@@ -114,6 +122,7 @@ import { StatusParameter } from '@/models/status/statusparameter';
 export default class StatusPage extends Vue {
   public model: StatusModel = new StatusModel();
   public isOpenRightSidePopupMenu: boolean = false;
+  public selectedInformationTab: number = 0;
 
   public created() {
     this.model.onCreate();
@@ -177,17 +186,15 @@ ul.nav {
   border-style: solid;
   @include country-color-deep('border-color');
   @include country-color-light('background-color');
-  &.information-town {
-    h4 {
-      margin: 0;
-      font-size: 1.4rem;
-      height: 2rem;
-      line-height: 2rem;
-      text-align: center;
-      font-weight: bold;
-      @include country-color-deep('background-color');
-      @include country-color-light('color');
-    }
+  h4 {
+    margin: 0;
+    font-size: 1.4rem;
+    height: 2rem;
+    line-height: 2rem;
+    text-align: center;
+    font-weight: bold;
+    @include country-color-deep('background-color');
+    @include country-color-light('color');
   }
   .commands {
     height: 48px;

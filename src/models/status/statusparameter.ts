@@ -1,3 +1,5 @@
+import * as api from '@/api/api';
+import Enumerable from 'linq';
 
 export enum StatusParameterType {
   /**
@@ -12,6 +14,10 @@ export enum StatusParameterType {
    * テキスト値
    */
   text = 3,
+  /**
+   * 武将のアイコン
+   */
+  characterIcon = 4,
 }
 
 export abstract class StatusParameter {
@@ -54,6 +60,16 @@ export class TextStatusParameter extends StatusParameter {
   }
 
   public constructor(name: string, public value: string) {
+    super(name);
+  }
+}
+
+export class CharacterIconStatusParameter extends StatusParameter {
+  public get type(): StatusParameterType {
+    return StatusParameterType.characterIcon;
+  }
+
+  public constructor(name: string, public icons: api.CharacterIcon[]) {
     super(name);
   }
 }

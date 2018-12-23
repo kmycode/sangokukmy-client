@@ -3,10 +3,13 @@ import Streaming from '@/api/streaming';
 import ApiStreaming from '@/api/apistreaming';
 import * as api from '@/api/api';
 import Enumerable from 'linq';
+import * as def from '@/common/definitions';
 import { StatusParameter,
   NoRangeStatusParameter,
   RangedStatusParameter,
-  TextStatusParameter } from '@/models/status/statusparameter';
+  TextStatusParameter,
+  CharacterIconStatusParameter,
+} from '@/models/status/statusparameter';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -41,7 +44,7 @@ export default class StatusModel {
       (obj) => this.updateCharacter(obj));
     ApiStreaming.status.start();
 
-    // debug
+    // TODO: debug
     for (let i = 0; i < 200; i++) {
       this.commands.push({ name: 'あああ', gameDate: new api.GameDateTime(180, 1) } as api.CharacterCommand);
     }
@@ -54,6 +57,8 @@ export default class StatusModel {
   public onDestroy() {
     ApiStreaming.status.stop();
   }
+
+  // #region Town
 
   private updateTown(town: api.Town) {
     ArrayUtil.addItem(this.towns, town);
@@ -70,8 +75,11 @@ export default class StatusModel {
 
   private setTown(town: api.Town) {
     this.town = town;
-    const country = ArrayUtil.find(this.countries, town.countryId);
+    this.townParameters = this.getTownParameters(town);
+  }
 
+  private getTownParameters(town: api.Town): StatusParameter[] {
+    const country = ArrayUtil.find(this.countries, town.countryId);
     const ps: StatusParameter[] = [];
     if (country) {
       ps.push(new TextStatusParameter('国', country.name));
@@ -86,8 +94,12 @@ export default class StatusModel {
     ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
     ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
     ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
-    this.townParameters = ps;
+    return ps;
   }
+
+  // #endregion
+
+  // #region Country
 
   private updateCountry(country: api.Country) {
     ArrayUtil.addItem(this.countries, country);
@@ -109,8 +121,13 @@ export default class StatusModel {
     return api.Country.default;
   }
 
+  // #endregion
+
+  // #region Character
+
   private updateCharacter(character: api.Character) {
     this.character = character;
+    this.characterParameters = this.getCharacterParameters(character);
 
     // 現在表示中の都市が設定されていなければ、現在の武将の都市を設定
     if (this.town.id < 0) {
@@ -120,4 +137,35 @@ export default class StatusModel {
       }
     }
   }
+
+  private getCharacterParameters(character: api.Character): StatusParameter[] {
+    const country = this.getCountry(character.countryId);
+    const ps: StatusParameter[] = [];
+    ps.push(new CharacterIconStatusParameter('アイコン', [ new api.CharacterIcon(0, 0, true, 1, '', '0.gif') ]));
+    ps.push(new TextStatusParameter('国', country.name));
+    ps.push(new NoRangeStatusParameter('武力', character.strong));
+    ps.push(new RangedStatusParameter('武力EX', character.strongEx, 1000));
+    ps.push(new NoRangeStatusParameter('知力', character.intellect));
+    ps.push(new RangedStatusParameter('知力EX', character.intellectEx, 1000));
+    ps.push(new NoRangeStatusParameter('統率', character.leadership));
+    ps.push(new RangedStatusParameter('統率EX', character.leadershipEx, 1000));
+    ps.push(new NoRangeStatusParameter('人望', character.popularity));
+    ps.push(new RangedStatusParameter('人望EX', character.popularityEx, 1000));
+    ps.push(new NoRangeStatusParameter('金', character.money));
+    ps.push(new NoRangeStatusParameter('米', character.rice));
+    ps.push(new NoRangeStatusParameter('貢献', character.contribution));
+    ps.push(new NoRangeStatusParameter('階級値', character.classValue));
+    ps.push(new TextStatusParameter('階級', api.Character.getClassName(character)));
+    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
+    if (soldierType) {
+      ps.push(new TextStatusParameter('兵種', soldierType.name));
+    } else {
+      ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+    }
+    ps.push(new RangedStatusParameter('兵士', character.soldierNumber, character.leadership));
+    ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
+    return ps;
+  }
+
+  // #endregion
 }

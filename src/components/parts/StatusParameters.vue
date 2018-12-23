@@ -1,6 +1,6 @@
 <template>
   <div class="parameters">
-    <div class="item" v-for="param in parameters" :key="param.name">
+    <div v-for="param in parameters" :key="param.name" :class="'item' + (param.type === 4 ? ' item-character-icon' : '')">
       <div v-if="param.type === 1" class="item-container">
         <div class="bar-background"></div>
         <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
@@ -23,6 +23,11 @@
           <span class="current">{{ param.value }}</span>
         </div>
       </div>
+      <div v-if="param.type === 4" class="item-container">
+        <div class="value value-icon">
+          <CharacterIcon :icons="param.icons"/>
+        </div>
+      </div>
     </div>
     <div class="item item-empty"></div>
     <div class="item item-empty"></div>
@@ -40,12 +45,14 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
+import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import * as api from '@/api/api';
 import { StatusParameter } from '@/models/status/statusparameter';
 
 @Component({
   components: {
     Map,
+    CharacterIcon,
   },
 })
 export default class StatusParametersPanel extends Vue {
@@ -60,6 +67,7 @@ export default class StatusParametersPanel extends Vue {
   flex-wrap: wrap;
   justify-content: space-around;
   align-content: flex-start;
+  align-items: flex-end;
   padding: 4px;
   height: calc(100% - 2rem - 48px);
   overflow: auto;
@@ -72,6 +80,15 @@ export default class StatusParametersPanel extends Vue {
     background: white;
     text-align: center;
     overflow: hidden;
+
+    &.item-character-icon {
+      height: 72px;
+      padding: 4px;
+      img {
+        width: 64px;
+        height: 64px;
+      }
+    }
 
     // パラメータの中身
     .item-container {
@@ -126,11 +143,18 @@ export default class StatusParametersPanel extends Vue {
         .max {
           font-size: 0.9rem;
         }
-        &.value-norange, &.value-text {
+        &.value-norange {
           margin-top: 4px;
         }
-        &.value-text .current {
-          font-size: 0.9rem;
+        &.value-text {
+          line-height: 1.1rem;
+          height: 2.2rem;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          .current {
+            font-size: 0.9rem;
+          }
         }
       }
     }

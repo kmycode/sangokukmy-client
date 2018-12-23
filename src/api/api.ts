@@ -125,6 +125,11 @@ export class AuthenticationData {
 export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
+  public static getClassName(chara: Character): string {
+    const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length);
+    return def.CLASS_NAMES[lank];
+  }
+
   public constructor(public id: number = 0,
                      public aliasId: string = '',
                      public name: string = '',
@@ -202,6 +207,39 @@ export class CharacterCommand {
                      public type: number = 0,
                      public name: string = '',
                      public gameDate: GameDateTime = new GameDateTime()) {}
+}
+
+export class CharacterIcon {
+  public static readonly default: CharacterIcon = new CharacterIcon(0, 0, true, 1, '', '0.gif');
+
+  public static getUri(icon: CharacterIcon): string {
+    if (icon.type === 2) {
+      // アップロードされたアイコン
+      return def.UPLOADED_ICONS_HOST + icon.fileName;
+    } else if (icon.type === 3) {
+      // Gravatar
+      return icon.uri;
+    } else {
+      // デフォルトのアイコン
+      return def.DEFAULT_ICONS_HOST + icon.fileName;
+    }
+  }
+
+  public static getMainUri(icons: CharacterIcon[]): string {
+    const main = Enumerable.from(icons).firstOrDefault((i) => i.isMain);
+    if (main) {
+      return CharacterIcon.getUri(main);
+    } else {
+      return CharacterIcon.getUri(CharacterIcon.default);
+    }
+  }
+
+  public constructor(public id: number = 0,
+                     public characterId: number = 0,
+                     public isMain: boolean = false,
+                     public type: number = 0,
+                     public uri: string = '',
+                     public fileName: string = '') {}
 }
 
 export class Api {
