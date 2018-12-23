@@ -104,11 +104,17 @@ export default class StatusModel {
   private updateCountry(country: api.Country) {
     ArrayUtil.addItem(this.countries, country);
 
-    // 現在所在している都市の国であれば、国名を更新する
+    // 現在表示している都市、武将の国であれば、国名を更新する
     if (country.id === this.town.countryId) {
       const townParameter = Enumerable.from(this.townParameters).firstOrDefault((tp) => tp.name === '国');
       if (townParameter) {
         (townParameter as TextStatusParameter).value = country.name;
+      }
+    }
+    if (country.id === this.character.countryId) {
+      const characterParameter = Enumerable.from(this.characterParameters).firstOrDefault((cp) => cp.name === '国');
+      if (characterParameter) {
+        (characterParameter as TextStatusParameter).value = country.name;
       }
     }
   }
