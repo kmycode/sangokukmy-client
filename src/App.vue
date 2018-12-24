@@ -16,10 +16,17 @@ import TopPage from './components/pages/TopPage.vue';
 import LoginPage from './components/pages/LoginPage.vue';
 import StatusPage from './components/pages/StatusPage.vue';
 import Notification from './components/services/Notification.vue';
+import * as api from '@/api/api';
 
 // フィルタ
 Vue.filter('zeroformat', (value: number, length: number): string | null => {
   return ('0000000000' + value).slice(-length);
+});
+Vue.filter('gamedate', (value: api.GameDateTime): string => {
+  return api.GameDateTime.toFormatedString(value);
+});
+Vue.filter('realdate', (value: api.DateTime): string => {
+  return api.DateTime.toFormatedString(value);
 });
 
 @Component({

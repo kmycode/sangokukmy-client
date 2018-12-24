@@ -78,8 +78,8 @@ export default class TopPage extends Vue {
 
   private created() {
     AsyncUtil.tryTimes(3, async () => {
-      this.mlogs = await api.Api.getMapLogs(5);
-      this.m2logs = await api.Api.getImportantMapLogs(5);
+      // this.mlogs = await api.Api.getMapLogs(5);
+      // this.m2logs = await api.Api.getImportantMapLogs(5);
       this.updateLogs = await api.Api.getCharacterLogs(5);
     }, () => undefined);
 

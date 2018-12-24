@@ -1,6 +1,6 @@
 <template>
   <div class="parameters">
-    <div v-for="param in parameters" :key="param.name" :class="'item' + (param.type === 4 ? ' item-character-icon' : '')">
+    <div v-for="param in parameters" :key="param.name" :class="'item' + (param.type === 4 ? ' item-character-icon' : param.type === 5 ? ' item-twin' : '')">
       <div v-if="param.type === 1" class="item-container">
         <div class="bar-background"></div>
         <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
@@ -26,6 +26,24 @@
       <div v-if="param.type === 4" class="item-container">
         <div class="value value-icon">
           <CharacterIcon :icons="param.icons"/>
+        </div>
+      </div>
+      <div v-if="param.type === 5" class="item-container">
+        <div class="twin-part">
+          <div class="name">{{ param.name }}</div>
+          <div class="value value-norange">
+            <span class="current">{{ param.value }}</span>
+          </div>
+        </div>
+        <div class="twin-part">
+          <div class="bar-background"></div>
+          <div :class="'bar' + (param.extraValueRatio === 100 ? ' bar-max' : param.extraValueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.extraValueRatio + '%'}"></div>
+          <div class="name">{{ param.extraName }}</div>
+          <div class="value value-ranged">
+            <span class="current">{{ param.extraValue }}</span>
+            <span class="split">/</span>
+            <span class="max">{{ param.extraMax }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -65,12 +83,11 @@ export default class StatusParametersPanel extends Vue {
 .parameters {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: center;
   align-content: flex-start;
   align-items: flex-end;
   padding: 4px;
-  height: calc(100% - 2rem - 48px);
-  overflow: auto;
+  height: 100%;
 
   .item {
     width: 100px;
@@ -82,12 +99,8 @@ export default class StatusParametersPanel extends Vue {
     overflow: hidden;
 
     &.item-character-icon {
-      height: 72px;
-      padding: 4px;
-      img {
-        width: 64px;
-        height: 64px;
-      }
+      height: 64px;
+      background: none;
     }
 
     // パラメータの中身
@@ -155,6 +168,20 @@ export default class StatusParametersPanel extends Vue {
           .current {
             font-size: 0.9rem;
           }
+        }
+      }
+    }
+
+    &.item-twin {
+      width: 208px;
+      position: static;
+
+      .item-container {
+        display: flex;
+        .twin-part {
+          position: relative;
+          width: 104px;
+          height: 58px;
         }
       }
     }

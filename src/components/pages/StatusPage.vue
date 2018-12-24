@@ -23,13 +23,15 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 1 }" @click.prevent.stop="selectedInformationTab = 1" href="#">武将</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2" href="#">国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">報告</a></li>
           </ul>
         </div>
         <!-- 都市情報 -->
         <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor">
           <h4 :class="'country-color-' + model.townCountryColor">{{ model.town.name }}</h4>
-          <StatusParametersPanel :parameters="model.townParameters"/>
+          <div class="content-main">
+            <StatusParametersPanel :parameters="model.townParameters"/>
+          </div>
           <div class="commands">
             <button type="button" class="btn btn-info">武将</button>
           </div>
@@ -37,9 +39,34 @@
         <!-- 武将情報 -->
         <div v-show="selectedInformationTab === 1" :class="'information-content information-character country-color-' + model.characterCountryColor">
           <h4 :class="'country-color-' + model.characterCountryColor">{{ model.character.name }}</h4>
-          <StatusParametersPanel :parameters="model.characterParameters"/>
+          <div class="content-main">
+            <StatusParametersPanel :parameters="model.characterParameters"/>
+          </div>
           <div class="commands">
             <button type="button" class="btn btn-info">部隊</button>
+          </div>
+        </div>
+        <!-- 国情報 -->
+        <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId">
+          <h4 :class="'country-color-' + model.country.colorId">{{ model.country.name }}</h4>
+          <div class="content-main">
+            <StatusParametersPanel :parameters="model.countryParameters"/>
+          </div>
+          <div class="commands">
+            <button type="button" class="btn btn-info">部隊</button>
+          </div>
+        </div>
+        <!-- 報告 -->
+        <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId">
+          <h4 v-show="selectedReportType === 0">報告（マップ）</h4>
+          <h4 v-show="selectedReportType === 1">報告（武将）</h4>
+          <div class="content-main">
+            <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal"/>
+            <MapLogList v-show="selectedReportType === 1" :logs="model.characterLogs" type="character-log"/>
+          </div>
+          <div class="commands">
+            <button type="button" class="btn btn-info" @click="selectedReportType = 0">マップ</button>
+            <button type="button" class="btn btn-info" @click="selectedReportType = 1">武将</button>
           </div>
         </div>
       </div>
@@ -110,6 +137,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
 import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
+import MapLogList from '@/components/parts/MapLogList.vue';
 import * as api from '@/api/api';
 import StatusModel from '@/models/status/statusmodel';
 import { StatusParameter } from '@/models/status/statusparameter';
@@ -118,12 +146,14 @@ import { StatusParameter } from '@/models/status/statusparameter';
   components: {
     Map,
     StatusParametersPanel,
+    MapLogList,
   },
 })
 export default class StatusPage extends Vue {
   public model: StatusModel = new StatusModel();
   public isOpenRightSidePopupMenu: boolean = false;
   public selectedInformationTab: number = 0;
+  public selectedReportType: number = 0;
 
   public created() {
     this.model.onCreate();
@@ -137,6 +167,7 @@ export default class StatusPage extends Vue {
 
 <style lang="scss" scoped>
 @import '@/scss/country-color.scss';
+@import '@/scss/global-colors.scss';
 
 $current-display-height: 36px;
 $nav-tab-height: 40px;
@@ -183,7 +214,7 @@ ul.nav {
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
   min-height: 140px;
-  border-width: 1px;
+  border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
   @include country-color-light('background-color');
@@ -197,10 +228,25 @@ ul.nav {
     @include country-color-deep('background-color');
     @include country-color-light('color');
   }
+  .content-main {
+    height: calc(100% - 2rem - 48px);
+    overflow: auto;
+  }
   .commands {
     height: 48px;
     padding: 4px;
     background: $color-navigation-commands;
+    button {
+      margin-right: 4px;
+    }
+  }
+  &.information-logs {
+    background-color: $global-table-background;
+    border-color: $global-table-border;
+    h4 {
+      background-color: $global-table-border;
+      color: $global-table-background;
+    }
   }
 }
 

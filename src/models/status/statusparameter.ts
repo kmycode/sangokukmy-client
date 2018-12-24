@@ -18,6 +18,10 @@ export enum StatusParameterType {
    * 武将のアイコン
    */
   characterIcon = 4,
+  /**
+   * noRnageとrangedの順に並べてくっつけたもの
+   */
+  twinNoRangeAndRanged = 5,
 }
 
 export abstract class StatusParameter {
@@ -71,5 +75,42 @@ export class CharacterIconStatusParameter extends StatusParameter {
 
   public constructor(name: string, public icons: api.CharacterIcon[]) {
     super(name);
+  }
+}
+
+export class TwinNoRangeAndRangedStatusParameter extends NoRangeStatusParameter {
+  private readonly ranged: RangedStatusParameter;
+
+  public get type(): StatusParameterType {
+    return StatusParameterType.twinNoRangeAndRanged;
+  }
+
+  public get extraName(): string {
+    return this.ranged.name;
+  }
+
+  public get extraValue(): number {
+    return this.ranged.value;
+  }
+
+  public set extraValue(value: number) {
+    this.ranged.value = value;
+  }
+
+  public get extraMax(): number {
+    return this.ranged.max;
+  }
+
+  public set extraMax(value: number) {
+    this.ranged.max = value;
+  }
+
+  public get extraValueRadio(): number {
+    return this.ranged.valueRatio;
+  }
+
+  public constructor(name: string, value: number, extraName: string, extraValueVal: number, extraMaxVal: number) {
+    super(name, value);
+    this.ranged = new RangedStatusParameter(extraName, extraValueVal, extraMaxVal);
   }
 }

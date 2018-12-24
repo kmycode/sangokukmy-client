@@ -20,5 +20,13 @@ export default class StatusParametersPanel extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
+img {
+  border-radius: 32px;
+  width: 64px;
+  height: 64px;
+  transition: border-radius .16s ease-in;
+  &:hover {
+    border-radius: 8px;
+  }
+}
 </style>

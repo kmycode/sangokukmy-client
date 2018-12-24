@@ -1,24 +1,27 @@
 <template>
-  <ul :class="{'map-log-list': type === 'normal', 'map-log-list-important': type === 'important', 'character-update-log-list': type === 'character-update-log'}">
-    <li v-if="type !== 'character-update-log'" v-for="mlog in logs" :key="mlog.id">
+  <ul :class="{'map-log-list': type === 'normal', 'map-log-list-important': type === 'important', 'character-update-log-list': type === 'character-update-log', 'character-log-list': type === 'character-log'}">
+    <li v-if="type === 'map-log-list' || type === 'map-log-list-important'" v-for="mlog in logs" :key="mlog.id">
       <MapLogLine :log="mlog"/>
     </li>
     <li v-if="type === 'character-update-log'" v-for="mlog in logs" :key="mlog.id">
-      {{ mlog.characterName }} (<RealDateTime :date="mlog.date"/>)
+      {{ mlog.characterName }} ({{ mlog.date | realdate }})
+    </li>
+    <li v-if="type === 'character-log'" v-for="mlog in logs" :key="mlog.id">
+      {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message"/> ({{ mlog.date | realdate }})
     </li>
   </ul>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import RealDateTime from './RealDateTime.vue';
-import MapLogLine from '../parts/MapLogLine.vue';
-import * as api from './../../api/api';
+import MapLogLine from '@/components/parts/MapLogLine.vue';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
+import * as api from '@/api/api';
 
 @Component({
   components: {
-    RealDateTime,
     MapLogLine,
+    KmyLogTagText,
   },
 })
 export default class MapLogList extends Vue {
@@ -54,6 +57,13 @@ ul.map-log-list {
   @extend ul.map-log-list;
   li::before {
     color: inherit;
+  }
+}
+// 武将行動ログリスト
+.character-log-list {
+  @extend ul.map-log-list;
+  li::before {
+    color: #666;
   }
 }
 </style>

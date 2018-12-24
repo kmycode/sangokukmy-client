@@ -40,6 +40,15 @@ export class ApiData<T> {
 export class DateTime {
   public static readonly typeId = 1;
 
+  public static toFormatedString(date: DateTime): string {
+    return date.year + '年' +
+      date.month + '月' +
+      date.day + '日 ' +
+      date.hours + ':' +
+      (date.minutes < 10 ? '0' : '') + date.minutes + ':' +
+      (date.seconds < 10 ? '0' : '') + date.seconds;
+  }
+
   public constructor(public year: number = 0,
                      public month: number = 0,
                      public day: number = 0,
@@ -48,7 +57,7 @@ export class DateTime {
                      public seconds: number = 0) {}
 
   public toString(): string {
-    return this.year + '年' + this.month + '月' + this.day + '日 ' + this.hours + ':' + this.minutes + ':' + this.seconds;
+    return DateTime.toFormatedString(this);
   }
 }
 
@@ -58,6 +67,10 @@ export class DateTime {
 export class GameDateTime {
   public static readonly typeId = 12;
 
+  public static toFormatedString(date: GameDateTime): string {
+    return date.year + '年' + date.month + '月';
+  }
+
   public constructor(public year: number = 0,
                      public month: number = 0) {}
 
@@ -66,7 +79,7 @@ export class GameDateTime {
   }
 
   public toString(): string {
-    return this.year + '年' + this.month + '月';
+    return GameDateTime.toFormatedString(this);
   }
 
   public toRealDate(): DateTime {
@@ -93,7 +106,11 @@ export class MapLog implements IIdentitiedEntity {
   public static readonly typeId = 4;
 
   constructor(public id: number,
+              public isImportant: boolean,
+              public eventName: string,
+              public eventColor: string,
               public message: string,
+              public gameDate: GameDateTime,
               public date: DateTime) {}
 }
 
@@ -160,7 +177,7 @@ export class Character implements IIdentitiedEntity {
  */
 export class Country {
   public static readonly typeId = 10;
-  public static readonly default = new Country(0, '無所属', 0);
+  public static readonly default = new Country(-1, '無所属', 0);
 
   public constructor(public id: number = 0,
                      public name: string = '',
@@ -174,6 +191,8 @@ export class Country {
  */
 export class Town implements IIdentitiedEntity {
   public static readonly typeId = 11;
+
+  public static readonly default: Town = new Town(-1);
 
   public static readonly typeAgriculture = 1;
   public static readonly typeCommercial = 2;
@@ -201,6 +220,9 @@ export class Town implements IIdentitiedEntity {
                      public ricePrice: number = 0) {}
 }
 
+/**
+ * 武将のコマンド
+ */
 export class CharacterCommand {
   public constructor(public commandNumber: number = 0,
                      public characterId: number = 0,
@@ -209,6 +231,9 @@ export class CharacterCommand {
                      public gameDate: GameDateTime = new GameDateTime()) {}
 }
 
+/**
+ * 武将のアイコン
+ */
 export class CharacterIcon {
   public static readonly default: CharacterIcon = new CharacterIcon(0, 0, true, 1, '', '0.gif');
 
@@ -230,7 +255,11 @@ export class CharacterIcon {
     if (main) {
       return CharacterIcon.getUri(main);
     } else {
-      return CharacterIcon.getUri(CharacterIcon.default);
+      if (icons.length > 0) {
+        return CharacterIcon.getUri(icons[0]);
+      } else {
+        return CharacterIcon.getUri(CharacterIcon.default);
+      }
     }
   }
 
@@ -240,6 +269,18 @@ export class CharacterIcon {
                      public type: number = 0,
                      public uri: string = '',
                      public fileName: string = '') {}
+}
+
+/**
+ * 武将の更新ログ
+ */
+export class CharacterLog {
+  public static readonly typeId = 13;
+
+  public constructor(public id: number,
+                     public message: string,
+                     public date: DateTime,
+                     public gameDate: GameDateTime) {}
 }
 
 export class Api {
@@ -276,44 +317,6 @@ export class Api {
     }
     return result;
   }
-
-//#region マップログ
-
-  /**
-   * マップログを取得する
-   *
-   * GET    /api/v1/maplog/{count}
-   * @param count 取得する数
-   * @returns マップログの配列。countに入り切らなかった場合は、空の要素が入れられる
-   */
-  public static async getMapLogs(count: number): Promise<MapLog[]> {
-    // dummy
-    const result = new Array<MapLog>();
-    for (let i = 0; i < count; i++) {
-      result.push(new MapLog(i + 1,
-        'てすとろぐ',
-        new DateTime(2018, 1, 1, 12, 0, 0)));
-    }
-    return result;
-  }
-
-  /*
-   * マップログ（太字）を取得する
-   *
-   * GET    /api/v1/maplog/important/{count}
-   */
-  public static async getImportantMapLogs(count: number): Promise<MapLog[]> {
-    // dummy
-    const result = new Array<MapLog>();
-    for (let i = 0; i < count; i++) {
-      result.push(new MapLog(i + 1,
-        'てすとろぐ（太字）',
-        new DateTime(2018, 1, 1, 12, 0, 0)));
-    }
-    return result;
-  }
-
-//#endregion
 
   /**
    * 認証のときに利用するヘッダ

@@ -9,17 +9,22 @@ import { StatusParameter,
   RangedStatusParameter,
   TextStatusParameter,
   CharacterIconStatusParameter,
+  TwinNoRangeAndRangedStatusParameter,
 } from '@/models/status/statusparameter';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
-  public towns: api.Town[] = [];
   public countries: api.Country[] = [];
-  public town: api.Town = new api.Town(-1);
+  public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
+  public countryParameters: StatusParameter[] = [];
+  public towns: api.Town[] = [];
+  public town: api.Town = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townParameters: StatusParameter[] = [];
-  public character: api.Character = new api.Character(-1);
+  public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
   public commands: api.CharacterCommand[] = [];
+  public mapLogs: api.MapLog[] = [];
+  public characterLogs: api.CharacterLog[] = [];
 
   public get townCountryColor(): number {
     return this.getCountry(this.town.countryId).colorId;
@@ -30,6 +35,7 @@ export default class StatusModel {
   }
 
   public onCreate() {
+    ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.GameDateTime>(
       api.GameDateTime.typeId,
       (obj) => this.gameDate = obj);
@@ -42,6 +48,12 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Character>(
       api.Character.typeId,
       (obj) => this.updateCharacter(obj));
+    ApiStreaming.status.on<api.MapLog>(
+      api.MapLog.typeId,
+      (obj) => this.addMapLog(obj));
+    ApiStreaming.status.on<api.CharacterLog>(
+      api.CharacterLog.typeId,
+      (obj) => this.addCharacterLog(obj));
     ApiStreaming.status.start();
 
     // TODO: debug
@@ -79,13 +91,10 @@ export default class StatusModel {
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
-    const country = ArrayUtil.find(this.countries, town.countryId);
+    const country = this.getCountry(town.countryId);
     const ps: StatusParameter[] = [];
-    if (country) {
-      ps.push(new TextStatusParameter('国', country.name));
-    } else {
-      ps.push(new TextStatusParameter('国', '無所属'));
-    }
+    ps.push(new TextStatusParameter('国', country.name));
+    ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type - 1]));
     ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
     ps.push(new NoRangeStatusParameter('農民', town.people));
     ps.push(new RangedStatusParameter('民忠', town.security, 100));
@@ -95,6 +104,14 @@ export default class StatusModel {
     ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
     ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     return ps;
+  }
+
+  private getTown(townId: number): api.Town {
+    const town = ArrayUtil.find(this.towns, townId);
+    if (town) {
+      return town;
+    }
+    return api.Town.default;
   }
 
   // #endregion
@@ -117,6 +134,23 @@ export default class StatusModel {
         (characterParameter as TextStatusParameter).value = country.name;
       }
     }
+
+    if (this.country.id < 0 && country.id === this.character.countryId) {
+      this.setCountry(country);
+    }
+  }
+
+  private setCountry(country: api.Country) {
+    this.country = country;
+    this.countryParameters = this.getCountryParameters(country);
+  }
+
+  private getCountryParameters(country: api.Country): StatusParameter[] {
+    const ps: StatusParameter[] = [];
+    const capital = this.getTown(country.capitalTownId);
+    ps.push(new TextStatusParameter('国名', country.name));
+    ps.push(new TextStatusParameter('首都', capital.name));
+    return ps;
   }
 
   private getCountry(countryId: number): api.Country {
@@ -149,14 +183,10 @@ export default class StatusModel {
     const ps: StatusParameter[] = [];
     ps.push(new CharacterIconStatusParameter('アイコン', [ new api.CharacterIcon(0, 0, true, 1, '', '0.gif') ]));
     ps.push(new TextStatusParameter('国', country.name));
-    ps.push(new NoRangeStatusParameter('武力', character.strong));
-    ps.push(new RangedStatusParameter('武力EX', character.strongEx, 1000));
-    ps.push(new NoRangeStatusParameter('知力', character.intellect));
-    ps.push(new RangedStatusParameter('知力EX', character.intellectEx, 1000));
-    ps.push(new NoRangeStatusParameter('統率', character.leadership));
-    ps.push(new RangedStatusParameter('統率EX', character.leadershipEx, 1000));
-    ps.push(new NoRangeStatusParameter('人望', character.popularity));
-    ps.push(new RangedStatusParameter('人望EX', character.popularityEx, 1000));
+    ps.push(new TwinNoRangeAndRangedStatusParameter('武力', character.strong, 'EX', character.strongEx, 1000));
+    ps.push(new TwinNoRangeAndRangedStatusParameter('知力', character.intellect, 'EX', character.intellectEx, 1000));
+    ps.push(new TwinNoRangeAndRangedStatusParameter('統率', character.leadership, 'EX', character.leadershipEx, 1000));
+    ps.push(new TwinNoRangeAndRangedStatusParameter('人望', character.popularity, 'EX', character.popularityEx, 1000));
     ps.push(new NoRangeStatusParameter('金', character.money));
     ps.push(new NoRangeStatusParameter('米', character.rice));
     ps.push(new NoRangeStatusParameter('貢献', character.contribution));
@@ -171,6 +201,20 @@ export default class StatusModel {
     ps.push(new RangedStatusParameter('兵士', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     return ps;
+  }
+
+  // #endregion
+
+  // #region Logs
+
+  private addMapLog(log: api.MapLog) {
+    if (!log.isImportant) {
+      ArrayUtil.addLog(this.mapLogs, log, 50);
+    }
+  }
+
+  private addCharacterLog(log: api.CharacterLog) {
+    ArrayUtil.addLog(this.characterLogs, log, 50);
   }
 
   // #endregion

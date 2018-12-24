@@ -67,6 +67,13 @@ export default class ApiStreaming {
     this.listeners.push(new ApiStreamingListener(typeId, onFire));
   }
 
+  /**
+   * 設定したイベントをクリアする
+   */
+  public clearEvents() {
+    this.listeners = [];
+  }
+
   private fire<T>(typeId: number, obj: T) {
     Enumerable
       .from(this.listeners)
