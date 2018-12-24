@@ -124,6 +124,14 @@ export default class NotificationService {
     'コマンド取得失敗',
     'コマンド取得に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly inputCommandsFailed = new NotificationServiceItem(
+    'コマンド入力失敗',
+    'コマンド入力に失敗しました。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly inputCommandsSucceed = new NotificationServiceItem(
+    'コマンド入力完了',
+    '{0} の入力が完了しました。',
+    NotificationServiceItemDefaultType.succeed);
 
   public static onError: ((title: string, message: string) => void) | null = null;
   public static onWarning: ((title: string, message: string) => void) | null = null;

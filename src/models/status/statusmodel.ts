@@ -294,6 +294,8 @@ export default class StatusModel {
           (cc) => api.GameDateTime.toNumber(cc.gameDate));
         if (already) {
           c.commandNumber = already.commandNumber;
+          c.date = already.date;
+          api.CharacterCommand.updateName(c);
         }
         ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
       });
@@ -305,6 +307,26 @@ export default class StatusModel {
 
   private updateCommand(command: api.CharacterCommand) {
     ArrayUtil.addItemUniquely(this.commands, command, (c) => api.GameDateTime.toNumber(c.gameDate));
+  }
+
+  public inputCommand(commandType: number) {
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    if (selectCommands.length > 0) {
+      selectCommands.forEach((c) => {
+        c.type = commandType;
+      });
+      api.Api.setCommands(selectCommands)
+        .then(() => {
+          selectCommands.forEach((c) => {
+            api.CharacterCommand.updateName(c);
+            c.isSelected = false;
+          });
+          NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+        })
+        .catch(() => {
+          NotificationService.inputCommandsFailed.notify();
+        });
+    }
   }
 
   public selectSingleCommand(command: api.CharacterCommand) {

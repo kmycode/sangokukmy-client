@@ -261,6 +261,14 @@ export class Town implements IIdentitiedEntity {
 export class CharacterCommand {
   public static readonly typeId: number = 14;
 
+  public static updateName(command: CharacterCommand) {
+    if (command.type === 1) {
+      command.name = '農業開発';
+    } else {
+      command.name = '';
+    }
+  }
+
   public constructor(public commandNumber: number = 0,
                      public characterId: number = 0,
                      public type: number = 0,
@@ -348,6 +356,18 @@ export class Api {
     try {
       const result = await axios.get<ApiArrayData<CharacterCommand>>(def.API_HOST + 'commands', this.authHeader);
       return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 武将のコマンドを設定
+   * @param commands 入力するコマンド
+   */
+  public static async setCommands(commands: CharacterCommand[]) {
+    try {
+      await axios.put(def.API_HOST + 'commands', commands, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
