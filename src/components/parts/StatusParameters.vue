@@ -107,11 +107,11 @@ export default class StatusParametersPanel extends Vue {
     .item-container {
       position: relative;
       width: 100%;
-      height: 100%;
+      height: 54px;
 
       .bar-background {
         position: absolute;
-        height: 12px;
+        height: 8px;
         width: 100%;
         bottom: 0;
         left: 0;
@@ -121,7 +121,7 @@ export default class StatusParametersPanel extends Vue {
 
       .bar {
         position: absolute;
-        height: 12px;
+        height: 8px;
         bottom: 0;
         left: 0;
         background: #56e;
@@ -135,7 +135,8 @@ export default class StatusParametersPanel extends Vue {
 
       // パラメータ名
       .name {
-        margin-top: 4px;
+        padding-top: 4px;
+        padding-bottom: 16px;
         font-weight: bold;
         font-size: 0.8rem;
         line-height: 0.9rem;
@@ -181,7 +182,6 @@ export default class StatusParametersPanel extends Vue {
         .twin-part {
           position: relative;
           width: 104px;
-          height: 58px;
         }
       }
     }

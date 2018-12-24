@@ -90,14 +90,16 @@
         </div>
         <!-- コマンド入力 -->
         <div class="right-side-content content-command">
+          <!-- コマンド選択のタブ -->
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a class="nav-link active" href="#">内政</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">増強</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">軍事</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">計略</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">個人</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">増強</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
           </ul>
-          <div class="commands">
+          <!-- 内政コマンド -->
+          <div v-show="selectedCommandCategory === 0" class="commands">
             <button type="button" class="btn btn-light">農業開発</button>
             <button type="button" class="btn btn-light">商業発展</button>
             <button type="button" class="btn btn-light">技術開発</button>
@@ -105,24 +107,61 @@
             <button type="button" class="btn btn-light">守兵増強</button>
             <button type="button" class="btn btn-light">米施し</button>
           </div>
+          <!-- 増強コマンド -->
+          <div v-show="selectedCommandCategory === 1" class="commands">
+            <button type="button" class="btn btn-light">農地開拓</button>
+            <button type="button" class="btn btn-light">市場拡大</button>
+            <button type="button" class="btn btn-light">城壁増築</button>
+          </div>
+          <!-- 軍事コマンド -->
+          <div v-show="selectedCommandCategory === 2" class="commands">
+            <button type="button" class="btn btn-light">徴兵</button>
+            <button type="button" class="btn btn-light">兵士訓練</button>
+            <button type="button" class="btn btn-light">城の守備</button>
+            <button type="button" class="btn btn-light">戦争</button>
+            <button type="button" class="btn btn-light">集合</button>
+          </div>
+          <!-- 計略コマンド -->
+          <div v-show="selectedCommandCategory === 3" class="commands">
+            <button type="button" class="btn btn-light">登用</button>
+            <button type="button" class="btn btn-light">密偵</button>
+          </div>
+          <!-- 個人コマンド -->
+          <div v-show="selectedCommandCategory === 4" class="commands">
+            <button type="button" class="btn btn-light">移動</button>
+            <button type="button" class="btn btn-light">能力強化</button>
+            <button type="button" class="btn btn-light">米売買</button>
+            <button type="button" class="btn btn-light">武器</button>
+            <button type="button" class="btn btn-light">書物</button>
+            <button type="button" class="btn btn-light">何もしない</button>
+            <button type="button" class="btn btn-primary">仕官</button>
+            <button type="button" class="btn btn-light">下野</button>
+          </div>
+          <!-- 選択ツール -->
           <div class="command-input-options">
+            <button type="button" class="btn btn-light" @click="model.clearAllCommandSelections()">クリア</button>
+            <button type="button" class="btn btn-light">全て</button>
             <button type="button" class="btn btn-light">偶数</button>
             <button type="button" class="btn btn-light">奇数</button>
             <button type="button" class="btn btn-light">月</button>
             <button type="button" class="btn btn-light">ax+b</button>
           </div>
+          <!-- 選択アルゴリズム -->
           <div class="command-select-options">
-            <button type="button" class="btn btn-outline-info">置換</button>
-            <button type="button" class="btn btn-info">OR</button>
-            <button type="button" class="btn btn-outline-info">AND</button>
-            <button type="button" class="btn btn-outline-info">NAND</button>
-            <button type="button" class="btn btn-outline-info">XOR</button>
+            <button type="button" :class="{ 'btn': true, 'btn-multiple-selection': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 0, 'btn-info': model.commandSelectMode === 0 }" @click="model.commandSelectMode = 0">置換</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 1, 'btn-info': model.commandSelectMode === 1 }" @click="model.commandSelectMode = 1">OR</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 2, 'btn-info': model.commandSelectMode === 2 }" @click="model.commandSelectMode = 2">AND</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 3, 'btn-info': model.commandSelectMode === 3 }" @click="model.commandSelectMode = 3">XOR</button>
           </div>
           <div class="command-list">
-            <div class="command-list-item" v-for="command in model.commands" :key="command.commandNumber">
+            <div v-for="command in model.commands"
+                 :key="command.commandNumber"
+                 :class="{ 'command-list-item': true, 'selected': command.isSelected }"
+                 @click="onCommandSelected(command, $event)">
               <div class="number">{{ command.commandNumber }}</div>
               <div class="command-information">
-                <div class="command-helper"><span class="gamedate">{{ command.gameDate.toString() }}</span><span class="realdate">{{ command.gameDate.toRealDate().toString() }}</span></div>
+                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">0</span>秒</span></div>
                 <div class="command-text">{{ command.name }}</div>
               </div>
             </div>
@@ -154,6 +193,9 @@ export default class StatusPage extends Vue {
   public isOpenRightSidePopupMenu: boolean = false;
   public selectedInformationTab: number = 0;
   public selectedReportType: number = 0;
+  public selectedCommandCategory: number = 0;
+
+  public isMultiCommandsSelection: boolean = false;
 
   public created() {
     this.model.onCreate();
@@ -161,6 +203,22 @@ export default class StatusPage extends Vue {
 
   public destroyed() {
     this.model.onDestroy();
+  }
+
+  private toggleMultiSelection() {
+    this.isMultiCommandsSelection = !this.isMultiCommandsSelection;
+  }
+
+  private onCommandSelected(command: api.CharacterCommand, event?: MouseEvent) {
+    if (this.isMultiCommandsSelection) {
+      this.model.selectMultipleCommand(command);
+    } else {
+      if (event && event.shiftKey) {
+        this.model.selectMultipleCommand(command);
+      } else {
+        this.model.selectSingleCommand(command);
+      }
+    }
   }
 }
 </script>
@@ -263,6 +321,15 @@ ul.nav {
         background-color: #6bf;
       }
     }
+    .btn-multiple-selection {
+      background: none;
+      border: 1px solid #444;
+      font-size: 1rem;
+      &.selected {
+        background: #444;
+        color: white;
+      }
+    }
     .commands {
       display: flex;
       flex-flow: row wrap;
@@ -306,12 +373,19 @@ ul.nav {
       display: flex;
       border-bottom: 1px dashed #ccf;
       cursor: pointer;
+      user-select: none;
       transition: background-color .1s ease-in;
       &:last-child {
         border-bottom: none;
       }
       &:hover {
         background: #e4e4f6;
+      }
+      &.selected {
+        background: #c6caf0;
+        &:hover {
+          background: #b1b1df;
+        }
       }
       .number {
         font-size: 1rem;
@@ -330,6 +404,14 @@ ul.nav {
             font-size: 0.8rem;
             margin-left: 24px;
             color: #777;
+          }
+          .rest {
+            margin-left: 24px;
+            .rest-time {
+              margin: 0 4px;
+              font-weight: bold;
+              color: red;
+            }
           }
         }
         .command-text {

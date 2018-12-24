@@ -17,6 +17,11 @@ export const DEFAULT_ICONS_HOST = HOST_ROOT + 'images/character-default-icons/';
 export const UPLOADED_ICONS_HOST = HOST_ROOT + 'images/character-uploaded-icons/';
 
 /**
+ * 更新時間
+ */
+export const UPDATE_TIME = 600;
+
+/**
  * 次の階級に上がるまでに必要な階級値
  */
 export const NEXT_LANK = 1000;

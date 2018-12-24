@@ -40,6 +40,15 @@ export default class ArrayUtil {
     return undefined;
   }
 
+  public static findUniquely<T>(items: T[], id: number, key: (obj: T) => number): T | undefined {
+    for (const item of items) {
+      if (key(item) === id) {
+        return item;
+      }
+    }
+    return undefined;
+  }
+
   private constructor() {}
 
 }

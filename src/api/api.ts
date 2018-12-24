@@ -35,18 +35,43 @@ export class ApiData<T> {
 }
 
 /**
+ * API配列データ
+ */
+export class ApiArrayData<T> {
+  public constructor(public type: number,
+                     public data: T[]) {}
+}
+
+/**
  * 月日・時刻
  */
 export class DateTime {
   public static readonly typeId = 1;
 
   public static toFormatedString(date: DateTime): string {
-    return date.year + '年' +
+    if (date !== undefined) {
+      return date.year + '年' +
       date.month + '月' +
       date.day + '日 ' +
       date.hours + ':' +
       (date.minutes < 10 ? '0' : '') + date.minutes + ':' +
       (date.seconds < 10 ? '0' : '') + date.seconds;
+    } else {
+      return '???';
+    }
+  }
+
+  public static toDate(date: DateTime): Date {
+    return new Date(date.year, date.month - 1, date.day, date.hours, date.minutes, date.seconds);
+  }
+
+  public static fromDate(date: Date): DateTime {
+    return new DateTime(date.getFullYear(),
+      date.getMonth() + 1,
+      date.getDate(),
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds());
   }
 
   public constructor(public year: number = 0,
@@ -71,20 +96,30 @@ export class GameDateTime {
     return date.year + '年' + date.month + '月';
   }
 
+  public static toNumber(date: GameDateTime): number {
+    return date.year * 12 + date.month;
+  }
+
+  public static toRealDate(date: GameDateTime): DateTime {
+    // TODO
+    return new DateTime(2018, 12, 1, 20, 0, 0);
+  }
+
+  public static nextMonth(date: GameDateTime): GameDateTime {
+    let year = date.year;
+    let month = date.month + 1;
+    if (month > 12) {
+      month = 1;
+      year++;
+    }
+    return new GameDateTime(year, month);
+  }
+
   public constructor(public year: number = 0,
                      public month: number = 0) {}
 
-  public toNumber(): number {
-    return this.year * 12 + this.month;
-  }
-
   public toString(): string {
     return GameDateTime.toFormatedString(this);
-  }
-
-  public toRealDate(): DateTime {
-    // TODO
-    return new DateTime(2018, 12, 1, 20, 0, 0);
   }
 }
 
@@ -224,11 +259,15 @@ export class Town implements IIdentitiedEntity {
  * 武将のコマンド
  */
 export class CharacterCommand {
+  public static readonly typeId: number = 14;
+
   public constructor(public commandNumber: number = 0,
                      public characterId: number = 0,
                      public type: number = 0,
                      public name: string = '',
-                     public gameDate: GameDateTime = new GameDateTime()) {}
+                     public gameDate: GameDateTime = new GameDateTime(),
+                     public date?: DateTime,
+                     public isSelected?: boolean) {}
 }
 
 /**
@@ -303,6 +342,18 @@ export class Api {
   }
 
   /**
+   * 武将のすべてのコマンドを取得（欠番がある場合もあるので注意）
+   */
+  public static async getAllCommands(): Promise<CharacterCommand[]> {
+    try {
+      const result = await axios.get<ApiArrayData<CharacterCommand>>(def.API_HOST + 'commands', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
    * 武将更新ログを取得する
    *
    * GET    /api/v1/character/updatelog/{count}
@@ -324,7 +375,7 @@ export class Api {
   private static get authHeader(): AxiosRequestConfig {
     return {
       headers: {
-        Authorization: current.authorizationToken,
+        Authorization: 'Bearer ' + current.authorizationToken,
       },
     };
   }

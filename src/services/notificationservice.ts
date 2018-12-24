@@ -120,6 +120,10 @@ export default class NotificationService {
     '認証失敗',
     '認証に失敗しました。再ログインを試みてください',
     NotificationServiceItemDefaultType.error);
+  public static readonly getCommandListFailed = new NotificationServiceItem(
+    'コマンド取得失敗',
+    'コマンド取得に失敗しました。',
+    NotificationServiceItemDefaultType.error);
 
   public static onError: ((title: string, message: string) => void) | null = null;
   public static onWarning: ((title: string, message: string) => void) | null = null;

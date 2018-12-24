@@ -28,6 +28,9 @@ Vue.filter('gamedate', (value: api.GameDateTime): string => {
 Vue.filter('realdate', (value: api.DateTime): string => {
   return api.DateTime.toFormatedString(value);
 });
+Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
+  return api.GameDateTime.toRealDate(value);
+});
 
 @Component({
   components: {

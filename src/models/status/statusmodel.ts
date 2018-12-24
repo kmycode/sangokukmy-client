@@ -1,3 +1,5 @@
+/* tslint:disable:member-ordering */
+
 import ArrayUtil from '@/models/common/arrayutil';
 import Streaming from '@/api/streaming';
 import ApiStreaming from '@/api/apistreaming';
@@ -11,6 +13,27 @@ import { StatusParameter,
   CharacterIconStatusParameter,
   TwinNoRangeAndRangedStatusParameter,
 } from '@/models/status/statusparameter';
+import Vue from 'vue';
+import NotificationService from '@/services/notificationservice';
+
+enum CommandSelectMode {
+  /**
+   * 置き換え
+   */
+  replace = 0,
+  /**
+   * OR
+   */
+  mode_or = 1,
+  /**
+   * AND
+   */
+  mode_and = 2,
+  /**
+   * XOR
+   */
+  mode_xor = 3,
+}
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -23,8 +46,11 @@ export default class StatusModel {
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
   public commands: api.CharacterCommand[] = [];
+  public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
+
+  private isInitializedCommands = false;
 
   public get townCountryColor(): number {
     return this.getCountry(this.town.countryId).colorId;
@@ -38,7 +64,7 @@ export default class StatusModel {
     ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.GameDateTime>(
       api.GameDateTime.typeId,
-      (obj) => this.gameDate = obj);
+      (obj) => this.updateGameDate(obj));
     ApiStreaming.status.on<api.Town>(
       api.Town.typeId,
       (obj) => this.updateTown(obj));
@@ -54,21 +80,32 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterLog>(
       api.CharacterLog.typeId,
       (obj) => this.addCharacterLog(obj));
+    ApiStreaming.status.on<api.CharacterCommand>(
+      api.CharacterCommand.typeId,
+      (obj) => this.updateCommand(obj));
     ApiStreaming.status.start();
-
-    // TODO: debug
-    for (let i = 0; i < 200; i++) {
-      this.commands.push({ name: 'あああ', gameDate: new api.GameDateTime(180, 1) } as api.CharacterCommand);
-    }
-    Enumerable
-      .from(this.commands)
-      .orderBy((c) => c.gameDate.toNumber())
-      .forEach((c, index) => c.commandNumber = index + 1);
   }
 
   public onDestroy() {
     ApiStreaming.status.stop();
   }
+
+  // #region GameDate
+
+  private initializeGameDate(date: api.GameDateTime) {
+    this.gameDate = date;
+    this.preInitializeCommands();
+  }
+
+  private updateGameDate(date: api.GameDateTime) {
+    if (api.GameDateTime.toNumber(this.gameDate) === 0) {
+      this.initializeGameDate(date);
+    } else {
+      this.gameDate = date;
+    }
+  }
+
+  // #endregion
 
   // #region Town
 
@@ -165,8 +202,17 @@ export default class StatusModel {
 
   // #region Character
 
-  private updateCharacter(character: api.Character) {
+  private initializeCharacter(character: api.Character) {
     this.character = character;
+    this.initializeCommands();
+  }
+
+  private updateCharacter(character: api.Character) {
+    if (this.character.id !== character.id) {
+      this.initializeCharacter(character);
+    } else {
+      this.character = character;
+    }
     this.characterParameters = this.getCharacterParameters(character);
 
     // 現在表示中の都市が設定されていなければ、現在の武将の都市を設定
@@ -201,6 +247,103 @@ export default class StatusModel {
     ps.push(new RangedStatusParameter('兵士', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     return ps;
+  }
+
+  // #endregion
+
+  // #region Command
+
+  private preInitializeCommands() {
+    // 武将データ入手前のコマンド一覧初期化
+
+    let gamedate = this.gameDate;
+
+    for (let i = 0; i < 200; i++) {
+      this.commands.push({ commandNumber: i + 1, name: '取得中...', gameDate: gamedate } as api.CharacterCommand);
+      gamedate = api.GameDateTime.nextMonth(gamedate);
+    }
+
+    if (this.character.id >= 0) {
+      this.initializeCommands();
+    }
+  }
+
+  private initializeCommands() {
+    // 武将データ入手後のコマンド一覧初期化
+
+    const date = api.DateTime.toDate(this.character.lastUpdated);
+    this.commands.forEach((c) => {
+      Vue.set(c, 'date', api.DateTime.fromDate(date));
+      date.setSeconds(date.getSeconds() + def.UPDATE_TIME);
+    });
+
+    // APIからコマンドを取得して、コマンドリストに反映
+    if (this.isInitializedCommands) {
+      return;
+    }
+    this.isInitializedCommands = true;
+    api.Api.getAllCommands().then((cmd) => {
+      // コマンドに設定していた仮のテキストを削除
+      this.commands.forEach((c) => c.name = '');
+
+      // サーバに保存されているコマンドを画面表示に反映
+      cmd.forEach((c) => {
+        const already = ArrayUtil.findUniquely(
+          this.commands,
+          api.GameDateTime.toNumber(c.gameDate),
+          (cc) => api.GameDateTime.toNumber(cc.gameDate));
+        if (already) {
+          c.commandNumber = already.commandNumber;
+        }
+        ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
+      });
+    })
+    .catch(() => {
+      NotificationService.getCommandListFailed.notify();
+    });
+  }
+
+  private updateCommand(command: api.CharacterCommand) {
+    ArrayUtil.addItemUniquely(this.commands, command, (c) => api.GameDateTime.toNumber(c.gameDate));
+  }
+
+  public selectSingleCommand(command: api.CharacterCommand) {
+    if (this.commandSelectMode === CommandSelectMode.replace) {
+      this.clearAllCommandSelections();
+      Vue.set(command, 'isSelected', true);
+    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
+      Vue.set(command, 'isSelected', true);
+    } else {
+      Vue.set(command, 'isSelected', !command.isSelected);
+    }
+  }
+
+  public selectMultipleCommand(lastCommand: api.CharacterCommand) {
+    const selected = Enumerable.from(this.commands)
+      .reverse()
+      .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
+      .takeWhile((c) => c.isSelected !== true)
+      .toArray();
+    if (this.commandSelectMode === CommandSelectMode.replace) {
+      this.clearAllCommandSelections();
+    }
+    selected.forEach((c) => Vue.set(c, 'isSelected', true));
+
+    // 置き換えモードで、一番最初のコマンドの選択が解除されるので
+    if (this.commandSelectMode === CommandSelectMode.replace) {
+      const first = Enumerable.from(this.commands)
+        .takeWhile((c) => c.isSelected !== true)
+        .lastOrDefault();
+      if (first) {
+        Vue.set(first, 'isSelected', true);
+      }
+    }
+  }
+
+  public clearAllCommandSelections() {
+    Enumerable.from(this.commands).where((c) => c.isSelected === true).forEach((c) => {
+      c.isSelected = false;
+    });
   }
 
   // #endregion
