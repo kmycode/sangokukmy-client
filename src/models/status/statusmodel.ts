@@ -296,8 +296,8 @@ export default class StatusModel {
           c.commandNumber = already.commandNumber;
           c.date = already.date;
           api.CharacterCommand.updateName(c);
+          ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
         }
-        ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
       });
     })
     .catch(() => {
