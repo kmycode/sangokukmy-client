@@ -19,6 +19,7 @@ export default class LoginService {
         case api.ErrorCode.serverConnectionFailed:
         case api.ErrorCode.databaseError:
         case api.ErrorCode.internalError:
+        case api.ErrorCode.operationConflict:
           return LoginResult.cannotConnect;
         case api.ErrorCode.loginCharacterNotFound:
           return LoginResult.wrongIdOrPassword;

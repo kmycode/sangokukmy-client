@@ -1,3 +1,5 @@
+import * as api from '@/api/api';
+import Enumerable from 'linq';
 
 export const HOST_ROOT = 'http://localhost:5000/';
 
@@ -86,3 +88,29 @@ export const TOWN_TYPES: string[] = [
   '城塞都市',
   '大都市',
 ];
+
+class CommandNameResolver {
+  public constructor(public type: number,
+                     private readonly format: string,
+                     private readonly solver?: (format: string,
+                                                parameters: api.CharacterCommandParameter[] | undefined) => string) {}
+
+  public solve(parameters: api.CharacterCommandParameter[]): string {
+    if (this.solver) {
+      return this.solver(this.format, parameters);
+    } else {
+      return this.format;
+    }
+  }
+}
+export const COMMAND_NAMES: CommandNameResolver[] = [
+  new CommandNameResolver(1, '農業開発'),
+  new CommandNameResolver(2, '商業発展'),
+  new CommandNameResolver(3, '技術開発'),
+  new CommandNameResolver(4, '城壁強化'),
+  new CommandNameResolver(5, '守兵増強'),
+];
+export function getCommandNameByType(type: number): CommandNameResolver | undefined {
+  return Enumerable.from(COMMAND_NAMES)
+                   .firstOrDefault((n) => n.type === type);
+}

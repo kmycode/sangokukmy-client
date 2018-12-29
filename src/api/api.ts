@@ -17,6 +17,10 @@ export enum ErrorCode {
   loginParameterMissing = 6,
   loginParameterIncorrect = 7,
   loginTokenIncorrect = 8,
+  loginTokenEmpty = 9,
+  internalDataNotFound = 10,
+  commandTypeNotFound = 11,
+  operationConflict = 12,
 }
 
 /**
@@ -256,14 +260,21 @@ export class Town implements IIdentitiedEntity {
 }
 
 /**
+ * 武将のコマンドパラメータ
+ */
+export class CharacterCommandParameter {
+}
+
+/**
  * 武将のコマンド
  */
 export class CharacterCommand {
   public static readonly typeId: number = 14;
 
   public static updateName(command: CharacterCommand) {
-    if (command.type === 1) {
-      command.name = '農業開発';
+    const cmd = def.getCommandNameByType(command.type);
+    if (cmd) {
+      command.name = cmd.solve(command.parameters);
     } else {
       command.name = '';
     }
@@ -273,6 +284,7 @@ export class CharacterCommand {
                      public characterId: number = 0,
                      public type: number = 0,
                      public name: string = '',
+                     public parameters: CharacterCommandParameter[] = [],
                      public gameDate: GameDateTime = new GameDateTime(),
                      public date?: DateTime,
                      public isSelected?: boolean) {}

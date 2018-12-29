@@ -101,10 +101,10 @@
           <!-- 内政コマンド -->
           <div v-show="selectedCommandCategory === 0" class="commands">
             <button type="button" class="btn btn-light" @click="model.inputCommand(1)">農業開発</button>
-            <button type="button" class="btn btn-light">商業発展</button>
-            <button type="button" class="btn btn-light">技術開発</button>
-            <button type="button" class="btn btn-light">城壁強化</button>
-            <button type="button" class="btn btn-light">守兵増強</button>
+            <button type="button" class="btn btn-light" @click="model.inputCommand(2)">商業発展</button>
+            <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
+            <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
+            <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
             <button type="button" class="btn btn-light">米施し</button>
           </div>
           <!-- 増強コマンド -->
