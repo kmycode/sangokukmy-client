@@ -50,6 +50,11 @@ export default class StatusModel {
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
 
+  public get isLoading(): boolean {
+    return this.isCommandInputing;
+  }
+  public isCommandInputing: boolean = false;
+
   private isInitializedCommands = false;
 
   public get townCountryColor(): number {
@@ -312,6 +317,7 @@ export default class StatusModel {
   public inputCommand(commandType: number) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
+      this.isCommandInputing = true;
       selectCommands.forEach((c) => {
         c.type = commandType;
       });
@@ -325,6 +331,9 @@ export default class StatusModel {
         })
         .catch(() => {
           NotificationService.inputCommandsFailed.notify();
+        })
+        .finally(() => {
+          this.isCommandInputing = false;
         });
     }
   }

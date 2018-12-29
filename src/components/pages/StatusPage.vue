@@ -98,44 +98,47 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
           </ul>
-          <!-- 内政コマンド -->
-          <div v-show="selectedCommandCategory === 0" class="commands">
-            <button type="button" class="btn btn-light" @click="model.inputCommand(1)">農業開発</button>
-            <button type="button" class="btn btn-light" @click="model.inputCommand(2)">商業発展</button>
-            <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
-            <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
-            <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
-            <button type="button" class="btn btn-light">米施し</button>
-          </div>
-          <!-- 増強コマンド -->
-          <div v-show="selectedCommandCategory === 1" class="commands">
-            <button type="button" class="btn btn-light">農地開拓</button>
-            <button type="button" class="btn btn-light">市場拡大</button>
-            <button type="button" class="btn btn-light">城壁増築</button>
-          </div>
-          <!-- 軍事コマンド -->
-          <div v-show="selectedCommandCategory === 2" class="commands">
-            <button type="button" class="btn btn-light">徴兵</button>
-            <button type="button" class="btn btn-light">兵士訓練</button>
-            <button type="button" class="btn btn-light">城の守備</button>
-            <button type="button" class="btn btn-light">戦争</button>
-            <button type="button" class="btn btn-light">集合</button>
-          </div>
-          <!-- 計略コマンド -->
-          <div v-show="selectedCommandCategory === 3" class="commands">
-            <button type="button" class="btn btn-light">登用</button>
-            <button type="button" class="btn btn-light">密偵</button>
-          </div>
-          <!-- 個人コマンド -->
-          <div v-show="selectedCommandCategory === 4" class="commands">
-            <button type="button" class="btn btn-light">移動</button>
-            <button type="button" class="btn btn-light">能力強化</button>
-            <button type="button" class="btn btn-light">米売買</button>
-            <button type="button" class="btn btn-light">武器</button>
-            <button type="button" class="btn btn-light">書物</button>
-            <button type="button" class="btn btn-light">何もしない</button>
-            <button type="button" class="btn btn-primary">仕官</button>
-            <button type="button" class="btn btn-light">下野</button>
+          <div class="loading-container">
+            <!-- 内政コマンド -->
+            <div v-show="selectedCommandCategory === 0" class="commands">
+              <button type="button" class="btn btn-light" @click="model.inputCommand(1)">農業開発</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(2)">商業発展</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
+              <button type="button" class="btn btn-light">米施し</button>
+            </div>
+            <!-- 増強コマンド -->
+            <div v-show="selectedCommandCategory === 1" class="commands">
+              <button type="button" class="btn btn-light">農地開拓</button>
+              <button type="button" class="btn btn-light">市場拡大</button>
+              <button type="button" class="btn btn-light">城壁増築</button>
+            </div>
+            <!-- 軍事コマンド -->
+            <div v-show="selectedCommandCategory === 2" class="commands">
+              <button type="button" class="btn btn-light">徴兵</button>
+              <button type="button" class="btn btn-light">兵士訓練</button>
+              <button type="button" class="btn btn-light">城の守備</button>
+              <button type="button" class="btn btn-light">戦争</button>
+              <button type="button" class="btn btn-light">集合</button>
+            </div>
+            <!-- 計略コマンド -->
+            <div v-show="selectedCommandCategory === 3" class="commands">
+              <button type="button" class="btn btn-light">登用</button>
+              <button type="button" class="btn btn-light">密偵</button>
+            </div>
+            <!-- 個人コマンド -->
+            <div v-show="selectedCommandCategory === 4" class="commands">
+              <button type="button" class="btn btn-light">移動</button>
+              <button type="button" class="btn btn-light">能力強化</button>
+              <button type="button" class="btn btn-light">米売買</button>
+              <button type="button" class="btn btn-light">武器</button>
+              <button type="button" class="btn btn-light">書物</button>
+              <button type="button" class="btn btn-light">何もしない</button>
+              <button type="button" class="btn btn-primary">仕官</button>
+              <button type="button" class="btn btn-light">下野</button>
+            </div>
+            <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
           </div>
           <!-- 選択ツール -->
           <div class="command-input-options">

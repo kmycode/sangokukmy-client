@@ -81,4 +81,39 @@ body {
   opacity: 0;
   transform: translateX(-20vw);
 }
+
+@keyframes loading-animation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.loading-container {
+  position: relative;
+  .loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(220, 230, 240, 0.8);
+    .loading-icon {
+      width: 30px;
+      height: 30px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      border: 4px solid #55bbff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      transform: rotate(0deg);
+      animation: loading-animation .8s linear infinite;
+    }
+  }
+}
 </style>
