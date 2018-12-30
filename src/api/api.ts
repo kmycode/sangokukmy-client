@@ -47,6 +47,16 @@ export class ApiArrayData<T> {
 }
 
 /**
+ * サーバからのシグナル
+ */
+export class ApiSignal {
+  public static readonly typeId: number = 15;
+
+  public constructor(public type: number = 0,
+                     public data?: any) {}
+}
+
+/**
  * 月日・時刻
  */
 export class DateTime {
@@ -104,19 +114,31 @@ export class GameDateTime {
     return date.year * 12 + date.month;
   }
 
+  public static fromNumber(num: number): GameDateTime {
+    return new GameDateTime(Math.floor(num / 12), num % 12 + 1);
+  }
+
   public static toRealDate(date: GameDateTime): DateTime {
     // TODO
     return new DateTime(2018, 12, 1, 20, 0, 0);
   }
 
-  public static nextMonth(date: GameDateTime): GameDateTime {
+  public static addMonth(date: GameDateTime, add: number): GameDateTime {
     let year = date.year;
-    let month = date.month + 1;
-    if (month > 12) {
-      month = 1;
+    let month = date.month + add;
+    while (month > 12) {
+      month -= 12;
       year++;
     }
+    while (month < 1) {
+      month += 12;
+      year--;
+    }
     return new GameDateTime(year, month);
+  }
+
+  public static nextMonth(date: GameDateTime): GameDateTime {
+    return GameDateTime.addMonth(date, 1);
   }
 
   public constructor(public year: number = 0,
@@ -364,10 +386,11 @@ export class Api {
   /**
    * 武将のすべてのコマンドを取得（欠番がある場合もあるので注意）
    */
-  public static async getAllCommands(): Promise<CharacterCommand[]> {
+  public static async getAllCommands(): Promise<{ commands: CharacterCommand[], secondsNextCommand: number }> {
     try {
-      const result = await axios.get<ApiArrayData<CharacterCommand>>(def.API_HOST + 'commands', this.authHeader);
-      return result.data.data;
+      const result = await axios.get<{ commands: CharacterCommand[], secondsNextCommand: number }>
+        (def.API_HOST + 'commands', this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

@@ -47,8 +47,11 @@ export default class StatusModel {
   public characterParameters: StatusParameter[] = [];
   public commands: api.CharacterCommand[] = [];
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
+  public secondsOfNextCommand: number = 0;
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
+
+  private timers: number[] = [];
 
   public get isLoading(): boolean {
     return this.isCommandInputing;
@@ -88,12 +91,33 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterCommand>(
       api.CharacterCommand.typeId,
       (obj) => this.updateCommand(obj));
+    ApiStreaming.status.on<api.ApiSignal>(
+      api.ApiSignal.typeId,
+      (obj) => this.onReceiveSignal(obj));
     ApiStreaming.status.start();
+
+    this.timers.push(setInterval(() => { this.secondsOfNextCommand--; }, 1000));
   }
 
   public onDestroy() {
     ApiStreaming.status.stop();
+    this.timers.forEach((id) => { clearInterval(id); });
   }
+
+  // #region ApiSignal
+
+  private onReceiveSignal(signal: api.ApiSignal) {
+    if (signal.type === 1) {
+      // 武将が更新された
+      const data = signal.data as { gameDate: api.GameDateTime, secondsNextCommand: number };
+      this.onExecutedCommand(data.gameDate, data.secondsNextCommand);
+    } else if (signal.type === 2) {
+      // 年月が進んだ
+      this.updateGameDate(signal.data as api.GameDateTime);
+    }
+  }
+
+  // #endregion
 
   // #region GameDate
 
@@ -276,6 +300,7 @@ export default class StatusModel {
   private initializeCommands() {
     // 武将データ入手後のコマンド一覧初期化
 
+    // コマンド更新時間を初期化
     const date = api.DateTime.toDate(this.character.lastUpdated);
     this.commands.forEach((c) => {
       Vue.set(c, 'date', api.DateTime.fromDate(date));
@@ -288,11 +313,20 @@ export default class StatusModel {
     }
     this.isInitializedCommands = true;
     api.Api.getAllCommands().then((cmd) => {
-      // コマンドに設定していた仮のテキストを削除
-      this.commands.forEach((c) => c.name = '');
+
+      // コマンドに設定していた仮のテキスト、年月を削除
+      let month = cmd.commands[0].gameDate;
+      this.commands.forEach((c) => {
+        c.name = '';
+        c.gameDate = month;
+        month = api.GameDateTime.nextMonth(month);
+      });
+
+      // 次のコマンド実行までの秒数を更新
+      this.secondsOfNextCommand = cmd.secondsNextCommand;
 
       // サーバに保存されているコマンドを画面表示に反映
-      cmd.forEach((c) => {
+      cmd.commands.forEach((c) => {
         const already = ArrayUtil.findUniquely(
           this.commands,
           api.GameDateTime.toNumber(c.gameDate),
@@ -375,6 +409,28 @@ export default class StatusModel {
     Enumerable.from(this.commands).where((c) => c.isSelected === true).forEach((c) => {
       c.isSelected = false;
     });
+  }
+
+  public onExecutedCommand(date: api.GameDateTime, secondsNextCommand: number) {
+    const dateNumber = api.GameDateTime.toNumber(date);
+    const cmds = Enumerable.from(this.commands);
+    const executed = cmds.where((c) => api.GameDateTime.toNumber(c.gameDate) <= dateNumber).toArray();
+    let lastMonth = api.GameDateTime.addMonth(date, this.commands.length);
+
+    // コマンドを削除
+    this.commands = cmds.except(executed).toArray();
+
+    // 末尾に空のコマンドを追加
+    let commandNumber = cmds.any() ? cmds.last().commandNumber : 1;
+    const addCount = executed.length;
+    for (let i = 0; i < addCount; i++) {
+      this.commands.push({ commandNumber, name: '', gameDate: lastMonth } as api.CharacterCommand);
+      lastMonth = api.GameDateTime.nextMonth(lastMonth);
+      commandNumber++;
+    }
+
+    // 次回更新までの秒数を設定
+    this.secondsOfNextCommand = secondsNextCommand;
   }
 
   // #endregion

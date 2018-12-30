@@ -164,7 +164,7 @@
                  @click="onCommandSelected(command, $event)">
               <div class="number">{{ command.commandNumber }}</div>
               <div class="command-information">
-                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">0</span>秒</span></div>
+                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ model.secondsOfNextCommand }}</span>秒</span></div>
                 <div class="command-text">{{ command.name }}</div>
               </div>
             </div>
