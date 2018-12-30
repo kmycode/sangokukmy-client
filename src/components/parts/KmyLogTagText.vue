@@ -19,11 +19,13 @@ export default class KmyLogTagText extends Vue {
       .replace('<num>', '<span class="kmy-format-number">')
       .replace('</num>', '</span>')
       .replace('<character>', '<span class="kmy-format-character">')
-      .replace('</character>', '</span>'
+      .replace('</character>', '</span>')
       .replace('<town>', '<span class="kmy-format-town">')
       .replace('</town>', '</span>')
       .replace('<country>', '<span class="kmy-format-country">')
-      .replace('</country>', '</span>'));
+      .replace('</country>', '</span>')
+      .replace('<emerge>', '<span class="kmy-format-emerge">')
+      .replace('</emerge>', '</span>');
   }
 }
 </script>
@@ -40,5 +42,9 @@ export default class KmyLogTagText extends Vue {
 }
 .kmy-format-country {
   color: #00a;
+}
+.kmy-format-emerge {
+  color: #f09;
+  font-weight: bold;
 }
 </style>

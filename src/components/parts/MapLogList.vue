@@ -7,7 +7,7 @@
       {{ mlog.characterName }} ({{ mlog.date | realdate }})
     </li>
     <li v-if="type === 'character-log'" v-for="mlog in logs" :key="mlog.id">
-      {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message"/> ({{ mlog.date | realdate }})
+      {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message"/> ({{ mlog.date | shortrealdate }})
     </li>
   </ul>
 </template>

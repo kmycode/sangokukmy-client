@@ -75,6 +75,16 @@ export class DateTime {
     }
   }
 
+  public static toShortFormatedString(date: DateTime): string {
+    if (date !== undefined) {
+      return date.day + '日 ' +
+      date.hours + ':' +
+      (date.minutes < 10 ? '0' : '') + date.minutes;
+    } else {
+      return '???';
+    }
+  }
+
   public static toDate(date: DateTime): Date {
     return new Date(date.year, date.month - 1, date.day, date.hours, date.minutes, date.seconds);
   }

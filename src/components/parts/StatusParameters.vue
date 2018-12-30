@@ -37,7 +37,7 @@
         </div>
         <div class="twin-part">
           <div class="bar-background"></div>
-          <div :class="'bar' + (param.extraValueRatio === 100 ? ' bar-max' : param.extraValueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.extraValueRatio + '%'}"></div>
+          <div :class="'bar' + (param.extraValueRatio === 100 ? ' bar-max' : param.extraValueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.ranged.valueRatio + '%'}"></div>
           <div class="name">{{ param.extraName }}</div>
           <div class="value value-ranged">
             <span class="current">{{ param.extraValue }}</span>
