@@ -83,6 +83,7 @@ export default class Streaming {
             }
             break;
         }
+        this.ajax.onreadystatechange = null;
       }
     };
 

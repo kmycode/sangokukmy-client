@@ -111,7 +111,7 @@ export class GameDateTime {
   }
 
   public static toNumber(date: GameDateTime): number {
-    return date.year * 12 + date.month;
+    return date.year * 12 + date.month - 1;
   }
 
   public static fromNumber(num: number): GameDateTime {
@@ -230,7 +230,8 @@ export class Character implements IIdentitiedEntity {
                      public deleteTurn: number = 0,
                      public townId: number = 0,
                      public message: number = 0,
-                     public lastUpdated: DateTime = new DateTime()) {}
+                     public lastUpdated: DateTime = new DateTime(),
+                     public lastUpdatedGameDate: GameDateTime = new GameDateTime()) {}
 }
 
 /**

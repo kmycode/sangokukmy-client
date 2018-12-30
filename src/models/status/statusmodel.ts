@@ -127,7 +127,7 @@ export default class StatusModel {
   }
 
   private updateGameDate(date: api.GameDateTime) {
-    if (api.GameDateTime.toNumber(this.gameDate) === 0) {
+    if (api.GameDateTime.toNumber(this.gameDate) === -1) {
       this.initializeGameDate(date);
     } else {
       this.gameDate = date;
@@ -315,7 +315,7 @@ export default class StatusModel {
     api.Api.getAllCommands().then((cmd) => {
 
       // コマンドに設定していた仮のテキスト、年月を削除
-      let month = cmd.commands[0].gameDate;
+      let month = api.GameDateTime.nextMonth(this.character.lastUpdatedGameDate);
       this.commands.forEach((c) => {
         c.name = '';
         c.gameDate = month;
@@ -430,13 +430,13 @@ export default class StatusModel {
       this.commands.push({
         commandNumber,
         name: '',
-        gameDate: lastMonth, } as api.CharacterCommand);
+        gameDate: lastMonth } as api.CharacterCommand);
       lastMonth = api.GameDateTime.nextMonth(lastMonth);
       commandNumber++;
     }
 
     // コマンド番号を整形
-    let commandDate = api.DateTime.toDate(this.character.lastUpdated);
+    const commandDate = api.DateTime.toDate(this.character.lastUpdated);
     this.commands.forEach((cmd, index) => {
       commandDate.setSeconds(commandDate.getSeconds() + def.UPDATE_TIME);
       cmd.commandNumber = index + 1;
