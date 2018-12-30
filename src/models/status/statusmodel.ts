@@ -303,8 +303,8 @@ export default class StatusModel {
     // コマンド更新時間を初期化
     const date = api.DateTime.toDate(this.character.lastUpdated);
     this.commands.forEach((c) => {
-      Vue.set(c, 'date', api.DateTime.fromDate(date));
       date.setSeconds(date.getSeconds() + def.UPDATE_TIME);
+      Vue.set(c, 'date', api.DateTime.fromDate(date));
     });
 
     // APIからコマンドを取得して、コマンドリストに反映
@@ -417,6 +417,9 @@ export default class StatusModel {
     const executed = cmds.where((c) => api.GameDateTime.toNumber(c.gameDate) <= dateNumber).toArray();
     let lastMonth = api.GameDateTime.addMonth(date, this.commands.length);
 
+    // 実行されたコマンドを取得
+    const command = ArrayUtil.findUniquely(this.commands, dateNumber, (c) => api.GameDateTime.toNumber(c.gameDate));
+
     // コマンドを削除
     this.commands = cmds.except(executed).toArray();
 
@@ -424,13 +427,32 @@ export default class StatusModel {
     let commandNumber = cmds.any() ? cmds.last().commandNumber : 1;
     const addCount = executed.length;
     for (let i = 0; i < addCount; i++) {
-      this.commands.push({ commandNumber, name: '', gameDate: lastMonth } as api.CharacterCommand);
+      this.commands.push({
+        commandNumber,
+        name: '',
+        gameDate: lastMonth, } as api.CharacterCommand);
       lastMonth = api.GameDateTime.nextMonth(lastMonth);
       commandNumber++;
     }
 
+    // コマンド番号を整形
+    let commandDate = api.DateTime.toDate(this.character.lastUpdated);
+    this.commands.forEach((cmd, index) => {
+      commandDate.setSeconds(commandDate.getSeconds() + def.UPDATE_TIME);
+      cmd.commandNumber = index + 1;
+      cmd.date = api.DateTime.fromDate(commandDate);
+    });
+
     // 次回更新までの秒数を設定
     this.secondsOfNextCommand = secondsNextCommand;
+
+    // 通知
+    if (command && command.type !== undefined && command.type !== 0) {
+      api.CharacterCommand.updateName(command);
+      NotificationService.commandExecuted.notifyWithParameter(command.name);
+    } else {
+      NotificationService.emptyCommandExecuted.notify();
+    }
   }
 
   // #endregion

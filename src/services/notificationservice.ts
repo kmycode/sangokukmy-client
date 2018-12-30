@@ -132,6 +132,14 @@ export default class NotificationService {
     'コマンド入力完了',
     '{0} の入力が完了しました。',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly commandExecuted = new NotificationServiceItem(
+    'コマンド実行完了',
+    '{0} のコマンドが実行されました。',
+    NotificationServiceItemDefaultType.information);
+  public static readonly emptyCommandExecuted = new NotificationServiceItem(
+    'コマンド実行をスキップ',
+    '何もしないコマンドが実行されました。放置削除ターンが進んでいます。',
+    NotificationServiceItemDefaultType.warning);
 
   public static onError: ((title: string, message: string) => void) | null = null;
   public static onWarning: ((title: string, message: string) => void) | null = null;
