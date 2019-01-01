@@ -1,18 +1,19 @@
 <template>
   <div class="parts-map">
     <div
-        v-for="town in towns"
-        :key="town.id"
-        :class="'map-cell country-color-' + getTownColor(town) + (isSelected(town) ? ' selected' : '')"
-        :style="{ top: town.y + '0%', left: town.x + '0%', }">
-      <div :class="'town-type town-type-' + town.type"></div>
-      <span class="town-name">{{ town.name }}</span>
+        v-for="t in towns"
+        :key="t.id"
+        :class="'map-cell country-color-' + getTownColor(t) + (town.id === t.id ? ' selected' : '')"
+        :style="{ top: t.y + '0%', left: t.x + '0%', }"
+        @click="$emit('selected', t.id)">
+      <div :class="'town-type town-type-' + t.type"></div>
+      <span class="town-name">{{ t.name }}</span>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import Enumerable from 'linq';
 import * as api from '@/api/api';
 
@@ -52,6 +53,7 @@ export default class Map extends Vue {
   height: 100%;
   position: relative;
   background: #080 url('../../assets/images/sangoku-originals/mapbg.gif');
+  user-select: none;
   .map-cell {
     width: 10%;
     height: 10%;

@@ -40,8 +40,8 @@ export default class StatusModel {
   public countries: api.Country[] = [];
   public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
   public countryParameters: StatusParameter[] = [];
-  public towns: api.Town[] = [];
-  public town: api.Town = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
+  public towns: api.TownBase[] = [];
+  public town: api.TownBase = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townParameters: StatusParameter[] = [];
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
@@ -76,6 +76,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Town>(
       api.Town.typeId,
       (obj) => this.updateTown(obj));
+    ApiStreaming.status.on<api.ScoutedTown>(
+      api.ScoutedTown.typeId,
+      (obj) => this.updateScoutedTown(obj));
     ApiStreaming.status.on<api.Country>(
       api.Country.typeId,
       (obj) => this.updateCountry(obj));
@@ -151,24 +154,43 @@ export default class StatusModel {
     }
   }
 
+  private updateScoutedTown(town: api.ScoutedTown) {
+    ArrayUtil.addItem(this.towns, town);
+  }
+
+  public selectTown(townId: number) {
+    const town = ArrayUtil.find(this.towns, townId);
+    if (town) {
+      this.setTown(town);
+    }
+  }
+
   private setTown(town: api.Town) {
     this.town = town;
     this.townParameters = this.getTownParameters(town);
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
+    const isScouted = api.Town.isScouted(town);
+    const isMyCountryTown = town.countryId === this.character.countryId;
     const country = this.getCountry(town.countryId);
     const ps: StatusParameter[] = [];
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type - 1]));
-    ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
-    ps.push(new NoRangeStatusParameter('農民', town.people));
-    ps.push(new RangedStatusParameter('民忠', town.security, 100));
-    ps.push(new RangedStatusParameter('農業', town.agriculture, town.agricultureMax));
-    ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
-    ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
-    ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
-    ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
+    if (isScouted) {
+      const scoutedTown = town as api.ScoutedTown;
+      ps.push(new TextStatusParameter('諜報', api.GameDateTime.toFormatedString(scoutedTown.scoutedGameDateTime!)));
+    }
+    if (isScouted || isMyCountryTown) {
+      ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
+      ps.push(new NoRangeStatusParameter('農民', town.people));
+      ps.push(new RangedStatusParameter('民忠', town.security, 100));
+      ps.push(new RangedStatusParameter('農業', town.agriculture, town.agricultureMax));
+      ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
+      ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
+      ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
+      ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
+    }
     return ps;
   }
 

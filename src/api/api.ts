@@ -258,19 +258,7 @@ export class Country {
                      public capitalTownId: number = 0) {}
 }
 
-/**
- * 都市
- */
-export class Town implements IIdentitiedEntity {
-  public static readonly typeId = 11;
-
-  public static readonly default: Town = new Town(-1);
-
-  public static readonly typeAgriculture = 1;
-  public static readonly typeCommercial = 2;
-  public static readonly typeFortress = 3;
-  public static readonly typeLarge = 4;
-
+export abstract class TownBase implements IIdentitiedEntity {
   public constructor(public id: number = 0,
                      public type: number = 0,
                      public countryId: number = 0,
@@ -290,6 +278,36 @@ export class Town implements IIdentitiedEntity {
                      public wallguardMax: number = 0,
                      public security: number = 0,
                      public ricePrice: number = 0) {}
+}
+
+/**
+ * 都市
+ */
+export class Town extends TownBase implements IIdentitiedEntity {
+  public static readonly typeId = 11;
+
+  public static readonly default: Town = new Town(-1);
+
+  public static readonly typeAgriculture = 1;
+  public static readonly typeCommercial = 2;
+  public static readonly typeFortress = 3;
+  public static readonly typeLarge = 4;
+
+  public static isScouted(town: TownBase): boolean {
+    const scoutMethod = (town as ScoutedTown).scoutMethod;
+    return scoutMethod !== undefined && scoutMethod !== 0;
+  }
+}
+
+/**
+ * 諜報された都市
+ */
+export class ScoutedTown extends TownBase implements IIdentitiedEntity {
+  public static readonly typeId = 16;
+
+  public scoutedCharacterId?: number;
+  public scoutMethod?: number;
+  public scoutedGameDateTime?: GameDateTime;
 }
 
 /**

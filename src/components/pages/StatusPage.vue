@@ -16,7 +16,7 @@
           </ul>
         </div>
         <div id="map-container">
-          <Map :towns="model.towns" :countries="model.countries" :town="model.town"/>
+          <Map :towns="model.towns" :countries="model.countries" :town="model.town" @selected="model.selectTown($event)"/>
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">

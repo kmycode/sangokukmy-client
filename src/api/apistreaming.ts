@@ -113,6 +113,9 @@ export default class ApiStreaming {
       case api.ApiSignal.typeId:
         this.fire(obj.type, obj.data as api.ApiSignal);
         break;
+      case api.ScoutedTown.typeId:
+        this.fire(obj.type, obj.data as api.ScoutedTown);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;
