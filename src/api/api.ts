@@ -345,7 +345,15 @@ export class CharacterCommand {
  * 武将のアイコン
  */
 export class CharacterIcon {
-  public static readonly default: CharacterIcon = new CharacterIcon(0, 0, true, 1, '', '0.gif');
+  public static readonly default: CharacterIcon = CharacterIcon.createDefault();
+
+  public static isDefault(icon: CharacterIcon): boolean {
+    if (icon.isNotDefaultPrivate !== undefined) {
+      return !icon.isNotDefaultPrivate;
+    } else {
+      return false;
+    }
+  }
 
   public static getUri(icon: CharacterIcon): string {
     if (icon.type === 2) {
@@ -373,6 +381,14 @@ export class CharacterIcon {
     }
   }
 
+  private static createDefault(): CharacterIcon {
+    const icon = new CharacterIcon(0, 0, true, 1, '', '0.gif');
+    icon.isNotDefaultPrivate = true;
+    return icon;
+  }
+
+  private isNotDefaultPrivate?: boolean = false;
+
   public constructor(public id: number = 0,
                      public characterId: number = 0,
                      public isMain: boolean = false,
@@ -384,13 +400,46 @@ export class CharacterIcon {
 /**
  * 武将の更新ログ
  */
-export class CharacterLog {
+export class CharacterLog implements IIdentitiedEntity {
   public static readonly typeId = 13;
 
   public constructor(public id: number,
                      public message: string,
                      public date: DateTime,
                      public gameDate: GameDateTime) {}
+}
+
+/**
+ * 手紙向けの武将データ
+ */
+export class CharacterChatData {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+
+/**
+ * 手紙
+ */
+export class ChatMessage implements IIdentitiedEntity {
+  public static readonly typeId = 17;
+
+  public static readonly typeSelfCountry = 1;
+  public static readonly typeOtherCountry = 2;
+  public static readonly typePrivate = 3;
+  public static readonly typeUnit = 4;
+  public static readonly typeTown = 5;
+  public static readonly typeGlobal = 6;
+  public static readonly typeSimpleBbs = 7;
+
+  public constructor(public id: number,
+                     public characterCountryId: number,
+                     public type: number,
+                     public message: string,
+                     public posted: DateTime,
+                     public character?: CharacterChatData,
+                     public characterIcon?: CharacterIcon,
+                     public typeData?: number,
+                     public typeData2?: number) {}
 }
 
 export class Api {

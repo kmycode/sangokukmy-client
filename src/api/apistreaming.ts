@@ -116,6 +116,9 @@ export default class ApiStreaming {
       case api.ScoutedTown.typeId:
         this.fire(obj.type, obj.data as api.ScoutedTown);
         break;
+      case api.ChatMessage.typeId:
+        this.fire(obj.type, obj.data as api.ChatMessage);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;

@@ -74,10 +74,10 @@
       <div class="col-lg-5 col-md-6">
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a class="nav-link active" href="#">コマンド</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">手紙</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">全国宛</a></li>
-            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">会議室</a>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">全国宛</a></li>
+            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">会議室</a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#">会議室</a>
                 <div class="dropdown-divider"></div>
@@ -89,7 +89,7 @@
           </ul>
         </div>
         <!-- コマンド入力 -->
-        <div class="right-side-content content-command">
+        <div v-show="selectedActionTab === 0" class="right-side-content content-command">
           <!-- コマンド選択のタブ -->
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
@@ -169,6 +169,35 @@
             </div>
           </div>
         </div>
+        <!-- 手紙 -->
+        <div v-show="selectedActionTab === 1" class="right-side-content content-chat">
+          <!-- 手紙の種類選択のタブ -->
+          <ul class="nav nav-pills nav-fill">
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li>
+          </ul>
+          <!-- 投稿フォーム -->
+          <div v-if="selectedChatCategory !== 4" class="loading-container">
+            <div :class="'chat-new-message country-color-' + model.characterCountryColor">
+              <CharacterIcon :icon="model.characterIcons"/>
+              <div class="post-pair">
+                <div class="message-input-wrapper">
+                  <textarea class="message-input"></textarea>
+                </div>
+                <div class="buttons">
+                  <button class="btn btn-primary">投稿</button>
+                </div>
+              </div>
+            </div>
+            <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
+          </div>
+          <div v-show="selectedChatCategory === 0" class="messages">
+            <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries"/>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -177,7 +206,9 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
+import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
+import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
 import * as api from '@/api/api';
 import StatusModel from '@/models/status/statusmodel';
@@ -186,7 +217,9 @@ import { StatusParameter } from '@/models/status/statusparameter';
 @Component({
   components: {
     Map,
+    CharacterIcon,
     StatusParametersPanel,
+    ChatMessagePanel,
     MapLogList,
   },
 })
@@ -195,7 +228,9 @@ export default class StatusPage extends Vue {
   public isOpenRightSidePopupMenu: boolean = false;
   public selectedInformationTab: number = 0;
   public selectedReportType: number = 0;
+  public selectedActionTab: number = 0;
   public selectedCommandCategory: number = 0;
+  public selectedChatCategory: number = 0;
 
   public isMultiCommandsSelection: boolean = false;
 
@@ -423,6 +458,54 @@ ul.nav {
           font-weight: bold;
         }
       }
+    }
+  }
+
+  &.content-chat {
+    display: flex;
+    flex-direction: column;
+
+    .nav {
+      .active {
+        background-color: #6bf;
+      }
+    }
+
+    .chat-new-message {
+      display: flex;
+      padding: 6px;
+      border-bottom-width: 2px;
+      border-bottom-style: solid;
+      @include country-color-light('background-color');
+      @include country-color-deep('border-bottom-color');
+
+      .post-pair {
+        padding-left: 6px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .message-input-wrapper {
+          flex: 1;
+          
+          .message-input {
+            height: 100%;
+            width: 100%;
+            border: 0;
+            padding: 4px;
+            font-size: 0.9rem;
+          }
+        }
+
+        .buttons {
+          text-align: right;
+        }
+      }
+    }
+
+    .messages {
+      flex: 1;
+      overflow: auto;
     }
   }
 }

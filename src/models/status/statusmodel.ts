@@ -45,11 +45,13 @@ export default class StatusModel {
   public townParameters: StatusParameter[] = [];
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
+  public characterIcons: api.CharacterIcon[] = [];
   public commands: api.CharacterCommand[] = [];
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public secondsOfNextCommand: number = 0;
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
+  public countryChatMessages: api.ChatMessage[] = [];
 
   private timers: number[] = [];
 
@@ -97,6 +99,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.ApiSignal>(
       api.ApiSignal.typeId,
       (obj) => this.onReceiveSignal(obj));
+    ApiStreaming.status.on<api.ChatMessage>(
+      api.ChatMessage.typeId,
+      (obj) => this.addChatMessage(obj));
     ApiStreaming.status.start();
 
     this.timers.push(setInterval(() => { this.secondsOfNextCommand--; }, 1000));
@@ -525,6 +530,17 @@ export default class StatusModel {
 
   private addCharacterLog(log: api.CharacterLog) {
     ArrayUtil.addLog(this.characterLogs, log, 50);
+  }
+
+  // #endregion
+
+  // #region ChatMessage
+
+  private addChatMessage(message: api.ChatMessage) {
+    if (message.type === api.ChatMessage.typeSelfCountry) {
+      // 自国宛
+      ArrayUtil.addLog(this.countryChatMessages, message);
+    }
   }
 
   // #endregion

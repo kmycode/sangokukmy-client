@@ -24,10 +24,12 @@ export default class ArrayUtil {
     }
   }
 
-  public static addLog<T>(items: T[], item: T, maxLength: number) {
+  public static addLog<T>(items: T[], item: T, maxLength: number = -1) {
     items.unshift(item);
-    while (maxLength < items.length) {
-      items.pop();
+    if (maxLength >= 0) {
+      while (maxLength < items.length) {
+        items.pop();
+      }
     }
   }
 

@@ -10,11 +10,20 @@ import * as api from '@/api/api';
   components: {
   },
 })
-export default class StatusParametersPanel extends Vue {
-  @Prop() public icons!: api.CharacterIcon[];
+export default class CharacterIcon extends Vue {
+  @Prop({
+    default: () => [],
+  }) public icons!: api.CharacterIcon[];
+  @Prop({
+    default: () => api.CharacterIcon.default,
+  }) public icon!: api.CharacterIcon;
 
   private get mainUri(): string {
-    return api.CharacterIcon.getMainUri(this.icons);
+    if (api.CharacterIcon.isDefault(this.icon)) {
+      return api.CharacterIcon.getMainUri(this.icons);
+    } else {
+      return api.CharacterIcon.getUri(this.icon);
+    }
   }
 }
 </script>
