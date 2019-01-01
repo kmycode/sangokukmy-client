@@ -405,6 +405,42 @@ export default class StatusModel {
     }
   }
 
+  public selectAllCommands() {
+    this.commands.forEach((c) => {
+      this.selectCommandWithSelectMode(c, true);
+    });
+  }
+
+  public selectEvenCommands() {
+    this.commands.forEach((c, index) => {
+      this.selectCommandWithSelectMode(c, index % 2 === 0);
+    });
+  }
+
+  public selectOddCommands() {
+    this.commands.forEach((c, index) => {
+      this.selectCommandWithSelectMode(c, index % 2 === 1);
+    });
+  }
+
+  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean) {
+    let isSelected = command.isSelected;
+
+    if (this.commandSelectMode === CommandSelectMode.replace) {
+      isSelected = value;
+    } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
+      isSelected = isSelected || value;
+    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
+      isSelected = isSelected && value;
+    } else if (this.commandSelectMode === CommandSelectMode.mode_xor) {
+      isSelected = isSelected !== value;
+    } else {
+      NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
+    }
+
+    Vue.set(command, 'isSelected', isSelected);
+  }
+
   public clearAllCommandSelections() {
     Enumerable.from(this.commands).where((c) => c.isSelected === true).forEach((c) => {
       c.isSelected = false;

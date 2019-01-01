@@ -143,10 +143,9 @@
           <!-- 選択ツール -->
           <div class="command-input-options">
             <button type="button" class="btn btn-light" @click="model.clearAllCommandSelections()">クリア</button>
-            <button type="button" class="btn btn-light">全て</button>
-            <button type="button" class="btn btn-light">偶数</button>
-            <button type="button" class="btn btn-light">奇数</button>
-            <button type="button" class="btn btn-light">月</button>
+            <button type="button" class="btn btn-light" @click="model.selectAllCommands()">全て</button>
+            <button type="button" class="btn btn-light" @click="model.selectOddCommands()">偶数</button>
+            <button type="button" class="btn btn-light" @click="model.selectEvenCommands()">奇数</button>
             <button type="button" class="btn btn-light">ax+b</button>
           </div>
           <!-- 選択アルゴリズム -->
