@@ -1,5 +1,6 @@
 import { Vue } from 'vue-property-decorator';
 import * as api from '@/api/api';
+import Enumerable from 'linq';
 
 export default class ArrayUtil {
 
@@ -24,11 +25,13 @@ export default class ArrayUtil {
     }
   }
 
-  public static addLog<T>(items: T[], item: T, maxLength: number = -1) {
-    items.unshift(item);
-    if (maxLength >= 0) {
-      while (maxLength < items.length) {
-        items.pop();
+  public static addLog<T extends api.IIdentitiedEntity>(items: T[], item: T, maxLength: number = -1) {
+    if (!ArrayUtil.find(items, item.id)) {
+      items.unshift(item);
+      if (maxLength >= 0) {
+        while (maxLength < items.length) {
+          items.pop();
+        }
       }
     }
   }
@@ -49,6 +52,15 @@ export default class ArrayUtil {
       }
     }
     return undefined;
+  }
+
+  public static replace<T>(items: T[], newItems: T[]) {
+    Enumerable.range(0, items.length).forEach(() => {
+      items.pop();
+    });
+    newItems.forEach((item) => {
+      items.push(item);
+    });
   }
 
   private constructor() {}

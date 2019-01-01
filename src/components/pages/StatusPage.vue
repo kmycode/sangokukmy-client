@@ -182,7 +182,7 @@
           <!-- 投稿フォーム -->
           <div v-if="selectedChatCategory !== 4" class="loading-container">
             <div :class="'chat-new-message country-color-' + model.characterCountryColor">
-              <CharacterIcon :icon="model.characterIcons"/>
+              <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
                   <textarea class="message-input"></textarea>

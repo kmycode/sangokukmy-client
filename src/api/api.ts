@@ -345,11 +345,12 @@ export class CharacterCommand {
  * 武将のアイコン
  */
 export class CharacterIcon {
+  public static readonly typeId = 18;
   public static readonly default: CharacterIcon = CharacterIcon.createDefault();
 
   public static isDefault(icon: CharacterIcon): boolean {
-    if (icon.isNotDefaultPrivate !== undefined) {
-      return !icon.isNotDefaultPrivate;
+    if (icon.isNotDefaultPrivate) {
+      return true;
     } else {
       return false;
     }
@@ -481,6 +482,19 @@ export class Api {
   public static async setCommands(commands: CharacterCommand[]) {
     try {
       await axios.put(def.API_HOST + 'commands', commands, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 武将のすべてのアイコンを取得
+   */
+  public static async getAllIcons(): Promise<CharacterIcon[]> {
+    try {
+      const result = await axios.get<ApiArrayData<CharacterIcon>>
+        (def.API_HOST + 'icons', this.authHeader);
+      return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
