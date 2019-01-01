@@ -1,6 +1,6 @@
 <template>
   <div class="chat-message-panel">
-    <transition-group name="notification-alert" tag="div">
+    <transition-group name="message" tag="div">
       <div
         class="item"
         v-for="mes in messages"

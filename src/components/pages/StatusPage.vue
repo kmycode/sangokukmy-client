@@ -185,14 +185,14 @@
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
-                  <textarea class="message-input"></textarea>
+                  <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
                 </div>
                 <div class="buttons">
-                  <button class="btn btn-primary">投稿</button>
+                  <button class="btn btn-primary" @click="postChat()">投稿</button>
                 </div>
               </div>
             </div>
-            <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
+            <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
           <div v-show="selectedChatCategory === 0" class="messages">
             <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries"/>
@@ -255,6 +255,13 @@ export default class StatusPage extends Vue {
       } else {
         this.model.selectSingleCommand(command);
       }
+    }
+  }
+
+  private postChat() {
+    if (this.selectedChatCategory === 0) {
+      // 自国宛
+      this.model.postCountryChat();
     }
   }
 }

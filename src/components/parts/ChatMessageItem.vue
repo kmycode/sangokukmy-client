@@ -3,7 +3,7 @@
     <CharacterIcon :icon="message.characterIcon"/>
     <div class="message-container">
       <div class="message">
-        {{ message.message }}
+        <KmyChatTagText :text="message.message"/>
       </div>
       <div class="message-footer">
         <span class="character-name">{{ message.character.name }}</span> <span class="posted">{{ message.posted | realdate }}</span>
@@ -15,12 +15,14 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import ArrayUtil from '@/models/common/arrayutil';
 
 @Component({
   components: {
     CharacterIcon,
+    KmyChatTagText,
   },
 })
 export default class ChatMessageItem extends Vue {

@@ -52,13 +52,15 @@ export default class StatusModel {
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
   public countryChatMessages: api.ChatMessage[] = [];
+  public chatPostMessage: string = '';
 
   private timers: number[] = [];
 
   public get isLoading(): boolean {
-    return this.isCommandInputing;
+    return this.isCommandInputing || this.isPostingChat;
   }
   public isCommandInputing: boolean = false;
+  public isPostingChat: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -551,6 +553,23 @@ export default class StatusModel {
     if (message.type === api.ChatMessage.typeSelfCountry) {
       // 自国宛
       ArrayUtil.addLog(this.countryChatMessages, message);
+    }
+  }
+
+  public postCountryChat() {
+    const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
+    if (icon) {
+      this.isPostingChat = true;
+      api.Api.postCountryChatMessage(this.chatPostMessage, icon)
+        .then(() => {
+          this.chatPostMessage = '';
+        })
+        .catch(() => {
+          NotificationService.postChatFailed.notify();
+        })
+        .finally(() => {
+          this.isPostingChat = false;
+        });
     }
   }
 

@@ -369,8 +369,21 @@ export class CharacterIcon {
     }
   }
 
+  public static getMain(icons: CharacterIcon[]): CharacterIcon | undefined {
+    return Enumerable.from(icons).firstOrDefault((i) => i.isMain);
+  }
+
+  public static getMainOrFirst(icons: CharacterIcon[]): CharacterIcon | undefined {
+    const main = CharacterIcon.getMain(icons);
+    if (main) {
+      return main;
+    } else {
+      return Enumerable.from(icons).firstOrDefault();
+    }
+  }
+
   public static getMainUri(icons: CharacterIcon[]): string {
-    const main = Enumerable.from(icons).firstOrDefault((i) => i.isMain);
+    const main = CharacterIcon.getMain(icons);
     if (main) {
       return CharacterIcon.getUri(main);
     } else {
@@ -514,6 +527,17 @@ export class Api {
       result.push(new CharacterUpdateLog(i + 1, 'あすか', new DateTime(2018, 1, 1, 12, 0, 0)));
     }
     return result;
+  }
+
+  public static async postCountryChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'chat/country', {
+        message: mes,
+        characterIconId: icon.id,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
   }
 
   /**
