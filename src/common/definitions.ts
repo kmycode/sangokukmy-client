@@ -124,7 +124,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       const soldierType = p.firstOrDefault((pp) => pp.type === 1);
       const soldierNumber = p.firstOrDefault((pp) => pp.type === 2);
       if (!soldierType || !soldierNumber) {
-        return 'エラー (10:1)';
+        return 'エラー (10:2)';
       }
 
       const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
@@ -134,7 +134,38 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
         return 'エラー (10:3)';
       }
     } else {
-      return 'エラー (10:2)';
+      return 'エラー (10:1)';
+    }
+  }),
+  new CommandNameResolver(18, '{0} を強化', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const trainingType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!trainingType) {
+        return 'エラー (18:2)';
+      }
+
+      let name: string;
+      switch (trainingType.numberValue) {
+        case 1:
+          name = '武力';
+          break;
+        case 2:
+          name = '知力';
+          break;
+        case 3:
+          name = '統率';
+          break;
+        case 4:
+          name = '人望';
+          break;
+        default:
+          return 'エラー (18:3)';
+      }
+
+      return format.replace('{0}', name);
+    } else {
+      return 'エラー (18:1)';
     }
   }),
 ];

@@ -130,7 +130,7 @@
             <!-- 個人コマンド -->
             <div v-show="selectedCommandCategory === 4" class="commands">
               <button type="button" class="btn btn-light">移動</button>
-              <button type="button" class="btn btn-light">能力強化</button>
+              <button type="button" class="btn btn-light" @click="isOpenTrainingDialog = true">能力強化</button>
               <button type="button" class="btn btn-light">米売買</button>
               <button type="button" class="btn btn-light">武器</button>
               <button type="button" class="btn btn-light">書物</button>
@@ -206,6 +206,7 @@
     <!-- ダイアログ -->
     <div id="status-dialog" :class="{ 'show': isOpenDialog }">
       <div class="dialog-background"></div>
+      <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
         <div class="dialog-content">
@@ -248,6 +249,21 @@
           </div>
         </div>
       </div>
+      <!-- 能力強化 -->
+      <div v-show="isOpenTrainingDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">能力強化</h2>
+        <div class="dialog-content dialog-content-training">
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 1)">武力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 2)">知力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 3)">統率</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 4)">人望</button>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenTrainingDialog = false">キャンセル</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -285,12 +301,13 @@ export default class StatusPage extends Vue {
   public selectedChatCategory: number = 0;
   public selectedSoliderType: number = 1;
   public isOpenSoldierDialog: boolean = false;
+  public isOpenTrainingDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog;
+    return this.isOpenSoldierDialog || this.isOpenTrainingDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -656,6 +673,13 @@ ul.nav {
         }
         .text {
           font-size: 1rem;
+        }
+      }
+
+      &.dialog-content-training {
+        button {
+          margin: 0 16px 0 0;
+          width: 80px;
         }
       }
     }
