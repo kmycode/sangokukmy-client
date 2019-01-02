@@ -125,6 +125,15 @@ export default class StatusModel {
     } else if (signal.type === 2) {
       // 年月が進んだ
       this.updateGameDate(signal.data as api.GameDateTime);
+    } else if (signal.type === 3) {
+      // 能力が上昇した
+      const type = signal.data.type as number;
+      const name = type === 1 ? '武力' : type === 2 ? '知力' : type === 3 ? '統率' : type === 4 ? '人望' : undefined;
+      if (name) {
+        NotificationService.attributeUp.notifyWithParameter(name, signal.data.value);
+      } else {
+        NotificationService.invalidStatus.notifyWithParameter('能力上昇signal.data.type');
+      }
     }
   }
 

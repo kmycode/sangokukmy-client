@@ -148,6 +148,10 @@ export default class NotificationService {
     '手紙送信失敗',
     '手紙の送信に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly attributeUp = new NotificationServiceItem(
+    '能力上昇',
+    '{0} が +{1} 上昇しました。',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
