@@ -540,6 +540,17 @@ export class Api {
     }
   }
 
+  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'chat/global', {
+        message: mes,
+        characterIconId: icon.id,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 認証のときに利用するヘッダ
    */

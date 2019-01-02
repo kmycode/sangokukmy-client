@@ -52,6 +52,7 @@ export default class StatusModel {
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
   public countryChatMessages: api.ChatMessage[] = [];
+  public globalChatMessages: api.ChatMessage[] = [];
   public chatPostMessage: string = '';
 
   private timers: number[] = [];
@@ -553,14 +554,25 @@ export default class StatusModel {
     if (message.type === api.ChatMessage.typeSelfCountry) {
       // 自国宛
       ArrayUtil.addLog(this.countryChatMessages, message);
+    } else if (message.type === api.ChatMessage.typeGlobal) {
+      // 全国宛
+      ArrayUtil.addLog(this.globalChatMessages, message);
     }
   }
 
   public postCountryChat() {
+    this.postChat((message, icon) => api.Api.postCountryChatMessage(message, icon));
+  }
+
+  public postGlobalChat() {
+    this.postChat((message, icon) => api.Api.postGlobalChatMessage(message, icon));
+  }
+
+  private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>) {
     const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
     if (icon) {
       this.isPostingChat = true;
-      api.Api.postCountryChatMessage(this.chatPostMessage, icon)
+      apiFunc(this.chatPostMessage, icon)
         .then(() => {
           this.chatPostMessage = '';
         })

@@ -170,9 +170,9 @@
           </div>
         </div>
         <!-- 手紙 -->
-        <div v-show="selectedActionTab === 1" class="right-side-content content-chat">
+        <div v-show="selectedActionTab === 1 || selectedActionTab === 2" class="right-side-content content-chat">
           <!-- 手紙の種類選択のタブ -->
-          <ul class="nav nav-pills nav-fill">
+          <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
@@ -194,8 +194,11 @@
             </div>
             <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
-          <div v-show="selectedChatCategory === 0" class="messages">
+          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries"/>
+          </div>
+          <div v-show="selectedActionTab === 2" class="messages">
+            <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
           </div>
         </div>
       </div>
@@ -259,9 +262,14 @@ export default class StatusPage extends Vue {
   }
 
   private postChat() {
-    if (this.selectedChatCategory === 0) {
-      // 自国宛
-      this.model.postCountryChat();
+    if (this.selectedActionTab === 1) {
+      if (this.selectedChatCategory === 0) {
+        // 自国宛
+        this.model.postCountryChat();
+      }
+    } else if (this.selectedActionTab === 2) {
+      // 全国宛
+      this.model.postGlobalChat();
     }
   }
 }
