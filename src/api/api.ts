@@ -245,7 +245,8 @@ export class Character implements IIdentitiedEntity {
                      public townId: number = 0,
                      public message: number = 0,
                      public lastUpdated: DateTime = new DateTime(),
-                     public lastUpdatedGameDate: GameDateTime = new GameDateTime()) {}
+                     public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
+                     public mainIcon?: CharacterIcon) {}
 }
 
 /**
@@ -514,6 +515,19 @@ export class Api {
     try {
       const result = await axios.get<ApiArrayData<CharacterIcon>>
         (def.API_HOST + 'icons', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 同じ都市にいる武将をすべて取得
+   */
+  public static async getAllCharactersAtSameTown(): Promise<Character[]> {
+    try {
+      const result = await axios.get<ApiArrayData<Character>>
+        (def.API_HOST + 'town/characters', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);

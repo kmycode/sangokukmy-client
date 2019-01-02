@@ -33,7 +33,7 @@
             <StatusParametersPanel :parameters="model.townParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info">武将</button>
+            <button v-show="model.town.id === model.character.townId" type="button" class="btn btn-info" @click="model.updateSameTownCharacters(); isOpenSameTownCharactersDialog = true">武将</button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -264,6 +264,20 @@
           </div>
         </div>
       </div>
+      <!-- 都市の滞在武将 -->
+      <div v-show="isOpenSameTownCharactersDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterTownCountryColor">{{ model.characterTown.name }} の武将</h2>
+        <div class="dialog-content loading-container">
+          <SimpleCharacterList :countries="model.countries" :characters="model.sameTownCharacters"/>
+          <div class="loading" v-show="model.isUpdatingSameTownCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenSameTownCharactersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -275,6 +289,7 @@ import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
+import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
@@ -288,6 +303,7 @@ import Enumerable from 'linq';
     StatusParametersPanel,
     ChatMessagePanel,
     MapLogList,
+    SimpleCharacterList,
   },
 })
 export default class StatusPage extends Vue {
@@ -302,12 +318,13 @@ export default class StatusPage extends Vue {
   public selectedSoliderType: number = 1;
   public isOpenSoldierDialog: boolean = false;
   public isOpenTrainingDialog: boolean = false;
+  public isOpenSameTownCharactersDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog || this.isOpenTrainingDialog;
+    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenSameTownCharactersDialog;
   }
 
   public get soliderDetail(): def.SoldierType {

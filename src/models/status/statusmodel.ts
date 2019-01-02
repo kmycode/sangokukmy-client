@@ -54,22 +54,36 @@ export default class StatusModel {
   public countryChatMessages: api.ChatMessage[] = [];
   public globalChatMessages: api.ChatMessage[] = [];
   public chatPostMessage: string = '';
+  public sameTownCharacters: api.Character[] = [];
 
   private timers: number[] = [];
 
   public get isLoading(): boolean {
-    return this.isCommandInputing || this.isPostingChat;
+    return this.isCommandInputing || this.isPostingChat || this.isUpdatingSameTownCharacters;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
+  public isUpdatingSameTownCharacters: boolean = false;
 
   private isInitializedCommands = false;
 
+  public get characterTown(): api.Town {
+    // 自分が所在している都市
+    return this.getTown(this.character.townId);
+  }
+
   public get townCountryColor(): number {
+    // 選択中の都市の国色
     return this.getCountry(this.town.countryId).colorId;
   }
 
+  public get characterTownCountryColor(): number {
+    // 自分が滞在している都市の国色
+    return this.getCountry(this.characterTown.countryId).colorId;
+  }
+
   public get characterCountryColor(): number {
+    // 自分の所属する都市の国色
     return this.getCountry(this.character.countryId).colorId;
   }
 
@@ -223,6 +237,20 @@ export default class StatusModel {
       return town;
     }
     return api.Town.default;
+  }
+
+  public updateSameTownCharacters() {
+    this.isUpdatingSameTownCharacters = true;
+    api.Api.getAllCharactersAtSameTown()
+      .then((characters) => {
+        this.sameTownCharacters = characters;
+      })
+      .catch(() => {
+        NotificationService.getSameTownCharactersFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingSameTownCharacters = false;
+      });
   }
 
   // #endregion
