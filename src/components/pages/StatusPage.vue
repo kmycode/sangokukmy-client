@@ -34,6 +34,7 @@
           </div>
           <div class="commands">
             <button v-show="model.town.id === model.character.townId" type="button" class="btn btn-info" @click="model.updateSameTownCharacters(); isOpenSameTownCharactersDialog = true">武将</button>
+            <button v-show="model.town.id === model.character.townId" type="button" class="btn btn-info" @click="model.updateSameTownDefenders(); isOpenSameTownDefendersDialog = true">守備</button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -278,6 +279,20 @@
           </div>
         </div>
       </div>
+      <!-- 都市の守備武将 -->
+      <div v-show="isOpenSameTownDefendersDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterTownCountryColor">{{ model.characterTown.name }} の守備</h2>
+        <div class="dialog-content loading-container">
+          <SimpleCharacterList :countries="model.countries" :characters="model.sameTownDefenders"/>
+          <div class="loading" v-show="model.isUpdatingSameTownDefenders"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenSameTownDefendersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -319,12 +334,14 @@ export default class StatusPage extends Vue {
   public isOpenSoldierDialog: boolean = false;
   public isOpenTrainingDialog: boolean = false;
   public isOpenSameTownCharactersDialog: boolean = false;
+  public isOpenSameTownDefendersDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenSameTownCharactersDialog;
+    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenSameTownCharactersDialog
+      || this.isOpenSameTownDefendersDialog;
   }
 
   public get soliderDetail(): def.SoldierType {

@@ -535,6 +535,19 @@ export class Api {
   }
 
   /**
+   * 同じ都市にいる守備武将をすべて取得
+   */
+  public static async getAllDefendersAtSameTown(): Promise<Character[]> {
+    try {
+      const result = await axios.get<ApiArrayData<Character>>
+        (def.API_HOST + 'town/defenders', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
    * 武将更新ログを取得する
    *
    * GET    /api/v1/character/updatelog/{count}

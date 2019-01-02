@@ -55,15 +55,18 @@ export default class StatusModel {
   public globalChatMessages: api.ChatMessage[] = [];
   public chatPostMessage: string = '';
   public sameTownCharacters: api.Character[] = [];
+  public sameTownDefenders: api.Character[] = [];
 
   private timers: number[] = [];
 
   public get isLoading(): boolean {
-    return this.isCommandInputing || this.isPostingChat || this.isUpdatingSameTownCharacters;
+    return this.isCommandInputing || this.isPostingChat || this.isUpdatingSameTownCharacters
+      || this.isUpdatingSameTownDefenders;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
   public isUpdatingSameTownCharacters: boolean = false;
+  public isUpdatingSameTownDefenders: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -228,6 +231,10 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     }
+    if (this.town.id === this.character.id) {
+      api.Api.getAllDefendersAtSameTown()
+        .then((defenders) => ps.push(new NoRangeStatusParameter('守備', defenders.length)));
+    }
     return ps;
   }
 
@@ -250,6 +257,20 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isUpdatingSameTownCharacters = false;
+      });
+  }
+
+  public updateSameTownDefenders() {
+    this.isUpdatingSameTownDefenders = true;
+    api.Api.getAllDefendersAtSameTown()
+      .then((characters) => {
+        this.sameTownDefenders = characters;
+      })
+      .catch(() => {
+        NotificationService.getSameTownCharactersFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingSameTownDefenders = false;
       });
   }
 
