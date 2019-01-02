@@ -21,6 +21,10 @@ export enum ErrorCode {
   internalDataNotFound = 10,
   commandTypeNotFound = 11,
   operationConflict = 12,
+  debugModeOnlyError = 13,
+  characterIconNotFoundError = 14,
+  lackOfTownTechnologyForSoldier = 15,
+  lackOfCommandParameter = 16,
 }
 
 /**
@@ -314,6 +318,9 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
  * 武将のコマンドパラメータ
  */
 export class CharacterCommandParameter {
+  public constructor(public type: number,
+                     public numberValue?: number,
+                     public stringValue?: string) {}
 }
 
 /**

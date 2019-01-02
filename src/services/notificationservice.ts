@@ -128,6 +128,10 @@ export default class NotificationService {
     'コマンド入力失敗',
     'コマンド入力に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly inputCommandsFailedBecauseLackOfSoldierTechnology = new NotificationServiceItem(
+    '徴兵コマンド入力失敗',
+    'コマンド入力に失敗しました。指定された兵種は、この都市で徴兵コマンドを入力することができません。',
+    NotificationServiceItemDefaultType.error);
   public static readonly inputCommandsSucceed = new NotificationServiceItem(
     'コマンド入力完了',
     '{0} の入力が完了しました。',

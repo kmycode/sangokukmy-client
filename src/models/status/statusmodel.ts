@@ -399,11 +399,26 @@ export default class StatusModel {
   }
 
   public inputCommand(commandType: number) {
+    this.inputCommandPrivate(commandType);
+  }
+
+  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, soldierType),
+                        new api.CharacterCommandParameter(2, soldierNumber));
+    });
+  }
+
+  private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
       this.isCommandInputing = true;
       selectCommands.forEach((c) => {
         c.type = commandType;
+        c.parameters = [];
+        if (setParams) {
+          setParams(c);
+        }
       });
       api.Api.setCommands(selectCommands)
         .then(() => {
@@ -413,8 +428,12 @@ export default class StatusModel {
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
         })
-        .catch(() => {
-          NotificationService.inputCommandsFailed.notify();
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
+            NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
+          } else {
+            NotificationService.inputCommandsFailed.notify();
+          }
         })
         .finally(() => {
           this.isCommandInputing = false;

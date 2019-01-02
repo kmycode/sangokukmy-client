@@ -31,25 +31,30 @@ export const NEXT_LANK = 1000;
 /**
  * 兵種
  */
-class SoldierType {
-  public constructor(public id: number, public name: string, public attackPower?: string,
-                     public defencePower?: string) {}
+export class SoldierType {
+  public constructor(public id: number,
+                     public name: string,
+                     public money?: number,
+                     public attackPower?: string,
+                     public defencePower?: string,
+                     public description?: string) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
-  new SoldierType(1, '雑兵'),
-  new SoldierType(2, '禁兵'),
-  new SoldierType(3, '軽歩兵'),
-  new SoldierType(4, '弓兵'),
-  new SoldierType(5, '軽騎兵'),
-  new SoldierType(6, '強弩兵'),
-  new SoldierType(7, '神鬼兵'),
-  new SoldierType(8, '重歩兵'),
-  new SoldierType(9, '重騎兵'),
-  new SoldierType(10, '智攻兵'),
-  new SoldierType(11, '連弩兵'),
-  new SoldierType(12, '壁守兵'),
-  new SoldierType(13, '衝車'),
-  new SoldierType(14, '井闌'),
+  new SoldierType(1, '雑兵', 10, '0', '0'),
+  new SoldierType(2, '禁兵', 10, '20', '20'),
+  new SoldierType(100, '雑兵・禁兵', 10, '0', '0', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に20のボーナスを得る'),
+  new SoldierType(3, '軽歩兵', 100, '0', '0', '説明'),
+  new SoldierType(4, '弓兵', 100, '0', '0', '説明'),
+  new SoldierType(5, '軽騎兵', 100, '0', '0', '説明'),
+  new SoldierType(6, '強弩兵', 100, '0', '0', '説明'),
+  new SoldierType(7, '神鬼兵', 100, '0', '0', '説明'),
+  new SoldierType(8, '重歩兵', 100, '0', '0', '説明'),
+  new SoldierType(9, '重騎兵', 100, '0', '0', '説明'),
+  new SoldierType(10, '智攻兵', 100, '0', '0', '説明'),
+  new SoldierType(11, '連弩兵', 100, '0', '0', '説明'),
+  new SoldierType(12, '壁守兵', 100, '0', '0', '説明'),
+  new SoldierType(13, '衝車', 100, '0', '0', '説明'),
+  new SoldierType(14, '井闌', 100, '0', '0', '説明'),
 ];
 
 /**
@@ -113,6 +118,25 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(7, '農地開拓'),
   new CommandNameResolver(8, '市場拡大'),
   new CommandNameResolver(9, '城壁増築'),
+  new CommandNameResolver(10, '{0} を {1} 人徴兵', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const soldierType = p.firstOrDefault((pp) => pp.type === 1);
+      const soldierNumber = p.firstOrDefault((pp) => pp.type === 2);
+      if (!soldierType || !soldierNumber) {
+        return 'エラー (10:1)';
+      }
+      
+      const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
+      if (type && soldierNumber.numberValue !== undefined) {
+        return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
+      } else {
+        return 'エラー (10:3)';
+      }
+    } else {
+      return 'エラー (10:2)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)

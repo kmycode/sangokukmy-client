@@ -116,7 +116,7 @@
             </div>
             <!-- 軍事コマンド -->
             <div v-show="selectedCommandCategory === 2" class="commands">
-              <button type="button" class="btn btn-light">徴兵</button>
+              <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
               <button type="button" class="btn btn-light">兵士訓練</button>
               <button type="button" class="btn btn-light">城の守備</button>
               <button type="button" class="btn btn-light">戦争</button>
@@ -203,6 +203,52 @@
         </div>
       </div>
     </div>
+    <!-- ダイアログ -->
+    <div id="status-dialog" :class="{ 'show': isOpenDialog }">
+      <div class="dialog-background"></div>
+      <div v-show="isOpenSoldierDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
+        <div class="dialog-content">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
+            <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 1">雑兵・禁兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 3">軽歩兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 4">弓兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 5">軽騎兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 6">強弩兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 7">神鬼兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 8">重歩兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 9">重騎兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 10">智攻兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 11">連弩兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 12">壁守兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 13">衝車</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 14">井闌</a>
+            </div>
+          </div>
+          <div class="soltype-detail">
+            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" style="width:72px;text-align:center" v-model="soldierNumber">人</div>
+            <div class="status">
+              <span class="item-head">金</span><span class="item-value">{{ soliderDetail.money }}</span>
+              <span class="item-head">攻撃力</span><span class="item-value">{{ soliderDetail.attackPower }}</span>
+              <span class="item-head">防御力</span><span class="item-value">{{ soliderDetail.defencePower }}</span>
+            </div>
+            <div class="text">
+              {{ soliderDetail.description }}
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSoldierDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.inputSoldierCommand(10, selectedSoliderType, soldierNumber)">実行</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -214,8 +260,10 @@ import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
 import * as api from '@/api/api';
+import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
 import { StatusParameter } from '@/models/status/statusparameter';
+import Enumerable from 'linq';
 
 @Component({
   components: {
@@ -229,13 +277,29 @@ import { StatusParameter } from '@/models/status/statusparameter';
 export default class StatusPage extends Vue {
   public model: StatusModel = new StatusModel();
   public isOpenRightSidePopupMenu: boolean = false;
+  public isOpenSoliderDropdown: boolean = false;
   public selectedInformationTab: number = 0;
   public selectedReportType: number = 0;
   public selectedActionTab: number = 0;
   public selectedCommandCategory: number = 0;
   public selectedChatCategory: number = 0;
+  public selectedSoliderType: number = 1;
+  public isOpenSoldierDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
+  public soldierNumber: number = 1;
+
+  public get isOpenDialog(): boolean {
+    return this.isOpenSoldierDialog;
+  }
+
+  public get soliderDetail(): def.SoldierType {
+    if (this.selectedSoliderType === 1) {
+      return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 100);
+    } else {
+      return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === this.selectedSoliderType);
+    }
+  }
 
   public created() {
     this.model.onCreate();
@@ -521,6 +585,98 @@ ul.nav {
     .messages {
       flex: 1;
       overflow: auto;
+    }
+  }
+}
+
+// ダイアログ
+#status-dialog {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  opacity: 0;
+  pointer-events: none;
+
+  .dialog-background {
+    width: 100%;
+    height: 100%;
+    background: black;
+    opacity: 0;
+    transition: opacity .2s ease-in;
+  }
+
+  .dialog-body {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    width: 600px;
+    height: 400px;
+    max-width: 98%;
+    max-height: 98%;
+    background: #efefef;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .dialog-title {
+      text-align: center;
+      padding: 4px;
+      @include country-color-deep('background-color');
+      @include country-color-light('color');
+    }
+
+    .dialog-content {
+      flex: 1;
+      padding: 4px 8px;
+      overflow: auto;
+
+      .soltype-detail {
+        margin-top: 12px;
+
+        .title {
+          font-size: 1.8rem;
+        }
+        .status {
+          font-size: 1.1rem;
+
+          .item-head {
+            color: #969;
+          }
+          .item-value {
+            padding: 0 12px 0 4px;
+            font-weight: bold;
+          }
+        }
+        .text {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .dialog-footer {
+      display: flex;
+      margin: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #dedede;
+
+      .left-side {
+        flex: 1;
+      }
+    }
+  }
+
+  &.show {
+    opacity: 1;
+    pointer-events: all;
+    .dialog-background {
+      opacity: 0.4;
     }
   }
 }
