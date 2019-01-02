@@ -126,7 +126,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!soldierType || !soldierNumber) {
         return 'エラー (10:1)';
       }
-      
+
       const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
       if (type && soldierNumber.numberValue !== undefined) {
         return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
