@@ -119,7 +119,7 @@
             <div v-show="selectedCommandCategory === 2" class="commands">
               <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
               <button type="button" class="btn btn-light">兵士訓練</button>
-              <button type="button" class="btn btn-light">城の守備</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
               <button type="button" class="btn btn-light">戦争</button>
               <button type="button" class="btn btn-light">集合</button>
             </div>
