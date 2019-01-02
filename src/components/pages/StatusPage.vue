@@ -106,13 +106,13 @@
               <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
               <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
               <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
-              <button type="button" class="btn btn-light">米施し</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(6)">米施し</button>
             </div>
             <!-- 増強コマンド -->
             <div v-show="selectedCommandCategory === 1" class="commands">
-              <button type="button" class="btn btn-light">農地開拓</button>
-              <button type="button" class="btn btn-light">市場拡大</button>
-              <button type="button" class="btn btn-light">城壁増築</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(7)">農地開拓</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(8)">市場拡大</button>
+              <button type="button" class="btn btn-light" @click="model.inputCommand(9)">城壁増築</button>
             </div>
             <!-- 軍事コマンド -->
             <div v-show="selectedCommandCategory === 2" class="commands">

@@ -109,6 +109,10 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(3, '技術開発'),
   new CommandNameResolver(4, '城壁強化'),
   new CommandNameResolver(5, '守兵増強'),
+  new CommandNameResolver(6, '米施し'),
+  new CommandNameResolver(7, '農地開拓'),
+  new CommandNameResolver(8, '市場拡大'),
+  new CommandNameResolver(9, '城壁増築'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
