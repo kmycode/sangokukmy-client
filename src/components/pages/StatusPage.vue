@@ -180,7 +180,7 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li>
           </ul>
           <!-- 投稿フォーム -->
-          <div v-if="selectedChatCategory !== 4" class="loading-container">
+          <div v-if="selectedActionTab !== 1 || selectedChatCategory !== 4" class="loading-container">
             <div :class="'chat-new-message country-color-' + model.characterCountryColor">
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
