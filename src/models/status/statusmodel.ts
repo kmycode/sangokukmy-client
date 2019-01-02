@@ -169,6 +169,12 @@ export default class StatusModel {
     } else if (this.town.id === town.id) {
       this.setTown(town);
     }
+
+    // 国の首都を更新
+    if (this.country.id >= 0 && this.country.capitalTownId === town.id) {
+      (Enumerable.from(this.countryParameters).first((cp) => cp.name === '首都') as TextStatusParameter)
+        .value = town.name;
+    }
   }
 
   private updateScoutedTown(town: api.ScoutedTown) {
