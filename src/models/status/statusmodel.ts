@@ -231,7 +231,7 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     }
-    if (this.town.id === this.character.id) {
+    if (this.town.id === this.character.townId) {
       api.Api.getAllDefendersAtSameTown()
         .then((defenders) => ps.push(new NoRangeStatusParameter('守備', defenders.length)));
     }
