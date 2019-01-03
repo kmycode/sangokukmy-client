@@ -3,7 +3,7 @@
     <div
         v-for="t in towns"
         :key="t.id"
-        :class="'map-cell country-color-' + getTownColor(t) + (town.id === t.id ? ' selected' : '')"
+        :class="'map-cell country-color-' + getTownColor(t) + (town.id === t.id ? ' selected' : '') + (currentTown.id === t.id ? ' current-town' : '')"
         :style="{ top: t.y + '0%', left: t.x + '0%', }"
         @click="$emit('selected', t.id)">
       <div :class="'town-type town-type-' + t.type"></div>
@@ -27,6 +27,9 @@ export default class Map extends Vue {
   @Prop({
     default: () => new api.Town(-1),
   }) public town!: api.Town;
+  @Prop({
+    default: () => new api.Town(-1),
+  }) public currentTown!: api.Town;
 
   private isSelected(current: api.Town): boolean {
     return this.town.id === current.id;
@@ -78,6 +81,14 @@ export default class Map extends Vue {
       z-index: 1;
     }
 
+    &.current-town {
+      @for $i from 0 through length($country-colors-light) - 1 {
+        &.country-color-#{$i} {
+          animation: current-town-#{$i} 3s linear infinite;
+        }
+      }
+    }
+
     .town-type {
       width: 16px;
       height: 16px;
@@ -97,6 +108,23 @@ export default class Map extends Vue {
     }
     .town-name {
       white-space: nowrap;
+    }
+  }
+}
+
+@for $i from 0 through length($country-colors-light) - 1 {
+  @keyframes current-town-#{$i} {
+    0% {
+      background-color: nth($country-colors-deep, $i + 1);
+      color: nth($country-colors-light, $i + 1);
+    }
+    30% {
+      background-color: darken(nth($country-colors-light, $i + 1), 15%);
+      color: nth($country-colors-deep, $i + 1);
+    }
+    60% {
+      background-color: nth($country-colors-deep, $i + 1);
+      color: nth($country-colors-light, $i + 1);
     }
   }
 }
