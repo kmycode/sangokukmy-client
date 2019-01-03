@@ -579,6 +579,8 @@ export default class StatusModel {
         .finally(() => {
           this.isCommandInputing = false;
         });
+    } else {
+      NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
     }
   }
 
