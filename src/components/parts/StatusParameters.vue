@@ -46,6 +46,13 @@
           </div>
         </div>
       </div>
+      <div v-if="param.type === 6" class="item-container loading-container">
+        <div class="name">{{ param.name }}</div>
+        <div class="value value-norange">
+          <span class="current">{{ param.value }}</span>
+        </div>
+        <div class="loading" v-show="param.isLoading"><div class="loading-icon"></div></div>
+      </div>
     </div>
     <div class="item item-empty"></div>
     <div class="item item-empty"></div>

@@ -1,5 +1,6 @@
 import * as api from '@/api/api';
 import Enumerable from 'linq';
+import Vue from 'vue';
 
 export enum StatusParameterType {
   /**
@@ -22,6 +23,10 @@ export enum StatusParameterType {
    * noRnageとrangedの順に並べてくっつけたもの
    */
   twinNoRangeAndRanged = 5,
+  /**
+   * 遅延ロードされる値
+   */
+  noRangeDelay = 6,
 }
 
 export abstract class StatusParameter {
@@ -55,6 +60,18 @@ export class NoRangeStatusParameter extends StatusParameter {
 
   public constructor(name: string, public value: number) {
     super(name);
+  }
+}
+
+export class NoRangeDelayStatusParameter extends NoRangeStatusParameter {
+  public isLoading: boolean = true;
+
+  public get type(): StatusParameterType {
+    return StatusParameterType.noRangeDelay;
+  }
+
+  public constructor(name: string) {
+    super(name, 0);
   }
 }
 

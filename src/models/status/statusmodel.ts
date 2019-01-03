@@ -12,6 +12,7 @@ import { StatusParameter,
   TextStatusParameter,
   CharacterIconStatusParameter,
   TwinNoRangeAndRangedStatusParameter,
+  NoRangeDelayStatusParameter,
 } from '@/models/status/statusparameter';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
@@ -231,10 +232,20 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     }
     if (town.id === this.character.townId || town.countryId === this.character.countryId) {
-      const defParam = new NoRangeStatusParameter('守備', 0);
+      const countParam = new NoRangeDelayStatusParameter('滞在');
+      const defParam = new NoRangeDelayStatusParameter('守備');
+      ps.push(countParam);
       ps.push(defParam);
+      api.Api.getAllCharactersAtTown(town.id)
+        .then((charas) => {
+          countParam.value = charas.length;
+          countParam.isLoading = false;
+        });
       api.Api.getAllDefendersAtTown(town.id)
-        .then((defenders) => defParam.value = defenders.length);
+        .then((defenders) => {
+          defParam.value = defenders.length;
+          defParam.isLoading = false;
+        });
     }
     return ps;
   }
