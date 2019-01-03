@@ -160,6 +160,10 @@ export default class NotificationService {
     '都市滞在武将取得失敗',
     'その都市に滞在する武将一覧の取得に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly getCountryCharactersFailed = new NotificationServiceItem(
+    '国の武将取得失敗',
+    'その国に所属する武将一覧の取得に失敗しました。',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

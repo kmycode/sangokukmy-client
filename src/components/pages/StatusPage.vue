@@ -59,7 +59,7 @@
             <StatusParametersPanel :parameters="model.countryParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info">部隊</button>
+            <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
           </div>
         </div>
         <!-- 報告 -->
@@ -298,6 +298,20 @@
           </div>
         </div>
       </div>
+      <!-- 国の滞在武将 -->
+      <div v-show="isOpenCountryCharactersDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の武将</h2>
+        <div class="dialog-content loading-container">
+          <SimpleCharacterList :countries="model.countries" :characters="model.countryCharacters"/>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenCountryCharactersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -340,13 +354,14 @@ export default class StatusPage extends Vue {
   public isOpenTrainingDialog: boolean = false;
   public isOpenTownCharactersDialog: boolean = false;
   public isOpenTownDefendersDialog: boolean = false;
+  public isOpenCountryCharactersDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
-      || this.isOpenTownDefendersDialog;
+      || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog;
   }
 
   public get soliderDetail(): def.SoldierType {

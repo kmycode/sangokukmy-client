@@ -57,23 +57,30 @@ export default class StatusModel {
   public chatPostMessage: string = '';
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
+  public countryCharacters: api.Character[] = [];
 
   private timers: number[] = [];
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
-      || this.isUpdatingTownDefenders;
+      || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
+  public isUpdatingCountryCharacters: boolean = false;
 
   private isInitializedCommands = false;
 
   public get characterTown(): api.Town {
     // 自分が所在している都市
     return this.getTown(this.character.townId);
+  }
+
+  public get countryColor(): number {
+    // 選択中の国の国色
+    return this.getCountry(this.country.id).colorId;
   }
 
   public get townCountryColor(): number {
@@ -331,6 +338,20 @@ export default class StatusModel {
       return country;
     }
     return api.Country.default;
+  }
+
+  public updateCountryCharacters() {
+    this.isUpdatingCountryCharacters = true;
+    api.Api.getAllCharactersBelongsCountry(this.country.id)
+      .then((characters) => {
+        this.countryCharacters = characters;
+      })
+      .catch(() => {
+        NotificationService.getCountryCharactersFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountryCharacters = false;
+      });
   }
 
   // #endregion

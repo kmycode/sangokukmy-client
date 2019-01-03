@@ -28,7 +28,7 @@
             <span class="parameter-name">人望</span>
             <span class="parameter-value">{{ chara.popularity }}</span>
           </span>
-          <span class="parameter-item">
+          <span v-if="hasSoldierData(chara)" class="parameter-item">
             <span class="parameter-name">{{ getSoldierTypeName(chara.soldierType) }}</span>
             <span class="parameter-value">{{ chara.soldierNumber }}</span>
           </span>
@@ -62,6 +62,10 @@ export default class SimpleCharacterList extends Vue {
     } else {
       return 0;
     }
+  }
+
+  private hasSoldierData(chara: api.Character): boolean {
+    return chara.soldierType !== undefined && chara.soldierType !== null;
   }
 
   private getSoldierTypeName(type: number): string {
