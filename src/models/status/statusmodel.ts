@@ -212,7 +212,6 @@ export default class StatusModel {
 
   private getTownParameters(town: api.Town): StatusParameter[] {
     const isScouted = api.Town.isScouted(town);
-    const isMyCountryTown = town.countryId === this.character.countryId;
     const country = this.getCountry(town.countryId);
     const ps: StatusParameter[] = [];
     ps.push(new TextStatusParameter('国', country.name));
@@ -221,7 +220,7 @@ export default class StatusModel {
       const scoutedTown = town as api.ScoutedTown;
       ps.push(new TextStatusParameter('諜報', api.GameDateTime.toFormatedString(scoutedTown.scoutedGameDateTime!)));
     }
-    if (isScouted || isMyCountryTown) {
+    if (town.ricePrice !== undefined) {
       ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
       ps.push(new NoRangeStatusParameter('農民', town.people));
       ps.push(new RangedStatusParameter('民忠', town.security, 100));
