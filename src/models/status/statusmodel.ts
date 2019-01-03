@@ -42,6 +42,7 @@ export default class StatusModel {
   public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
   public countryParameters: StatusParameter[] = [];
   public towns: api.TownBase[] = [];
+  public scoutedTowns: api.ScoutedTown[] = [];
   public town: api.TownBase = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townParameters: StatusParameter[] = [];
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
@@ -204,19 +205,34 @@ export default class StatusModel {
   }
 
   private updateScoutedTown(town: api.ScoutedTown) {
-    ArrayUtil.addItem(this.towns, town);
+    town.id = town.scoutedTownId;
+    ArrayUtil.addItem(this.scoutedTowns, town);
+
+    if (this.town.id === town.id) {
+      this.setTown(town);
+    }
   }
 
   public selectTown(townId: number) {
     const town = ArrayUtil.find(this.towns, townId);
     if (town) {
-      this.setTown(town);
+      if (town.countryId !== this.character.countryId && town.id !== this.character.townId) {
+        const scoutedTown = ArrayUtil.findUniquely(this.scoutedTowns, townId, (st) => st.scoutedTownId);
+        if (scoutedTown) {
+          this.setTown(scoutedTown);
+        } else {
+          this.setTown(town);
+        }
+      } else {
+        this.setTown(town);
+      }
     }
   }
 
   private setTown(town: api.Town) {
     this.town = town;
     this.townParameters = this.getTownParameters(town);
+    Vue.set(this.town, 'scoutedGameDateTime', (this.town as any).scoutedGameDateTime);
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
@@ -225,10 +241,6 @@ export default class StatusModel {
     const ps: StatusParameter[] = [];
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type - 1]));
-    if (isScouted) {
-      const scoutedTown = town as api.ScoutedTown;
-      ps.push(new TextStatusParameter('諜報', api.GameDateTime.toFormatedString(scoutedTown.scoutedGameDateTime!)));
-    }
     if (town.ricePrice !== undefined) {
       ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
       ps.push(new NoRangeStatusParameter('農民', town.people));

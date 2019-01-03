@@ -33,7 +33,7 @@
         </div>
         <!-- 都市情報 -->
         <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor">
-          <h4 :class="'country-color-' + model.townCountryColor">{{ model.town.name }}</h4>
+          <h4 :class="'country-color-' + model.townCountryColor">{{ model.town.name }}<span v-if="model.town.scoutedGameDateTime">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span></h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
           </div>

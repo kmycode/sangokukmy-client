@@ -310,6 +310,7 @@ export class Town extends TownBase implements IIdentitiedEntity {
 export class ScoutedTown extends TownBase implements IIdentitiedEntity {
   public static readonly typeId = 16;
 
+  public scoutedTownId: number = 0;
   public scoutedCharacterId?: number;
   public scoutMethod?: number;
   public scoutedGameDateTime?: GameDateTime;
