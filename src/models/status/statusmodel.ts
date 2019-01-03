@@ -439,7 +439,7 @@ export default class StatusModel {
         if (already) {
           c.commandNumber = already.commandNumber;
           c.date = already.date;
-          api.CharacterCommand.updateName(c);
+          this.updateCommandName(c);
           ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
         }
       });
@@ -464,6 +464,12 @@ export default class StatusModel {
     });
   }
 
+  public inputMoveCommand(commandType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, this.town.id));
+    });
+  }
+
   public inputTrainingCommand(commandType: number, trainingType: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, trainingType));
@@ -484,7 +490,7 @@ export default class StatusModel {
       api.Api.setCommands(selectCommands)
         .then(() => {
           selectCommands.forEach((c) => {
-            api.CharacterCommand.updateName(c);
+            this.updateCommandName(c);
             c.isSelected = false;
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
@@ -614,10 +620,26 @@ export default class StatusModel {
 
     // 通知
     if (command && command.type !== undefined && command.type !== 0) {
-      api.CharacterCommand.updateName(command);
+      this.updateCommandName(command);
       NotificationService.commandExecuted.notifyWithParameter(command.name);
     } else {
       NotificationService.emptyCommandExecuted.notify();
+    }
+  }
+
+  private updateCommandName(command: api.CharacterCommand) {
+    api.CharacterCommand.updateName(command);
+
+    // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
+    if (command.type === 17) {
+      // 移動
+      const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+      if (targetTownId && targetTownId.numberValue) {
+        const town = this.getTown(targetTownId.numberValue);
+        command.name = command.name.replace('%0%', town.name);
+      } else {
+        command.name = 'エラー (17:A)';
+      }
     }
   }
 

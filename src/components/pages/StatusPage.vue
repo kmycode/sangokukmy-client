@@ -130,7 +130,7 @@
             </div>
             <!-- 個人コマンド -->
             <div v-show="selectedCommandCategory === 4" class="commands">
-              <button type="button" class="btn btn-light">移動</button>
+              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(17)">移動</button>
               <button type="button" class="btn btn-light" @click="isOpenTrainingDialog = true">能力強化</button>
               <button type="button" class="btn btn-light">米売買</button>
               <button type="button" class="btn btn-light">武器</button>

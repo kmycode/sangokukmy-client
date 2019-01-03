@@ -138,6 +138,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     }
   }),
   new CommandNameResolver(12, '城の守備'),
+  new CommandNameResolver(17, '%0% へ移動'),
   new CommandNameResolver(18, '{0} を強化', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
