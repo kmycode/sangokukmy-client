@@ -221,6 +221,8 @@ export default class StatusModel {
         if (town.id !== this.character.townId) {
           // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
           if (scoutedTown) {
+            this.townCharacters = scoutedTown.characters;
+            this.townDefenders = scoutedTown.defenders;
             this.setTown(scoutedTown);
           } else {
             this.setTown(town);
@@ -275,6 +277,9 @@ export default class StatusModel {
           defParam.value = defenders.length;
           defParam.isLoading = false;
         });
+    } else if (isScouted) {
+      ps.push(new NoRangeStatusParameter('滞在', this.townCharacters.length));
+      ps.push(new NoRangeStatusParameter('守備', this.townDefenders.length));
     }
     return ps;
   }

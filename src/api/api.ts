@@ -315,28 +315,8 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
   public scoutMethod?: number;
   public scoutedGameDateTime?: GameDateTime;
 
-  public characters: ScoutedCharacter[] = [];
-  public defenders: ScoutedDefender[] = [];
-}
-
-/**
- * 諜報された武将
- */
-export class ScoutedCharacter implements IIdentitiedEntity {
-  public id: number = -1;
-  public characterId?: number;
-  public soldierType?: number;
-  public soldierNumber?: number;
-}
-
-/**
- * 諜報された守備
- */
-export class ScoutedDefender implements IIdentitiedEntity {
-  public id: number = -1;
-  public characterId?: number;
-  public soldierType?: number;
-  public soldierNumber?: number;
+  public characters: Character[] = [];
+  public defenders: Character[] = [];
 }
 
 /**
