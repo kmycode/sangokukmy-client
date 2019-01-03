@@ -253,7 +253,7 @@ export default class StatusModel {
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type - 1]));
     if (town.ricePrice !== undefined) {
-      ps.push(new NoRangeStatusParameter('相場', town.ricePrice));
+      ps.push(new NoRangeStatusParameter('相場', Math.round(town.ricePrice * 1000) / 1000));
       ps.push(new NoRangeStatusParameter('農民', town.people));
       ps.push(new RangedStatusParameter('民忠', town.security, 100));
       ps.push(new RangedStatusParameter('農業', town.agriculture, town.agricultureMax));
