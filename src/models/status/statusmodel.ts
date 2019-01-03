@@ -208,7 +208,7 @@ export default class StatusModel {
     town.id = town.scoutedTownId;
     ArrayUtil.addItem(this.scoutedTowns, town);
 
-    if (this.town.id === town.id) {
+    if (this.town.id === town.id && this.town.id !== this.character.townId) {
       this.setTown(town);
     }
   }
