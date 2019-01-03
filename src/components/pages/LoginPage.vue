@@ -100,7 +100,7 @@ export default class LoginPage extends Vue {
 @import '../../scss/bootstrap-helper.scss';
 
 #login-page {
-  $panel-background: #ffffff99;
+  $panel-background: rgba(255, 255, 255, 0.6);
 
   width: 100vw;
   height: 100vh;
