@@ -164,6 +164,14 @@ export default class NotificationService {
     '国の武将取得失敗',
     'その国に所属する武将一覧の取得に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly scouted = new NotificationServiceItem(
+    '諜報完了',
+    '{0} を諜報しました。',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly scoutFailed = new NotificationServiceItem(
+    '諜報失敗',
+    '{0} を諜報できませんでした。',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

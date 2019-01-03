@@ -63,13 +63,14 @@ export default class StatusModel {
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
-      || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters;
+      || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
+  public isScouting: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -290,6 +291,20 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isUpdatingTownDefenders = false;
+      });
+  }
+
+  public scoutTown() {
+    this.isScouting = true;
+    api.Api.scoutTown()
+      .then(() => {
+        NotificationService.scouted.notifyWithParameter(this.characterTown.name);
+      })
+      .catch(() => {
+        NotificationService.scoutFailed.notifyWithParameter(this.characterTown.name);
+      })
+      .finally(() => {
+        this.isScouting = false;
       });
   }
 

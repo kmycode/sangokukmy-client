@@ -313,6 +313,29 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
   public scoutedCharacterId?: number;
   public scoutMethod?: number;
   public scoutedGameDateTime?: GameDateTime;
+
+  public characters: ScoutedCharacter[] = [];
+  public defenders: ScoutedDefender[] = [];
+}
+
+/**
+ * 諜報された武将
+ */
+export class ScoutedCharacter implements IIdentitiedEntity {
+  public id: number = -1;
+  public characterId?: number;
+  public soldierType?: number;
+  public soldierNumber?: number;
+}
+
+/**
+ * 諜報された守備
+ */
+export class ScoutedDefender implements IIdentitiedEntity {
+  public id: number = -1;
+  public characterId?: number;
+  public soldierType?: number;
+  public soldierNumber?: number;
 }
 
 /**
@@ -542,6 +565,18 @@ export class Api {
       const result = await axios.get<ApiArrayData<Character>>
         (def.API_HOST + 'town/' + townId + '/defenders', this.authHeader);
       return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 現在いる都市を諜報
+   */
+  public static async scoutTown(): Promise<any> {
+    try {
+      await axios.post
+        (def.API_HOST + 'town/scout', {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
