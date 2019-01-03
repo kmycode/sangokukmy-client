@@ -726,9 +726,7 @@ export default class StatusModel {
   // #region Logs
 
   private addMapLog(log: api.MapLog) {
-    if (!log.isImportant) {
-      ArrayUtil.addLog(this.mapLogs, log, 50);
-    }
+    ArrayUtil.addLog(this.mapLogs, log, 50);
   }
 
   private addCharacterLog(log: api.CharacterLog) {

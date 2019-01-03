@@ -188,4 +188,5 @@ export class EventType {
 }
 export const EVENT_TYPES: EventType[] = [
   new EventType(1, '収入', 'gold'),
+  new EventType(2, 'イベント', 'red'),
 ];

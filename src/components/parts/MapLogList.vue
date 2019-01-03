@@ -1,6 +1,6 @@
 <template>
   <ul :class="{'map-log-list': type === 'normal', 'map-log-list-important': type === 'important', 'character-update-log-list': type === 'character-update-log', 'character-log-list': type === 'character-log'}">
-    <li v-if="type === 'map-log-list' || type === 'map-log-list-important'" v-for="mlog in logs" :key="mlog.id">
+    <li v-if="type === 'normal' || type === 'important'" v-for="mlog in logs" :key="mlog.id">
       <MapLogLine :log="mlog"/>
     </li>
     <li v-if="type === 'character-update-log'" v-for="mlog in logs" :key="mlog.id">
@@ -37,6 +37,7 @@ ul.map-log-list {
   margin: 0;
   margin-left: 1em;
   padding: 0;
+  font-size: 1rem;
   li::before {
     content: '●';
     margin-left: -1em;
