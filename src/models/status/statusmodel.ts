@@ -191,10 +191,10 @@ export default class StatusModel {
     // 現在表示中の都市を更新
     if (this.town.id < 0) {
       if (this.character.id >= 0 && town.id === this.character.townId) {
-        this.setTown(town);
+        this.selectTown(town.id);
       }
     } else if (this.town.id === town.id) {
-      this.setTown(town);
+      this.selectTown(town.id);
     }
 
     // 国の首都を更新
@@ -208,19 +208,28 @@ export default class StatusModel {
     town.id = town.scoutedTownId;
     ArrayUtil.addItem(this.scoutedTowns, town);
 
-    if (this.town.id === town.id && this.town.id !== this.character.townId) {
-      this.setTown(town);
+    if (this.town.id === town.id) {
+      this.selectTown(town.id);
     }
   }
 
   public selectTown(townId: number) {
     const town = ArrayUtil.find(this.towns, townId);
     if (town) {
-      if (town.countryId !== this.character.countryId && town.id !== this.character.townId) {
+      if (town.countryId !== this.character.countryId) {
         const scoutedTown = ArrayUtil.findUniquely(this.scoutedTowns, townId, (st) => st.scoutedTownId);
-        if (scoutedTown) {
-          this.setTown(scoutedTown);
+        if (town.id !== this.character.townId) {
+          // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
+          if (scoutedTown) {
+            this.setTown(scoutedTown);
+          } else {
+            this.setTown(town);
+          }
         } else {
+          // 他国で、かつ自分がいる都市であれば、諜報年月だけを設定
+          if (scoutedTown) {
+            (town as api.ScoutedTown).scoutedGameDateTime = scoutedTown.scoutedGameDateTime;
+          }
           this.setTown(town);
         }
       } else {
