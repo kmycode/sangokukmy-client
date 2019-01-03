@@ -217,7 +217,7 @@ export default class StatusModel {
     const town = ArrayUtil.find(this.towns, townId);
     if (town) {
       if (town.countryId !== this.character.countryId) {
-        const scoutedTown = ArrayUtil.findUniquely(this.scoutedTowns, townId, (st) => st.scoutedTownId);
+        const scoutedTown = ArrayUtil.find(this.scoutedTowns, townId);
         if (town.id !== this.character.townId) {
           // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
           if (scoutedTown) {
