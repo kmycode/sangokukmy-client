@@ -370,6 +370,8 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
+    ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
+    ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
     return ps;
   }
 

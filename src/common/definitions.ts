@@ -175,3 +175,17 @@ export function getCommandNameByType(type: number): CommandNameResolver | undefi
   return Enumerable.from(COMMAND_NAMES)
                    .firstOrDefault((n) => n.type === type);
 }
+
+/**
+ * イベントの種類
+ */
+export class EventType {
+  public static readonly default: EventType = new EventType(0, 'ERR', 'black');
+
+  public constructor(public id: number,
+                     public name: string,
+                     public color: string) {}
+}
+export const EVENT_TYPES: EventType[] = [
+  new EventType(1, '収入', 'gold'),
+];

@@ -180,10 +180,13 @@ export class ApiError {
 export class MapLog implements IIdentitiedEntity {
   public static readonly typeId = 4;
 
+  public static getEventType(log: MapLog): def.EventType | undefined {
+    return Enumerable.from(def.EVENT_TYPES).firstOrDefault((et) => et.id === log.eventType);
+  }
+
   constructor(public id: number,
               public isImportant: boolean,
-              public eventName: string,
-              public eventColor: string,
+              public eventType: number,
               public message: string,
               public gameDate: GameDateTime,
               public date: DateTime) {}
@@ -260,7 +263,9 @@ export class Country {
                      public name: string = '',
                      public colorId: number = 0,
                      public established: GameDateTime = new GameDateTime(),
-                     public capitalTownId: number = 0) {}
+                     public capitalTownId: number = 0,
+                     public lastMoneyIncomes: number = 0,
+                     public lastRiceIncomes: number = 0) {}
 }
 
 export abstract class TownBase implements IIdentitiedEntity {
