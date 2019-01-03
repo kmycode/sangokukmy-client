@@ -54,19 +54,19 @@ export default class StatusModel {
   public countryChatMessages: api.ChatMessage[] = [];
   public globalChatMessages: api.ChatMessage[] = [];
   public chatPostMessage: string = '';
-  public sameTownCharacters: api.Character[] = [];
-  public sameTownDefenders: api.Character[] = [];
+  public townCharacters: api.Character[] = [];
+  public townDefenders: api.Character[] = [];
 
   private timers: number[] = [];
 
   public get isLoading(): boolean {
-    return this.isCommandInputing || this.isPostingChat || this.isUpdatingSameTownCharacters
-      || this.isUpdatingSameTownDefenders;
+    return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
+      || this.isUpdatingTownDefenders;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
-  public isUpdatingSameTownCharacters: boolean = false;
-  public isUpdatingSameTownDefenders: boolean = false;
+  public isUpdatingTownCharacters: boolean = false;
+  public isUpdatingTownDefenders: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -230,9 +230,11 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     }
-    if (this.town.id === this.character.townId) {
-      api.Api.getAllDefendersAtSameTown()
-        .then((defenders) => ps.push(new NoRangeStatusParameter('守備', defenders.length)));
+    if (town.id === this.character.townId || town.countryId === this.character.countryId) {
+      const defParam = new NoRangeStatusParameter('守備', 0);
+      ps.push(defParam);
+      api.Api.getAllDefendersAtTown(town.id)
+        .then((defenders) => defParam.value = defenders.length);
     }
     return ps;
   }
@@ -245,31 +247,31 @@ export default class StatusModel {
     return api.Town.default;
   }
 
-  public updateSameTownCharacters() {
-    this.isUpdatingSameTownCharacters = true;
-    api.Api.getAllCharactersAtSameTown()
+  public updateTownCharacters() {
+    this.isUpdatingTownCharacters = true;
+    api.Api.getAllCharactersAtTown(this.town.id)
       .then((characters) => {
-        this.sameTownCharacters = characters;
+        this.townCharacters = characters;
       })
       .catch(() => {
-        NotificationService.getSameTownCharactersFailed.notify();
+        NotificationService.getTownCharactersFailed.notify();
       })
       .finally(() => {
-        this.isUpdatingSameTownCharacters = false;
+        this.isUpdatingTownCharacters = false;
       });
   }
 
-  public updateSameTownDefenders() {
-    this.isUpdatingSameTownDefenders = true;
-    api.Api.getAllDefendersAtSameTown()
+  public updateTownDefenders() {
+    this.isUpdatingTownDefenders = true;
+    api.Api.getAllDefendersAtTown(this.town.id)
       .then((characters) => {
-        this.sameTownDefenders = characters;
+        this.townDefenders = characters;
       })
       .catch(() => {
-        NotificationService.getSameTownCharactersFailed.notify();
+        NotificationService.getTownCharactersFailed.notify();
       })
       .finally(() => {
-        this.isUpdatingSameTownDefenders = false;
+        this.isUpdatingTownDefenders = false;
       });
   }
 

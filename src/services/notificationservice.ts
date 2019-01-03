@@ -156,9 +156,9 @@ export default class NotificationService {
     '能力上昇',
     '{0} が +{1} 上昇しました。',
     NotificationServiceItemDefaultType.information);
-  public static readonly getSameTownCharactersFailed = new NotificationServiceItem(
+  public static readonly getTownCharactersFailed = new NotificationServiceItem(
     '都市滞在武将取得失敗',
-    '同じ都市に滞在する武将一覧の取得に失敗しました。',
+    'その都市に滞在する武将一覧の取得に失敗しました。',
     NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',

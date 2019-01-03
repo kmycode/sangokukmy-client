@@ -522,12 +522,12 @@ export class Api {
   }
 
   /**
-   * 同じ都市にいる武将をすべて取得
+   * 都市にいる武将をすべて取得
    */
-  public static async getAllCharactersAtSameTown(): Promise<Character[]> {
+  public static async getAllCharactersAtTown(townId: number): Promise<Character[]> {
     try {
       const result = await axios.get<ApiArrayData<Character>>
-        (def.API_HOST + 'town/characters', this.authHeader);
+        (def.API_HOST + 'town/' + townId + '/characters', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
@@ -537,10 +537,10 @@ export class Api {
   /**
    * 同じ都市にいる守備武将をすべて取得
    */
-  public static async getAllDefendersAtSameTown(): Promise<Character[]> {
+  public static async getAllDefendersAtTown(townId: number): Promise<Character[]> {
     try {
       const result = await axios.get<ApiArrayData<Character>>
-        (def.API_HOST + 'town/defenders', this.authHeader);
+        (def.API_HOST + 'town/' + townId + '/defenders', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);

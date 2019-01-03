@@ -33,8 +33,8 @@
             <StatusParametersPanel :parameters="model.townParameters"/>
           </div>
           <div class="commands">
-            <button v-show="model.town.id === model.character.townId" type="button" class="btn btn-info" @click="model.updateSameTownCharacters(); isOpenSameTownCharactersDialog = true">武将</button>
-            <button v-show="model.town.id === model.character.townId" type="button" class="btn btn-info" @click="model.updateSameTownDefenders(); isOpenSameTownDefendersDialog = true">守備</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">武将</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownDefenders(); isOpenTownDefendersDialog = true">守備</button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -266,30 +266,30 @@
         </div>
       </div>
       <!-- 都市の滞在武将 -->
-      <div v-show="isOpenSameTownCharactersDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterTownCountryColor">{{ model.characterTown.name }} の武将</h2>
+      <div v-show="isOpenTownCharactersDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の武将</h2>
         <div class="dialog-content loading-container">
-          <SimpleCharacterList :countries="model.countries" :characters="model.sameTownCharacters"/>
-          <div class="loading" v-show="model.isUpdatingSameTownCharacters"><div class="loading-icon"></div></div>
+          <SimpleCharacterList :countries="model.countries" :characters="model.townCharacters"/>
+          <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
           <div class="left-side"></div>
           <div class="right-side">
-            <button class="btn btn-light" @click="isOpenSameTownCharactersDialog = false">閉じる</button>
+            <button class="btn btn-light" @click="isOpenTownCharactersDialog = false">閉じる</button>
           </div>
         </div>
       </div>
       <!-- 都市の守備武将 -->
-      <div v-show="isOpenSameTownDefendersDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterTownCountryColor">{{ model.characterTown.name }} の守備</h2>
+      <div v-show="isOpenTownDefendersDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の守備</h2>
         <div class="dialog-content loading-container">
-          <SimpleCharacterList :countries="model.countries" :characters="model.sameTownDefenders"/>
-          <div class="loading" v-show="model.isUpdatingSameTownDefenders"><div class="loading-icon"></div></div>
+          <SimpleCharacterList :countries="model.countries" :characters="model.townDefenders"/>
+          <div class="loading" v-show="model.isUpdatingTownDefenders"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
           <div class="left-side"></div>
           <div class="right-side">
-            <button class="btn btn-light" @click="isOpenSameTownDefendersDialog = false">閉じる</button>
+            <button class="btn btn-light" @click="isOpenTownDefendersDialog = false">閉じる</button>
           </div>
         </div>
       </div>
@@ -333,15 +333,15 @@ export default class StatusPage extends Vue {
   public selectedSoliderType: number = 1;
   public isOpenSoldierDialog: boolean = false;
   public isOpenTrainingDialog: boolean = false;
-  public isOpenSameTownCharactersDialog: boolean = false;
-  public isOpenSameTownDefendersDialog: boolean = false;
+  public isOpenTownCharactersDialog: boolean = false;
+  public isOpenTownDefendersDialog: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenSameTownCharactersDialog
-      || this.isOpenSameTownDefendersDialog;
+    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
+      || this.isOpenTownDefendersDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
