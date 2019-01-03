@@ -2,11 +2,12 @@
   <div id="top-page">
     <div class="container">
       <div class="row">
-        <div class="top-table top-title-logo col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+        <div class="top-table top-title-logo loading-container col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
           <h1>三国志NET KMY Version 9</h1>
-          <h2>第1期 ※1期限り</h2>
-          [<span class="number">000</span>年<span class="number">00</span>月]<br>
-          来月まであと <span class="number">00</span>分<span class="number">00</span>秒
+          <h2>第{{ system.period }}<span v-if="system.betaVersion > 0">.{{ system.betaVersion }}</span>期</h2>
+          [<span class="number">{{ system.gameDateTime.year }}</span>年<span class="number">{{ system.gameDateTime.month | zeroformat(2) }}</span>月]<br>
+          来月まであと <span class="number">{{ nextMonthSeconds }}</span>秒
+          <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
       <div class="row">
@@ -27,7 +28,7 @@
         </div>
       </div>
       <div id="app-index" class="row">
-        <div class="col-sm-12">
+        <div class="col-sm-12 loading-container">
           <!--マップログ（細字）-->
           <div class="top-table-flat">
             <MapLogList :logs="mlogs" :type="'normal'"/>
@@ -40,6 +41,7 @@
           <div class="top-table-flat">
             <MapLogList :logs="updateLogs" :type="'character-update-log'"/>
           </div>
+          <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
     </div>
@@ -58,6 +60,7 @@ import ArrayUtil from '../../models/common/arrayutil';
 import Streaming from './../../api/streaming';
 import ApiStreaming from './../../api/apistreaming';
 import * as api from './../../api/api';
+import * as def from '@/common/definitions';
 
 @Component({
   components: {
@@ -71,6 +74,11 @@ export default class TopPage extends Vue {
   private mlogs = new Array<api.MapLog>();
   private m2logs = new Array<api.MapLog>();
   private updateLogs = new Array<api.CharacterUpdateLog>();
+  private system: api.SystemData = new api.SystemData();
+  private nextMonthSeconds = 0;
+  private isLoadingSystem = true;
+
+  private nextMonthSecondsTimer = 0;
 
   public login() {
     this.$emit('login-start');
@@ -78,11 +86,26 @@ export default class TopPage extends Vue {
 
   private created() {
     AsyncUtil.tryTimes(3, async () => {
-      // this.mlogs = await api.Api.getMapLogs(5);
-      // this.m2logs = await api.Api.getImportantMapLogs(5);
       this.updateLogs = await api.Api.getCharacterLogs(5);
     }, () => undefined);
 
+    // 次の月までの秒数を進めるタイマーを開始
+    if (this.nextMonthSecondsTimer > 0) {
+      clearInterval(this.nextMonthSecondsTimer);
+    }
+    this.nextMonthSecondsTimer = setInterval(() => this.nextMonthSeconds--, 1000);
+
+    // ストリーミングを開始
+    ApiStreaming.top.clearEvents();
+    ApiStreaming.top.on<api.SystemData>(api.SystemData.typeId, (log) => {
+      this.system = log;
+
+      const systemMonthDate = api.DateTime.toDate(log.currentMonthStartDateTime);
+      systemMonthDate.setSeconds(systemMonthDate.getSeconds() + def.UPDATE_TIME);
+      this.nextMonthSeconds = Math.floor((systemMonthDate.getTime() - new Date().getTime()) / 1000);
+
+      this.isLoadingSystem = false;
+    });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => ArrayUtil.addLog(this.m2logs, log, 5));
     ApiStreaming.top.start();
   }

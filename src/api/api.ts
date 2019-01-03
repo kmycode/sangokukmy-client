@@ -175,6 +175,19 @@ export class ApiError {
 }
 
 /**
+ * システムデータ
+ */
+export class SystemData {
+  public static readonly typeId = 19;
+
+  public constructor(public isDebug: boolean = false,
+                     public period: number = 0,
+                     public betaVersion: number = 0,
+                     public gameDateTime: GameDateTime = new GameDateTime(0, 0),
+                     public currentMonthStartDateTime: DateTime = new DateTime(0, 0, 0, 0, 0, 0)) {}
+}
+
+/**
  * マップログ
  */
 export class MapLog implements IIdentitiedEntity {

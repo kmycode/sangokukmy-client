@@ -14,7 +14,7 @@ export default class ApiStreaming {
   /**
    * トップ画面のストリーミング
    */
-  public static top = new ApiStreaming(def.API_HOST + 'test/streaming', 'GET');
+  public static top = new ApiStreaming(def.API_HOST + 'streaming/anonymous', 'GET');
 
   /**
    * ステータス画面のストリーミング
