@@ -81,6 +81,7 @@ div#notification-service {
   position: fixed;
   bottom: 20px;
   right: 20px;
+  z-index: 100;
   div.alert {
     width: 30vw;
     max-width: 600px;
