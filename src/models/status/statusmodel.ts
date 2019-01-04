@@ -392,7 +392,15 @@ export default class StatusModel {
       if (!country.posts) {
         Vue.set(country, 'posts', []);
       }
-      ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
+
+      country.posts = Enumerable.from(country.posts)
+        .where((p) => p.characterId !== post.characterId)
+        .toArray();
+      if (post.type !== 0) {
+        // 任命
+        ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
+      }
+
       if (this.country.id === country.id) {
         this.setCountry(country);
       }
