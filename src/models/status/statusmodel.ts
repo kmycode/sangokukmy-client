@@ -64,7 +64,8 @@ export default class StatusModel {
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
-      || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting;
+      || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
+      || this.isAppointing;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
@@ -72,6 +73,7 @@ export default class StatusModel {
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
   public isScouting: boolean = false;
+  public isAppointing: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -95,9 +97,20 @@ export default class StatusModel {
     return this.getCountry(this.characterTown.countryId).colorId;
   }
 
+  public get characterCountry(): api.Country {
+    // 自分の所属する国
+    return this.getCountry(this.character.countryId);
+  }
+
   public get characterCountryColor(): number {
-    // 自分の所属する都市の国色
+    // 自分の所属する国の国色
     return this.getCountry(this.character.countryId).colorId;
+  }
+
+  public get canAppoint(): boolean {
+    // 自分が任命権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
   public onCreate() {
@@ -114,6 +127,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Country>(
       api.Country.typeId,
       (obj) => this.updateCountry(obj));
+    ApiStreaming.status.on<api.CountryPost>(
+      api.CountryPost.typeId,
+      (obj) => this.updateCountryPost(obj));
     ApiStreaming.status.on<api.Character>(
       api.Character.typeId,
       (obj) => this.updateCharacter(obj));
@@ -339,6 +355,16 @@ export default class StatusModel {
   // #region Country
 
   private updateCountry(country: api.Country) {
+
+    // 役職リストが欠損していることがあるので、既存のデータで補う
+    if (!country.posts || country.posts.length === 0) {
+      const old = ArrayUtil.find(this.countries, country.id);
+      if (old) {
+        country.posts = old.posts;
+      }
+    }
+
+    // 配列のデータを更新
     ArrayUtil.addItem(this.countries, country);
 
     // 現在表示している都市、武将の国であれば、国名を更新する
@@ -355,8 +381,34 @@ export default class StatusModel {
       }
     }
 
-    if (this.country.id < 0 && country.id === this.character.countryId) {
+    if ((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) {
       this.setCountry(country);
+    }
+  }
+
+  private updateCountryPost(post: api.CountryPost) {
+    const country = ArrayUtil.find(this.countries, post.countryId);
+    if (country) {
+      if (!country.posts) {
+        Vue.set(country, 'posts', []);
+      }
+      ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
+      if (this.country.id === country.id) {
+        this.setCountry(country);
+      }
+    }
+
+    if (post.countryId === this.character.countryId && post.characterId === this.character.id) {
+      if (post.type !== 0) {
+        // 自分が任命された
+        const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((p) => p.id === post.type);
+        if (postType) {
+          NotificationService.selfAppointed.notifyWithParameter(postType.name);
+        }
+      } else {
+        // 自分が解任された
+        NotificationService.selfDismissed.notify();
+      }
     }
   }
 
@@ -370,8 +422,21 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
-    ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
-    ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+    if (country.lastMoneyIncomes !== undefined) {
+      ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
+      ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+    }
+
+    // 役職
+    if (country.posts) {
+      Enumerable.from(country.posts).orderBy((p) => p.type).forEach((p) => {
+        const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((cp) => cp.id === p.type);
+        if (postType) {
+          ps.push(new TextStatusParameter(postType.name, p.character.name));
+        }
+      });
+    }
+
     return ps;
   }
 
@@ -395,6 +460,23 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingCountryCharacters = false;
       });
+  }
+
+  public setCountryPost(characterId: number, post: number) {
+    const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((p) => p.id === post);
+    if (postType) {
+      this.isAppointing = true;
+      api.Api.setCountryPost(characterId, post)
+        .then(() => {
+          NotificationService.appointed.notifyWithParameter(postType.name);
+        })
+        .catch(() => {
+          NotificationService.appointFailed.notifyWithParameter(postType.name);
+        })
+        .finally(() => {
+          this.isAppointing = false;
+        });
+    }
   }
 
   // #endregion

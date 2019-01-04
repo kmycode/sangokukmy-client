@@ -119,6 +119,9 @@ export default class ApiStreaming {
       case api.ChatMessage.typeId:
         this.fire(obj.type, obj.data as api.ChatMessage);
         break;
+      case api.CountryPost.typeId:
+        this.fire(obj.type, obj.data as api.CountryPost);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;

@@ -190,3 +190,21 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(1, '収入', 'gold'),
   new EventType(2, 'イベント', '#c3c'),
 ];
+
+/**
+ * 国の役職
+ */
+export class CountryPostType {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+export const COUNTRY_POSTS: CountryPostType[] = [
+  new CountryPostType(0, '一般'),
+  new CountryPostType(1, '君主'),
+  new CountryPostType(2, '軍師'),
+  new CountryPostType(3, '大将軍'),
+  new CountryPostType(4, '騎兵将軍'),
+  new CountryPostType(5, '弓将軍'),
+  new CountryPostType(6, '護衛将軍'),
+  new CountryPostType(7, '将軍'),
+];

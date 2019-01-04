@@ -176,6 +176,22 @@ export default class NotificationService {
     '諜報失敗',
     '{0} を諜報できませんでした。',
     NotificationServiceItemDefaultType.error);
+  public static readonly appointed = new NotificationServiceItem(
+    '任命成功',
+    '{0} を任命しました。',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly appointFailed = new NotificationServiceItem(
+    '任命失敗',
+    '{0} を任命できませんでした。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly selfAppointed = new NotificationServiceItem(
+    '任命',
+    'おめでとうございます。あなたは、 {0} に任命されました。',
+    NotificationServiceItemDefaultType.information);
+  public static readonly selfDismissed = new NotificationServiceItem(
+    '解任',
+    'あなたは、役職を解任されました。',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

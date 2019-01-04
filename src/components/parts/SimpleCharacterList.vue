@@ -9,7 +9,21 @@
       </div>
       <div class="information">
         <div class="standard">
-          <span class="name">{{ chara.name }}</span>
+          <div class="name">{{ chara.name }}</div>
+          <div v-if="chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主')" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
+          <div v-if="canEdit && myCountryId === chara.countryId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
+            <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
+              {{ getPostName(chara.id, chara.countryId) }}
+            </button>
+              <div class="dropdown-menu" :style="(isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+              </div>
+          </div>
         </div>
         <div class="parameters">
           <span class="parameter-item">
@@ -54,6 +68,14 @@ import Enumerable from 'linq';
 export default class SimpleCharacterList extends Vue {
   @Prop() public characters!: api.Character[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: -1,
+  }) public myCountryId!: number;
+  @Prop({
+    default: false,
+  }) public canEdit!: boolean;
+
+  private isOpenPostsPopup: boolean = false;
 
   private getCountryColorId(countryId: number): number {
     const country = ArrayUtil.find(this.countries, countryId);
@@ -62,6 +84,19 @@ export default class SimpleCharacterList extends Vue {
     } else {
       return 0;
     }
+  }
+
+  private getPostName(charaId: number, countryId: number): string {
+    const country = ArrayUtil.find(this.countries, countryId);
+    if (country && country.posts) {
+      const post = Enumerable.from(country.posts).firstOrDefault((p) => p.characterId === charaId);
+      const postTypeId = post ? post.type : 0;
+      const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((pt) => pt.id === postTypeId);
+      if (postType) {
+        return postType.name;
+      }
+    }
+    return '';
   }
 
   private hasSoldierData(chara: api.Character): boolean {
@@ -99,8 +134,15 @@ export default class SimpleCharacterList extends Vue {
       margin-left: 12px;
 
       .standard {
+        display: flex;
+
         .name {
           font-size: 1.6rem;
+          flex: 1;
+        }
+
+        .post, .post-selection {
+          margin: 4px 12px 0 0;
         }
       }
 

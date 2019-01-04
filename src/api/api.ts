@@ -266,6 +266,18 @@ export class Character implements IIdentitiedEntity {
 }
 
 /**
+ * 国のポスト
+ */
+export class CountryPost {
+  public static readonly typeId = 20;
+
+  public constructor(public type: number = 0,
+                     public countryId: number = 0,
+                     public characterId: number = 0,
+                     public character: Character) {}
+}
+
+/**
  * 国
  */
 export class Country {
@@ -278,7 +290,8 @@ export class Country {
                      public established: GameDateTime = new GameDateTime(),
                      public capitalTownId: number = 0,
                      public lastMoneyIncomes: number = 0,
-                     public lastRiceIncomes: number = 0) {}
+                     public lastRiceIncomes: number = 0,
+                     public posts: CountryPost[] = []) {}
 }
 
 export abstract class TownBase implements IIdentitiedEntity {
@@ -589,6 +602,23 @@ export class Api {
       const result = await axios.get<ApiArrayData<Character>>
         (def.API_HOST + 'country/' + countryId + '/characters', this.authHeader);
       return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 国の役職を設定
+   * @param characterId 設定する相手のID
+   * @param post 設定する役職ID
+   */
+  public static async setCountryPost(characterId: number, post: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/posts', {
+          type: post,
+          characterId,
+        }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

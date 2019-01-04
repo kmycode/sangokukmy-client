@@ -310,8 +310,13 @@
       <div v-show="isOpenCountryCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の武将</h2>
         <div class="dialog-content loading-container">
-          <SimpleCharacterList :countries="model.countries" :characters="model.countryCharacters"/>
-          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+          <SimpleCharacterList
+            :countries="model.countries"
+            :characters="model.countryCharacters"
+            :myCountryId="model.character.countryId"
+            :canEdit="model.canAppoint"
+            @appoint="model.setCountryPost($event.characterId, $event.type)"/>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
           <div class="left-side"></div>
