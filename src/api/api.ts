@@ -290,8 +290,56 @@ export class Country {
                      public established: GameDateTime = new GameDateTime(),
                      public capitalTownId: number = 0,
                      public posts: CountryPost[] = [],
+                     public alliances: CountryAlliance[] = [],
+                     public wars: CountryWar[] = [],
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number) {}
+}
+
+export abstract class CountryDipromacy {
+  public static isEqualCountry<T extends { id: number, requestedCountryId: number, insistedCountryId: number }>(
+      item: T, country1: number, country2: number) {
+    return (item.requestedCountryId === country1 && item.insistedCountryId === country2) ||
+           (item.insistedCountryId === country1 && item.requestedCountryId === country2);
+  }
+
+  public constructor(public id: number = 0,
+                     public status: number = 0,
+                     public requestedCountryId: number = 0,
+                     public insistedCountryId: number = 0,
+                     public requestedCountry: Country = new Country(),
+                     public insistedCountry: Country = new Country()) {}
+}
+
+/**
+ * 同盟
+ */
+export class CountryAlliance extends CountryDipromacy {
+  public static readonly typeId = 21;
+
+  public static readonly statusRequesting = 1;
+  public static readonly statusDismissed = 2;
+  public static readonly statusAvailable = 3;
+  public static readonly statusInBreaking = 4;
+  public static readonly statusBroken = 5;
+
+  public isPublic: boolean = false;
+  public breakingDelay: number = 0;
+}
+
+/**
+ * 宣戦布告
+ */
+export class CountryWar extends CountryDipromacy {
+  public static readonly typeId = 22;
+
+  public static readonly statusAvailable = 1;
+  public static readonly statusStopRequesting = 2;
+  public static readonly statusStoped = 3;
+
+  public requestedStopCountryId: number = 0;
+  public requestedStopCountry: Country = new Country();
+  public startGameDate: GameDateTime = new GameDateTime();
 }
 
 export abstract class TownBase implements IIdentitiedEntity {

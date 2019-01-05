@@ -208,3 +208,32 @@ export const COUNTRY_POSTS: CountryPostType[] = [
   new CountryPostType(6, '護衛将軍'),
   new CountryPostType(7, '将軍'),
 ];
+
+/**
+ * 同盟状態
+ */
+export class CountryAllianceStatus {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+export const COUNTRY_ALLIANCE_STATUSES: CountryAllianceStatus[] = [
+  new CountryAllianceStatus(1, '同盟協議中'),
+  new CountryAllianceStatus(2, '同盟協議決裂'),
+  new CountryAllianceStatus(3, '同盟中'),
+  new CountryAllianceStatus(4, '破棄猶予中'),
+  new CountryAllianceStatus(5, '破棄済'),
+];
+
+/**
+ * 戦争状態
+ */
+export class CountryWarStatus {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
+  new CountryWarStatus(1, '交戦中'),
+  new CountryWarStatus(2, '停戦協議中'),
+  new CountryWarStatus(3, '停戦'),
+  new CountryWarStatus(4, '開戦前'),
+];

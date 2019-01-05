@@ -68,6 +68,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
+            <button type="button" class="btn btn-secondary">同盟</button>
           </div>
         </div>
         <!-- 報告 -->

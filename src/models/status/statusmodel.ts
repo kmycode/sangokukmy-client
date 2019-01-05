@@ -127,6 +127,12 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Country>(
       api.Country.typeId,
       (obj) => this.updateCountry(obj));
+    ApiStreaming.status.on<api.CountryAlliance>(
+      api.CountryAlliance.typeId,
+      (obj) => this.updateCountryAlliance(obj));
+    ApiStreaming.status.on<api.CountryWar>(
+      api.CountryWar.typeId,
+      (obj) => this.updateCountryWar(obj));
     ApiStreaming.status.on<api.CountryPost>(
       api.CountryPost.typeId,
       (obj) => this.updateCountryPost(obj));
@@ -372,6 +378,25 @@ export default class StatusModel {
         country.lastMoneyIncomes = old.lastMoneyIncomes;
         country.lastRiceIncomes = old.lastRiceIncomes;
       }
+
+      // 同盟データがｒｙ
+      if (!country.alliances || country.alliances.length === 0) {
+        country.alliances = old.alliances;
+      }
+      if (!country.wars || country.wars.length === 0) {
+        country.wars = old.wars;
+      }
+    }
+
+    // APIから入ってこない可能性のあるデータを、空の配列で埋める
+    if (country.posts === undefined) {
+      country.posts = [];
+    }
+    if (country.alliances === undefined) {
+      country.alliances = [];
+    }
+    if (country.wars === undefined) {
+      country.wars = [];
     }
 
     // 配列のデータを更新
@@ -444,6 +469,24 @@ export default class StatusModel {
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
     }
+    if (country.alliances) {
+      country.alliances.forEach((ca, index) => {
+        const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
+        if (status) {
+          const targetCountry = ca.requestedCountryId === country.id ? ca.insistedCountry : ca.requestedCountry;
+          ps.push(new TextStatusParameter(index + '-' + status.name, targetCountry.name));
+        }
+      });
+    }
+    if (country.wars) {
+      country.wars.forEach((cw, index) => {
+        const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
+        if (status) {
+          const targetCountry = cw.requestedCountryId === country.id ? cw.insistedCountry : cw.requestedCountry;
+          ps.push(new TextStatusParameter(index + '-' + status.name, targetCountry.name));
+        }
+      });
+    }
 
     // 役職
     if (country.id > 0 && country.posts) {
@@ -495,6 +538,46 @@ export default class StatusModel {
           this.isAppointing = false;
         });
     }
+  }
+
+  // #endregion
+
+  // #region CountryDiplomacies
+
+  private updateCountryAlliance(alliance: api.CountryAlliance) {
+    this.updateCountryDiplomacies(alliance, (c) => c.alliances, (c, val) => c.alliances = val);
+  }
+
+  private updateCountryWar(war: api.CountryWar) {
+    this.updateCountryDiplomacies(war, (c) => c.wars, (c, val) => c.wars = val);
+  }
+
+  private updateCountryDiplomacies<T extends api.CountryDipromacy>(
+       diplomacy: T,
+       itemsProperty: (country: api.Country) => T[],
+       itemsSetter: (country: api.Country, newItems: T[]) => void) {
+    const countries = [this.getCountry(diplomacy.requestedCountryId), this.getCountry(diplomacy.insistedCountryId)];
+    diplomacy.requestedCountry = countries[0];
+    diplomacy.insistedCountry = countries[1];
+
+    Enumerable.from(countries).where((c) => c.id > 0).forEach((country) => {
+      const items = itemsProperty(country);
+      const targetCountry = countries[0].id === country.id ? countries[1] : countries[0];
+
+      // 古いのを消す
+      const newItems = Enumerable
+        .from(items)
+        .where((ca) => ca.id < diplomacy.id &&
+                       !api.CountryDipromacy
+                          .isEqualCountry(ca, diplomacy.requestedCountryId, diplomacy.insistedCountryId))
+        .toArray();
+
+      // 新しいのを追加する
+      newItems.push(diplomacy);
+
+      // 保存
+      itemsSetter(country, newItems);
+    });
   }
 
   // #endregion
