@@ -440,13 +440,13 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
-    if (country.lastMoneyIncomes !== undefined) {
+    if (country.id > 0 && country.lastMoneyIncomes !== undefined && country.lastRiceIncomes !== undefined) {
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
     }
 
     // 役職
-    if (country.posts) {
+    if (country.id > 0 && country.posts) {
       Enumerable.from(country.posts).orderBy((p) => p.type).forEach((p) => {
         const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((cp) => cp.id === p.type);
         if (postType) {

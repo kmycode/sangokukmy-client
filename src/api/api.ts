@@ -289,9 +289,9 @@ export class Country {
                      public colorId: number = 0,
                      public established: GameDateTime = new GameDateTime(),
                      public capitalTownId: number = 0,
-                     public lastMoneyIncomes: number = 0,
-                     public lastRiceIncomes: number = 0,
-                     public posts: CountryPost[] = []) {}
+                     public posts: CountryPost[] = [],
+                     public lastMoneyIncomes?: number,
+                     public lastRiceIncomes?: number) {}
 }
 
 export abstract class TownBase implements IIdentitiedEntity {
