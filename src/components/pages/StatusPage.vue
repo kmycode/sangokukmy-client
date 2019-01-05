@@ -314,6 +314,7 @@
             :countries="model.countries"
             :characters="model.countryCharacters"
             :myCountryId="model.character.countryId"
+            :myCharacterId="model.character.id"
             :canEdit="model.canAppoint"
             @appoint="model.setCountryPost($event.characterId, $event.type)"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>

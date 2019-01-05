@@ -10,8 +10,8 @@
       <div class="information">
         <div class="standard">
           <div class="name">{{ chara.name }}</div>
-          <div v-if="chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主')" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-          <div v-if="canEdit && myCountryId === chara.countryId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
+          <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
+          <div v-else class="post-selection">
             <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
               {{ getPostName(chara.id, chara.countryId) }}
             </button>
@@ -68,6 +68,9 @@ import Enumerable from 'linq';
 export default class SimpleCharacterList extends Vue {
   @Prop() public characters!: api.Character[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: -1,
+  }) public myCharacterId!: number;
   @Prop({
     default: -1,
   }) public myCountryId!: number;
