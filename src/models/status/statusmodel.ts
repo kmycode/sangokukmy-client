@@ -253,6 +253,9 @@ export default class StatusModel {
       } else {
         this.setTown(town);
       }
+
+      // 国情報も変える
+      this.setCountry(this.getCountry(this.town.countryId));
     }
   }
 
