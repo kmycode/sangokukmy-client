@@ -66,7 +66,6 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: #ca8 url('./assets/images/sangoku-originals/o.gif');
-  font-size: 14pt;
 }
 
 * {

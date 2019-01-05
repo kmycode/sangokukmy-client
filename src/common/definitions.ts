@@ -217,11 +217,17 @@ export class CountryAllianceStatus {
                      public name: string) {}
 }
 export const COUNTRY_ALLIANCE_STATUSES: CountryAllianceStatus[] = [
-  new CountryAllianceStatus(1, '同盟協議中'),
+  new CountryAllianceStatus(-1, '自国'),
+  new CountryAllianceStatus(0, '同盟関係なし'),
+  new CountryAllianceStatus(1, '同盟協議中'),       // 自分が打診している
   new CountryAllianceStatus(2, '同盟協議決裂'),
   new CountryAllianceStatus(3, '同盟中'),
   new CountryAllianceStatus(4, '破棄猶予中'),
   new CountryAllianceStatus(5, '破棄済'),
+  new CountryAllianceStatus(6, '同盟修正協議中'),
+
+  new CountryAllianceStatus(101, '同盟協議中'),     // 自分が打診されている
+  new CountryAllianceStatus(106, '同盟修正協議中'),  // 自分が打診されている
 ];
 
 /**
@@ -232,6 +238,7 @@ export class CountryWarStatus {
                      public name: string) {}
 }
 export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
+  new CountryWarStatus(0, '戦争関係なし'),
   new CountryWarStatus(1, '交戦中'),
   new CountryWarStatus(2, '停戦協議中'),
   new CountryWarStatus(3, '停戦'),

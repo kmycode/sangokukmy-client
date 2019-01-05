@@ -65,7 +65,7 @@ export default class StatusModel {
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
-      || this.isAppointing;
+      || this.isAppointing || this.isSendingAlliance || this.isSendingWar;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
@@ -74,6 +74,8 @@ export default class StatusModel {
   public isUpdatingCountryCharacters: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
+  public isSendingAlliance: boolean = false;
+  public isSendingWar: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -111,6 +113,83 @@ export default class StatusModel {
     // 自分が任命権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canDiplomacy(): boolean {
+    // 自分が外交権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get countryAlliance(): api.CountryAlliance | undefined {
+    // 現在選択中の国と自分の国の同盟
+    return Enumerable
+      .from(this.country.alliances)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
+  }
+
+  public get countryWar(): api.CountryWar | undefined {
+    // 現在選択中の国と自分の国の戦争
+    return Enumerable
+      .from(this.country.wars)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
+  }
+
+  public get countryAllianceStatus(): def.CountryAllianceStatus {
+    // 自分の国との同盟関係
+    let status = 0;
+    const myCountry = this.getCountry(this.character.countryId);
+    if (myCountry.id === this.country.id) {
+      status = -1;
+    } else if (this.country.alliances) {
+      const alliance = Enumerable
+        .from(this.country.alliances)
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
+      if (alliance) {
+        if (alliance.status === api.CountryAlliance.statusRequesting) {
+          // 自分が打診したか、されてるかでデータを変える
+          status = alliance.requestedCountryId === this.characterCountry.id ? 1 : 101;
+        } else {
+          status = alliance.status;
+        }
+      } else {
+        status = 0;
+      }
+    }
+
+    const statusObj = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES)
+                                .firstOrDefault((s) => s.id === status);
+    if (statusObj) {
+      return statusObj;
+    } else {
+      return def.COUNTRY_ALLIANCE_STATUSES[0];
+    }
+  }
+
+  public get countryWarStatus(): def.CountryWarStatus {
+    // 自分の国との戦争関係
+    let status = 0;
+    const myCountry = this.getCountry(this.character.countryId);
+    if (myCountry.id === this.country.id) {
+      status = -1;
+    } else if (this.country.wars) {
+      const war = Enumerable
+        .from(this.country.wars)
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
+      if (war) {
+        status = war.status;
+      } else {
+        status = 0;
+      }
+    }
+
+    const statusObj = Enumerable.from(def.COUNTRY_WAR_STATUSES)
+                                .firstOrDefault((s) => s.id === status);
+    if (statusObj) {
+      return statusObj;
+    } else {
+      return def.COUNTRY_WAR_STATUSES[0];
+    }
   }
 
   public onCreate() {

@@ -68,7 +68,8 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button type="button" class="btn btn-secondary">同盟</button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = 0">同盟</button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = 0">戦争</button>
           </div>
         </div>
         <!-- 報告 -->
@@ -244,7 +245,7 @@
             </div>
           </div>
           <div class="soltype-detail">
-            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" style="width:72px;text-align:center" v-model="soldierNumber">人</div>
+            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;transform:translateY(-6px)" v-model="soldierNumber">人</div>
             <div class="status">
               <span class="item-head">金</span><span class="item-value">{{ soliderDetail.money }}</span>
               <span class="item-head">攻撃力</span><span class="item-value">{{ soliderDetail.attackPower }}</span>
@@ -327,6 +328,71 @@
           </div>
         </div>
       </div>
+      <!-- 同盟 -->
+      <div v-show="isOpenAllianceDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
+        <div class="dialog-content loading-container">
+          {{ model.countryAllianceStatus.name }}
+          <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 1; isOpenAlliancePopup = false" href="#">撤回</button>
+          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-secondary" @click="selectedAllianceStatus = 2; isOpenAlliancePopup = false" href="#">拒否</button>
+          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-primary"   @click="selectedAllianceStatus = 3; isOpenAlliancePopup = false" href="#">承認</button>
+          <button v-show="model.countryAllianceStatus.id ===   0" class="btn btn-secondary" @click="selectedAllianceStatus = 4; isOpenAlliancePopup = false" href="#">同盟申入</button>
+          <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 6; isOpenAlliancePopup = false" href="#">破棄</button>
+          <div v-show="selectedAllianceStatus === 1" class="content-section">
+            <h3>同盟申入撤回</h3>
+          </div>
+          <div v-show="selectedAllianceStatus === 2" class="content-section">
+            <h3>同盟打診拒否</h3>
+          </div>
+          <div v-show="selectedAllianceStatus === 3" class="content-section">
+            <h3>同盟打診承認（同盟開始）</h3>
+          </div>
+          <div v-show="selectedAllianceStatus === 6" class="content-section">
+            <h3>同盟破棄</h3>
+          </div>
+          <div v-show="selectedAllianceStatus === 4" class="content-section">
+            <h3>同盟申入</h3>
+            <div class="form-group">
+              <label for="allianceOption2">破棄猶予（ヶ月）</label>
+              <input type="number" max="48" min="0" id="allianceOption2" class="form-control">
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" value="" id="allianceOption1">
+              <label class="form-check-label" for="allianceOption1">
+                同盟関係を公表する
+              </label>
+            </div>
+          </div>
+          <div v-if="model.countryAlliance !== undefined" class="content-section current-diplomacy">
+            <h3>同盟条件</h3>
+            破棄猶予：{{ model.countryAlliance.breakingDelay }}ヶ月<br>
+            公表：{{ model.countryAlliance.isPublic ? 'する' : 'しない' }}
+          </div>
+          <div class="loading" v-show="model.isSendingAlliance"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenAllianceDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-if="model.canDiplomacy" @click="isOpenAllianceDialog = false">承認</button>
+            <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenAllianceDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
+      <!-- 戦争 -->
+      <div v-show="isOpenWarDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.townCountryColor">戦争：{{ model.country.name }}</h2>
+        <div class="dialog-content loading-container">
+          <div class="loading" v-show="model.isSendingWar"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenWarDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -370,13 +436,18 @@ export default class StatusPage extends Vue {
   public isOpenTownCharactersDialog: boolean = false;
   public isOpenTownDefendersDialog: boolean = false;
   public isOpenCountryCharactersDialog: boolean = false;
+  public isOpenAllianceDialog: boolean = false;
+  public isOpenWarDialog: boolean = false;
+  public selectedAllianceStatus: number = 0;
+  public selectedWarStatus: number = 0;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
-      || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog;
+      || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
+      || this.isOpenAllianceDialog || this.isOpenWarDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -722,6 +793,14 @@ ul.nav {
       flex: 1;
       padding: 4px 8px;
       overflow: auto;
+
+      .content-section {
+        margin-top: 24px;
+      }
+
+      .current-diplomacy {
+        background: #dedede;
+      }
 
       .soltype-detail {
         margin-top: 12px;
