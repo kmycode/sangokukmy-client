@@ -359,11 +359,18 @@ export default class StatusModel {
 
   private updateCountry(country: api.Country) {
 
-    // 役職リストが欠損していることがあるので、既存のデータで補う
-    if (!country.posts || country.posts.length === 0) {
-      const old = ArrayUtil.find(this.countries, country.id);
-      if (old) {
+    const old = ArrayUtil.find(this.countries, country.id);
+
+    if (old) {
+      // 役職リストが欠損していることがあるので、既存のデータで補う
+      if (!country.posts || country.posts.length === 0) {
         country.posts = old.posts;
+      }
+
+      // 収入データが欠損していることがあればｒｙ
+      if (country.lastMoneyIncomes === undefined && this.character.countryId === country.id) {
+        country.lastMoneyIncomes = old.lastMoneyIncomes;
+        country.lastRiceIncomes = old.lastRiceIncomes;
       }
     }
 
