@@ -68,8 +68,8 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = 0">同盟</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = 0">戦争</button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = -1">同盟</button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
           </div>
         </div>
         <!-- 報告 -->
@@ -333,12 +333,12 @@
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
         <div class="dialog-content loading-container">
           {{ model.countryAllianceStatus.name }}
-          <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 1; isOpenAlliancePopup = false" href="#">撤回</button>
+          <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 0; isOpenAlliancePopup = false" href="#">撤回</button>
           <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-secondary" @click="selectedAllianceStatus = 2; isOpenAlliancePopup = false" href="#">拒否</button>
           <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-primary"   @click="selectedAllianceStatus = 3; isOpenAlliancePopup = false" href="#">承認</button>
-          <button v-show="model.countryAllianceStatus.id ===   0" class="btn btn-secondary" @click="selectedAllianceStatus = 4; isOpenAlliancePopup = false" href="#">同盟申入</button>
-          <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 6; isOpenAlliancePopup = false" href="#">破棄</button>
-          <div v-show="selectedAllianceStatus === 1" class="content-section">
+          <button v-show="model.countryAllianceStatus.id ===   0 || model.countryAllianceStatus.id === 2 || model.countryAllianceStatus.id === 5" class="btn btn-secondary" @click="selectedAllianceStatus = 1; isOpenAlliancePopup = false" href="#">同盟申入</button>
+          <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 4; isOpenAlliancePopup = false" href="#">破棄</button>
+          <div v-show="selectedAllianceStatus === 0" class="content-section">
             <h3>同盟申入撤回</h3>
           </div>
           <div v-show="selectedAllianceStatus === 2" class="content-section">
@@ -347,23 +347,23 @@
           <div v-show="selectedAllianceStatus === 3" class="content-section">
             <h3>同盟打診承認（同盟開始）</h3>
           </div>
-          <div v-show="selectedAllianceStatus === 6" class="content-section">
+          <div v-show="selectedAllianceStatus === 4" class="content-section">
             <h3>同盟破棄</h3>
           </div>
-          <div v-show="selectedAllianceStatus === 4" class="content-section">
+          <div v-show="selectedAllianceStatus === 1" class="content-section">
             <h3>同盟申入</h3>
             <div class="form-group">
               <label for="allianceOption2">破棄猶予（ヶ月）</label>
-              <input type="number" max="48" min="0" id="allianceOption2" class="form-control">
+              <input type="number" max="48" min="0" id="allianceOption2" class="form-control" v-model="model.allianceBreakingDelay">
             </div>
             <div class="form-check">
-              <input class="form-check-input" type="checkbox" value="" id="allianceOption1">
+              <input class="form-check-input" type="checkbox" value="" id="allianceOption1" v-model="model.allianceIsPublic">
               <label class="form-check-label" for="allianceOption1">
                 同盟関係を公表する
               </label>
             </div>
           </div>
-          <div v-if="model.countryAlliance !== undefined" class="content-section current-diplomacy">
+          <div v-if="model.countryAlliance !== undefined && model.countryAllianceStatus.id !== 0 && model.countryAllianceStatus.id !== 2 && model.countryAllianceStatus.id !== 5" class="content-section current-diplomacy">
             <h3>同盟条件</h3>
             破棄猶予：{{ model.countryAlliance.breakingDelay }}ヶ月<br>
             公表：{{ model.countryAlliance.isPublic ? 'する' : 'しない' }}
@@ -375,7 +375,7 @@
             <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenAllianceDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-if="model.canDiplomacy" @click="isOpenAllianceDialog = false">承認</button>
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedAllianceStatus >= 0" @click="model.setAlliance(selectedAllianceStatus); isOpenAllianceDialog = false">承認</button>
             <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenAllianceDialog = false">閉じる</button>
           </div>
         </div>

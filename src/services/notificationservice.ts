@@ -192,6 +192,34 @@ export default class NotificationService {
     '解任',
     'あなたは、役職を解任されました。',
     NotificationServiceItemDefaultType.information);
+  public static readonly allianced = new NotificationServiceItem(
+    '同盟手続き成功',
+    '同盟の手続きは、無事相手に送信されました。',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly allianceFailed = new NotificationServiceItem(
+    '同盟手続き失敗',
+    '何らかの理由で、同盟の手続きに失敗しました。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly allianceFailedBecauseSameStatus = new NotificationServiceItem(
+    '同盟手続き失敗',
+    '同盟手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly allianceCompleted = new NotificationServiceItem(
+    '同盟締結',
+    '{0} との同盟が締結されました。',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly allianceRejected = new NotificationServiceItem(
+    '同盟否決',
+    '{0} との同盟は拒否されました。',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly allianceStartBreaking = new NotificationServiceItem(
+    '同盟破棄猶予開始',
+    '{0} との同盟は、破棄猶予期間に入りました。',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly allianceBroken = new NotificationServiceItem(
+    '同盟破棄',
+    '{0} との同盟は、破棄されました。',
+    NotificationServiceItemDefaultType.warning);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

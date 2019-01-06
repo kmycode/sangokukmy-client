@@ -60,6 +60,9 @@ export default class StatusModel {
   public townDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
 
+  public allianceBreakingDelay: number = 0;
+  public allianceIsPublic: boolean = false;
+
   private timers: number[] = [];
 
   public get isLoading(): boolean {
@@ -625,6 +628,22 @@ export default class StatusModel {
 
   private updateCountryAlliance(alliance: api.CountryAlliance) {
     this.updateCountryDiplomacies(alliance, (c) => c.alliances, (c, val) => c.alliances = val);
+
+    // 自国に関係することなら通知する
+    if (alliance.requestedCountryId === this.character.countryId ||
+        alliance.insistedCountryId === this.character.countryId) {
+      const targetCountry = alliance.requestedCountryId === this.character.countryId ?
+        alliance.insistedCountry : alliance.requestedCountry;
+      if (alliance.status === api.CountryAlliance.statusAvailable) {
+        NotificationService.allianceCompleted.notifyWithParameter(targetCountry.name);
+      } else if (alliance.status === api.CountryAlliance.statusDismissed) {
+        NotificationService.allianceRejected.notifyWithParameter(targetCountry.name);
+      } else if (alliance.status === api.CountryAlliance.statusInBreaking) {
+        NotificationService.allianceStartBreaking.notifyWithParameter(targetCountry.name);
+      } else if (alliance.status === api.CountryAlliance.statusBroken) {
+        NotificationService.allianceBroken.notifyWithParameter(targetCountry.name);
+      }
+    }
   }
 
   private updateCountryWar(war: api.CountryWar) {
@@ -641,7 +660,6 @@ export default class StatusModel {
 
     Enumerable.from(countries).where((c) => c.id > 0).forEach((country) => {
       const items = itemsProperty(country);
-      const targetCountry = countries[0].id === country.id ? countries[1] : countries[0];
 
       // 古いのを消す
       const newItems = Enumerable
@@ -657,6 +675,43 @@ export default class StatusModel {
       // 保存
       itemsSetter(country, newItems);
     });
+  }
+
+  public setAlliance(status: number) {
+    const countryA = this.country.id;
+    const countryB = this.character.countryId;
+
+    const old = Enumerable
+      .from(this.characterCountry.alliances)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, countryA, countryB));
+    if (old && old.status === status) {
+      NotificationService.allianceFailedBecauseSameStatus.notifyWithParameter(this.country.name);
+      return;
+    }
+
+    const alliance = new api.CountryAlliance();
+    alliance.status = status;
+    alliance.requestedCountryId = countryB;
+    alliance.insistedCountryId = countryA;
+    if (!old) {
+      alliance.breakingDelay = this.allianceBreakingDelay;
+      alliance.isPublic = this.allianceIsPublic;
+    } else {
+      alliance.breakingDelay = old.breakingDelay;
+      alliance.isPublic = old.isPublic;
+    }
+
+    this.isSendingAlliance = true;
+    api.Api.setCountryAlliance(alliance)
+      .then(() => {
+        NotificationService.allianced.notify();
+      })
+      .catch((ex) => {
+        NotificationService.allianceFailed.notify();
+      })
+      .finally(() => {
+        this.isSendingAlliance = false;
+      });
   }
 
   // #endregion

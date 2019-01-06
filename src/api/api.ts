@@ -673,6 +673,20 @@ export class Api {
   }
 
   /**
+   * 国の役職を設定
+   * @param characterId 設定する相手のID
+   * @param post 設定する役職ID
+   */
+  public static async setCountryAlliance(alliance: CountryAlliance): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/' + alliance.insistedCountryId + '/alliance', alliance, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
    * 武将更新ログを取得する
    *
    * GET    /api/v1/character/updatelog/{count}
@@ -725,7 +739,7 @@ export class Api {
     if (ex.response) {
       return ex.response.data;
     } else {
-      return { data: ApiError.serverConnectionFailed };
+      return { data: ApiError.serverConnectionFailed, innerException: ex };
     }
   }
 
