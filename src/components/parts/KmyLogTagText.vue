@@ -16,16 +16,16 @@ export default class KmyLogTagText extends Vue {
 
   private get formatedText(): string {
     return this.text
-      .replace('<num>', '<span class="kmy-format-number">')
-      .replace('</num>', '</span>')
-      .replace('<character>', '<span class="kmy-format-character">')
-      .replace('</character>', '</span>')
-      .replace('<town>', '<span class="kmy-format-town">')
-      .replace('</town>', '</span>')
-      .replace('<country>', '<span class="kmy-format-country">')
-      .replace('</country>', '</span>')
-      .replace('<emerge>', '<span class="kmy-format-emerge">')
-      .replace('</emerge>', '</span>');
+      .replace(/<num>/g, '<span class="kmy-format-number">')
+      .replace(/<\/num>/g, '</span>')
+      .replace(/<character>/g, '<span class="kmy-format-character">')
+      .replace(/<\/character>/g, '</span>')
+      .replace(/<town>/g, '<span class="kmy-format-town">')
+      .replace(/<\/town>/g, '</span>')
+      .replace(/<country>/g, '<span class="kmy-format-country">')
+      .replace(/<\/country>/g, '</span>')
+      .replace(/<emerge>/g, '<span class="kmy-format-emerge">')
+      .replace(/<\/emerge>/g, '</span>');
   }
 }
 </script>
