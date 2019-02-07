@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-bind:style="{'color':eventType.color}">【{{ eventType.name }}】</span><span v-if="log.isImportant">[{{ log.gameDate | gamedate }}]</span> <KmyLogTagText :text="log.message"/> ({{ log.date | realdate }})
+    <span v-bind:style="{'color':eventType.color}">【{{ eventType.name }}】</span><span v-if="log.isImportant">[{{ log.gameDate | gamedate }}]</span> <KmyLogTagText :text="log.message"/> ({{ log.date | shortrealdate }})
   </span>
 </template>
 
