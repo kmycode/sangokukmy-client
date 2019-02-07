@@ -333,11 +333,11 @@
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
         <div class="dialog-content loading-container">
           {{ model.countryAllianceStatus.name }}
-          <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 0; isOpenAlliancePopup = false" href="#">撤回</button>
-          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-secondary" @click="selectedAllianceStatus = 2; isOpenAlliancePopup = false" href="#">拒否</button>
-          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-primary"   @click="selectedAllianceStatus = 3; isOpenAlliancePopup = false" href="#">承認</button>
-          <button v-show="model.countryAllianceStatus.id ===   0 || model.countryAllianceStatus.id === 2 || model.countryAllianceStatus.id === 5" class="btn btn-secondary" @click="selectedAllianceStatus = 1; isOpenAlliancePopup = false" href="#">同盟申入</button>
-          <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 4; isOpenAlliancePopup = false" href="#">破棄</button>
+          <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 0" href="#">撤回</button>
+          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-secondary" @click="selectedAllianceStatus = 2" href="#">拒否</button>
+          <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-primary"   @click="selectedAllianceStatus = 3" href="#">承認</button>
+          <button v-show="model.countryAllianceStatus.id ===   0 || model.countryAllianceStatus.id === 2 || model.countryAllianceStatus.id === 5" class="btn btn-secondary" @click="selectedAllianceStatus = 1" href="#">同盟申入</button>
+          <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 4" href="#">破棄</button>
           <div v-show="selectedAllianceStatus === 0" class="content-section">
             <h3>同盟申入撤回</h3>
           </div>
@@ -384,12 +384,31 @@
       <div v-show="isOpenWarDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">戦争：{{ model.country.name }}</h2>
         <div class="dialog-content loading-container">
+          {{ model.countryWarStatus.name }}
+          <button v-show="model.countryWarStatus.id ===   0" class="btn btn-secondary" @click="selectedWarStatus = 4" href="#">宣戦布告</button>
+          <!--
+          <button v-show="model.countryWarStatus.id ===   4 || model.countryWarStatus.id === 1" class="btn btn-secondary" @click="selectedWarStatus = 2" href="#">停戦申入</button>
+          <button v-show="model.countryWarStatus.id === 102" class="btn btn-secondary" @click="selectedWarStatus = 3" href="#">停戦承認</button>
+          <button v-show="model.countryWarStatus.id === 102" class="btn btn-primary"   @click="selectedWarStatus = 4" href="#">停戦拒否</button>
+          <button v-show="model.countryWarStatus.id ===   2" class="btn btn-primary"   @click="selectedWarStatus = 4" href="#">停戦撤回</button>
+          -->
+          <div v-show="selectedWarStatus === 4 && model.countryWarStatus.id === 0" class="content-section">
+            <h3>宣戦布告</h3>
+            <GameDateTimePicker v-model="model.warStartDate"/>
+          </div>
+          <div v-if="model.countryWar !== undefined && model.countryWarStatus.id !== 0" class="content-section current-diplomacy">
+            <h3>戦争</h3>
+            {{ model.countryWar.startGameDate | gamedate }} 開戦
+          </div>
           <div class="loading" v-show="model.isSendingWar"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
-          <div class="left-side"></div>
+          <div class="left-side">
+            <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenWarDialog = false">キャンセル</button>
+          </div>
           <div class="right-side">
-            <button class="btn btn-light" @click="isOpenWarDialog = false">閉じる</button>
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedAllianceStatus >= 0" @click="model.setWar(selectedWarStatus); isOpenWarDialog = false">承認</button>
+            <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenWarDialog = false">閉じる</button>
           </div>
         </div>
       </div>
@@ -405,6 +424,7 @@ import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
+import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
@@ -419,6 +439,7 @@ import Enumerable from 'linq';
     ChatMessagePanel,
     MapLogList,
     SimpleCharacterList,
+    GameDateTimePicker,
   },
 })
 export default class StatusPage extends Vue {

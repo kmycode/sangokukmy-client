@@ -336,6 +336,7 @@ export class CountryWar extends CountryDipromacy {
   public static readonly statusAvailable = 1;
   public static readonly statusStopRequesting = 2;
   public static readonly statusStoped = 3;
+  public static readonly statusInReady = 4;
 
   public requestedStopCountryId: number = 0;
   public requestedStopCountry: Country = new Country();
@@ -673,14 +674,26 @@ export class Api {
   }
 
   /**
-   * 国の役職を設定
-   * @param characterId 設定する相手のID
-   * @param post 設定する役職ID
+   * 同盟情報を送信
+   * @param alliance 設定する同盟情報
    */
   public static async setCountryAlliance(alliance: CountryAlliance): Promise<any> {
     try {
       await axios.put
         (def.API_HOST + 'country/' + alliance.insistedCountryId + '/alliance', alliance, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 戦争情報を送信
+   * @param war 設定する戦争情報
+   */
+  public static async setCountryWar(war: CountryWar): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/' + war.insistedCountryId + '/war', war, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

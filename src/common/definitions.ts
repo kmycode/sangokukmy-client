@@ -189,6 +189,10 @@ export class EventType {
 export const EVENT_TYPES: EventType[] = [
   new EventType(1, '収入', 'gold'),
   new EventType(2, 'イベント', '#c3c'),
+  new EventType(3, '同盟破棄', 'red'),
+  new EventType(4, '開戦', 'red'),
+  new EventType(5, '同盟締結', 'dodgerblue'),
+  new EventType(6, '宣戦布告', 'red'),
 ];
 
 /**

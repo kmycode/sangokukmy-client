@@ -220,6 +220,26 @@ export default class NotificationService {
     '同盟破棄',
     '{0} との同盟は、破棄されました。',
     NotificationServiceItemDefaultType.warning);
+  public static readonly warInReady = new NotificationServiceItem(
+    '宣戦布告',
+    '{0} と {1} に開戦します。',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly warStart = new NotificationServiceItem(
+    '開戦',
+    '{0} との戦争が始まりました。',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly warSent = new NotificationServiceItem(
+    '戦争手続き成功',
+    '戦争の手続きは、無事相手に送信されました。',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly warFailed = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '何らかの理由で、戦争の手続きに失敗しました。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseSameStatus = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

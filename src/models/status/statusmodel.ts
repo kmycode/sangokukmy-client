@@ -37,6 +37,8 @@ enum CommandSelectMode {
 }
 
 export default class StatusModel {
+  public hasInitialized: boolean = false;
+
   public gameDate: api.GameDateTime = new api.GameDateTime();
   public countries: api.Country[] = [];
   public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
@@ -62,6 +64,7 @@ export default class StatusModel {
 
   public allianceBreakingDelay: number = 0;
   public allianceIsPublic: boolean = false;
+  public warStartDate: api.GameDateTime = new api.GameDateTime();
 
   private timers: number[] = [];
 
@@ -265,6 +268,9 @@ export default class StatusModel {
       } else {
         NotificationService.invalidStatus.notifyWithParameter('能力上昇signal.data.type');
       }
+    } else if (signal.type === 4) {
+      // 初期データを送信し終えた
+      this.hasInitialized = true;
     }
   }
 
@@ -274,6 +280,7 @@ export default class StatusModel {
 
   private initializeGameDate(date: api.GameDateTime) {
     this.gameDate = date;
+    this.warStartDate = date;
     this.preInitializeCommands();
   }
 
@@ -630,7 +637,8 @@ export default class StatusModel {
     this.updateCountryDiplomacies(alliance, (c) => c.alliances, (c, val) => c.alliances = val);
 
     // 自国に関係することなら通知する
-    if (alliance.requestedCountryId === this.character.countryId ||
+    if (this.hasInitialized &&
+        alliance.requestedCountryId === this.character.countryId ||
         alliance.insistedCountryId === this.character.countryId) {
       const targetCountry = alliance.requestedCountryId === this.character.countryId ?
         alliance.insistedCountry : alliance.requestedCountry;
@@ -648,6 +656,21 @@ export default class StatusModel {
 
   private updateCountryWar(war: api.CountryWar) {
     this.updateCountryDiplomacies(war, (c) => c.wars, (c, val) => c.wars = val);
+
+    // 自国に関係することなら通知する
+    if (this.hasInitialized &&
+      war.requestedCountryId === this.character.countryId ||
+      war.insistedCountryId === this.character.countryId) {
+      const targetCountry = war.requestedCountryId === this.character.countryId ?
+        war.insistedCountry : war.requestedCountry;
+      if (war.status === api.CountryWar.statusAvailable) {
+        NotificationService.warStart.notifyWithParameter(targetCountry.name);
+      } else if (war.status === api.CountryWar.statusInReady) {
+        NotificationService.warInReady.notifyWithParameter(
+          targetCountry.name,
+          api.GameDateTime.toFormatedString(war.startGameDate));
+      }
+    }
   }
 
   private updateCountryDiplomacies<T extends api.CountryDipromacy>(
@@ -711,6 +734,41 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isSendingAlliance = false;
+      });
+  }
+
+  public setWar(status: number) {
+    const countryA = this.country.id;
+    const countryB = this.character.countryId;
+
+    const old = Enumerable
+      .from(this.characterCountry.wars)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, countryA, countryB));
+    if (old && old.status === status) {
+      NotificationService.warFailedBecauseSameStatus.notifyWithParameter(this.country.name);
+      return;
+    }
+
+    const war = new api.CountryWar();
+    war.status = status;
+    war.requestedCountryId = countryB;
+    war.insistedCountryId = countryA;
+    if (!old) {
+      war.startGameDate = this.warStartDate;
+    } else {
+      war.startGameDate = old.startGameDate;
+    }
+
+    this.isSendingWar = true;
+    api.Api.setCountryWar(war)
+      .then(() => {
+        NotificationService.warSent.notify();
+      })
+      .catch((ex) => {
+        NotificationService.warFailed.notify();
+      })
+      .finally(() => {
+        this.isSendingWar = false;
       });
   }
 
