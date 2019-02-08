@@ -61,6 +61,8 @@ export default class StatusModel {
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
+  public units: api.Unit[] = [];
+  public leaderUnit: api.Unit = new api.Unit(-1);
 
   public allianceBreakingDelay: number = 0;
   public allianceIsPublic: boolean = false;
@@ -71,7 +73,7 @@ export default class StatusModel {
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
-      || this.isAppointing || this.isSendingAlliance || this.isSendingWar;
+      || this.isAppointing || this.isSendingAlliance || this.isSendingWar || this.isUpdatingUnit;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
@@ -82,6 +84,7 @@ export default class StatusModel {
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
   public isSendingWar: boolean = false;
+  public isUpdatingUnit: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -198,6 +201,13 @@ export default class StatusModel {
     }
   }
 
+  public unitMemberCharacters(unit: api.Unit): api.Character[] {
+    // 部隊のメンバの武将リスト
+    return Enumerable.from(unit.members)
+      .select((um) => um.character)
+      .toArray();
+  }
+
   public onCreate() {
     ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.GameDateTime>(
@@ -271,6 +281,12 @@ export default class StatusModel {
     } else if (signal.type === 4) {
       // 初期データを送信し終えた
       this.hasInitialized = true;
+    } else if (signal.type === 5) {
+      // 部隊が解散された
+      NotificationService.belongsUnitRemoved.notify();
+    } else if (signal.type === 6) {
+      // 部隊が集合された
+      NotificationService.belongsUnitGathered.notify();
     }
   }
 
@@ -1093,6 +1109,174 @@ export default class StatusModel {
       } else {
         command.name = 'エラー (17:A)';
       }
+    }
+  }
+
+  // #endregion
+
+  // #region Unit
+
+  public updateUnits() {
+    this.isUpdatingUnit = true;
+    api.Api.getUnits()
+      .then((units) => {
+        this.units = units;
+        units.forEach((u) => {
+          const leader = Enumerable.from(u.members)
+            .firstOrDefault((um) => um.post === api.UnitMember.postLeader);
+          if (leader) {
+            u.leader = leader;
+          }
+        });
+
+        // 自分が所属している部隊と、隊長かどうかを調べて反映する
+        let currentUnitPost = api.UnitMember.postNormal;
+        const currentUnit = Enumerable.from(units)
+          .firstOrDefault((u) => {
+            const member = Enumerable.from(u.members)
+              .firstOrDefault((um) => um.characterId === this.character.id);
+            if (member) {
+              currentUnitPost = member.post;
+              return true;
+            } else {
+              return false;
+            }
+          });
+
+        this.leaderUnit = new api.Unit(-1);
+        if (currentUnit) {
+          if (currentUnitPost === api.UnitMember.postLeader) {
+            this.leaderUnit = currentUnit;
+          }
+          Vue.set(currentUnit, 'isSelected', true);
+        }
+      })
+      .catch(() => {
+        NotificationService.unitLoadFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingUnit = false;
+      });
+  }
+
+  public toggleUnit(unit: api.Unit) {
+    const isSelected: boolean = !unit.isSelected;
+    this.isUpdatingUnit = true;
+
+    if (isSelected) {
+      let isSucceed = false;
+      api.Api.joinUnit(unit.id)
+        .then(() => {
+          NotificationService.unitJoined.notifyWithParameter(unit.name);
+          this.units.forEach((u) => { Vue.set(u, 'isSelected', false); });
+          Vue.set(unit, 'isSelected', true);
+          isSucceed = true;
+        })
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.unitJoinLimitedError) {
+            NotificationService.unitJoinFailedBecauseLimited.notifyWithParameter(unit.name);
+          } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
+            NotificationService.unitJoinFailedBecauseLeader.notifyWithParameter(unit.name);
+          } else if (ex.data.code === api.ErrorCode.meaninglessOperationError) {
+            NotificationService.unitJoinFailedBecauseCurrentUnit.notifyWithParameter(unit.name);
+          } else {
+            NotificationService.unitJoinFailed.notifyWithParameter(unit.name);
+          }
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    } else {
+      let isSucceed = false;
+      api.Api.leaveUnit()
+        .then(() => {
+          NotificationService.unitLeft.notifyWithParameter(unit.name);
+          Vue.set(unit, 'isSelected', false);
+          isSucceed = true;
+        })
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.invalidOperationError) {
+            NotificationService.unitLeaveFailedBecauseLeader.notifyWithParameter(unit.name);
+          } else {
+            NotificationService.unitLeaveFailed.notifyWithParameter(unit.name);
+          }
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    }
+  }
+
+  public createUnit() {
+    if (this.leaderUnit.id < 0) {
+      this.isUpdatingUnit = true;
+      let isSucceed = false;
+      api.Api.createUnit(this.leaderUnit)
+        .then(() => {
+          NotificationService.unitCreated.notifyWithParameter(this.leaderUnit.name);
+          isSucceed = true;
+        })
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.lackOfNameParameterError) {
+            NotificationService.unitCreateFailedBecauseLackOfParameters.notify();
+          } else {
+            NotificationService.unitCreateFailed.notifyWithParameter(this.leaderUnit.name);
+          }
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    }
+  }
+
+  public updateLeaderUnit() {
+    if (this.leaderUnit.id >= 0) {
+      this.isUpdatingUnit = true;
+      let isSucceed = false;
+      api.Api.updateUnit(this.leaderUnit.id, this.leaderUnit)
+        .then(() => {
+          NotificationService.unitUpdated.notifyWithParameter(this.leaderUnit.name);
+          isSucceed = true;
+        })
+        .catch(() => {
+          NotificationService.unitUpdateFailed.notifyWithParameter(this.leaderUnit.name);
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    }
+  }
+
+  public removeLeaderUnit() {
+    if (this.leaderUnit.id >= 0) {
+      this.isUpdatingUnit = true;
+      let isSucceed = false;
+      api.Api.removeUnit(this.leaderUnit.id)
+        .then(() => {
+          NotificationService.unitRemoved.notifyWithParameter(this.leaderUnit.name);
+          isSucceed = true;
+        })
+        .catch(() => {
+          NotificationService.unitRemoveFailed.notifyWithParameter(this.leaderUnit.name);
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
     }
   }
 

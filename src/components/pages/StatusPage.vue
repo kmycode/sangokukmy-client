@@ -57,7 +57,7 @@
             <StatusParametersPanel :parameters="model.characterParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info">部隊</button>
+            <button type="button" class="btn btn-info" @click="model.updateUnits(); isShowCreateUnitForm = false; isOpenUnitsDialog = true">部隊</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -67,7 +67,8 @@
             <StatusParametersPanel :parameters="model.countryParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
+            <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isShowCreateUnitForm = false; isOpenCountryCharactersDialog = true">武将</button>
+            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.updateUnits(); isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = -1">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
           </div>
@@ -412,6 +413,61 @@
           </div>
         </div>
       </div>
+      <!-- 部隊 -->
+      <div v-show="isOpenUnitsDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の部隊</h2>
+        <div class="dialog-content loading-container">
+          <div style="width:100%;height:100%;overflow:auto">
+            <div v-if="model.leaderUnit.id >= 0">
+              <h3>{{ model.leaderUnit.name }}</h3>
+              <div class="unit-form">
+                <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
+                <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !model.leaderUnit.isLimited, 'btn-secondary': model.leaderUnit.isLimited }" @click="model.leaderUnit.isLimited = !model.leaderUnit.isLimited">入隊を制限する</button><br>
+                <div class="button-group">
+                  <button class="btn btn-primary" @click="model.updateLeaderUnit()" href="#">保存</button>
+                  <button class="btn btn-light" @click="isShowUnitLeaderOperations = !isShowUnitLeaderOperations" href="#">その他の操作</button>
+                  <button v-show="isShowUnitLeaderOperations" class="btn btn-danger" @click="model.removeLeaderUnit()" href="#">削除</button>
+                </div>
+              </div>
+            </div>
+            <div v-else>
+              <button class="btn btn-secondary" @click="isShowCreateUnitForm = true" href="#">部隊作成</button>
+              <div v-show="isShowCreateUnitForm" class="unit-form">
+                <h3>部隊作成</h3>
+                <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
+                <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
+                <div class="button-group">
+                  <button class="btn btn-primary" @click="model.createUnit()" href="#">作成</button>
+                </div>
+              </div>
+            </div>
+            <div class="unit-list">
+              <div v-for="unit in model.units"
+                    :key="unit.id"
+                    :class="{ 'unit-list-item': true, 'selected': unit.isSelected }"
+                    @click="model.toggleUnit(unit)">
+                <div class="left-side">
+                  <CharacterIcon :icon="unit.leader.character.mainIcon"/>
+                </div>
+                <div class="right-side">
+                  <div class="unit-name">{{ unit.name }}<span v-show="unit.isLimited" class="unit-limited">制限中</span></div>
+                  <div class="unit-message">{{ unit.message }}</div>
+                  <div class="unit-leader">隊長: {{ unit.leader.character.name }}</div>
+                  <div class="unit-members"><MiniCharacterList :characters="model.unitMemberCharacters(unit)" :countries="model.countries"/></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingUnit"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenUnitsDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -424,6 +480,7 @@ import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
+import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -439,6 +496,7 @@ import Enumerable from 'linq';
     ChatMessagePanel,
     MapLogList,
     SimpleCharacterList,
+    MiniCharacterList,
     GameDateTimePicker,
   },
 })
@@ -459,8 +517,11 @@ export default class StatusPage extends Vue {
   public isOpenCountryCharactersDialog: boolean = false;
   public isOpenAllianceDialog: boolean = false;
   public isOpenWarDialog: boolean = false;
+  public isOpenUnitsDialog: boolean = false;
   public selectedAllianceStatus: number = 0;
   public selectedWarStatus: number = 0;
+  public isShowUnitLeaderOperations: boolean = false;
+  public isShowCreateUnitForm: boolean = false;
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
@@ -468,7 +529,7 @@ export default class StatusPage extends Vue {
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
-      || this.isOpenAllianceDialog || this.isOpenWarDialog;
+      || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -842,6 +903,67 @@ ul.nav {
         }
         .text {
           font-size: 1rem;
+        }
+      }
+
+      .unit-list {
+        margin-top: 12px;
+
+        .unit-list-item {
+          display: flex;
+          cursor: pointer;
+          padding: 4px;
+          transition: background-color .14s ease-in;
+
+          &:hover {
+            background-color: #dee0f3;
+          }
+
+          &.selected {
+            background-color: #c9cce7;
+
+            &:hover {
+              background-color: #acb0d1;
+            }
+          }
+
+          .right-side {
+            flex: 1;
+            padding-left: 8px;
+
+            .unit-name {
+              font-size: 24px;
+            }
+
+            .unit-limited {
+              color: red;
+              margin-left: 16px;
+              font-size: 14px;
+              font-weight: bold;
+            }
+
+            .unit-message {
+              padding: 4px 0;
+              color: #888;
+            }
+          }
+        }
+      }
+
+      .unit-form {
+        .unit-message-input {
+          min-width: 70%;
+          margin: 4px 0;
+        }
+
+        .button-group {
+          text-align: right;
+        }
+
+        .input-label {
+          color: #666;
+          width: 6.5em;
+          display: inline-block;
         }
       }
 

@@ -240,6 +240,78 @@ export default class NotificationService {
     '戦争手続き失敗',
     '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitLoadFailed = new NotificationServiceItem(
+    '部隊取得失敗',
+    '部隊一覧を取得できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitJoined = new NotificationServiceItem(
+    '入隊',
+    '部隊 {0} に入りました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitJoinFailed = new NotificationServiceItem(
+    '入隊失敗',
+    '部隊 {0} に入ることができませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitJoinFailedBecauseLeader = new NotificationServiceItem(
+    '入隊失敗',
+    '隊長は部隊に入ることができません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitJoinFailedBecauseCurrentUnit = new NotificationServiceItem(
+    '入隊失敗',
+    'すでに部隊 {0} に入っています',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitJoinFailedBecauseLimited = new NotificationServiceItem(
+    '入隊失敗',
+    '部隊 {0} には入場制限がかかっています',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitLeft = new NotificationServiceItem(
+    '部隊脱退',
+    '部隊 {0} から脱げました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitLeaveFailed = new NotificationServiceItem(
+    '部隊脱退失敗',
+    '部隊 {0} から脱げられません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitLeaveFailedBecauseLeader = new NotificationServiceItem(
+    '部隊脱退失敗',
+    '部隊長は部隊から脱げられません。削除してください',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitCreated = new NotificationServiceItem(
+    '部隊作成',
+    '部隊 {0} を作成しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitCreateFailed = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊 {0} を作成できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitCreateFailedBecauseLackOfParameters = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊を作成できませんでした。名前が必要です',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitUpdated = new NotificationServiceItem(
+    '部隊更新',
+    '部隊 {0} の情報を更新しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitUpdateFailed = new NotificationServiceItem(
+    '部隊更新失敗',
+    '部隊 {0} の情報を更新できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitRemoved = new NotificationServiceItem(
+    '部隊削除',
+    '部隊 {0} を削除しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitRemoveFailed = new NotificationServiceItem(
+    '部隊削除失敗',
+    '部隊 {0} を削除できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly belongsUnitRemoved = new NotificationServiceItem(
+    '部隊削除',
+    '所属していた部隊が削除されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly belongsUnitGathered = new NotificationServiceItem(
+    '部隊集合',
+    '所属部隊が集合されました',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

@@ -118,4 +118,15 @@ body {
     }
   }
 }
+
+input[type=text], input[type=number], input[type=password], textarea {
+  border-width: 0 0 2px 0;
+  border-color: #bbb;
+  background-color: rgba(255, 255, 255, 0.4);
+
+  &:focus {
+    outline: none;
+    background-color: rgba(210, 230, 255, 0.8);
+  }
+}
 </style>

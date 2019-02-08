@@ -25,6 +25,18 @@ export enum ErrorCode {
   characterIconNotFoundError = 14,
   lackOfTownTechnologyForSoldier = 15,
   lackOfCommandParameter = 16,
+  invalidCommandParameter = 17,
+  notPermissionError = 18,
+  townNotFoundError = 19,
+  meaninglessOperationError = 20,
+  characterNotFoundError = 21,
+  countryNotFoundError = 22,
+  invalidParameterError = 23,
+  lackOfParameterError = 24,
+  lackOfNameParameterError = 25,
+  invalidOperationError = 26,
+  unitNotFoundError = 27,
+  unitJoinLimitedError = 28,
 }
 
 /**
@@ -548,6 +560,30 @@ export class ChatMessage implements IIdentitiedEntity {
                      public typeData2?: number) {}
 }
 
+export class UnitMember {
+  public static readonly typeId = 24;
+
+  public static readonly postNormal = 1;
+  public static readonly postLeader = 2;
+
+  public constructor(public character: Character = new Character(-1),
+                     public characterId: number = 0,
+                     public post: number = 0) {}
+}
+
+export class Unit {
+  public static readonly typeId = 23;
+
+  public constructor(public id: number = 0,
+                     public countryId: number = 0,
+                     public name: string = '',
+                     public message: string = '',
+                     public isLimited: boolean = false,
+                     public members: UnitMember[] = [],
+                     public isSelected: boolean = false,
+                     public leader: UnitMember = new UnitMember()) {}
+}
+
 export class Api {
 
   /**
@@ -732,6 +768,63 @@ export class Api {
         message: mes,
         characterIconId: icon.id,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getUnits(): Promise<Unit[]> {
+    try {
+      const result = await axios.get<Unit[]>(def.API_HOST + 'units', this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async createUnit(unit: Unit): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'unit', {
+        name: unit.name,
+        message: unit.message,
+        isLimited: unit.isLimited,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async joinUnit(id: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'unit/' + id + '/join', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async leaveUnit(): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'unit/leave', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async updateUnit(id: number, unit: Unit): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'unit/' + id, {
+        name: unit.name,
+        message: unit.message,
+        isLimited: unit.isLimited,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async removeUnit(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'unit/' + id, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
