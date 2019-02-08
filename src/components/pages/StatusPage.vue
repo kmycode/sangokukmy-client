@@ -415,9 +415,9 @@
       </div>
       <!-- 部隊 -->
       <div v-show="isOpenUnitsDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の部隊</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} の部隊</h2>
         <div class="dialog-content loading-container">
-          <div style="width:100%;height:100%;overflow:auto">
+          <div style="width:100%;height:100%;overflow:auto;margin:0;">
             <div v-if="model.leaderUnit.id >= 0">
               <h3>{{ model.leaderUnit.name }}</h3>
               <div class="unit-form">
