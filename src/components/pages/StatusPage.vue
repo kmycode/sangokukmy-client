@@ -48,6 +48,7 @@
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">武将（当時）</button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備（当時）</button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
           </div>
         </div>
         <!-- 武将情報 -->
