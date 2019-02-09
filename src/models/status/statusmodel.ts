@@ -1100,14 +1100,14 @@ export default class StatusModel {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17) {
-      // 移動
+    if (command.type === 17 || command.type === 13) {
+      // 移動、戦争
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetTownId && targetTownId.numberValue) {
         const town = this.getTown(targetTownId.numberValue);
         command.name = command.name.replace('%0%', town.name);
       } else {
-        command.name = 'エラー (17:A)';
+        command.name = 'エラー (' + command.type + ':A)';
       }
     }
   }
