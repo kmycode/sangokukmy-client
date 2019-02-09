@@ -136,7 +136,7 @@
               <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
               <button type="button" class="btn btn-light">兵士訓練</button>
               <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
-              <button type="button" class="btn btn-light">戦争</button>
+              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(13)">戦争</button>
               <button type="button" class="btn btn-light">集合</button>
             </div>
             <!-- 計略コマンド -->
@@ -231,18 +231,16 @@
             <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
             <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
               <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 1">雑兵・禁兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 3">軽歩兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 4">弓兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 5">軽騎兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 6">強弩兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 7">神鬼兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 8">重歩兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 9">重騎兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 10">智攻兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 11">連弩兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 12">壁守兵</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 13">衝車</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 14">井闌</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 100" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 3">軽歩兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 200" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 4">弓兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 300" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 5">軽騎兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 400" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 6">強弩兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 500" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 7">神鬼兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 600" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 8">重歩兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 700" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 9">重騎兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 800" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 10">智攻兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 900" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 11">連弩兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology > 998" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 12">壁守兵</a>
             </div>
           </div>
           <div class="soltype-detail">

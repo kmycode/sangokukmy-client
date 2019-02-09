@@ -42,19 +42,17 @@ export class SoldierType {
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, '雑兵', 10, '0', '0'),
   new SoldierType(2, '禁兵', 10, '20', '20'),
-  new SoldierType(100, '雑兵・禁兵', 10, '0', '0', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に20のボーナスを得る'),
-  new SoldierType(3, '軽歩兵', 100, '0', '0', '説明'),
-  new SoldierType(4, '弓兵', 100, '0', '0', '説明'),
-  new SoldierType(5, '軽騎兵', 100, '0', '0', '説明'),
-  new SoldierType(6, '強弩兵', 100, '0', '0', '説明'),
-  new SoldierType(7, '神鬼兵', 100, '0', '0', '説明'),
-  new SoldierType(8, '重歩兵', 100, '0', '0', '説明'),
-  new SoldierType(9, '重騎兵', 100, '0', '0', '説明'),
-  new SoldierType(10, '智攻兵', 100, '0', '0', '説明'),
-  new SoldierType(11, '連弩兵', 100, '0', '0', '説明'),
-  new SoldierType(12, '壁守兵', 100, '0', '0', '説明'),
-  new SoldierType(13, '衝車', 100, '0', '0', '説明'),
-  new SoldierType(14, '井闌', 100, '0', '0', '説明'),
+  new SoldierType(100, '雑兵・禁兵', 10, '0 / 20', '0 / 20', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に20のボーナスを得る'),
+  new SoldierType(3, '軽歩兵',  20, '10', '0', '軽装備の歩兵'),
+  new SoldierType(4, '弓兵',    30, '0', '15', '弓を持った兵士'),
+  new SoldierType(5, '軽騎兵',  50, '35', '10', '軽装備の騎兵'),
+  new SoldierType(6, '強弩兵',  70, '10', '35', '弩を持った兵士'),
+  new SoldierType(7, '神鬼兵',  100, '知力', '0', '攻撃力に知力が補正として加算される'),
+  new SoldierType(8, '重歩兵',  150, '50', '30', '重装備の歩兵'),
+  new SoldierType(9, '重騎兵',  200, '60', '40', '重装備の騎兵'),
+  new SoldierType(10, '智攻兵', 250, '知力x0.7', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
+  new SoldierType(11, '連弩兵', 300, '80', '10', '連弩を持った兵士'),
+  new SoldierType(12, '壁守兵', 350, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
 ];
 
 /**
@@ -138,6 +136,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     }
   }),
   new CommandNameResolver(12, '城の守備'),
+  new CommandNameResolver(13, '%0% へ侵攻'),
   new CommandNameResolver(17, '%0% へ移動'),
   new CommandNameResolver(18, '{0} を強化', (format, params) => {
     if (params) {
@@ -193,6 +192,13 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(4, '開戦', 'red'),
   new EventType(5, '同盟締結', 'dodgerblue'),
   new EventType(6, '宣戦布告', 'red'),
+  new EventType(7, '相討', '#55f'),
+  new EventType(8, '引分', '#55f'),
+  new EventType(9, '敗北', '#55f'),
+  new EventType(10, '勝利', '#55f'),
+  new EventType(11, '支配', 'blue'),
+  new EventType(12, '滅亡', 'red'),
+  new EventType(13, '統一', 'red'),
 ];
 
 /**
