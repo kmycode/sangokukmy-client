@@ -122,6 +122,9 @@ export default class ApiStreaming {
       case api.CountryPost.typeId:
         this.fire(obj.type, obj.data as api.CountryPost);
         break;
+      case api.CharacterUpdateLog.typeId:
+        this.fire(obj.type, obj.data as api.CharacterUpdateLog);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;

@@ -4,7 +4,8 @@
       <MapLogLine :log="mlog"/>
     </li>
     <li v-if="type === 'character-update-log'" v-for="mlog in logs" :key="mlog.id">
-      {{ mlog.characterName }} ({{ mlog.date | realdate }})
+      <span v-if="!mlog.isFirstAtMonth">{{ mlog.characterName }} を更新 ({{ mlog.date | realdate }})</span>
+      <span v-if="mlog.isFirstAtMonth">=== {{ mlog.gameDate | gamedate }} ({{ mlog.date | realdate }}) ===</span>
     </li>
     <li v-if="type === 'character-log'" v-for="mlog in logs" :key="mlog.id">
       {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message"/> ({{ mlog.date | shortrealdate }})

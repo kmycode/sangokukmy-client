@@ -85,10 +85,6 @@ export default class TopPage extends Vue {
   }
 
   private created() {
-    AsyncUtil.tryTimes(3, async () => {
-      this.updateLogs = await api.Api.getCharacterLogs(5);
-    }, () => undefined);
-
     // 次の月までの秒数を進めるタイマーを開始
     if (this.nextMonthSecondsTimer > 0) {
       clearInterval(this.nextMonthSecondsTimer);
@@ -111,6 +107,9 @@ export default class TopPage extends Vue {
       if (log.isImportant) {
         ArrayUtil.addLog(this.m2logs, log, 5);
       }
+    });
+    ApiStreaming.top.on<api.CharacterUpdateLog>(api.CharacterUpdateLog.typeId, (log) => {
+      ArrayUtil.addLog(this.updateLogs, log, 5);
     });
     ApiStreaming.top.start();
   }

@@ -221,11 +221,13 @@ export class MapLog implements IIdentitiedEntity {
  * 武将更新ログ
  */
 export class CharacterUpdateLog implements IIdentitiedEntity {
-  public static readonly typeId = 3;
+  public static readonly typeId = 25;
 
   constructor(public id: number,
               public characterName: string,
-              public date: DateTime) {}
+              public date: DateTime,
+              public gameDate: GameDateTime,
+              public isFirstAtMonth: boolean) {}
 }
 
 /**
@@ -733,22 +735,6 @@ export class Api {
     } catch (ex) {
       throw Api.pickException(ex);
     }
-  }
-
-  /**
-   * 武将更新ログを取得する
-   *
-   * GET    /api/v1/character/updatelog/{count}
-   * @param count 取得する数
-   * @returns ログの配列。countに入り切らなかった場合は、空の要素が入れられる
-   */
-  public static async getCharacterLogs(count: number): Promise<CharacterUpdateLog[]> {
-    // dummy
-    const result = new Array<CharacterUpdateLog>();
-    for (let i = 0; i < count; i++) {
-      result.push(new CharacterUpdateLog(i + 1, 'あすか', new DateTime(2018, 1, 1, 12, 0, 0)));
-    }
-    return result;
   }
 
   public static async postCountryChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
