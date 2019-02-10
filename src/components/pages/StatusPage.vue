@@ -3,17 +3,17 @@
     <div class="row">
       <!-- 左カラム -->
       <div class="col-lg-7 col-md-6">
-        <div id="current-display">
-          <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
-          <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
+        <div id="current-display-wrapper">
+          <div id="system-button-group">
+            <!--<button type="button" class="btn btn-secondary">aaa</button>-->
+          </div>
+          <div id="current-display">
+            <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
+            <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
+          </div>
         </div>
-        <div id="map-mode-tab">
-          <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a class="nav-link active" href="#">都市</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">外交</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">内政</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">軍事</a></li>
-          </ul>
+        <div id="directive" :class="'country-color-' + model.characterCountryColor">
+          {{ model.characterCountry.name }} 所属
         </div>
         <div id="map-container">
           <Map
@@ -597,19 +597,37 @@ ul.nav {
 }
 
 // 現在年月
-#current-display {
-  text-align: center;
-  height: $current-display-height;
-  line-height: $current-display-height;
-  .number {
-    font-weight: bold;
-    color: #080;
-    padding: 0 8px;
+#current-display-wrapper {
+  display: flex;
+  height: 40px;
+
+  #current-display {
+    flex: 1;
+    text-align: center;
+    height: $current-display-height;
+    line-height: $current-display-height;
+    font-size: 1.4rem;
+    .number {
+      font-weight: bold;
+      color: #080;
+      padding: 0 8px;
+    }
   }
 }
 
-// マップのモードを指定するタブ
-#map-mode-tab {
+// 指令
+#directive {
+  height: 40px;
+  padding: 4px 8px;
+  line-height: 32px;
+  border-width: 0;
+  border-left-width: 16px;
+  border-style: solid;
+  white-space: nowrap;
+  overflow: hidden;
+  @include country-color-light('background-color');
+  @include country-color-deep('color');
+  @include country-color-deep('border-color');
 }
 
 // マップのコンテナ
