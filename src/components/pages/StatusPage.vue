@@ -581,7 +581,7 @@ export default class StatusPage extends Vue {
 @import '@/scss/country-color.scss';
 @import '@/scss/global-colors.scss';
 
-$current-display-height: 36px;
+$current-display-height: 40px;
 $nav-tab-height: 40px;
 $left-side-fixed-height: $current-display-height + $nav-tab-height;
 $right-side-fixed-height: $nav-tab-height;
