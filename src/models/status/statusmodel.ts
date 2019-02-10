@@ -1,6 +1,7 @@
 /* tslint:disable:member-ordering */
 
 import ArrayUtil from '@/models/common/arrayutil';
+import CancellableAsyncStack from '@/models/common/cancellableasyncstack';
 import Streaming from '@/api/streaming';
 import ApiStreaming from '@/api/apistreaming';
 import * as api from '@/api/api';
@@ -69,6 +70,8 @@ export default class StatusModel {
   public warStartDate: api.GameDateTime = new api.GameDateTime();
 
   private timers: number[] = [];
+  private townCharacterLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
+  private townDefenderLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
@@ -397,16 +400,21 @@ export default class StatusModel {
       const defParam = new NoRangeDelayStatusParameter('守備');
       ps.push(countParam);
       ps.push(defParam);
-      api.Api.getAllCharactersAtTown(town.id)
-        .then((charas) => {
-          countParam.value = charas.length;
-          countParam.isLoading = false;
-        });
-      api.Api.getAllDefendersAtTown(town.id)
-        .then((defenders) => {
-          defParam.value = defenders.length;
-          defParam.isLoading = false;
-        });
+
+      this.townCharacterLoadTask.then = (charas) => {
+        countParam.value = charas.length;
+        countParam.isLoading = false;
+      };
+      this.townCharacterLoadTask.push(async () => {
+        return api.Api.getAllCharactersAtTown(town.id);
+      });
+      this.townDefenderLoadTask.then = (defenders) => {
+        defParam.value = defenders.length;
+        defParam.isLoading = false;
+      };
+      this.townDefenderLoadTask.push(async () => {
+        return api.Api.getAllDefendersAtTown(town.id);
+      });
     } else if (isScouted) {
       ps.push(new NoRangeStatusParameter('滞在', this.townCharacters.length));
       ps.push(new NoRangeStatusParameter('守備', this.townDefenders.length));
