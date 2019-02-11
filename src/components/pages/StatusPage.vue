@@ -469,7 +469,7 @@
       </div>
       <!-- 戦闘ログ -->
       <div v-show="isOpenBattleLogDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">戦闘ログ</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">戦闘ログ {{ battleLogId }}</h2>
         <div class="dialog-content loading-container">
           <BattleLogView :countries="model.countries" :logId="battleLogId" @loading="isLoadingBattleLog = true" @loaded="isLoadingBattleLog = false"/>
           <div class="loading" v-show="isLoadingBattleLog"><div class="loading-icon"></div></div>
