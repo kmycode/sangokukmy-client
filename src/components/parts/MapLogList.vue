@@ -1,7 +1,7 @@
 <template>
   <ul :class="{'map-log-list': type === 'normal', 'map-log-list-important': type === 'important', 'character-update-log-list': type === 'character-update-log', 'character-log-list': type === 'character-log'}">
     <li v-if="type === 'normal' || type === 'important'" v-for="mlog in logs" :key="mlog.id">
-      <MapLogLine :log="mlog"/>
+      <MapLogLine :log="mlog" :isShowBattleLog="isShowBattleLog" @battle-log="$emit('battle-log', $event)"/>
     </li>
     <li v-if="type === 'character-update-log'" v-for="mlog in logs" :key="mlog.id">
       <span v-if="!mlog.isFirstAtMonth">{{ mlog.characterName }} を更新 ({{ mlog.date | realdate }})</span>
@@ -28,6 +28,9 @@ import * as api from '@/api/api';
 export default class MapLogList extends Vue {
   @Prop() private logs!: api.MapLog[];
   @Prop() private type!: string;
+  @Prop({
+    default: false,
+  }) private isShowBattleLog!: boolean;
 }
 </script>
 

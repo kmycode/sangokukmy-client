@@ -312,6 +312,10 @@ export default class NotificationService {
     '部隊集合',
     '所属部隊が集合されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly battleLogLoadFailed = new NotificationServiceItem(
+    '戦闘ログ取得失敗',
+    '戦闘ログ {0} を取得できませんでした',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

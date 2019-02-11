@@ -214,7 +214,8 @@ export class MapLog implements IIdentitiedEntity {
               public eventType: number,
               public message: string,
               public gameDate: GameDateTime,
-              public date: DateTime) {}
+              public date: DateTime,
+              public battleLogId: number) {}
 }
 
 /**
@@ -586,6 +587,29 @@ export class Unit {
                      public leader: UnitMember = new UnitMember()) {}
 }
 
+export class BattleLogLine {
+  public constructor(public id: number = 0,
+                     public battleLogId: number = 0,
+                     public turn: number = 0,
+                     public attackerDamage: number = 0,
+                     public attackerNumber: number = 0,
+                     public defenderDamage: number = 0,
+                     public defenderNumber: number = 0) {}
+}
+
+export class BattleLog {
+  public static readonly defenderCharacter = 1;
+  public static readonly defenderWall = 3;
+
+  public constructor(public id: number = 0,
+                     public town: Town,
+                     public defenderType: number,
+                     public attackerCache: Character,
+                     public defenderCache: Character,
+                     public maplog: MapLog,
+                     public lines: BattleLogLine[]) {}
+}
+
 export class Api {
 
   /**
@@ -811,6 +835,15 @@ export class Api {
   public static async removeUnit(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'unit/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getBattleLog(id: number): Promise<BattleLog> {
+    try {
+      const result = await axios.get<BattleLog>(def.API_HOST + 'battle/' + id, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

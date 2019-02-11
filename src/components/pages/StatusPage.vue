@@ -79,7 +79,7 @@
           <h4 v-show="selectedReportType === 0">報告（マップ）</h4>
           <h4 v-show="selectedReportType === 1">報告（武将）</h4>
           <div class="content-main">
-            <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal"/>
+            <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
             <MapLogList v-show="selectedReportType === 1" :logs="model.characterLogs" type="character-log"/>
           </div>
           <div class="commands">
@@ -467,6 +467,20 @@
           </div>
         </div>
       </div>
+      <!-- 戦闘ログ -->
+      <div v-show="isOpenBattleLogDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">戦闘ログ</h2>
+        <div class="dialog-content loading-container">
+          <BattleLogView :countries="model.countries" :logId="battleLogId" @loading="isLoadingBattleLog = true" @loaded="isLoadingBattleLog = false"/>
+          <div class="loading" v-show="isLoadingBattleLog"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenBattleLogDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -481,6 +495,7 @@ import MapLogList from '@/components/parts/MapLogList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
+import BattleLogView from '@/components/parts/BattleLogView.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
@@ -497,6 +512,7 @@ import Enumerable from 'linq';
     SimpleCharacterList,
     MiniCharacterList,
     GameDateTimePicker,
+    BattleLogView,
   },
 })
 export default class StatusPage extends Vue {
@@ -517,6 +533,8 @@ export default class StatusPage extends Vue {
   public isOpenAllianceDialog: boolean = false;
   public isOpenWarDialog: boolean = false;
   public isOpenUnitsDialog: boolean = false;
+  public isOpenBattleLogDialog: boolean = false;
+  public isLoadingBattleLog: boolean = false;
   public selectedAllianceStatus: number = 0;
   public selectedWarStatus: number = 0;
   public isShowUnitLeaderOperations: boolean = false;
@@ -524,11 +542,13 @@ export default class StatusPage extends Vue {
 
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
+  public battleLogId: number = 0;
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
-      || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog;
+      || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
+      || this.isOpenBattleLogDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -871,15 +891,20 @@ ul.nav {
     right: 0;
     bottom: 0;
     margin: auto;
-    width: 600px;
-    height: 400px;
-    max-width: 98%;
-    max-height: 98%;
+    width: 70vw;
+    height: 90vh;
     background: #efefef;
     border-radius: 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+
+    @media screen and (max-width: 600px) {
+      width: 98vw;
+    }
+    @media screen and (max-height: 400px) {
+      height: 98vh;
+    }
 
     .dialog-title {
       text-align: center;
