@@ -316,6 +316,30 @@ export default class NotificationService {
     '戦闘ログ取得失敗',
     '戦闘ログ {0} を取得できませんでした',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryBbsPosted = new NotificationServiceItem(
+    '会議室書き込み',
+    '会議室のスレッドに書き込みました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countryBbsPostFailed = new NotificationServiceItem(
+    '会議室書き込み失敗',
+    '会議室のスレッドに書き込めませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly countryBbsPostFailedBecauseEmptyText = new NotificationServiceItem(
+    '会議室書き込み失敗',
+    'テキストを入力してください',
+    NotificationServiceItemDefaultType.error);
+  public static readonly countryBbsPostFailedBecauseEmptyTitle = new NotificationServiceItem(
+    '会議室書き込み失敗',
+    'タイトルを入力してください',
+    NotificationServiceItemDefaultType.error);
+  public static readonly countryBbsRemoved = new NotificationServiceItem(
+    '会議室書き込み削除',
+    '会議室のスレッドの書き込みを削除しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countryBbsRemoveFailed = new NotificationServiceItem(
+    '会議室書き込み削除失敗',
+    '会議室のスレッドの書き込みの削除に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

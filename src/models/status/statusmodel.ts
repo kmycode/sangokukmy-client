@@ -64,6 +64,7 @@ export default class StatusModel {
   public countryCharacters: api.Character[] = [];
   public units: api.Unit[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
+  public countryBbsThreads: api.ThreadBbsItem[] = [];
 
   public allianceBreakingDelay: number = 0;
   public allianceIsPublic: boolean = false;
@@ -129,6 +130,12 @@ export default class StatusModel {
 
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canRemoveAllCountryBbsItems(): boolean {
+    // 自分が会議室の全書き込み削除権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
@@ -252,6 +259,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.ChatMessage>(
       api.ChatMessage.typeId,
       (obj) => this.addChatMessage(obj));
+    ApiStreaming.status.on<api.ThreadBbsItem>(
+      api.ThreadBbsItem.typeId,
+      (obj) => this.onThreadBbsItemReceived(obj));
     ApiStreaming.status.start();
 
     this.timers.push(setInterval(() => { this.secondsOfNextCommand--; }, 1000));
@@ -1336,6 +1346,51 @@ export default class StatusModel {
         .finally(() => {
           this.isPostingChat = false;
         });
+    }
+  }
+
+  // #endregion
+
+  // #region ThreadBbs
+
+  private onThreadBbsItemReceived(item: api.ThreadBbsItem) {
+    let items: api.ThreadBbsItem[];
+    if (item.type === api.ThreadBbsItem.typeCountryBbs) {
+      items = this.countryBbsThreads;
+    } else { return; }
+
+    if (!item.isRemove) {
+      // 追加
+      if (!item.parentId) {
+        const thread = ArrayUtil.find(items, item.id);
+        if (!thread) {
+          items.unshift(item);
+        }
+      } else {
+        const thread = ArrayUtil.find(items, item.parentId);
+        if (thread) {
+          const child = ArrayUtil.find(thread.children, item.id);
+          if (!child) {
+            thread.children.unshift(item);
+          }
+        }
+      }
+    } else {
+      // 削除
+      if (!item.parentId) {
+        const thread = ArrayUtil.find(items, item.id);
+        if (thread) {
+          items.splice(items.indexOf(thread), 1);
+        }
+      } else {
+        const thread = ArrayUtil.find(items, item.parentId);
+        if (thread) {
+          const child = ArrayUtil.find(thread.children, item.id);
+          if (child) {
+            thread.children.splice(thread.children.indexOf(child), 1);
+          }
+        }
+      }
     }
   }
 

@@ -95,9 +95,11 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">全国宛</a></li>
-            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">会議室</a>
+            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
+                <span v-show="selectedActionTabSubPanel === 0">会議室</span>
+              </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
-                <a class="dropdown-item" href="#">会議室</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">会議室</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">情報</a>
                 <div class="dropdown-divider"></div>
@@ -218,6 +220,10 @@
           <div v-show="selectedActionTab === 2" class="messages">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
           </div>
+        </div>
+        <!-- 会議室 -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-meeting">
+          <ThreadBbs :countries="model.countries" :threads="model.countryBbsThreads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
       </div>
     </div>
@@ -496,6 +502,7 @@ import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
+import ThreadBbs from '@/components/parts/ThreadBbs.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
@@ -513,6 +520,7 @@ import Enumerable from 'linq';
     MiniCharacterList,
     GameDateTimePicker,
     BattleLogView,
+    ThreadBbs,
   },
 })
 export default class StatusPage extends Vue {
@@ -522,6 +530,7 @@ export default class StatusPage extends Vue {
   public selectedInformationTab: number = 0;
   public selectedReportType: number = 0;
   public selectedActionTab: number = 0;
+  public selectedActionTabSubPanel: number = 0;
   public selectedCommandCategory: number = 0;
   public selectedChatCategory: number = 0;
   public selectedSoliderType: number = 1;
@@ -862,6 +871,10 @@ ul.nav {
       flex: 1;
       overflow: auto;
     }
+  }
+
+  &.content-meeting {
+    overflow: auto;
   }
 }
 

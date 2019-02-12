@@ -610,6 +610,30 @@ export class BattleLog {
                      public lines: BattleLogLine[]) {}
 }
 
+export class ThreadBbsReply {
+  public title: string = '';
+  public text: string = '';
+  public parentId: number = 0;
+}
+
+export class ThreadBbsItem implements IIdentitiedEntity {
+  public static readonly typeId = 26;
+
+  public static readonly typeCountryBbs = 1;
+
+  public constructor(public id: number,
+                     public type: number,
+                     public parentId: number,
+                     public children: ThreadBbsItem[],
+                     public countryId: number,
+                     public character: Character,
+                     public characterIcon: CharacterIcon,
+                     public title: string,
+                     public text: string,
+                     public written: DateTime,
+                     public isRemove: boolean) {}
+}
+
 export class Api {
 
   /**
@@ -844,6 +868,26 @@ export class Api {
     try {
       const result = await axios.get<BattleLog>(def.API_HOST + 'battle/' + id, this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async writeCountryBbsItem(text: string, parentId: number = 0, title: string = ''): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'bbs/country', {
+        text,
+        parentId,
+        title,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async removeCountryBbsItem(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'bbs/country/' + id, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
