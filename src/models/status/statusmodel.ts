@@ -1374,6 +1374,9 @@ export default class StatusModel {
       if (!item.parentId) {
         const thread = ArrayUtil.find(items, item.id);
         if (!thread) {
+          if (!item.children) {
+            item.children = [];
+          }
           items.unshift(item);
         }
       } else {
