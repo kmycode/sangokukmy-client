@@ -24,6 +24,11 @@ export const UPLOADED_ICONS_HOST = HOST_ROOT + 'images/character-uploaded-icons/
 export const UPDATE_TIME = 600;
 
 /**
+ * 更新を開始する年
+ */
+export const UPDATE_START_YEAR = 24;
+
+/**
  * 次の階級に上がるまでに必要な階級値
  */
 export const NEXT_LANK = 1000;

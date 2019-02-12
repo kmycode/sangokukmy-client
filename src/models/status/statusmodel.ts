@@ -909,6 +909,13 @@ export default class StatusModel {
 
       // コマンドに設定していた仮のテキスト、年月を削除
       let month = api.GameDateTime.nextMonth(this.character.lastUpdatedGameDate);
+      let skipMonthCount = 0;
+      if (month.year < def.UPDATE_START_YEAR) {
+        // 更新開始以降のコマンドのみを表示する
+        const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
+        skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
+        month = newMonth;
+      }
       this.commands.forEach((c) => {
         c.name = '';
         c.gameDate = month;
@@ -916,7 +923,7 @@ export default class StatusModel {
       });
 
       // 次のコマンド実行までの秒数を更新
-      this.secondsOfNextCommand = cmd.secondsNextCommand;
+      this.secondsOfNextCommand = cmd.secondsNextCommand + skipMonthCount * def.UPDATE_TIME;
 
       // サーバに保存されているコマンドを画面表示に反映
       cmd.commands.forEach((c) => {
