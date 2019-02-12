@@ -196,7 +196,9 @@ export class SystemData {
                      public period: number = 0,
                      public betaVersion: number = 0,
                      public gameDateTime: GameDateTime = new GameDateTime(0, 0),
-                     public currentMonthStartDateTime: DateTime = new DateTime(0, 0, 0, 0, 0, 0)) {}
+                     public currentMonthStartDateTime: DateTime = new DateTime(0, 0, 0, 0, 0, 0),
+                     public isWaitingReset: boolean = false,
+                     public resetGameDateTime: GameDateTime = new GameDateTime(0, 0)) {}
 }
 
 /**

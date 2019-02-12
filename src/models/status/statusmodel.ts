@@ -300,6 +300,9 @@ export default class StatusModel {
     } else if (signal.type === 6) {
       // 部隊が集合された
       NotificationService.belongsUnitGathered.notify();
+    } else if (signal.type === 7) {
+      // リセットされた
+      location.reload();
     }
   }
 

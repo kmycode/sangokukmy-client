@@ -7,6 +7,9 @@
           <h2>第{{ system.period }}<span v-if="system.betaVersion > 0">.{{ system.betaVersion }}</span>期</h2>
           [<span class="number">{{ system.gameDateTime.year }}</span>年<span class="number">{{ system.gameDateTime.month | zeroformat(2) }}</span>月]<br>
           来月まであと <span class="number">{{ nextMonthSeconds }}</span>秒
+          <div v-if="system.gameDateTime.year < 24">更新開始: <span class="number">24</span>年<span class="number">01</span>月より</div>
+          <div v-if="system.gameDateTime.year >= 24 && system.gameDateTime.year < 48">主要国戦闘解除: <span class="number">48</span>年<span class="number">01</span>月より</div>
+          <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
@@ -110,6 +113,12 @@ export default class TopPage extends Vue {
     });
     ApiStreaming.top.on<api.CharacterUpdateLog>(api.CharacterUpdateLog.typeId, (log) => {
       ArrayUtil.addLog(this.updateLogs, log, 5);
+    });
+    ApiStreaming.top.on<api.ApiSignal>(api.ApiSignal.typeId, (signal) => {
+      if (signal.type === 7) {
+        // リセットされた
+        location.reload();
+      }
     });
     ApiStreaming.top.start();
   }

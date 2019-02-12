@@ -199,6 +199,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(11, '支配', 'blue'),
   new EventType(12, '滅亡', 'red'),
   new EventType(13, '統一', 'red'),
+  new EventType(14, 'リセット', 'red'),
 ];
 
 /**
