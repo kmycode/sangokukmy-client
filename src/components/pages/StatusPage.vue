@@ -170,7 +170,7 @@
           </div>
           <!-- 選択アルゴリズム -->
           <div class="command-select-options">
-            <button type="button" :class="{ 'btn': true, 'btn-multiple-selection': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 0, 'btn-info': model.commandSelectMode === 0 }" @click="model.commandSelectMode = 0">置換</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 1, 'btn-info': model.commandSelectMode === 1 }" @click="model.commandSelectMode = 1">OR</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 2, 'btn-info': model.commandSelectMode === 2 }" @click="model.commandSelectMode = 2">AND</button>
@@ -720,15 +720,6 @@ ul.nav {
     .nav {
       .active {
         background-color: #6bf;
-      }
-    }
-    .btn-multiple-selection {
-      background: none;
-      border: 1px solid #444;
-      font-size: 1rem;
-      &.selected {
-        background: #444;
-        color: white;
       }
     }
     .commands {

@@ -4,7 +4,10 @@
       <component :is="currentPage"
         @login-start="startLogin"
         @login-abort="abortLogin"
-        @login-succeed="enterStatusPage"/>
+        @login-succeed="enterStatusPage"
+        @entry-start="startEntry"
+        @entry-abort="abortEntry"
+        @entry-succeed="enterStatusPage"/>
     </transition>
     <Notification/>
   </div>
@@ -15,6 +18,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import TopPage from './components/pages/TopPage.vue';
 import LoginPage from './components/pages/LoginPage.vue';
 import StatusPage from './components/pages/StatusPage.vue';
+import EntryPage from './components/pages/EntryPage.vue';
 import Notification from './components/services/Notification.vue';
 import * as api from '@/api/api';
 
@@ -40,6 +44,7 @@ Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
     TopPage,
     LoginPage,
     StatusPage,
+    EntryPage,
     Notification,
   },
 })
@@ -56,6 +61,14 @@ export default class App extends Vue {
 
   public enterStatusPage() {
     this.currentPage = 'StatusPage';
+  }
+
+  public startEntry() {
+    this.currentPage = 'EntryPage';
+  }
+
+  public abortEntry() {
+    this.currentPage = 'TopPage';
   }
 }
 </script>
@@ -82,6 +95,16 @@ body {
 .component-fade-leave-to {
   opacity: 0;
   transform: translateX(-20vw);
+}
+
+.btn-toggle {
+  background: none;
+  border: 1px solid #444;
+  font-size: 1rem;
+  &.selected {
+    background: #444;
+    color: white;
+  }
 }
 
 @keyframes loading-animation {

@@ -313,6 +313,21 @@ export class Country {
                      public lastRiceIncomes?: number) {}
 }
 
+export class CountryExtraData {
+  public static readonly default = new CountryExtraData();
+
+  public constructor(public countryId: number = 0,
+                     public isJoinLimited: boolean = false) {}
+}
+
+export class EntryExtraData {
+  public static readonly default = new EntryExtraData();
+
+  public constructor(public attributeMax: number = 0,
+                     public attributeSumMax: number = 0,
+                     public countryData: CountryExtraData[] = []) {}
+}
+
 export abstract class CountryDipromacy {
   public static isEqualCountry<T extends { id: number, requestedCountryId: number, insistedCountryId: number }>(
       item: T, country1: number, country2: number) {
@@ -471,7 +486,7 @@ export class CharacterIcon {
       return def.UPLOADED_ICONS_HOST + icon.fileName;
     } else if (icon.type === 3) {
       // Gravatar
-      return icon.uri;
+      return 'https://www.gravatar.com/avatar/' + icon.fileName + '?s=128';
     } else {
       // デフォルトのアイコン
       return def.DEFAULT_ICONS_HOST + icon.fileName;
@@ -505,7 +520,7 @@ export class CharacterIcon {
   }
 
   private static createDefault(): CharacterIcon {
-    const icon = new CharacterIcon(0, 0, true, 1, '', '0.gif');
+    const icon = new CharacterIcon(0, 0, true, 1, '0.gif');
     icon.isNotDefaultPrivate = true;
     return icon;
   }
@@ -516,7 +531,6 @@ export class CharacterIcon {
                      public characterId: number = 0,
                      public isMain: boolean = false,
                      public type: number = 0,
-                     public uri: string = '',
                      public fileName: string = '') {}
 }
 
@@ -890,6 +904,47 @@ export class Api {
   public static async removeCountryBbsItem(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'bbs/country/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async entry(chara: Character,
+                            icon: CharacterIcon,
+                            password: string,
+                            country: Country): Promise<AuthenticationData> {
+    try {
+      const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'entry', {
+        character: {
+          name: chara.name,
+          aliasId: chara.aliasId,
+          strong: chara.strong,
+          intellect: chara.intellect,
+          leadership: chara.leadership,
+          popularity: chara.popularity,
+          townId: chara.townId,
+          message: chara.message,
+        },
+        icon: {
+          type: icon.type,
+          fileName: icon.fileName,
+        },
+        password,
+        country: {
+          name: country.name,
+          colorId: country.colorId,
+        },
+      });
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getEntryExtraData(): Promise<EntryExtraData> {
+    try {
+      const result = await axios.get<EntryExtraData>(def.API_HOST + 'entry/data');
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

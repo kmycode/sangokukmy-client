@@ -29,9 +29,24 @@ export const UPDATE_TIME = 600;
 export const UPDATE_START_YEAR = 24;
 
 /**
+ * 戦闘解除ターン
+ */
+export const BATTLE_STOP_TURN = 288;
+
+/**
  * 次の階級に上がるまでに必要な階級値
  */
 export const NEXT_LANK = 1000;
+
+/**
+ * 国色の数
+ */
+export const COUNTRY_COLOR_NUM = 8;
+
+/**
+ * アイコン数
+ */
+export const DEFAULT_ICON_NUM = 98;
 
 /**
  * 兵種
@@ -205,6 +220,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(12, '滅亡', 'red'),
   new EventType(13, '統一', 'red'),
   new EventType(14, 'リセット', 'red'),
+  new EventType(15, '仕官', 'dodgerblue'),
+  new EventType(16, '建国', '#008'),
 ];
 
 /**

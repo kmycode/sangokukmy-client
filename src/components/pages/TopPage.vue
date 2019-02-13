@@ -16,7 +16,7 @@
       <div class="row">
         <div class="top-login-form col-sm-6 offset-sm-3">
           <button type="button" class="btn btn-light" @click="login">ログイン</button>
-          <button type="button" class="btn btn-primary">新規登録</button>
+          <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
       <div class="row">
@@ -85,6 +85,10 @@ export default class TopPage extends Vue {
 
   public login() {
     this.$emit('login-start');
+  }
+
+  public entry() {
+    this.$emit('entry-start');
   }
 
   private created() {

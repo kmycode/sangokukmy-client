@@ -340,6 +340,14 @@ export default class NotificationService {
     '会議室書き込み削除失敗',
     '会議室のスレッドの書き込みの削除に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly entryExtraDataFailed = new NotificationServiceItem(
+    '登録追加データ取得失敗',
+    'データ取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly entryFailed = new NotificationServiceItem(
+    '登録失敗',
+    '登録に失敗しました。原因が分からない場合は、管理者に連絡してください。連絡先はトップページの下に書いてあります',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
