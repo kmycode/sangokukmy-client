@@ -192,6 +192,7 @@ declare const grecaptcha: any;
 export default class EntryPage extends Vue {
   private character: api.Character = new api.Character();
   private country: api.Country = new api.Country();
+  private defaultCountry: api.Country = new api.Country();
   private town: api.Town = new api.Town();
   private password: string = '';
   private passwordConfirm: string = '';
@@ -380,7 +381,7 @@ export default class EntryPage extends Vue {
   private entry() {
     if (this.canEntry || true) {
       this.isEntrying = true;
-      api.Api.entry(this.character, this.icon, this.password, this.country)
+      api.Api.entry(this.character, this.icon, this.password, this.isPublish ? this.country : this.defaultCountry)
         .then((auth) => {
           LoginService.setAccessToken(auth.accessToken);
           this.$emit('entry-succeed');
