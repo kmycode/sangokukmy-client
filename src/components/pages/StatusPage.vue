@@ -140,7 +140,7 @@
               <button type="button" class="btn btn-light">兵士訓練</button>
               <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
               <button type="button" class="btn btn-light" @click="model.inputMoveCommand(13)">戦争</button>
-              <button type="button" class="btn btn-light">集合</button>
+              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(14)">集合</button>
             </div>
             <!-- 計略コマンド -->
             <div v-show="selectedCommandCategory === 3" class="commands">
