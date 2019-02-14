@@ -348,6 +348,18 @@ export default class NotificationService {
     '登録失敗',
     '登録に失敗しました。原因が分からない場合は、管理者に連絡してください。連絡先はトップページの下に書いてあります',
     NotificationServiceItemDefaultType.error);
+  public static readonly entryFailedBecauseSameNameOrAliasId = new NotificationServiceItem(
+    '登録失敗',
+    '指定した武将名またはログインIDは、すでに登録されています',
+    NotificationServiceItemDefaultType.error);
+  public static readonly entryFailedBecauseSameCountryNameOrColor = new NotificationServiceItem(
+    '登録失敗',
+    '指定した国名または色は、すでに登録されています',
+    NotificationServiceItemDefaultType.error);
+  public static readonly entryFailedBecauseSameIpAddress = new NotificationServiceItem(
+    '登録失敗',
+    'すでに登録した人の中から同じIPアドレスが検出されました。スマホなどからの登録はお控えください',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

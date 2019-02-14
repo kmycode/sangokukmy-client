@@ -37,6 +37,18 @@ export enum ErrorCode {
   invalidOperationError = 26,
   unitNotFoundError = 27,
   unitJoinLimitedError = 28,
+  parentNodeNotFoundError = 29,
+  notTopNodeError = 30,
+  nodeNotFoundError = 31,
+  numberRangeError = 32,
+  stringLengthError = 33,
+  cantPublisAtSuchTownhError = 34,
+  cantJoinAtSuchTownhError = 35,
+  cantJoinAtSuchCountryhError = 36,
+  duplicateCharacterNameOrAliasIdError = 37,
+  duplicateCountryNameOrColorError = 38,
+  invalidIpAddressError = 39,
+  duplicateEntryError = 40,
 }
 
 /**
