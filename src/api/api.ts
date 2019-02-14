@@ -288,7 +288,7 @@ export class Character implements IIdentitiedEntity {
                      public classValue: number = 0,
                      public deleteTurn: number = 0,
                      public townId: number = 0,
-                     public message: number = 0,
+                     public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
                      public mainIcon?: CharacterIcon) {}
