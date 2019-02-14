@@ -154,8 +154,8 @@
               <button type="button" class="btn btn-light">米売買</button>
               <button type="button" class="btn btn-light">武器</button>
               <button type="button" class="btn btn-light">書物</button>
-              <button type="button" class="btn btn-light">何もしない</button>
-              <button type="button" class="btn btn-primary">仕官</button>
+              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(0)">何もしない</button>
+              <button type="button" class="btn btn-primary" @click="model.inputMoveCommand(23)">仕官</button>
               <button type="button" class="btn btn-light">下野</button>
             </div>
             <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
