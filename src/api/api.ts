@@ -835,6 +835,28 @@ export class Api {
     }
   }
 
+  public static async postPrivateChatMessage(mes: string, icon: CharacterIcon, toCharaId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'chat/character/' + toCharaId, {
+        message: mes,
+        characterIconId: icon.id,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async postOtherCountryChatMessage(mes: string, icon: CharacterIcon, toCountryId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'chat/country/' + toCountryId, {
+        message: mes,
+        characterIconId: icon.id,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async getUnits(): Promise<Unit[]> {
     try {
       const result = await axios.get<Unit[]>(def.API_HOST + 'units', this.authHeader);

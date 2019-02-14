@@ -10,6 +10,11 @@
       <div class="information">
         <div class="standard">
           <div class="name">{{ chara.name }}</div>
+          <div class="commands">
+          </div>
+          <div class="chat" v-if="canPrivateChat">
+            <button class="btn btn-outline-secondary btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+          </div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
           <div v-else class="post-selection">
             <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
@@ -77,6 +82,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canEdit!: boolean;
+  @Prop({
+    default: false,
+  }) public canPrivateChat!: boolean;
 
   private isOpenPostsPopup: boolean = false;
 
@@ -142,6 +150,10 @@ export default class SimpleCharacterList extends Vue {
         .name {
           font-size: 1.6rem;
           flex: 1;
+        }
+
+        .chat {
+          margin-right: 16px;
         }
 
         .post, .post-selection {

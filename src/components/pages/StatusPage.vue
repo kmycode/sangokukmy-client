@@ -221,6 +221,9 @@
           <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries"/>
           </div>
+          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries"/>
+          </div>
           <div v-show="selectedActionTab === 2" class="messages">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
           </div>
@@ -294,7 +297,11 @@
       <div v-show="isOpenTownCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の武将</h2>
         <div class="dialog-content loading-container">
-          <SimpleCharacterList :countries="model.countries" :characters="model.townCharacters"/>
+          <SimpleCharacterList
+            :countries="model.countries"
+            :characters="model.townCharacters"
+            canPrivateChat="true"
+            @private-chat="readyPrivateChat($event)"/>
           <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -308,7 +315,11 @@
       <div v-show="isOpenTownDefendersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の守備</h2>
         <div class="dialog-content loading-container">
-          <SimpleCharacterList :countries="model.countries" :characters="model.townDefenders"/>
+          <SimpleCharacterList
+            :countries="model.countries"
+            :characters="model.townDefenders"
+            canPrivateChat="true"
+            @private-chat="readyPrivateChat($event)"/>
           <div class="loading" v-show="model.isUpdatingTownDefenders"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -328,7 +339,9 @@
             :myCountryId="model.character.countryId"
             :myCharacterId="model.character.id"
             :canEdit="model.canAppoint"
-            @appoint="model.setCountryPost($event.characterId, $event.type)"/>
+            canPrivateChat="true"
+            @appoint="model.setCountryPost($event.characterId, $event.type)"
+            @private-chat="readyPrivateChat($event)"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -491,6 +504,57 @@
           </div>
         </div>
       </div>
+      <div v-show="isOpenPrivateChatDialog || isOpenOtherCountryChatDialog" class="dialog-background"></div>
+      <!-- 個宛 -->
+      <div v-show="isOpenPrivateChatDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">個人宛手紙</h2>
+        <div class="dialog-content dialog-content-chat loading-container">
+          <h3>送り先: {{ chatPrivateTo.name }}</h3>
+          <!-- 投稿フォーム -->
+          <div class="chat-new-message">
+            <CharacterIcon :icons="model.characterIcons"/>
+            <div class="post-pair">
+              <div class="message-input-wrapper">
+                <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenPrivateChatDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="model.postPrivateChat(chatPrivateTo.id, () => isOpenPrivateChatDialog = false)">投稿</button>
+          </div>
+        </div>
+      </div>
+      <!-- 他個宛 -->
+      <div v-show="isOpenCountryChatDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">他国宛手紙</h2>
+        <div class="dialog-content dialog-content-chat loading-container">
+          <h3>送り先: {{ chatCountryTo.name }}</h3>
+          <!-- 投稿フォーム -->
+          <div class="chat-new-message">
+            <CharacterIcon :icons="model.characterIcons"/>
+            <div class="post-pair">
+              <div class="message-input-wrapper">
+                <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
+              </div>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCountryChatDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="model.postOtherCountryChat(chatPrivateTo.id, () => isOpenCountryChatDialog = false)">投稿</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -546,6 +610,8 @@ export default class StatusPage extends Vue {
   public isOpenAllianceDialog: boolean = false;
   public isOpenWarDialog: boolean = false;
   public isOpenUnitsDialog: boolean = false;
+  public isOpenPrivateChatDialog: boolean = false;
+  public isOpenOtherCountryChatDialog: boolean = false;
   public isOpenBattleLogDialog: boolean = false;
   public isLoadingBattleLog: boolean = false;
   public selectedAllianceStatus: number = 0;
@@ -557,11 +623,14 @@ export default class StatusPage extends Vue {
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
 
+  public chatPrivateTo: api.Character = new api.Character(-1);
+  public chatCountryTo: api.Country = new api.Country(-1);
+
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
-      || this.isOpenBattleLogDialog;
+      || this.isOpenBattleLogDialog || this.isOpenPrivateChatDialog || this.isOpenOtherCountryChatDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -594,6 +663,16 @@ export default class StatusPage extends Vue {
         this.model.selectSingleCommand(command);
       }
     }
+  }
+
+  private readyPrivateChat(chara: api.Character) {
+    this.chatPrivateTo = chara;
+    this.isOpenPrivateChatDialog = true;
+  }
+
+  private readyOtherCountryChat(country: api.Country) {
+    this.chatCountryTo = country;
+    this.isOpenOtherCountryChatDialog = true;
   }
 
   private postChat() {
@@ -1030,6 +1109,24 @@ ul.nav {
         button {
           margin: 0 16px 0 0;
           width: 80px;
+        }
+      }
+
+      &.dialog-content-chat {
+        .chat-new-message {
+          display: flex;
+          width: 100%;
+          align-items: center;
+
+          .post-pair {
+            flex: 1;
+            margin-left: 12px;
+
+            textarea {
+              width: 100%;
+              height: 200px;
+            }
+          }
         }
       }
     }

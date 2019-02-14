@@ -58,6 +58,7 @@ export default class StatusModel {
   public characterLogs: api.CharacterLog[] = [];
   public countryChatMessages: api.ChatMessage[] = [];
   public globalChatMessages: api.ChatMessage[] = [];
+  public privateChatMessages: api.ChatMessage[] = [];
   public chatPostMessage: string = '';
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
@@ -1334,12 +1335,16 @@ export default class StatusModel {
   // #region ChatMessage
 
   private addChatMessage(message: api.ChatMessage) {
-    if (message.type === api.ChatMessage.typeSelfCountry) {
+    if (message.type === api.ChatMessage.typeSelfCountry ||
+        message.type === api.ChatMessage.typeOtherCountry) {
       // 自国宛
       ArrayUtil.addLog(this.countryChatMessages, message);
     } else if (message.type === api.ChatMessage.typeGlobal) {
       // 全国宛
       ArrayUtil.addLog(this.globalChatMessages, message);
+    } else if (message.type === api.ChatMessage.typePrivate) {
+      // 個宛
+      ArrayUtil.addLog(this.privateChatMessages, message);
     }
   }
 
@@ -1351,13 +1356,30 @@ export default class StatusModel {
     this.postChat((message, icon) => api.Api.postGlobalChatMessage(message, icon));
   }
 
-  private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>) {
+  public postPrivateChat(charaId: number, callback?: () => void) {
+    if (charaId > 0) {
+      this.postChat((message, icon) => api.Api.postPrivateChatMessage(message, icon, charaId),
+                    callback);
+    }
+  }
+
+  public postOtherCountryChat(countryId: number, callback?: () => void) {
+    if (countryId > 0) {
+      this.postChat((message, icon) => api.Api.postOtherCountryChatMessage(message, icon, countryId),
+                    callback);
+    }
+  }
+
+  private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>, callback?: () => void) {
     const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
     if (icon) {
       this.isPostingChat = true;
       apiFunc(this.chatPostMessage, icon)
         .then(() => {
           this.chatPostMessage = '';
+          if (callback) {
+            callback();
+          }
         })
         .catch(() => {
           NotificationService.postChatFailed.notify();
