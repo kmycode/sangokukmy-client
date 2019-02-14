@@ -97,6 +97,15 @@ export default class StatusModel {
     return this.getTown(this.character.townId);
   }
 
+  public get characterDeleteTurn(): number {
+    // 放置削除ターン
+    return def.CHARACTER_DELETE_TURN - this.character.deleteTurn;
+  }
+
+  public get isShowDeleteTurn(): boolean {
+    return this.character.deleteTurn > 0 && def.UPDATE_START_YEAR <= this.gameDate.year;
+  }
+
   public get countryColor(): number {
     // 選択中の国の国色
     return this.getCountry(this.country.id).colorId;

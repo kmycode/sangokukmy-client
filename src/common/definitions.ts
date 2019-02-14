@@ -34,6 +34,11 @@ export const UPDATE_START_YEAR = 24;
 export const BATTLE_STOP_TURN = 288;
 
 /**
+ * 放置削除ターン
+ */
+export const CHARACTER_DELETE_TURN = 500;
+
+/**
  * 次の階級に上がるまでに必要な階級値
  */
 export const NEXT_LANK = 1000;

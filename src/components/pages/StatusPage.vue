@@ -176,6 +176,10 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 2, 'btn-info': model.commandSelectMode === 2 }" @click="model.commandSelectMode = 2">AND</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 3, 'btn-info': model.commandSelectMode === 3 }" @click="model.commandSelectMode = 3">XOR</button>
           </div>
+          <!-- 放置削除の通知 -->
+          <div v-show="model.isShowDeleteTurn" class="command-delete-turn-notify">
+            このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ model.characterDeleteTurn }}</span> ターンで削除されます
+          </div>
           <div class="command-list">
             <div v-for="command in model.commands"
                  :key="command.commandNumber"
@@ -752,6 +756,15 @@ ul.nav {
       flex-flow: row wrap;
       button {
         margin: 4px 4px 0 0;
+      }
+    }
+    .command-delete-turn-notify {
+      color: white;
+      background-color: #e7a;
+      padding: 4px 8px;
+      .number {
+        font-weight: bold;
+        font-size: 24px;
       }
     }
     .command-list {
