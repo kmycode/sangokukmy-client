@@ -25,7 +25,7 @@
             <li class="nav-item"><a class="nav-link active" href="#">トップページ</a></li>
             <li class="nav-item"><a class="nav-link" href="#">説明書</a></li>
             <li class="nav-item"><a class="nav-link" href="#">勢力図</a></li>
-            <li class="nav-item"><a class="nav-link" href="#">武将一覧</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$emit('show-all-characters')">武将一覧</a></li>
             <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li>
           </ul>
         </div>

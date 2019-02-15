@@ -7,7 +7,8 @@
         @login-succeed="enterStatusPage"
         @entry-start="startEntry"
         @entry-abort="abortEntry"
-        @entry-succeed="enterStatusPage"/>
+        @entry-succeed="enterStatusPage"
+        @show-all-characters="showAllCharacters"/>
     </transition>
     <Notification/>
   </div>
@@ -19,6 +20,7 @@ import TopPage from './components/pages/TopPage.vue';
 import LoginPage from './components/pages/LoginPage.vue';
 import StatusPage from './components/pages/StatusPage.vue';
 import EntryPage from './components/pages/EntryPage.vue';
+import AllCharactersPage from './components/pages/AllCharactersPage.vue';
 import Notification from './components/services/Notification.vue';
 import * as api from '@/api/api';
 
@@ -45,6 +47,7 @@ Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
     LoginPage,
     StatusPage,
     EntryPage,
+    AllCharactersPage,
     Notification,
   },
 })
@@ -69,6 +72,10 @@ export default class App extends Vue {
 
   public abortEntry() {
     this.currentPage = 'TopPage';
+  }
+
+  public showAllCharacters() {
+    this.currentPage = 'AllCharactersPage';
   }
 }
 </script>

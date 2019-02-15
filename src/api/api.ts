@@ -300,6 +300,10 @@ export class Character implements IIdentitiedEntity {
 export class CountryPost {
   public static readonly typeId = 20;
 
+  public static readonly typeMonarch = 1;
+  public static readonly typeWarrior = 2;
+  public static readonly typeGrandGeneral = 3;
+
   public constructor(public type: number = 0,
                      public countryId: number = 0,
                      public characterId: number = 0,
@@ -321,6 +325,8 @@ export class Country {
                      public posts: CountryPost[] = [],
                      public alliances: CountryAlliance[] = [],
                      public wars: CountryWar[] = [],
+                     public hasOverthrown: boolean = false,
+                     public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number) {}
 }
@@ -713,6 +719,26 @@ export class Api {
     try {
       const result = await axios.get<ApiArrayData<CharacterIcon>>
         (def.API_HOST + 'icons', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getAllCharacters(): Promise<Character[]> {
+    try {
+      const result = await axios.get<ApiArrayData<Character>>
+        (def.API_HOST + 'characters', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getAllCountries(): Promise<Country[]> {
+    try {
+      const result = await axios.get<ApiArrayData<Country>>
+        (def.API_HOST + 'countries', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
