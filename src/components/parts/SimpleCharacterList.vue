@@ -13,7 +13,7 @@
           <div class="commands">
           </div>
           <div class="chat" v-if="canPrivateChat">
-            <button class="btn btn-outline-secondary btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+            <button class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
           </div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
           <div v-else class="post-selection">

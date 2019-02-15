@@ -72,6 +72,7 @@
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.updateUnits(); isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = -1">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
+            <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
         </div>
         <!-- 報告 -->
@@ -199,9 +200,9 @@
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
+            <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
           </ul>
           <!-- 投稿フォーム -->
           <div v-if="selectedActionTab !== 1 || selectedChatCategory !== 4" class="loading-container">
@@ -209,20 +210,24 @@
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
-                  <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
+                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage"></textarea>
+                </div>
+                <div v-show="(isSendToPrivate && selectedChatCategory === 1) || (isSendToCountry && selectedChatCategory === 0)" class="message-target"
+                     @click="isSendToPrivate = isSendToCountry = false">
+                  <span class="target-text">{{ chatSendTargetName }} へ送信</span><span class="remove-mark">✕</span>
                 </div>
                 <div class="buttons">
-                  <button class="btn btn-primary" @click="postChat()">投稿</button>
+                  <button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button>
                 </div>
               </div>
             </div>
             <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
           <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
-            <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries"/>
+            <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
           </div>
           <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
-            <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries"/>
+            <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
           </div>
           <div v-show="selectedActionTab === 2" class="messages">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
@@ -301,7 +306,7 @@
             :countries="model.countries"
             :characters="model.townCharacters"
             canPrivateChat="true"
-            @private-chat="readyPrivateChat($event)"/>
+            @private-chat="readyPrivateChat($event); isOpenTownCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -319,7 +324,7 @@
             :countries="model.countries"
             :characters="model.townDefenders"
             canPrivateChat="true"
-            @private-chat="readyPrivateChat($event)"/>
+            @private-chat="readyPrivateChat($event); isOpenTownDefendersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownDefenders"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -341,7 +346,7 @@
             :canEdit="model.canAppoint"
             canPrivateChat="true"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
-            @private-chat="readyPrivateChat($event)"/>
+            @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -504,57 +509,6 @@
           </div>
         </div>
       </div>
-      <div v-show="isOpenPrivateChatDialog || isOpenOtherCountryChatDialog" class="dialog-background"></div>
-      <!-- 個宛 -->
-      <div v-show="isOpenPrivateChatDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">個人宛手紙</h2>
-        <div class="dialog-content dialog-content-chat loading-container">
-          <h3>送り先: {{ chatPrivateTo.name }}</h3>
-          <!-- 投稿フォーム -->
-          <div class="chat-new-message">
-            <CharacterIcon :icons="model.characterIcons"/>
-            <div class="post-pair">
-              <div class="message-input-wrapper">
-                <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
-              </div>
-            </div>
-          </div>
-          <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenPrivateChatDialog = false">キャンセル</button>
-          </div>
-          <div class="right-side">
-            <button class="btn btn-primary" @click="model.postPrivateChat(chatPrivateTo.id, () => isOpenPrivateChatDialog = false)">投稿</button>
-          </div>
-        </div>
-      </div>
-      <!-- 他個宛 -->
-      <div v-show="isOpenCountryChatDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">他国宛手紙</h2>
-        <div class="dialog-content dialog-content-chat loading-container">
-          <h3>送り先: {{ chatCountryTo.name }}</h3>
-          <!-- 投稿フォーム -->
-          <div class="chat-new-message">
-            <CharacterIcon :icons="model.characterIcons"/>
-            <div class="post-pair">
-              <div class="message-input-wrapper">
-                <textarea class="message-input" v-model="model.chatPostMessage"></textarea>
-              </div>
-            </div>
-          </div>
-          <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenCountryChatDialog = false">キャンセル</button>
-          </div>
-          <div class="right-side">
-            <button class="btn btn-primary" @click="model.postOtherCountryChat(chatPrivateTo.id, () => isOpenCountryChatDialog = false)">投稿</button>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 </template>
@@ -610,8 +564,6 @@ export default class StatusPage extends Vue {
   public isOpenAllianceDialog: boolean = false;
   public isOpenWarDialog: boolean = false;
   public isOpenUnitsDialog: boolean = false;
-  public isOpenPrivateChatDialog: boolean = false;
-  public isOpenOtherCountryChatDialog: boolean = false;
   public isOpenBattleLogDialog: boolean = false;
   public isLoadingBattleLog: boolean = false;
   public selectedAllianceStatus: number = 0;
@@ -623,6 +575,8 @@ export default class StatusPage extends Vue {
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
 
+  public isSendToPrivate: boolean = false;
+  public isSendToCountry: boolean = false;
   public chatPrivateTo: api.Character = new api.Character(-1);
   public chatCountryTo: api.Country = new api.Country(-1);
 
@@ -630,7 +584,7 @@ export default class StatusPage extends Vue {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
-      || this.isOpenBattleLogDialog || this.isOpenPrivateChatDialog || this.isOpenOtherCountryChatDialog;
+      || this.isOpenBattleLogDialog;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -641,12 +595,39 @@ export default class StatusPage extends Vue {
     }
   }
 
+  public get canSendChat(): boolean {
+    if (this.model.chatPostMessage.length === 0) {
+      return false;
+    }
+    if (this.selectedActionTab === 1 && this.selectedChatCategory === 1) {
+      // 個人宛
+      return this.isSendToPrivate;
+    }
+    return true;
+  }
+
+  public get chatSendTargetName(): string {
+    if (this.isSendToPrivate) {
+      return this.chatPrivateTo.name;
+    } else if (this.isSendToCountry) {
+      return this.chatCountryTo.name;
+    } else {
+      return '';
+    }
+  }
+
   public created() {
     this.model.onCreate();
   }
 
   public destroyed() {
     this.model.onDestroy();
+  }
+
+  private onResetRequested() {
+    this.model.onDestroy();
+    this.model = new StatusModel();
+    this.model.onCreate();
   }
 
   private toggleMultiSelection() {
@@ -667,19 +648,58 @@ export default class StatusPage extends Vue {
 
   private readyPrivateChat(chara: api.Character) {
     this.chatPrivateTo = chara;
-    this.isOpenPrivateChatDialog = true;
+    this.isSendToPrivate = true;
+    this.isSendToCountry = false;
+    this.selectedActionTab = 1;
+    this.selectedChatCategory = 1;
+    (this.$refs.chatMessageInput as any).focus();
+  }
+
+  private readyPrivateChatById(id: number) {
+    const chara = Enumerable
+      .from(this.model.privateChatMessages)
+      .concat(this.model.countryChatMessages)
+      .firstOrDefault((c) => {
+        if (c.character) {
+          return c.character.id === id;
+        } else {
+          return false;
+        }
+      });
+    if (chara && chara.character) {
+      this.readyPrivateChat(new api.Character(chara.character.id, '', chara.character.name));
+    }
   }
 
   private readyOtherCountryChat(country: api.Country) {
     this.chatCountryTo = country;
-    this.isOpenOtherCountryChatDialog = true;
+    this.isSendToPrivate = false;
+    this.isSendToCountry = true;
+    this.selectedActionTab = 1;
+    this.selectedChatCategory = 0;
+    (this.$refs.chatMessageInput as any).focus();
+  }
+
+  private readyOtherCountryChatById(id: number) {
+    const country = Enumerable.from(this.model.countries)
+      .firstOrDefault((c) => c.id === id);
+    if (country) {
+      this.readyOtherCountryChat(country);
+    }
   }
 
   private postChat() {
     if (this.selectedActionTab === 1) {
       if (this.selectedChatCategory === 0) {
         // 自国宛
-        this.model.postCountryChat();
+        if (!this.isSendToCountry) {
+          this.model.postCountryChat();
+        } else {
+          this.model.postOtherCountryChat(this.chatCountryTo.id, () => this.isSendToCountry = false);
+        }
+      } else if (this.selectedChatCategory === 1) {
+        // 個人宛
+        this.model.postPrivateChat(this.chatPrivateTo.id, () => this.isSendToPrivate = false);
       }
     } else if (this.selectedActionTab === 2) {
       // 全国宛
@@ -935,12 +955,35 @@ ul.nav {
         .message-input-wrapper {
           flex: 1;
           
-          .message-input {
-            height: 100%;
+          .message-input, .message-input textarea {
+            height: 72px;
             width: 100%;
             border: 0;
             padding: 4px;
             font-size: 0.9rem;
+          }
+        }
+
+        .message-target {
+          padding: 4px 12px;
+            margin-top: -8px;
+          cursor: pointer;
+          transition: all .2s ease-in;
+
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.16);
+            .remove-mark {
+              visibility: visible;
+            }
+          }
+
+          .target-text {
+            padding: 4px 24px 4px 0;
+          }
+
+          .remove-mark {
+            visibility: hidden;
+            font-weight: bold;
           }
         }
 
@@ -1109,24 +1152,6 @@ ul.nav {
         button {
           margin: 0 16px 0 0;
           width: 80px;
-        }
-      }
-
-      &.dialog-content-chat {
-        .chat-new-message {
-          display: flex;
-          width: 100%;
-          align-items: center;
-
-          .post-pair {
-            flex: 1;
-            margin-left: 12px;
-
-            textarea {
-              width: 100%;
-              height: 200px;
-            }
-          }
         }
       }
     }

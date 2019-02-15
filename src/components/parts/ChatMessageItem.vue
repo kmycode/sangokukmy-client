@@ -3,10 +3,20 @@
     <CharacterIcon :icon="message.characterIcon"/>
     <div class="message-container">
       <div class="message">
-        <KmyChatTagText :text="message.message"/>
+        <div class="text"><KmyChatTagText :text="message.message"/></div>
+        <div class="commands">
+          <button v-if="canSendPrivate && message.character.id !== myCharacterId" @click="$emit('chat-private', message.character.id)" type="button" class="btn btn-light btn-sm">個宛</button>
+          <button v-if="canSendOtherCountry && message.characterCountryId !== myCountryId" @click="$emit('chat-other-country', message.characterCountryId)" type="button" class="btn btn-warning btn-sm">国宛</button>
+        </div>
       </div>
       <div class="message-footer">
-        <span class="character-name">{{ message.character.name }}</span> <span class="posted">{{ message.posted | realdate }}</span>
+        <span v-if="message.receiverName" class="character-name-group">
+          <span class="character-name">{{ message.character.name }}</span> から <span class="character-name">{{ message.receiverName }}</span> ヘ
+        </span>
+        <span v-else class="character-name-group">
+          <span class="character-name">{{ message.character.name }}</span>
+        </span>
+        <span class="posted">{{ message.posted | realdate }}</span>
       </div>
     </div>
   </div>
@@ -28,6 +38,18 @@ import ArrayUtil from '@/models/common/arrayutil';
 export default class ChatMessageItem extends Vue {
   @Prop() public message!: api.ChatMessage;
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: false,
+  }) public canSendPrivate!: boolean;
+  @Prop({
+    default: 0,
+  }) public myCharacterId!: number;
+  @Prop({
+    default: false,
+  }) public canSendOtherCountry!: boolean;
+  @Prop({
+    default: 0,
+  }) public myCountryId!: number;
 
   private get countryColor(): number {
     const country = ArrayUtil.find(this.countries, this.message.characterCountryId);
@@ -61,16 +83,23 @@ export default class ChatMessageItem extends Vue {
 
     .message {
       flex: 1;
+
+      .commands {
+        text-align: right;
+      }
     }
 
     .message-footer {
       font-size: 0.7rem;
       text-align: right;
 
-      .character-name {
+      .character-name-group {
         font-size: 0.8rem;
-        font-weight: bold;
         padding-right: 12px;
+
+        .character-name {
+          font-weight: bold;
+        }
       }
     }
   }

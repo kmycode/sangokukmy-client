@@ -16,7 +16,10 @@ export default class KmyChatTagText extends Vue {
 
   private get formatedText(): string {
     return this.text
-      .replace('\n', '<br>');
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/\n/g, '<br>');
   }
 }
 </script>

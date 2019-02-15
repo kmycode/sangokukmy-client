@@ -839,6 +839,19 @@ export class Api {
     }
   }
 
+  public static async getCountryChatMessage(sinceId?: number, count?: number): Promise<ChatMessage[]> {
+    try {
+      const result = await axios.get<ApiArrayData<ChatMessage>>(def.API_HOST + 'chat/country?' +
+        this.buildQueryParameters({
+          sinceId,
+          count,
+        }), this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async postCountryChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/country', {
@@ -949,6 +962,15 @@ export class Api {
     }
   }
 
+  public static async getCountryBbsItems(): Promise<ThreadBbsItem[]> {
+    try {
+      const result = await axios.get<ThreadBbsItem[]>(def.API_HOST + 'bbs/country', this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async writeCountryBbsItem(text: string, parentId: number = 0, title: string = ''): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'bbs/country', {
@@ -1027,6 +1049,16 @@ export class Api {
     } else {
       return { data: ApiError.serverConnectionFailed, innerException: ex };
     }
+  }
+
+  private static buildQueryParameters(param: any): string {
+    const queries: string[] = [];
+    Object.keys(param).forEach((key) => {
+      if (param[key] !== undefined) {
+        queries.push(key + '=' + param[key]);
+      }
+    });
+    return queries.join('&');
   }
 
 }

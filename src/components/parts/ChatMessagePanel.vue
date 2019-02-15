@@ -5,7 +5,16 @@
         class="item"
         v-for="mes in messages"
         :key="mes.id">
-        <ChatMessageItem v-if="mes.character && mes.characterIcon" :countries="countries" :message="mes"/>
+        <ChatMessageItem
+          v-if="mes.character && mes.characterIcon"
+          :countries="countries"
+          :message="mes"
+          :canSendPrivate="canSendPrivate"
+          :canSendOtherCountry="canSendOtherCountry"
+          :myCharacterId="myCharacterId"
+          :myCountryId="myCountryId"
+          @chat-private="$emit('chat-private', $event)"
+          @chat-other-country="$emit('chat-other-country', $event)"/>
       </div>
     </transition-group>
   </div>
@@ -27,6 +36,18 @@ import ArrayUtil from '@/models/common/arrayutil';
 export default class ChatMessagePanel extends Vue {
   @Prop() public messages!: api.ChatMessage[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: false,
+  }) public canSendPrivate!: boolean;
+  @Prop({
+    default: 0,
+  }) public myCharacterId!: number;
+  @Prop({
+    default: false,
+  }) public canSendOtherCountry!: boolean;
+  @Prop({
+    default: 0,
+  }) public myCountryId!: number;
 }
 </script>
 

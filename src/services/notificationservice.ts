@@ -152,9 +152,21 @@ export default class NotificationService {
     'アイコン取得失敗',
     'アイコン取得に失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly getChatFailed = new NotificationServiceItem(
+    '手紙取得失敗',
+    '手紙の取得に失敗しました。',
+    NotificationServiceItemDefaultType.error);
   public static readonly postChatFailed = new NotificationServiceItem(
     '手紙送信失敗',
     '手紙の送信に失敗しました。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly postChatFailedBecauseNotPermission = new NotificationServiceItem(
+    '手紙送信失敗',
+    '手紙の送信に失敗しました。送信するための権限がありません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly postChatFailedBecauseTargetNotFound = new NotificationServiceItem(
+    '手紙送信失敗',
+    '手紙の送信に失敗しました。送信先が見つかりません。手紙を書いている途中に削除されたか滅亡した可能性があります',
     NotificationServiceItemDefaultType.error);
   public static readonly attributeUp = new NotificationServiceItem(
     '能力上昇',
@@ -176,6 +188,10 @@ export default class NotificationService {
     '諜報失敗',
     '{0} を諜報できませんでした。',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryChanged = new NotificationServiceItem(
+    '所属国変更',
+    'あなたの所属国が変わりました',
+    NotificationServiceItemDefaultType.information);
   public static readonly appointed = new NotificationServiceItem(
     '任命成功',
     '{0} を任命しました。',
@@ -316,6 +332,10 @@ export default class NotificationService {
     '戦闘ログ取得失敗',
     '戦闘ログ {0} を取得できませんでした',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryBbsLoadFailed = new NotificationServiceItem(
+    '会議室取得失敗',
+    '会議室のデータを取得できませんでした',
+    NotificationServiceItemDefaultType.error);
   public static readonly countryBbsPosted = new NotificationServiceItem(
     '会議室書き込み',
     '会議室のスレッドに書き込みました',
@@ -364,6 +384,10 @@ export default class NotificationService {
     '武将取得失敗',
     '武将取得に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly chatPrivateReceived = new NotificationServiceItem(
+    '個宛',
+    '{0} から個宛を受け取りました',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

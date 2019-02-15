@@ -93,6 +93,8 @@ export default class StatusModel {
 
   private isInitializedCommands = false;
 
+  // #region Properties
+
   public get characterTown(): api.Town {
     // 自分が所在している都市
     return this.getTown(this.character.townId);
@@ -228,6 +230,10 @@ export default class StatusModel {
       .toArray();
   }
 
+  // #endregion
+
+  // #region Streaming
+
   public onCreate() {
     ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.GameDateTime>(
@@ -281,6 +287,8 @@ export default class StatusModel {
     ApiStreaming.status.stop();
     this.timers.forEach((id) => { clearInterval(id); });
   }
+
+  // #endregion
 
   // #region ApiSignal
 
@@ -676,6 +684,30 @@ export default class StatusModel {
     }
   }
 
+  private onCountryChanged() {
+    this.countryChatMessages = [];
+    this.countryBbsThreads = [];
+    api.Api.getCountryChatMessage()
+      .then((messages) => {
+        messages.forEach((message) => {
+          ArrayUtil.addLog(this.countryChatMessages, message);
+        });
+      })
+      .catch(() => {
+        NotificationService.getChatFailed.notify();
+      });
+    api.Api.getCountryBbsItems()
+      .then((items) => {
+        items.forEach((item) => {
+          ArrayUtil.addLog(this.countryBbsThreads, item);
+        });
+      })
+      .catch(() => {
+        NotificationService.countryBbsLoadFailed.notify();
+      });
+    NotificationService.countryChanged.notify();
+  }
+
   // #endregion
 
   // #region CountryDiplomacies
@@ -843,7 +875,12 @@ export default class StatusModel {
     if (this.character.id !== character.id) {
       this.initializeCharacter(character);
     } else {
-      this.character = character;
+      if (this.character.countryId !== character.countryId) {
+        this.character = character;
+        this.onCountryChanged();
+      } else {
+        this.character = character;
+      }
     }
     this.characterParameters = this.getCharacterParameters(character);
 
@@ -1345,6 +1382,9 @@ export default class StatusModel {
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
       ArrayUtil.addLog(this.privateChatMessages, message);
+      if (message.character && message.character.id !== this.character.id) {
+        NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
+      }
     }
   }
 
@@ -1358,15 +1398,13 @@ export default class StatusModel {
 
   public postPrivateChat(charaId: number, callback?: () => void) {
     if (charaId > 0) {
-      this.postChat((message, icon) => api.Api.postPrivateChatMessage(message, icon, charaId),
-                    callback);
+      this.postChat((message, icon) => api.Api.postPrivateChatMessage(message, icon, charaId));
     }
   }
 
   public postOtherCountryChat(countryId: number, callback?: () => void) {
     if (countryId > 0) {
-      this.postChat((message, icon) => api.Api.postOtherCountryChatMessage(message, icon, countryId),
-                    callback);
+      this.postChat((message, icon) => api.Api.postOtherCountryChatMessage(message, icon, countryId));
     }
   }
 
@@ -1381,8 +1419,17 @@ export default class StatusModel {
             callback();
           }
         })
-        .catch(() => {
-          NotificationService.postChatFailed.notify();
+        .catch((ex) => {
+          if (ex.data) {
+            if (ex.data.code === api.ErrorCode.notPermissionError) {
+              NotificationService.postChatFailedBecauseNotPermission.notify();
+            } else if (ex.data.code === api.ErrorCode.countryNotFoundError ||
+                       ex.data.code === api.ErrorCode.characterNotFoundError) {
+              NotificationService.postChatFailedBecauseTargetNotFound.notify();
+            }
+          } else {
+            NotificationService.postChatFailed.notify();
+          }
         })
         .finally(() => {
           this.isPostingChat = false;
