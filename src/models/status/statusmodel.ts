@@ -717,8 +717,8 @@ export default class StatusModel {
 
     // 自国に関係することなら通知する
     if (this.hasInitialized &&
-        alliance.requestedCountryId === this.character.countryId ||
-        alliance.insistedCountryId === this.character.countryId) {
+        (alliance.requestedCountryId === this.character.countryId ||
+         alliance.insistedCountryId === this.character.countryId)) {
       const targetCountry = alliance.requestedCountryId === this.character.countryId ?
         alliance.insistedCountry : alliance.requestedCountry;
       if (alliance.status === api.CountryAlliance.statusAvailable) {
@@ -738,8 +738,8 @@ export default class StatusModel {
 
     // 自国に関係することなら通知する
     if (this.hasInitialized &&
-      war.requestedCountryId === this.character.countryId ||
-      war.insistedCountryId === this.character.countryId) {
+      (war.requestedCountryId === this.character.countryId ||
+       war.insistedCountryId === this.character.countryId)) {
       const targetCountry = war.requestedCountryId === this.character.countryId ?
         war.insistedCountry : war.requestedCountry;
       if (war.status === api.CountryWar.statusAvailable) {
@@ -1382,7 +1382,7 @@ export default class StatusModel {
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
       ArrayUtil.addLog(this.privateChatMessages, message);
-      if (message.character && message.character.id !== this.character.id) {
+      if (message.character && message.character.id !== this.character.id && this.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
       }
     }
