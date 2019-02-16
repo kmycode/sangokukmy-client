@@ -43,11 +43,13 @@ export default class ApiStreaming {
    * ストリーミングを開始
    */
   public start() {
-    this.streaming.header = {
-      Authorization: 'Bearer ' + current.authorizationToken,
-    };
-    this.streaming.start();
-    this.isStreaming = true;
+    if (!this.isStreaming) {
+      this.streaming.header = {
+        Authorization: 'Bearer ' + current.authorizationToken,
+      };
+      this.streaming.start();
+      this.isStreaming = true;
+    }
   }
 
   /**
@@ -160,11 +162,16 @@ export default class ApiStreaming {
         NotificationService.serverDatabaseFailed.notify();
         break;
     }
-    setTimeout(() => {
-      if (this.isStreaming) {
-        this.start();
-      }
-    }, 5000);
+
+    // 自分で停止したわけでなければ、再接続を試みる
+    if (this.isStreaming) {
+      this.stop();
+      setTimeout(() => {
+        if (!this.isStreaming) {
+          this.start();
+        }
+      }, 5000);
+    }
   }
 }
 
