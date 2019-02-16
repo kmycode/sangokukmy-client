@@ -101,10 +101,10 @@
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">会議室</a>
-                <div class="dropdown-divider"></div>
+                <!-- <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#">情報</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">専用BBS</a>
+                <a class="dropdown-item" href="#">専用BBS</a> -->
               </div>
             </li>
           </ul>
@@ -116,7 +116,7 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">増強</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li>
+            <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li> -->
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
           </ul>
           <div class="loading-container">
@@ -138,26 +138,26 @@
             <!-- 軍事コマンド -->
             <div v-show="selectedCommandCategory === 2" class="commands">
               <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
-              <button type="button" class="btn btn-light">兵士訓練</button>
+              <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
               <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
               <button type="button" class="btn btn-light" @click="model.inputMoveCommand(13)">戦争</button>
               <button type="button" class="btn btn-light" @click="model.inputMoveCommand(14)">集合</button>
             </div>
             <!-- 計略コマンド -->
             <div v-show="selectedCommandCategory === 3" class="commands">
-              <button type="button" class="btn btn-light">登用</button>
-              <button type="button" class="btn btn-light">密偵</button>
+              <!-- <button type="button" class="btn btn-light">登用</button>
+              <button type="button" class="btn btn-light">密偵</button> -->
             </div>
             <!-- 個人コマンド -->
             <div v-show="selectedCommandCategory === 4" class="commands">
               <button type="button" class="btn btn-light" @click="model.inputMoveCommand(17)">移動</button>
               <button type="button" class="btn btn-light" @click="isOpenTrainingDialog = true">能力強化</button>
-              <button type="button" class="btn btn-light">米売買</button>
+              <!-- <button type="button" class="btn btn-light">米売買</button>
               <button type="button" class="btn btn-light">武器</button>
-              <button type="button" class="btn btn-light">書物</button>
+              <button type="button" class="btn btn-light">書物</button> -->
               <button type="button" class="btn btn-light" @click="model.inputMoveCommand(0)">何もしない</button>
               <button type="button" class="btn btn-primary" @click="model.inputMoveCommand(23)">仕官</button>
-              <button type="button" class="btn btn-light">下野</button>
+              <!-- <button type="button" class="btn btn-light">下野</button> -->
             </div>
             <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
           </div>
@@ -167,7 +167,7 @@
             <button type="button" class="btn btn-light" @click="model.selectAllCommands()">全て</button>
             <button type="button" class="btn btn-light" @click="model.selectOddCommands()">偶数</button>
             <button type="button" class="btn btn-light" @click="model.selectEvenCommands()">奇数</button>
-            <button type="button" class="btn btn-light">ax+b</button>
+            <!-- <button type="button" class="btn btn-light">ax+b</button> -->
           </div>
           <!-- 選択アルゴリズム -->
           <div class="command-select-options">
