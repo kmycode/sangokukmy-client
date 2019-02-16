@@ -1,7 +1,8 @@
 import * as api from '@/api/api';
 import Enumerable from 'linq';
+import * as local from './localsettings';
 
-export const HOST_ROOT = 'http://localhost:5000/';
+export const HOST_ROOT = local.HOST_ROOT_LOCAL;
 
 /**
  * APIサーバのホスト
