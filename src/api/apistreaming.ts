@@ -54,8 +54,8 @@ export default class ApiStreaming {
    * ストリーミングを停止
    */
   public stop() {
-    this.streaming.stop();
     this.isStreaming = false;
+    this.streaming.stop();
   }
 
   /**
@@ -142,8 +142,10 @@ export default class ApiStreaming {
         break;
       case 0:
       case 404:
-        NotificationService.serverConnectionFailed.notify();
-        this.isLastError = true;
+        if (this.isStreaming) {
+          NotificationService.serverConnectionFailed.notify();
+          this.isLastError = true;
+        }
         break;
       case 500:
         const errorCode: number = error === null ? -1 : error.code;
