@@ -6,6 +6,15 @@
       </div>
       <div class="section">
         <h3>基本情報</h3>
+        <div v-if="system.invitationCodeRequestedAtEntry" :class="{ 'form-row': true, 'error': !isOkInvitationCode, }">
+          <div class="label">招待コード</div>
+          <div class="field">
+            <input type="text" v-model="invitationCode">
+          </div>
+          <div class="detail">
+            別途連絡した招待コードを入力してください
+          </div>
+        </div>
         <div :class="{ 'form-row': true, 'error': !isOkName, }">
           <div class="label">名前</div>
           <div class="field">
@@ -199,6 +208,7 @@ export default class EntryPage extends Vue {
   private passwordConfirm: string = '';
   private icon: api.CharacterIcon = new api.CharacterIcon(0, 0, true, 1, '0.gif');
   private isPublish: boolean = false;
+  private invitationCode: string = '';
 
   private system: api.SystemData = new api.SystemData();
   private countries: api.Country[] = [];
@@ -279,6 +289,11 @@ export default class EntryPage extends Vue {
     return this.sumOfAttributes === this.extraData.attributeSumMax;
   }
 
+  private get isOkInvitationCode(): boolean {
+    return !this.system.invitationCodeRequestedAtEntry ||
+      this.invitationCode.length > 0;
+  }
+
   private get canEntry(): boolean {
     return this.isOkName &&
       this.isOkAliasId &&
@@ -293,7 +308,8 @@ export default class EntryPage extends Vue {
       this.isOkIntellect &&
       this.isOkLeadership &&
       this.isOkPopularity &&
-      this.isOkSumOfAttributes
+      this.isOkSumOfAttributes &&
+      this.isOkInvitationCode
       ;
   }
 
@@ -382,7 +398,11 @@ export default class EntryPage extends Vue {
   private entry() {
     if (this.canEntry || true) {
       this.isEntrying = true;
-      api.Api.entry(this.character, this.icon, this.password, this.isPublish ? this.country : this.defaultCountry)
+      api.Api.entry(this.character,
+                    this.icon,
+                    this.password,
+                    this.isPublish ? this.country : this.defaultCountry,
+                    this.invitationCode)
         .then((auth) => {
           LoginService.setAccessToken(auth.accessToken);
           this.$emit('entry-succeed');
@@ -394,6 +414,8 @@ export default class EntryPage extends Vue {
             NotificationService.entryFailedBecauseSameCountryNameOrColor.notify();
           } else if (ex.data.code === api.ErrorCode.duplicateEntryError) {
             NotificationService.entryFailedBecauseSameIpAddress.notify();
+          } else if (ex.data.code === api.ErrorCode.invitationCodeRequestedError) {
+            NotificationService.entryFailedBecauseInvitationCode.notify();
           } else {
             NotificationService.entryFailed.notify();
           }

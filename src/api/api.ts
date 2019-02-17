@@ -49,6 +49,7 @@ export enum ErrorCode {
   duplicateCountryNameOrColorError = 38,
   invalidIpAddressError = 39,
   duplicateEntryError = 40,
+  invitationCodeRequestedError = 41,
 }
 
 /**
@@ -210,7 +211,8 @@ export class SystemData {
                      public gameDateTime: GameDateTime = new GameDateTime(0, 0),
                      public currentMonthStartDateTime: DateTime = new DateTime(0, 0, 0, 0, 0, 0),
                      public isWaitingReset: boolean = false,
-                     public resetGameDateTime: GameDateTime = new GameDateTime(0, 0)) {}
+                     public resetGameDateTime: GameDateTime = new GameDateTime(0, 0),
+                     public invitationCodeRequestedAtEntry: boolean = false) {}
 }
 
 /**
@@ -998,7 +1000,8 @@ export class Api {
   public static async entry(chara: Character,
                             icon: CharacterIcon,
                             password: string,
-                            country: Country): Promise<AuthenticationData> {
+                            country: Country,
+                            invitationCode?: string): Promise<AuthenticationData> {
     try {
       const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'entry', {
         character: {
@@ -1020,6 +1023,7 @@ export class Api {
           name: country.name,
           colorId: country.colorId,
         },
+        invitationCode,
       });
       return result.data.data;
     } catch (ex) {

@@ -380,6 +380,10 @@ export default class NotificationService {
     '登録失敗',
     'すでに登録した人の中から同じIPアドレスが検出されました。スマホなどからの登録はお控えください',
     NotificationServiceItemDefaultType.error);
+  public static readonly entryFailedBecauseInvitationCode = new NotificationServiceItem(
+    '登録失敗',
+    '招待コードが指定されていないか、間違っています',
+    NotificationServiceItemDefaultType.error);
   public static readonly getAllCharactersFailed = new NotificationServiceItem(
     '武将取得失敗',
     '武将取得に失敗しました',
