@@ -947,8 +947,18 @@ export default class StatusModel {
   private initializeCommands() {
     // 武将データ入手後のコマンド一覧初期化
 
+    let month = api.GameDateTime.nextMonth(this.character.lastUpdatedGameDate);
+    let skipMonthCount = 0;
+    if (month.year < def.UPDATE_START_YEAR) {
+      // 更新開始以降のコマンドのみを表示する
+      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
+      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
+      month = newMonth;
+    }
+
     // コマンド更新時間を初期化
     const date = api.DateTime.toDate(this.character.lastUpdated);
+    date.setSeconds(date.getSeconds() + skipMonthCount * def.UPDATE_TIME);
     this.commands.forEach((c) => {
       date.setSeconds(date.getSeconds() + def.UPDATE_TIME);
       Vue.set(c, 'date', api.DateTime.fromDate(date));
@@ -962,14 +972,6 @@ export default class StatusModel {
     api.Api.getAllCommands().then((cmd) => {
 
       // コマンドに設定していた仮のテキスト、年月を削除
-      let month = api.GameDateTime.nextMonth(this.character.lastUpdatedGameDate);
-      let skipMonthCount = 0;
-      if (month.year < def.UPDATE_START_YEAR) {
-        // 更新開始以降のコマンドのみを表示する
-        const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
-        skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
-        month = newMonth;
-      }
       this.commands.forEach((c) => {
         c.name = '';
         c.gameDate = month;
@@ -1139,6 +1141,7 @@ export default class StatusModel {
     const cmds = Enumerable.from(this.commands);
     const executed = cmds.where((c) => api.GameDateTime.toNumber(c.gameDate) <= dateNumber).toArray();
     let lastMonth = api.GameDateTime.addMonth(date, this.commands.length);
+    const nextMonth = api.GameDateTime.nextMonth(date);
 
     // 実行されたコマンドを取得
     const command = ArrayUtil.findUniquely(this.commands, dateNumber, (c) => api.GameDateTime.toNumber(c.gameDate));
@@ -1158,24 +1161,47 @@ export default class StatusModel {
       commandNumber++;
     }
 
+    // 次回更新までの秒数を設定
+    let skipMonthCount = 0;
+    if (nextMonth.year < def.UPDATE_START_YEAR) {
+      // 更新開始年以前の表示
+      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
+      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(nextMonth);
+    }
+    this.secondsOfNextCommand = secondsNextCommand + skipMonthCount * def.UPDATE_TIME;
+
     // コマンド番号を整形
+    this.updateCommandData(date);
+
+    // 通知
+    if (date.year >= def.UPDATE_START_YEAR) {
+      if (command && command.type !== undefined && command.type !== 0) {
+        this.updateCommandName(command);
+        NotificationService.commandExecuted.notifyWithParameter(command.name);
+      } else {
+        NotificationService.emptyCommandExecuted.notify();
+      }
+    }
+  }
+
+  private updateCommandData(lastUpdatedGameDate: api.GameDateTime = this.character.lastUpdatedGameDate) {
+    let month = api.GameDateTime.nextMonth(lastUpdatedGameDate);
+    let skipMonthCount = 0;
+    if (month.year < def.UPDATE_START_YEAR) {
+      // 更新開始以降のコマンドのみを表示する
+      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
+      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
+      month = newMonth;
+    }
+
+    // コマンド更新時間を初期化
     const commandDate = api.DateTime.toDate(this.character.lastUpdated);
+    commandDate.setSeconds(commandDate.getSeconds() + skipMonthCount * def.UPDATE_TIME);
     this.commands.forEach((cmd, index) => {
       commandDate.setSeconds(commandDate.getSeconds() + def.UPDATE_TIME);
       cmd.commandNumber = index + 1;
       cmd.date = api.DateTime.fromDate(commandDate);
     });
-
-    // 次回更新までの秒数を設定
-    this.secondsOfNextCommand = secondsNextCommand;
-
-    // 通知
-    if (command && command.type !== undefined && command.type !== 0) {
-      this.updateCommandName(command);
-      NotificationService.commandExecuted.notifyWithParameter(command.name);
-    } else {
-      NotificationService.emptyCommandExecuted.notify();
-    }
   }
 
   private updateCommandName(command: api.CharacterCommand) {
