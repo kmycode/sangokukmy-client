@@ -4,11 +4,12 @@
       <hr>
       三国志NET Ver2.7 <a href="http://www3.to/maccyu2/" target="_top">maccyu</a><br>
       三国志NET KMY Version (since 2006.8.21)<br>
-      Administered by 雪あすか <a href="https://github.com/kmycode">GitHub</a> / <a href="https://twitter.com/askyq">Twitter</a> (※成人向けコンテンツ注意)
+      GitHub開発ページ: <a href="https://github.com/kmycode/sangokukmy">Server</a> / <a href="https://github.com/kmycode/sangokukmy-client">Client</a><br>
+      Administered by <a href="https://twitter.com/askyq">雪あすか (旧 KMY/水城正未/飛香有希)</a> (※成人向けコンテンツ注意)
       <div id="footer-last-mes">
         ※本ゲームプログラムは、原作Ver2.7ならびに三国志NET KMY Version 3／7を参考に、一から再構成したものです<br>
         Google Chrome(Win, Mac)、Safari(Mac) で動作を確認しております<br>
-        Internet Explorer、Microsoft Edgeでも、操作に不都合がないことは確認していますが、表示の崩れまでは対応していません。<del>潰れて</del>
+        Internet Explorer、Microsoft Edgeでも、操作に不都合がないことは確認していますが、表示の崩れまでは対応していません。<del>滅んで</del>
       </div>
     </div>
   </footer>
