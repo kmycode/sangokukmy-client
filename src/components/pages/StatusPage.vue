@@ -309,6 +309,7 @@
             :countries="model.countries"
             :characters="model.townCharacters"
             canPrivateChat="true"
+            :myCharacterId="model.character.id"
             @private-chat="readyPrivateChat($event); isOpenTownCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
@@ -327,6 +328,7 @@
             :countries="model.countries"
             :characters="model.townDefenders"
             canPrivateChat="true"
+            :myCharacterId="model.character.id"
             @private-chat="readyPrivateChat($event); isOpenTownDefendersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownDefenders"><div class="loading-icon"></div></div>
         </div>

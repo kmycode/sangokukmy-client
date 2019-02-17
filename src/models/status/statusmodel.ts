@@ -1456,6 +1456,8 @@ export default class StatusModel {
             } else if (ex.data.code === api.ErrorCode.countryNotFoundError ||
                        ex.data.code === api.ErrorCode.characterNotFoundError) {
               NotificationService.postChatFailedBecauseTargetNotFound.notify();
+            } else {
+              NotificationService.postChatFailed.notify();
             }
           } else {
             NotificationService.postChatFailed.notify();

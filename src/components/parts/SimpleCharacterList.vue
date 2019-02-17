@@ -12,7 +12,7 @@
           <div class="name">{{ chara.name }}</div>
           <div class="commands">
           </div>
-          <div class="chat" v-if="canPrivateChat">
+          <div class="chat" v-if="canPrivateChat && chara.id !== myCharacterId">
             <button class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
           </div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
