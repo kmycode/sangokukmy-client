@@ -78,7 +78,8 @@ export default class StatusModel {
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
-      || this.isAppointing || this.isSendingAlliance || this.isSendingWar || this.isUpdatingUnit;
+      || this.isAppointing || this.isSendingAlliance || this.isSendingWar || this.isUpdatingUnit
+      || this.isLoadingMoreMapLogs;
   }
   public isCommandInputing: boolean = false;
   public isPostingChat: boolean = false;
@@ -90,6 +91,8 @@ export default class StatusModel {
   public isSendingAlliance: boolean = false;
   public isSendingWar: boolean = false;
   public isUpdatingUnit: boolean = false;
+  public isLoadingMoreMapLogs: boolean = false;
+  public hasLoadAllMapLogs: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -1366,6 +1369,29 @@ export default class StatusModel {
   private addMapLog(log: api.MapLog) {
     ArrayUtil.addLog(this.mapLogs, log, 50);
   }
+
+  public loadOldMapLogs() {
+    if (this.isLoadingMoreMapLogs || this.hasLoadAllMapLogs) {
+      return;
+    }
+    this.isLoadingMoreMapLogs = true;
+    api.Api.getMapLog(this.mapLogs[this.mapLogs.length - 1].id, 50)
+      .then((logs) => {
+        if (logs.length > 0) {
+          Enumerable.from(logs).reverse().forEach((log) => {
+            ArrayUtil.addItem(this.mapLogs, log);
+          });
+        } else {
+          this.hasLoadAllMapLogs = true;
+        }
+      })
+      .catch(() => {
+        NotificationService.loadMapLogFailed.notify();
+      })
+      .finally(() => {
+        this.isLoadingMoreMapLogs = false;
+      });
+}
 
   private addCharacterLog(log: api.CharacterLog) {
     ArrayUtil.addLog(this.characterLogs, log, 50);

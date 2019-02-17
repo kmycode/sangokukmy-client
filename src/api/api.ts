@@ -1032,6 +1032,15 @@ export class Api {
     }
   }
 
+  public static async getMapLog(sinceId: number, count: number = 50): Promise<MapLog[]> {
+    try {
+      const result = await axios.get<MapLog[]>(def.API_HOST + 'maplog?since=' + sinceId + '&count=' + count);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 認証のときに利用するヘッダ
    */

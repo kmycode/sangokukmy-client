@@ -392,6 +392,10 @@ export default class NotificationService {
     '滅亡',
     '所属している国が滅亡しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly loadMapLogFailed = new NotificationServiceItem(
+    'マップログ取得失敗',
+    'マップログ取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

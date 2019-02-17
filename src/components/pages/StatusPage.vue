@@ -79,9 +79,12 @@
         <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId">
           <h4 v-show="selectedReportType === 0">報告（マップ）</h4>
           <h4 v-show="selectedReportType === 1">報告（武将）</h4>
-          <div class="content-main">
+          <div class="content-main" @scroll="onMapLogScrolled($event)">
             <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
             <MapLogList v-show="selectedReportType === 1" :logs="model.characterLogs" type="character-log"/>
+            <div v-show="model.isLoadingMoreMapLogs" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="selectedReportType = 0">マップ</button>
@@ -710,6 +713,15 @@ export default class StatusPage extends Vue {
       this.model.postGlobalChat();
     }
   }
+
+  private onMapLogScrolled(event: any) {
+    if (this.selectedReportType === 0) {
+      // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
+      if ((event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight) {
+        this.model.loadOldMapLogs();
+      }
+    }
+  }
 }
 </script>
 
@@ -723,6 +735,11 @@ $left-side-fixed-height: $current-display-height + $nav-tab-height;
 $right-side-fixed-height: $nav-tab-height;
 
 $color-navigation-commands: #e0e0e0;
+
+// infinite scrollで、リストの一番下につける、loading-container付きのdivにつけるクラス
+.load-more {
+  height: 40px;
+}
 
 // Bootstrapによるタブ
 ul.nav {
