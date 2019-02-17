@@ -444,7 +444,7 @@
             <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenWarDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedAllianceStatus >= 0" @click="model.setWar(selectedWarStatus); isOpenWarDialog = false">承認</button>
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedWarStatus >= 0" @click="model.setWar(selectedWarStatus); isOpenWarDialog = false">承認</button>
             <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenWarDialog = false">閉じる</button>
           </div>
         </div>
