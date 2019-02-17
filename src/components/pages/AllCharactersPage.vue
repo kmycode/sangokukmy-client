@@ -90,7 +90,7 @@ export default class AllCharactersPage extends Vue {
     this.allCharacters = charas;
 
     const countries = Enumerable.from(allCountries)
-      .where((c) => !c.lastMoneyIncomes)
+      .where((c) => !c.hasOverthrown)
       .toArray();
     countries.forEach((country) => {
       const cdata = country as any;
