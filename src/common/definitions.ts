@@ -196,6 +196,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (18:1)';
     }
   }),
+  new CommandNameResolver(23, '仕官'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
