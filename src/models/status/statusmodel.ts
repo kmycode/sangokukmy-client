@@ -705,7 +705,11 @@ export default class StatusModel {
       .catch(() => {
         NotificationService.countryBbsLoadFailed.notify();
       });
-    NotificationService.countryChanged.notify();
+    if (!this.character.countryId) {
+      NotificationService.countryOverthrown.notify();
+    } else {
+      NotificationService.countryChanged.notify();
+    }
   }
 
   // #endregion
