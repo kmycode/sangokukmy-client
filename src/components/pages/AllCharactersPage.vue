@@ -96,7 +96,7 @@ export default class AllCharactersPage extends Vue {
       const cdata = country as any;
       cdata.characters = Enumerable.from(charas)
         .where((c) => c.countryId === country.id)
-        .orderByDescending((c) => c.contribution)
+        .orderByDescending((c) => c.classValue)
         .toArray();
       cdata.monarch = this.getMonarch(country);
       cdata.warrior = this.getWarrior(country);
