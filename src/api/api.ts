@@ -223,13 +223,13 @@ export class MapLog implements IIdentitiedEntity {
     return Enumerable.from(def.EVENT_TYPES).firstOrDefault((et) => et.id === log.eventType);
   }
 
-  constructor(public id: number,
-              public isImportant: boolean,
-              public eventType: number,
-              public message: string,
-              public gameDate: GameDateTime,
-              public date: DateTime,
-              public battleLogId: number) {}
+  constructor(public id: number = 0,
+              public isImportant: boolean = false,
+              public eventType: number = 0,
+              public message: string = '',
+              public gameDate: GameDateTime = new GameDateTime(),
+              public date: DateTime = new DateTime(),
+              public battleLogId: number = 0) {}
 }
 
 /**
@@ -491,7 +491,7 @@ export class CharacterIcon {
   public static readonly default: CharacterIcon = CharacterIcon.createDefault();
 
   public static isDefault(icon: CharacterIcon): boolean {
-    if (icon.isNotDefaultPrivate) {
+    if (icon && icon.isNotDefaultPrivate) {
       return true;
     } else {
       return false;
@@ -499,15 +499,19 @@ export class CharacterIcon {
   }
 
   public static getUri(icon: CharacterIcon): string {
-    if (icon.type === 2) {
-      // アップロードされたアイコン
-      return def.UPLOADED_ICONS_HOST + icon.fileName;
-    } else if (icon.type === 3) {
-      // Gravatar
-      return 'https://www.gravatar.com/avatar/' + icon.fileName + '?s=128';
+    if (icon) {
+      if (icon.type === 2) {
+        // アップロードされたアイコン
+        return def.UPLOADED_ICONS_HOST + icon.fileName;
+      } else if (icon.type === 3) {
+        // Gravatar
+        return 'https://www.gravatar.com/avatar/' + icon.fileName + '?s=128';
+      } else {
+        // デフォルトのアイコン
+        return def.DEFAULT_ICONS_HOST + icon.fileName;
+      }
     } else {
-      // デフォルトのアイコン
-      return def.DEFAULT_ICONS_HOST + icon.fileName;
+      return '';
     }
   }
 
@@ -636,12 +640,12 @@ export class BattleLog {
   public static readonly defenderWall = 3;
 
   public constructor(public id: number = 0,
-                     public town: Town,
-                     public defenderType: number,
-                     public attackerCache: Character,
-                     public defenderCache: Character,
-                     public maplog: MapLog,
-                     public lines: BattleLogLine[]) {}
+                     public town: Town = Town.default,
+                     public defenderType: number = 0,
+                     public attackerCache: Character = new Character(-1),
+                     public defenderCache: Character = new Character(-1),
+                     public maplog: MapLog = new MapLog(-1),
+                     public lines: BattleLogLine[] = []) {}
 }
 
 export class ThreadBbsReply {

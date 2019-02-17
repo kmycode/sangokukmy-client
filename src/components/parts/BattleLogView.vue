@@ -1,15 +1,20 @@
 <template>
-  <div v-if="log">
+  <div v-if="log.id > 0">
     <SimpleCharacterList :characters="characters" :countries="countries"/>
     <div class="message first">
-      {{ log.maplog.gameDate | gamedate }}、<KmyLogTagText :text="'<country>' + attackerCountry.name + '</country> の <character>' + log.attackerCache.name + '</character> は <country>' + defenderCountry.name + '</country> の <town>' + log.town.name + '</town> へ侵攻しました'"/><br>
-      <KmyLogTagText v-show="log.lines.length > 0" :text="'<character>' + log.defenderCache.name + '</character> が応戦しました'"/>
+      {{ log.maplog.gameDate | gamedate }}、
+      <KmyLogTagText
+        :text="'<country>' + attackerCountry.name + '</country> の <character>' + log.attackerCache.name + '</character> は <country>' + defenderCountry.name + '</country> の <town>' + log.town.name + '</town> へ侵攻しました'"
+      />
+      <br>
+      <KmyLogTagText
+        v-show="log.lines.length > 0"
+        :text="'<character>' + log.defenderCache.name + '</character> が応戦しました'"
+      />
       <KmyLogTagText v-show="log.lines.length <= 0" :text="'応戦できる者はいませんでした'"/>
     </div>
     <div class="lines">
-      <div class="line"
-           v-for="line in log.lines"
-           :key="line.id">
+      <div class="line" v-for="line in log.lines" :key="line.id">
         <div class="chara attacker">
           <div class="icon">
             <CharacterIcon :icon="log.attackerCache.mainIcon"/>
@@ -58,15 +63,14 @@ import NotificationService from '@/services/notificationservice';
 })
 export default class BattleLogView extends Vue {
   @Prop({
-    default: undefined,
-  }) private log!: api.BattleLog;
-  @Prop({
     default: 0,
-  }) private logId!: number;
+  })
+  private logId!: number;
   @Prop() private countries!: api.Country[];
+  private log: api.BattleLog = new api.BattleLog();
 
   private get characters(): api.Character[] {
-    return [ this.log.attackerCache, this.log.defenderCache ];
+    return [this.log.attackerCache, this.log.defenderCache];
   }
 
   private get attackerCountry(): api.Country {
@@ -93,9 +97,7 @@ export default class BattleLogView extends Vue {
   }
 
   private getCountry(id: number): api.Country {
-    const country = Enumerable
-      .from(this.countries)
-      .firstOrDefault((c) => c.id === id);
+    const country = Enumerable.from(this.countries).firstOrDefault((c) => c.id === id);
     if (country !== undefined) {
       return country;
     } else {

@@ -1,5 +1,5 @@
 <template>
-  <img :src="mainUri">
+  <img :class="mainUri ? '' : 'hidden'" :src="mainUri">
 </template>
 
 <script lang="ts">
@@ -20,7 +20,11 @@ export default class CharacterIcon extends Vue {
 
   private get mainUri(): string {
     if (api.CharacterIcon.isDefault(this.icon)) {
-      return api.CharacterIcon.getMainUri(this.icons);
+      if (this.icons.length > 0) {
+        return api.CharacterIcon.getMainUri(this.icons);
+      } else {
+        return '';
+      }
     } else {
       return api.CharacterIcon.getUri(this.icon);
     }
@@ -36,6 +40,9 @@ img {
   transition: border-radius .16s ease-in;
   &:hover {
     border-radius: 8px;
+  }
+  &.hidden {
+    visibility: hidden;
   }
 }
 </style>
