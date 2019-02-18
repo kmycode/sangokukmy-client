@@ -14,12 +14,12 @@ export default class ApiStreaming {
   /**
    * トップ画面のストリーミング
    */
-  public static top = new ApiStreaming(def.API_HOST + 'streaming/anonymous', 'GET');
+  public static top = new ApiStreaming(def.API_HOST + 'streaming/anonymous', 'GET', false);
 
   /**
    * ステータス画面のストリーミング
    */
-  public static status = new ApiStreaming(def.API_HOST + 'streaming/status', 'GET');
+  public static status = new ApiStreaming(def.API_HOST + 'streaming/status', 'GET', true);
 
   /**
    * 前回接続でエラーが発生していたか
@@ -31,7 +31,8 @@ export default class ApiStreaming {
   private streaming: Streaming = new Streaming();
 
   private constructor(uri: string,
-                      method: string) {
+                      method: string,
+                      private isAuthorize: boolean) {
     // ストリーミングを初期化
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
     this.streaming.onError = (code, err) => this.onError(code, err);
@@ -44,9 +45,11 @@ export default class ApiStreaming {
    */
   public start() {
     if (!this.isStreaming) {
-      this.streaming.header = {
-        Authorization: 'Bearer ' + current.authorizationToken,
-      };
+      if (this.isAuthorize) {
+        this.streaming.header = {
+          Authorization: 'Bearer ' + current.authorizationToken,
+        };
+      }
       this.streaming.start();
       this.isStreaming = true;
     }
