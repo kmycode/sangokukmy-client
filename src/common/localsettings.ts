@@ -1,6 +1,6 @@
 
 function isLocal(): boolean {
-  return location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+  return process.env.NODE_ENV !== 'production';
 }
 
 export const HOST_ROOT_LOCAL =
