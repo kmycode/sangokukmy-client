@@ -56,19 +56,20 @@ export default class Streaming {
 
     // 受信がすべて完了したとき
     this.ajax.onreadystatechange = () => {
-      if (this.ajax != null && this.ajax.readyState === 4) {
-        switch (this.ajax.status) {
+      const ajax = this.ajax;
+      if (ajax != null && ajax.readyState === 4) {
+        switch (ajax.status) {
           case 200:
             if (this.onFinished !== null) {
-              this.onFinished(this.ajax.status);
+              this.onFinished(ajax.status);
             }
             break;
           default:
             if (this.onError !== null) {
               let errobj: api.ApiError | null = null;
-              if (this.ajax.responseText.length > 0) {
+              if (ajax.responseText.length > 0) {
                 const line = Enumerable
-                  .from(this.ajax.responseText.split('\n'))
+                  .from(ajax.responseText.split('\n'))
                   .last((ln) => ln.length > 0);
                 try {
                   const obj = JSON.parse(line) as api.ApiData<api.ApiError>;
@@ -79,11 +80,11 @@ export default class Streaming {
                   NotificationService.empty();
                 }
               }
-              this.onError(this.ajax.status, errobj);
+              this.onError(ajax.status, errobj);
             }
             break;
         }
-        this.ajax.onreadystatechange = null;
+        ajax.onreadystatechange = null;
       }
     };
 
