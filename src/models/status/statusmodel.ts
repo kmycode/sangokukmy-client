@@ -93,6 +93,12 @@ export default class StatusModel {
   public isUpdatingUnit: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
+  public isLoadingMoreGlobalChats: boolean = false;
+  public hasLoadAllGlobalChats: boolean = false;
+  public isLoadingMoreCountryChats: boolean = false;
+  public hasLoadAllCountryChats: boolean = false;
+  public isLoadingMorePrivateChats: boolean = false;
+  public hasLoadAllPrivateChats: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -1493,6 +1499,56 @@ export default class StatusModel {
           this.isPostingChat = false;
         });
     }
+  }
+
+  public loadOldGlobalChats() {
+    if (!this.hasLoadAllGlobalChats && !this.isLoadingMoreGlobalChats) {
+      this.loadOldChats(this.globalChatMessages,
+                        (id) => api.Api.getGlobalChatMessage(id, 50),
+                        (val) => this.isLoadingMoreGlobalChats = val,
+                        () => this.hasLoadAllGlobalChats = true);
+    }
+  }
+
+  public loadOldCountryChats() {
+    if (!this.hasLoadAllCountryChats && !this.isLoadingMoreCountryChats) {
+      this.loadOldChats(this.countryChatMessages,
+                        (id) => api.Api.getCountryChatMessage(id, 50),
+                        (val) => this.isLoadingMoreCountryChats = val,
+                        () => this.hasLoadAllCountryChats = true);
+    }
+  }
+
+  public loadOldPrivateChats() {
+    if (!this.hasLoadAllPrivateChats && !this.isLoadingMorePrivateChats) {
+      this.loadOldChats(this.privateChatMessages,
+                        (id) => api.Api.getPrivateChatMessage(id, 50),
+                        (val) => this.isLoadingMorePrivateChats = val,
+                        () => this.hasLoadAllPrivateChats = true);
+    }
+  }
+
+  private loadOldChats(messages: api.ChatMessage[],
+                       func: (sinceId: number) => Promise<api.ChatMessage[]>,
+                       setLoading: (val: boolean) => void,
+                       onLoadedAll: () => void) {
+    setLoading(true);
+    func(messages[messages.length - 1].id)
+      .then((mes) => {
+        if (mes.length > 0) {
+          Enumerable.from(mes).reverse().forEach((m) => {
+            ArrayUtil.addItem(messages, m);
+          });
+        } else {
+          onLoadedAll();
+        }
+      })
+      .catch(() => {
+        NotificationService.getChatFailed.notify();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   // #endregion

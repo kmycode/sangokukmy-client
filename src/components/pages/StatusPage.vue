@@ -226,14 +226,23 @@
             </div>
             <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
-          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
+          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages" @scroll="onCountryChatScrolled">
             <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
+            <div v-show="model.isLoadingMoreCountryChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
-          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
+          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages" @scroll="onPrivateChatScrolled">
             <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
+            <div v-show="model.isLoadingMorePrivateChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
-          <div v-show="selectedActionTab === 2" class="messages">
+          <div v-show="selectedActionTab === 2" class="messages" @scroll="this.onGlobalChatScrolled">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
+            <div v-show="model.isLoadingMoreGlobalChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
         </div>
         <!-- 会議室 -->
@@ -718,11 +727,33 @@ export default class StatusPage extends Vue {
 
   private onMapLogScrolled(event: any) {
     if (this.selectedReportType === 0) {
-      // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
-      if ((event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight) {
+      if (this.isScrolled(event)) {
         this.model.loadOldMapLogs();
       }
     }
+  }
+
+  private onGlobalChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldGlobalChats();
+    }
+  }
+
+  private onCountryChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldCountryChats();
+    }
+  }
+
+  private onPrivateChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldPrivateChats();
+    }
+  }
+
+  private isScrolled(event: any): boolean {
+    // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
+    return (event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight;
   }
 }
 </script>

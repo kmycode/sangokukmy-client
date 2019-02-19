@@ -880,12 +880,34 @@ export class Api {
     }
   }
 
+  public static async getGlobalChatMessage(since: number, count: number): Promise<ChatMessage[]> {
+    try {
+      const result = await axios.get<ApiArrayData<ChatMessage>>(
+        def.API_HOST + 'chat/global?sinceId=' + since + '&count=' + count,
+        this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async postPrivateChatMessage(mes: string, icon: CharacterIcon, toCharaId: number): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/character/' + toCharaId, {
         message: mes,
         characterIconId: icon.id,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getPrivateChatMessage(since: number, count: number): Promise<ChatMessage[]> {
+    try {
+      const result = await axios.get<ApiArrayData<ChatMessage>>(
+        def.API_HOST + 'chat/character?sinceId=' + since + '&count=' + count,
+        this.authHeader);
+      return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
