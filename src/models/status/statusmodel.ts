@@ -1470,8 +1470,9 @@ export default class StatusModel {
   }
 
   private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>, callback?: () => void) {
+    this.chatPostMessage = this.trimChatMessage(this.chatPostMessage);
     const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
-    if (icon) {
+    if (icon && this.chatPostMessage.length > 0) {
       this.isPostingChat = true;
       apiFunc(this.chatPostMessage, icon)
         .then(() => {
@@ -1548,6 +1549,17 @@ export default class StatusModel {
       .finally(() => {
         setLoading(false);
       });
+  }
+
+  private trimChatMessage(text: string): string {
+    // Shift+Enterで投稿したときの、最後につく改行をのぞく
+    if (text.length > 0 && text[text.length - 1] === '\n') {
+      text = text.slice(0, text.length - 1);
+      if (text.length > 0 && text[text.length - 1] === '\r') {
+        text = text.slice(0, text.length - 1);
+      }
+    }
+    return text;
   }
 
   // #endregion
