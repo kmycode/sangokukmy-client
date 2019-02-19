@@ -44,6 +44,8 @@ export default class Streaming {
   public onError: ((statusCode: number, error: api.ApiError | null) => void) | null = null;
 
   private ajax: XMLHttpRequest | null = null;
+  private isLastError: boolean = false;
+  private length: number = 0;
 
   /**
    * ストリーミングを開始する
@@ -99,23 +101,7 @@ export default class Streaming {
     this.ajax.send(requestBody);
 
     // リクエストを受け取っていないか確認
-    let length = 0;
-    const ajaxTimer = setInterval(() => {
-      if (this.ajax != null) {
-        if (length !== this.ajax.responseText.length) {
-          const updatedText = this.ajax.responseText.slice(length);
-          length = this.ajax.responseText.length;
-
-          // JSONになおしてイベント発行
-          const lines = updatedText.split('\n');
-          lines.filter((line) => line).forEach((line) => {
-            this.output(line);
-          });
-        }
-      } else {
-        clearInterval(ajaxTimer);
-      }
-    }, 100);
+    this.receiveLoop();
   }
 
   /**
@@ -128,9 +114,43 @@ export default class Streaming {
     }
   }
 
+  private receiveLoop() {
+    const ajax = this.ajax;
+    if (ajax != null) {
+      if (this.length !== ajax.responseText.length || this.isLastError) {
+        const updatedText = ajax.responseText.slice(this.length);
+        this.length = ajax.responseText.length;
+
+        // JSONになおしてイベント発行
+        this.isLastError = false;
+        const lines = updatedText.split('\n');
+        const availableLines = lines.filter((line) => line);
+        availableLines.forEach((line) => {
+          this.output(line);
+        });
+
+        // 最後のデータがエラーなら、最後のデータを後でもう一度
+        if (this.isLastError) {
+          const lastAvailableLine = availableLines[availableLines.length - 1];
+          this.length -= Enumerable.from(lines)
+            .skipWhile((line) => line !== lastAvailableLine)
+            .sum((line) => line.length + 1);
+          if (updatedText[updatedText.length - 1] !== '\n') {
+            this.length--;
+          }
+        }
+      }
+
+      // 並列処理を防止するため、setIntervalは使わない
+      setTimeout(() => this.receiveLoop(), 100);
+    }
+  }
+
   private output(line: string) {
     try {
       const obj = JSON.parse(line);
+      this.isLastError = false;
+
       if (this.onReceiveObject !== null) {
         this.onReceiveObject(obj);
       }
@@ -138,6 +158,7 @@ export default class Streaming {
       if (this.onReceiveText !== null) {
         this.onReceiveText(line);
       }
+      this.isLastError = true;
     }
   }
 
