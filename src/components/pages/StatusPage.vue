@@ -98,18 +98,19 @@
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">全国宛</a></li>
-            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
+            <!-- <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span v-show="selectedActionTabSubPanel === 0">会議室</span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">会議室</a>
-                <!-- <div class="dropdown-divider"></div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">登用</a>
                 <a class="dropdown-item" href="#">情報</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">専用BBS</a> -->
+                <a class="dropdown-item" href="#">専用BBS</a>
               </div>
-            </li>
+            </li> -->
           </ul>
         </div>
         <!-- コマンド入力 -->
@@ -198,17 +199,18 @@
           </div>
         </div>
         <!-- 手紙 -->
-        <div v-show="selectedActionTab === 1 || selectedActionTab === 2" class="right-side-content content-chat">
+        <div v-show="selectedActionTab === 1" class="right-side-content content-chat">
           <!-- 手紙の種類選択のタブ -->
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#">全国</a></li>
             <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
           </ul>
           <!-- 投稿フォーム -->
-          <div v-if="selectedActionTab !== 1 || selectedChatCategory !== 4" class="loading-container">
+          <div v-if="selectedActionTab === 1 && selectedChatCategory !== 4" class="loading-container">
             <div :class="'chat-new-message country-color-' + model.characterCountryColor">
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
@@ -238,7 +240,7 @@
               <div class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
-          <div v-show="selectedActionTab === 2" class="messages" @scroll="this.onGlobalChatScrolled">
+          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages" @scroll="this.onGlobalChatScrolled">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
             <div v-show="model.isLoadingMoreGlobalChats" class="loading-container load-more">
               <div class="loading"><div class="loading-icon"></div></div>
@@ -246,7 +248,7 @@
           </div>
         </div>
         <!-- 会議室 -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-meeting">
+        <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.countryBbsThreads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
       </div>
