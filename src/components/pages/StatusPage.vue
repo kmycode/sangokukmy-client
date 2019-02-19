@@ -255,7 +255,7 @@
     </div>
     <!-- ダイアログ -->
     <div id="status-dialog" :class="{ 'show': isOpenDialog }">
-      <div class="dialog-background"></div>
+      <div class="dialog-background" @click="closeDialogs()"></div>
       <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
@@ -605,6 +605,13 @@ export default class StatusPage extends Vue {
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog;
+  }
+
+  public closeDialogs() {
+    this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
+      this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
+      this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
+      this.isOpenBattleLogDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
