@@ -9,9 +9,13 @@
       </div>
       <div class="information">
         <div class="standard">
-          <div class="name">{{ chara.name }}</div>
-          <div v-if="chara.deleteTurn > 0" class="delete-turn">放置削除まで {{ getDeleteTurn(chara) }} ターン</div>
-          <div class="class-name">階級: {{ getClassName(chara) }}</div>
+          <div class="left-block">
+            <div class="name">{{ chara.name }}</div>
+          </div>
+          <div class="right-block">
+            <div v-if="chara.deleteTurn > 0" class="delete-turn">放置削除まで {{ getDeleteTurn(chara) }} ターン</div>
+            <div class="class-name">階級: {{ getClassName(chara) }}</div>
+          </div>
         </div>
         <div class="parameters">
           <span class="parameter-item">
@@ -76,6 +80,7 @@ export default class CharacterList extends Vue {
 
 <style lang="scss" scoped>
 @import '@/scss/country-color.scss';
+@import '@/scss/bootstrap-helper.scss';
 
 .simple-character-list {
   .item {
@@ -95,36 +100,53 @@ export default class CharacterList extends Vue {
 
       .standard {
         display: flex;
+        flex-wrap: wrap;
 
-        .name {
-          font-size: 1.6rem;
+        .left-block {
           flex: 1;
+
+          .name {
+            font-size: 1.6rem;
+            flex: 1;
+            white-space: nowrap;
+
+            @include media-query-lower(md) {
+              font-size: 1.4rem;
+            }
+
+            @include media-query-lower(sm) {
+              font-size: 1.2rem;
+            }
+          }
         }
 
-        .delete-turn {
-          font-weight: bold;
-          color: red;
-          margin-right: 16px;
-        }
-
-        .class-name {
-          margin: 4px 8px 0 0;
+        .right-block {
+          display: flex;
+          margin: 2px 8px 0 0;
+          
+          .delete-turn {
+            font-weight: bold;
+            color: red;
+            margin-right: 16px;
+          }
         }
       }
 
       .parameters {
+        display: flex;
+        flex-wrap: wrap;
         .parameter-item {
           padding-right: 12px;
           .parameter-name {
             font-size: 0.8rem;
             color: #666;
-            padding-right: 4px;
           }
           .parameter-value {
+            padding-left: 8px;
             display: inline-block;
             font-size: 1rem;
             font-weight: bold;
-            width: 2rem;
+            width: 3rem;
             text-align: center;
           }
         }

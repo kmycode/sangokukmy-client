@@ -12,9 +12,9 @@
         <div class="container-fluid">
           <div class="row" v-show="!isLogining">
             <div class="col-md-1">ID</div>
-            <div class="col-md-4"><input type="text" ref="firstFocused" v-model="loginId"></div>
+            <div class="col-md-4"><input type="text" ref="firstFocused" v-model="loginId" @keyup.enter="login"></div>
             <div class="col-md-1">PASS</div>
-            <div class="col-md-4"><input type="password" v-model="loginPassword"></div>
+            <div class="col-md-4"><input type="password" v-model="loginPassword" @keyup.enter="login"></div>
             <div class="col-md-2"><button type="button" class="btn btn-primary" @click="login">ログイン</button></div>
           </div>
           <div v-if="isLogining">

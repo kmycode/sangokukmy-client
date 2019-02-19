@@ -98,18 +98,19 @@
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">全国宛</a></li>
-            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
+            <!-- <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span v-show="selectedActionTabSubPanel === 0">会議室</span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">会議室</a>
-                <!-- <div class="dropdown-divider"></div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#">登用</a>
                 <a class="dropdown-item" href="#">情報</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">専用BBS</a> -->
+                <a class="dropdown-item" href="#">専用BBS</a>
               </div>
-            </li>
+            </li> -->
           </ul>
         </div>
         <!-- コマンド入力 -->
@@ -198,22 +199,23 @@
           </div>
         </div>
         <!-- 手紙 -->
-        <div v-show="selectedActionTab === 1 || selectedActionTab === 2" class="right-side-content content-chat">
+        <div v-show="selectedActionTab === 1" class="right-side-content content-chat">
           <!-- 手紙の種類選択のタブ -->
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#">全国</a></li>
             <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
           </ul>
           <!-- 投稿フォーム -->
-          <div v-if="selectedActionTab !== 1 || selectedChatCategory !== 4" class="loading-container">
+          <div v-if="selectedActionTab === 1 && selectedChatCategory !== 4" class="loading-container">
             <div :class="'chat-new-message country-color-' + model.characterCountryColor">
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
-                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage"></textarea>
+                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage" @keyup.shift.enter.prevent.stop="postChat()"></textarea>
                 </div>
                 <div v-show="(isSendToPrivate && selectedChatCategory === 1) || (isSendToCountry && selectedChatCategory === 0)" class="message-target"
                      @click="isSendToPrivate = isSendToCountry = false">
@@ -226,25 +228,34 @@
             </div>
             <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
-          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
+          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages" @scroll="onCountryChatScrolled">
             <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
+            <div v-show="model.isLoadingMoreCountryChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
-          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
+          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages" @scroll="onPrivateChatScrolled">
             <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
+            <div v-show="model.isLoadingMorePrivateChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
-          <div v-show="selectedActionTab === 2" class="messages">
+          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages" @scroll="this.onGlobalChatScrolled">
             <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
+            <div v-show="model.isLoadingMoreGlobalChats" class="loading-container load-more">
+              <div class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
         </div>
         <!-- 会議室 -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-meeting">
+        <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.countryBbsThreads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
       </div>
     </div>
     <!-- ダイアログ -->
     <div id="status-dialog" :class="{ 'show': isOpenDialog }">
-      <div class="dialog-background"></div>
+      <div class="dialog-background" @click="closeDialogs()"></div>
       <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
@@ -596,6 +607,13 @@ export default class StatusPage extends Vue {
       || this.isOpenBattleLogDialog;
   }
 
+  public closeDialogs() {
+    this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
+      this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
+      this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
+      this.isOpenBattleLogDialog = false;
+  }
+
   public get soliderDetail(): def.SoldierType {
     if (this.selectedSoliderType === 1) {
       return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 100);
@@ -718,11 +736,33 @@ export default class StatusPage extends Vue {
 
   private onMapLogScrolled(event: any) {
     if (this.selectedReportType === 0) {
-      // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
-      if ((event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight) {
+      if (this.isScrolled(event)) {
         this.model.loadOldMapLogs();
       }
     }
+  }
+
+  private onGlobalChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldGlobalChats();
+    }
+  }
+
+  private onCountryChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldCountryChats();
+    }
+  }
+
+  private onPrivateChatScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldPrivateChats();
+    }
+  }
+
+  private isScrolled(event: any): boolean {
+    // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
+    return (event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight;
   }
 }
 </script>
@@ -816,6 +856,7 @@ ul.nav {
   .content-main {
     height: calc(100% - 2rem - 48px);
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .commands {
     height: 48px;
@@ -893,6 +934,7 @@ ul.nav {
       flex: 1;
       margin-top: 4px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .command-list-item {
       background: #f4f4ff;
@@ -1019,11 +1061,13 @@ ul.nav {
     .messages {
       flex: 1;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 
   &.content-meeting {
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 

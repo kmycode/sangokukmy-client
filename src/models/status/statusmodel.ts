@@ -93,6 +93,12 @@ export default class StatusModel {
   public isUpdatingUnit: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
+  public isLoadingMoreGlobalChats: boolean = false;
+  public hasLoadAllGlobalChats: boolean = false;
+  public isLoadingMoreCountryChats: boolean = false;
+  public hasLoadAllCountryChats: boolean = false;
+  public isLoadingMorePrivateChats: boolean = false;
+  public hasLoadAllPrivateChats: boolean = false;
 
   private isInitializedCommands = false;
 
@@ -773,8 +779,7 @@ export default class StatusModel {
       // 古いのを消す
       const newItems = Enumerable
         .from(items)
-        .where((ca) => ca.id < diplomacy.id &&
-                       !api.CountryDipromacy
+        .where((ca) => !api.CountryDipromacy
                           .isEqualCountry(ca, diplomacy.requestedCountryId, diplomacy.insistedCountryId))
         .toArray();
 
@@ -1465,8 +1470,9 @@ export default class StatusModel {
   }
 
   private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>, callback?: () => void) {
+    this.chatPostMessage = this.trimChatMessage(this.chatPostMessage);
     const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
-    if (icon) {
+    if (icon && this.chatPostMessage.length > 0) {
       this.isPostingChat = true;
       apiFunc(this.chatPostMessage, icon)
         .then(() => {
@@ -1493,6 +1499,67 @@ export default class StatusModel {
           this.isPostingChat = false;
         });
     }
+  }
+
+  public loadOldGlobalChats() {
+    if (!this.hasLoadAllGlobalChats && !this.isLoadingMoreGlobalChats) {
+      this.loadOldChats(this.globalChatMessages,
+                        (id) => api.Api.getGlobalChatMessage(id, 50),
+                        (val) => this.isLoadingMoreGlobalChats = val,
+                        () => this.hasLoadAllGlobalChats = true);
+    }
+  }
+
+  public loadOldCountryChats() {
+    if (!this.hasLoadAllCountryChats && !this.isLoadingMoreCountryChats) {
+      this.loadOldChats(this.countryChatMessages,
+                        (id) => api.Api.getCountryChatMessage(id, 50),
+                        (val) => this.isLoadingMoreCountryChats = val,
+                        () => this.hasLoadAllCountryChats = true);
+    }
+  }
+
+  public loadOldPrivateChats() {
+    if (!this.hasLoadAllPrivateChats && !this.isLoadingMorePrivateChats) {
+      this.loadOldChats(this.privateChatMessages,
+                        (id) => api.Api.getPrivateChatMessage(id, 50),
+                        (val) => this.isLoadingMorePrivateChats = val,
+                        () => this.hasLoadAllPrivateChats = true);
+    }
+  }
+
+  private loadOldChats(messages: api.ChatMessage[],
+                       func: (sinceId: number) => Promise<api.ChatMessage[]>,
+                       setLoading: (val: boolean) => void,
+                       onLoadedAll: () => void) {
+    setLoading(true);
+    func(messages[messages.length - 1].id)
+      .then((mes) => {
+        if (mes.length > 0) {
+          Enumerable.from(mes).reverse().forEach((m) => {
+            ArrayUtil.addItem(messages, m);
+          });
+        } else {
+          onLoadedAll();
+        }
+      })
+      .catch(() => {
+        NotificationService.getChatFailed.notify();
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }
+
+  private trimChatMessage(text: string): string {
+    // Shift+Enterで投稿したときの、最後につく改行をのぞく
+    if (text.length > 0 && text[text.length - 1] === '\n') {
+      text = text.slice(0, text.length - 1);
+      if (text.length > 0 && text[text.length - 1] === '\r') {
+        text = text.slice(0, text.length - 1);
+      }
+    }
+    return text;
   }
 
   // #endregion

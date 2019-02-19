@@ -11,7 +11,7 @@
         <div :class="'post country-color-' + country.colorId">
           <h4 class="post-name">君主</h4>
           <div class="post-character" v-if="country.monarch.id > 0">
-            <CharacterIcon :icon="country.monarch.mainIcon"/>
+            <div class="icon"><CharacterIcon :icon="country.monarch.mainIcon"/></div>
             <div class="name">{{ country.monarch.name }}</div>
           </div>
           <div class="post-character-notexists" v-else>不在</div>
@@ -19,7 +19,7 @@
         <div :class="'post post-small country-color-' + country.colorId">
           <h4 class="post-name">軍師</h4>
           <div class="post-character" v-if="country.warrior.id > 0">
-            <CharacterIcon :icon="country.warrior.mainIcon"/>
+            <div class="icon"><CharacterIcon :icon="country.warrior.mainIcon"/></div>
             <div class="name">{{ country.warrior.name }}</div>
           </div>
           <div class="post-character-notexists" v-else>不在</div>
@@ -27,7 +27,7 @@
         <div :class="'post post-small country-color-' + country.colorId">
           <h4 class="post-name">大将軍</h4>
           <div class="post-character" v-if="country.grandGeneral.id > 0">
-            <CharacterIcon :icon="country.grandGeneral.mainIcon"/>
+            <div class="icon"><CharacterIcon :icon="country.grandGeneral.mainIcon"/></div>
             <div class="name">{{ country.grandGeneral.name }}</div>
           </div>
           <div class="post-character-notexists" v-else>不在</div>
@@ -157,7 +157,7 @@ export default class AllCharactersPage extends Vue {
     .post {
       display: flex;
       align-items: center;
-      height: 72px;
+      min-height: 72px;
       padding: 0 16px;
       @include country-color-light('background-color');
 
@@ -169,10 +169,14 @@ export default class AllCharactersPage extends Vue {
 
       .post-character {
         display: flex;
+        flex-wrap: wrap;
+
+        .icon {
+          margin-right: 24px;
+        }
 
         .name {
           font-size: 32px;
-          margin-left: 24px;
         }
       }
 
@@ -183,7 +187,7 @@ export default class AllCharactersPage extends Vue {
     }
 
     .post-small {
-      height: 48px;
+      min-height: 48px;
       img {
         width: 36px;
         height: 36px;
