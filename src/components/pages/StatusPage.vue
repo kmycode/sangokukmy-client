@@ -215,7 +215,7 @@
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
-                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage" @keyup.shift.enter.prevent.stop="postChat()"></textarea>
+                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage" @keyup.ctrl.enter.prevent.stop="postChat()" @keyup.meta.enter="postChat()"></textarea>
                 </div>
                 <div v-show="(isSendToPrivate && selectedChatCategory === 1) || (isSendToCountry && selectedChatCategory === 0)" class="message-target"
                      @click="isSendToPrivate = isSendToCountry = false">
