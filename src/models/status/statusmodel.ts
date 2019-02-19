@@ -779,8 +779,7 @@ export default class StatusModel {
       // 古いのを消す
       const newItems = Enumerable
         .from(items)
-        .where((ca) => ca.id < diplomacy.id &&
-                       !api.CountryDipromacy
+        .where((ca) => !api.CountryDipromacy
                           .isEqualCountry(ca, diplomacy.requestedCountryId, diplomacy.insistedCountryId))
         .toArray();
 
