@@ -14,6 +14,37 @@
         </div>
       </div>
       <div class="row">
+        <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+          <div v-show="isLoadingSystem && nextMonthSeconds <= -15" class="not-loading-message-panel">
+            <h2>読込に通常より時間がかかっています...</h2>
+            <h3>お使いのネットワーク回線は通常より混雑していませんか？</h3>
+            <div>
+              他のサイト（<a href="https://google.com/" target="_blank">Google</a>など）にもアクセスして、ネットワーク回線に問題がないか確認してください
+            </div>
+            <h3>アンチウィルスソフトの影響ではありませんか？</h3>
+            <div>
+              アンチウィルスソフトに除外サイト設定がある場合は、以下の２つのサイトを除外設定してから再接続を試みてください
+              <ul>
+                <li><code>https://sangoku.kmycode.net/</code></li>
+                <li><code>https://sangokukmy-api.kmycode.net/</code></li>
+              </ul>
+              本サイトはHTTP Streamingという技術を採用しており、そのために一部のアンチウィルスソフトに引っかかるようです
+            </div>
+            <h3>サーバ自体が落ちていませんか？</h3>
+            <div>
+              サーバが落ちている場合、データのロードができません。
+              その場合、画面右下に赤色の通知が表示されますので、ご確認ください。
+              しばらく時間を置いて、もう一度アクセスしてみてください。
+              なお、このまま放置しても自動的に再接続を試み続けるため、サーバが復帰した時に正常な表示に戻ります
+            </div>
+            <h3>どうしても解決しない場合は</h3>
+            <div>
+              管理者に連絡してください。連絡先は本ページのフッタに書いてあります
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
         <div class="top-login-form col-sm-6 offset-sm-3">
           <button type="button" class="btn btn-light" @click="login">ログイン</button>
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
@@ -143,4 +174,15 @@ h1 { color: #420; }
 .top-title-logo { margin-top: 20px; padding: 8px; text-align: center; }
 .top-login-form { margin-top: 20px; text-align: center; }
 .top-content { margin-top: 40px; }
+
+.not-loading-message-panel {
+  padding: 0 16px 24px;
+  margin: 16px 0;
+  h2, h3 {
+    margin: 20px 0 12px;
+  }
+  h3 {
+    font-size: 1.6rem;
+  }
+}
 </style>
