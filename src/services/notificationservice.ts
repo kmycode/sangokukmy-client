@@ -282,15 +282,15 @@ export default class NotificationService {
     NotificationServiceItemDefaultType.error);
   public static readonly unitLeft = new NotificationServiceItem(
     '部隊脱退',
-    '部隊 {0} から脱げました',
+    '部隊 {0} から抜けました',
     NotificationServiceItemDefaultType.succeed);
   public static readonly unitLeaveFailed = new NotificationServiceItem(
     '部隊脱退失敗',
-    '部隊 {0} から脱げられません',
+    '部隊 {0} から抜けられません',
     NotificationServiceItemDefaultType.error);
   public static readonly unitLeaveFailedBecauseLeader = new NotificationServiceItem(
     '部隊脱退失敗',
-    '部隊長は部隊から脱げられません。削除してください',
+    '部隊長は部隊から抜けられません。削除してください',
     NotificationServiceItemDefaultType.error);
   public static readonly unitCreated = new NotificationServiceItem(
     '部隊作成',
