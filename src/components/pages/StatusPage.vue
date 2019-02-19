@@ -849,6 +849,7 @@ ul.nav {
   .content-main {
     height: calc(100% - 2rem - 48px);
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
   .commands {
     height: 48px;
@@ -926,6 +927,7 @@ ul.nav {
       flex: 1;
       margin-top: 4px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .command-list-item {
       background: #f4f4ff;
@@ -1052,11 +1054,13 @@ ul.nav {
     .messages {
       flex: 1;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
     }
   }
 
   &.content-meeting {
     overflow: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
