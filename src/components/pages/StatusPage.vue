@@ -727,10 +727,10 @@ export default class StatusPage extends Vue {
       } else if (this.selectedChatCategory === 1) {
         // 個人宛
         this.model.postPrivateChat(this.chatPrivateTo.id, () => this.isSendToPrivate = false);
+      } else if (this.selectedChatCategory === 5) {
+        // 全国宛
+        this.model.postGlobalChat();
       }
-    } else if (this.selectedActionTab === 2) {
-      // 全国宛
-      this.model.postGlobalChat();
     }
   }
 
