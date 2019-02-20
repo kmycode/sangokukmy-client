@@ -677,6 +677,17 @@ export class ThreadBbsItem implements IIdentitiedEntity {
                      public isOpen?: boolean) {}
 }
 
+export class CharacterOnline {
+  public static readonly typeId = 27;
+
+  public static readonly statusOffline = 0;
+  public static readonly statusActive = 1;
+  public static readonly statusInactive = 2;
+
+  public constructor(public status: number,
+                     public character: Character) {}
+}
+
 export class Api {
 
   /**
@@ -1069,6 +1080,15 @@ export class Api {
     try {
       const result = await axios.get<MapLog[]>(def.API_HOST + 'maplog?since=' + sinceId + '&count=' + count);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setOnlineStatus(status: number): Promise<any> {
+    try {
+      const statusText = status === CharacterOnline.statusActive ? 'active' : 'inactive';
+      await axios.put(def.API_HOST + 'online/' + statusText, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

@@ -10,6 +10,7 @@
           <div v-if="system.gameDateTime.year < 24">更新開始: <span class="number">24</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year >= 24 && system.gameDateTime.year < 48">主要国戦闘解除: <span class="number">48</span>年<span class="number">01</span>月より</div>
           <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
+          <div class="onlines"></div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
@@ -85,7 +86,7 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import Footer from '..//common/Footer.vue';
+import Footer from '../common/Footer.vue';
 import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';

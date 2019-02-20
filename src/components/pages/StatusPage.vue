@@ -5,7 +5,8 @@
       <div class="col-lg-7 col-md-6">
         <div id="current-display-wrapper">
           <div id="system-button-group">
-            <!--<button type="button" class="btn btn-secondary">aaa</button>-->
+            <button type="button" class="btn btn-info" v-show="!isShowOnlines" @click="isShowOnlines = true">ON</button>
+            <button type="button" class="btn btn-info" v-show="isShowOnlines" @click="isShowOnlines = false">地図</button>
           </div>
           <div id="current-display">
             <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
@@ -17,11 +18,26 @@
         </div>
         <div id="map-container">
           <Map
+            v-show="!isShowOnlines"
             :towns="model.towns"
             :countries="model.countries"
             :town="model.town"
             :currentTown="model.characterTown"
             @selected="model.selectTown($event)"/>
+          <div v-show="isShowOnlines" class="online-list">
+            <div class="online-list-item">
+              <h3>ACTIVE</h3>
+              <MiniCharacterList
+                :countries="model.countries"
+                :characters="model.onlines.activeCharacters"/>
+            </div>
+            <div class="online-list-item">
+              <h3>INACTIVE</h3>
+              <MiniCharacterList
+                :countries="model.countries"
+                :characters="model.onlines.inactiveCharacters"/>
+            </div>
+          </div>
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
@@ -597,6 +613,7 @@ export default class StatusPage extends Vue {
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
   public chatPostMessage: string = '';
+  public isShowOnlines: boolean = false;
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
@@ -649,7 +666,7 @@ export default class StatusPage extends Vue {
     }
   }
 
-  public created() {
+  public mounted() {
     this.model.onCreate();
   }
 
@@ -813,6 +830,18 @@ ul.nav {
 #map-container {
   height: calc(65vh - #{$left-side-fixed-height});
   min-height: 320px;
+
+  .online-list {
+    padding: 8px;
+
+    .online-list-item {
+      margin-bottom: 24px;
+      h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+    }
+  }
 }
 
 // 情報欄のタブ

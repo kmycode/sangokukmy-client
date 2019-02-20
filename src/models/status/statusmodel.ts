@@ -20,6 +20,7 @@ import CommandList from '@/models/status/commandlist';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
 import ThreadBbs from './threadbbs';
+import OnlineModel from './onlinemodel';
 
 export default class StatusModel {
   public hasInitialized: boolean = false;
@@ -201,6 +202,8 @@ export default class StatusModel {
   // #region Streaming
 
   public onCreate() {
+    this.onlines.beginWatch();
+
     ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.GameDateTime>(
       api.GameDateTime.typeId,
@@ -244,12 +247,16 @@ export default class StatusModel {
     ApiStreaming.status.on<api.ThreadBbsItem>(
       api.ThreadBbsItem.typeId,
       (obj) => this.countryThreadBbs.onItemReceived(obj));
+    ApiStreaming.status.on<api.CharacterOnline>(
+      api.CharacterOnline.typeId,
+      (obj) => this.onlines.onOnlineDataReceived(obj));
     ApiStreaming.status.start();
   }
 
   public onDestroy() {
     ApiStreaming.status.stop();
     this.commands.dispose();
+    this.onlines.dispose();
   }
 
   // #endregion
@@ -1180,6 +1187,12 @@ export default class StatusModel {
   // #region ThreadBbs
 
   public countryThreadBbs = new ThreadBbs();
+
+  // #endregion
+
+  // #region Online
+
+  public onlines = new OnlineModel();
 
   // #endregion
 }
