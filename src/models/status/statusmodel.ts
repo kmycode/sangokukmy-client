@@ -15,27 +15,11 @@ import { StatusParameter,
   TwinNoRangeAndRangedStatusParameter,
   NoRangeDelayStatusParameter,
 } from '@/models/status/statusparameter';
+import ChatMessageContainer from '@/models/status/chatmessagecontainer';
+import CommandList from '@/models/status/commandlist';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
-
-enum CommandSelectMode {
-  /**
-   * 置き換え
-   */
-  replace = 0,
-  /**
-   * OR
-   */
-  mode_or = 1,
-  /**
-   * AND
-   */
-  mode_and = 2,
-  /**
-   * XOR
-   */
-  mode_xor = 3,
-}
+import ThreadBbs from './threadbbs';
 
 export default class StatusModel {
   public hasInitialized: boolean = false;
@@ -51,27 +35,18 @@ export default class StatusModel {
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
   public characterIcons: api.CharacterIcon[] = [];
-  public commands: api.CharacterCommand[] = [];
-  public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
-  public secondsOfNextCommand: number = 0;
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
-  public countryChatMessages: api.ChatMessage[] = [];
-  public globalChatMessages: api.ChatMessage[] = [];
-  public privateChatMessages: api.ChatMessage[] = [];
-  public chatPostMessage: string = '';
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public units: api.Unit[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
-  public countryBbsThreads: api.ThreadBbsItem[] = [];
 
   public allianceBreakingDelay: number = 0;
   public allianceIsPublic: boolean = false;
   public warStartDate: api.GameDateTime = new api.GameDateTime();
 
-  private timers: number[] = [];
   private townCharacterLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
   private townDefenderLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
 
@@ -79,10 +54,9 @@ export default class StatusModel {
     return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar || this.isUpdatingUnit
-      || this.isLoadingMoreMapLogs;
+      || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
+      || this.privateChat.isLoading;
   }
-  public isCommandInputing: boolean = false;
-  public isPostingChat: boolean = false;
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
@@ -93,16 +67,17 @@ export default class StatusModel {
   public isUpdatingUnit: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
-  public isLoadingMoreGlobalChats: boolean = false;
-  public hasLoadAllGlobalChats: boolean = false;
-  public isLoadingMoreCountryChats: boolean = false;
-  public hasLoadAllCountryChats: boolean = false;
-  public isLoadingMorePrivateChats: boolean = false;
-  public hasLoadAllPrivateChats: boolean = false;
-
-  private isInitializedCommands = false;
 
   // #region Properties
+
+  private get characterIcon(): api.CharacterIcon {
+    const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
+    if (icon) {
+      return icon;
+    } else {
+      return api.CharacterIcon.default;
+    }
+  }
 
   public get characterTown(): api.Town {
     // 自分が所在している都市
@@ -141,24 +116,6 @@ export default class StatusModel {
   public get characterCountryColor(): number {
     // 自分の所属する国の国色
     return this.getCountry(this.character.countryId).colorId;
-  }
-
-  public get canAppoint(): boolean {
-    // 自分が任命権限を持つか
-    return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
-  }
-
-  public get canDiplomacy(): boolean {
-    // 自分が外交権限を持つか
-    return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
-  }
-
-  public get canRemoveAllCountryBbsItems(): boolean {
-    // 自分が会議室の全書き込み削除権限を持つか
-    return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
   public get countryAlliance(): api.CountryAlliance | undefined {
@@ -277,24 +234,22 @@ export default class StatusModel {
       (obj) => this.addCharacterLog(obj));
     ApiStreaming.status.on<api.CharacterCommand>(
       api.CharacterCommand.typeId,
-      (obj) => this.updateCommand(obj));
+      (obj) => this.commands.updateCommand(obj));
     ApiStreaming.status.on<api.ApiSignal>(
       api.ApiSignal.typeId,
       (obj) => this.onReceiveSignal(obj));
     ApiStreaming.status.on<api.ChatMessage>(
       api.ChatMessage.typeId,
-      (obj) => this.addChatMessage(obj));
+      (obj) => this.onReceiveChatMessage(obj));
     ApiStreaming.status.on<api.ThreadBbsItem>(
       api.ThreadBbsItem.typeId,
-      (obj) => this.onThreadBbsItemReceived(obj));
+      (obj) => this.countryThreadBbs.onItemReceived(obj));
     ApiStreaming.status.start();
-
-    this.timers.push(setInterval(() => { this.secondsOfNextCommand--; }, 1000));
   }
 
   public onDestroy() {
     ApiStreaming.status.stop();
-    this.timers.forEach((id) => { clearInterval(id); });
+    this.commands.dispose();
   }
 
   // #endregion
@@ -305,7 +260,7 @@ export default class StatusModel {
     if (signal.type === 1) {
       // 武将が更新された
       const data = signal.data as { gameDate: api.GameDateTime, secondsNextCommand: number };
-      this.onExecutedCommand(data.gameDate, data.secondsNextCommand);
+      this.commands.onExecutedCommand(data.gameDate, this.character.lastUpdated, data.secondsNextCommand);
     } else if (signal.type === 2) {
       // 年月が進んだ
       this.updateGameDate(signal.data as api.GameDateTime);
@@ -321,6 +276,7 @@ export default class StatusModel {
     } else if (signal.type === 4) {
       // 初期データを送信し終えた
       this.hasInitialized = true;
+      this.countryThreadBbs.sortThreads();
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -340,7 +296,7 @@ export default class StatusModel {
   private initializeGameDate(date: api.GameDateTime) {
     this.gameDate = date;
     this.warStartDate = date;
-    this.preInitializeCommands();
+    this.commands.preInitialize(date);
   }
 
   private updateGameDate(date: api.GameDateTime) {
@@ -574,40 +530,6 @@ export default class StatusModel {
     }
   }
 
-  private updateCountryPost(post: api.CountryPost) {
-    const country = ArrayUtil.find(this.countries, post.countryId);
-    if (country) {
-      if (!country.posts) {
-        Vue.set(country, 'posts', []);
-      }
-
-      country.posts = Enumerable.from(country.posts)
-        .where((p) => p.characterId !== post.characterId)
-        .toArray();
-      if (post.type !== 0) {
-        // 任命
-        ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
-      }
-
-      if (this.country.id === country.id) {
-        this.setCountry(country);
-      }
-    }
-
-    if (post.countryId === this.character.countryId && post.characterId === this.character.id) {
-      if (post.type !== 0) {
-        // 自分が任命された
-        const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((p) => p.id === post.type);
-        if (postType) {
-          NotificationService.selfAppointed.notifyWithParameter(postType.name);
-        }
-      } else {
-        // 自分が解任された
-        NotificationService.selfDismissed.notify();
-      }
-    }
-  }
-
   private setCountry(country: api.Country) {
     this.country = country;
     this.countryParameters = this.getCountryParameters(country);
@@ -676,6 +598,69 @@ export default class StatusModel {
       });
   }
 
+  private onCountryChanged() {
+    this.countryChat.clear();
+    api.Api.getCountryChatMessage()
+      .then((messages) => {
+        messages.forEach((message) => {
+          this.countryChat.append(message);
+        });
+      })
+      .catch(() => {
+        NotificationService.getChatFailed.notify();
+      });
+    api.Api.getCountryBbsItems()
+      .then((items) => {
+        this.countryThreadBbs.reset(items);
+      })
+      .catch(() => {
+        NotificationService.countryBbsLoadFailed.notify();
+      });
+    if (!this.character.countryId) {
+      NotificationService.countryOverthrown.notify();
+    } else {
+      NotificationService.countryChanged.notify();
+    }
+  }
+
+  // #endregion
+
+  // #region CountryPost
+
+  private updateCountryPost(post: api.CountryPost) {
+    const country = ArrayUtil.find(this.countries, post.countryId);
+    if (country) {
+      if (!country.posts) {
+        Vue.set(country, 'posts', []);
+      }
+
+      country.posts = Enumerable.from(country.posts)
+        .where((p) => p.characterId !== post.characterId)
+        .toArray();
+      if (post.type !== 0) {
+        // 任命
+        ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
+      }
+
+      if (this.country.id === country.id) {
+        this.setCountry(country);
+      }
+    }
+
+    if (post.countryId === this.character.countryId && post.characterId === this.character.id) {
+      if (post.type !== 0) {
+        // 自分が任命された
+        const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((p) => p.id === post.type);
+        if (postType) {
+          NotificationService.selfAppointed.notifyWithParameter(postType.name);
+        }
+      } else {
+        // 自分が解任された
+        NotificationService.selfDismissed.notify();
+      }
+    }
+  }
+
   public setCountryPost(characterId: number, post: number) {
     const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((p) => p.id === post);
     if (postType) {
@@ -693,32 +678,26 @@ export default class StatusModel {
     }
   }
 
-  private onCountryChanged() {
-    this.countryChatMessages = [];
-    this.countryBbsThreads = [];
-    api.Api.getCountryChatMessage()
-      .then((messages) => {
-        messages.forEach((message) => {
-          ArrayUtil.addLog(this.countryChatMessages, message);
-        });
-      })
-      .catch(() => {
-        NotificationService.getChatFailed.notify();
-      });
-    api.Api.getCountryBbsItems()
-      .then((items) => {
-        items.forEach((item) => {
-          ArrayUtil.addLog(this.countryBbsThreads, item);
-        });
-      })
-      .catch(() => {
-        NotificationService.countryBbsLoadFailed.notify();
-      });
-    if (!this.character.countryId) {
-      NotificationService.countryOverthrown.notify();
-    } else {
-      NotificationService.countryChanged.notify();
-    }
+  // #endregion
+
+  // #region CountryPermissions
+
+  public get canAppoint(): boolean {
+    // 自分が任命権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canDiplomacy(): boolean {
+    // 自分が外交権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canRemoveAllCountryBbsItems(): boolean {
+    // 自分が会議室の全書き込み削除権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
   // #endregion
@@ -880,7 +859,7 @@ export default class StatusModel {
       });
 
     // コマンドを初期化
-    this.initializeCommands();
+    this.commands.initialize(character.lastUpdatedGameDate, character.lastUpdated);
   }
 
   private updateCharacter(character: api.Character) {
@@ -934,295 +913,10 @@ export default class StatusModel {
 
   // #region Command
 
-  private preInitializeCommands() {
-    // 武将データ入手前のコマンド一覧初期化
+  public commands: CommandList = new CommandList(() => this.towns);
 
-    let gamedate = this.gameDate;
-
-    for (let i = 0; i < 200; i++) {
-      this.commands.push({ commandNumber: i + 1, name: '取得中...', gameDate: gamedate } as api.CharacterCommand);
-      gamedate = api.GameDateTime.nextMonth(gamedate);
-    }
-
-    if (this.character.id >= 0) {
-      this.initializeCommands();
-    }
-  }
-
-  private initializeCommands() {
-    // 武将データ入手後のコマンド一覧初期化
-
-    let month = api.GameDateTime.nextMonth(this.character.lastUpdatedGameDate);
-    let skipMonthCount = 0;
-    if (month.year < def.UPDATE_START_YEAR) {
-      // 更新開始以降のコマンドのみを表示する
-      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
-      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
-      month = newMonth;
-    }
-
-    // コマンド更新時間を初期化
-    const date = api.DateTime.toDate(this.character.lastUpdated);
-    date.setSeconds(date.getSeconds() + skipMonthCount * def.UPDATE_TIME);
-    this.commands.forEach((c) => {
-      date.setSeconds(date.getSeconds() + def.UPDATE_TIME);
-      Vue.set(c, 'date', api.DateTime.fromDate(date));
-    });
-
-    // APIからコマンドを取得して、コマンドリストに反映
-    if (this.isInitializedCommands) {
-      return;
-    }
-    this.isInitializedCommands = true;
-    api.Api.getAllCommands().then((cmd) => {
-
-      // コマンドに設定していた仮のテキスト、年月を削除
-      this.commands.forEach((c) => {
-        c.name = '';
-        c.gameDate = month;
-        month = api.GameDateTime.nextMonth(month);
-      });
-
-      // 次のコマンド実行までの秒数を更新
-      this.secondsOfNextCommand = cmd.secondsNextCommand + skipMonthCount * def.UPDATE_TIME;
-
-      // サーバに保存されているコマンドを画面表示に反映
-      cmd.commands.forEach((c) => {
-        const already = ArrayUtil.findUniquely(
-          this.commands,
-          api.GameDateTime.toNumber(c.gameDate),
-          (cc) => api.GameDateTime.toNumber(cc.gameDate));
-        if (already) {
-          c.commandNumber = already.commandNumber;
-          c.date = already.date;
-          this.updateCommandName(c);
-          ArrayUtil.addItemUniquely(this.commands, c, (cc) => api.GameDateTime.toNumber(cc.gameDate));
-        }
-      });
-    })
-    .catch(() => {
-      NotificationService.getCommandListFailed.notify();
-    });
-  }
-
-  private updateCommand(command: api.CharacterCommand) {
-    ArrayUtil.addItemUniquely(this.commands, command, (c) => api.GameDateTime.toNumber(c.gameDate));
-  }
-
-  public inputCommand(commandType: number) {
-    this.inputCommandPrivate(commandType);
-  }
-
-  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number) {
-    this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, soldierType),
-                        new api.CharacterCommandParameter(2, soldierNumber));
-    });
-  }
-
-  public inputMoveCommand(commandType: number) {
-    this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, this.town.id));
-    });
-  }
-
-  public inputTrainingCommand(commandType: number, trainingType: number) {
-    this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, trainingType));
-    });
-  }
-
-  private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
-    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
-    if (selectCommands.length > 0) {
-      this.isCommandInputing = true;
-      selectCommands.forEach((c) => {
-        c.type = commandType;
-        c.parameters = [];
-        if (setParams) {
-          setParams(c);
-        }
-      });
-      api.Api.setCommands(selectCommands)
-        .then(() => {
-          selectCommands.forEach((c) => {
-            this.updateCommandName(c);
-            c.isSelected = false;
-          });
-          NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
-            NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
-          } else {
-            NotificationService.inputCommandsFailed.notify();
-          }
-        })
-        .finally(() => {
-          this.isCommandInputing = false;
-        });
-    } else {
-      NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
-    }
-  }
-
-  public selectSingleCommand(command: api.CharacterCommand) {
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-      Vue.set(command, 'isSelected', true);
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
-      Vue.set(command, 'isSelected', true);
-    } else {
-      Vue.set(command, 'isSelected', !command.isSelected);
-    }
-  }
-
-  public selectMultipleCommand(lastCommand: api.CharacterCommand) {
-    const selected = Enumerable.from(this.commands)
-      .reverse()
-      .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
-      .takeWhile((c) => c.isSelected !== true)
-      .toArray();
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-    }
-    selected.forEach((c) => Vue.set(c, 'isSelected', true));
-
-    // 置き換えモードで、一番最初のコマンドの選択が解除されるので
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      const first = Enumerable.from(this.commands)
-        .takeWhile((c) => c.isSelected !== true)
-        .lastOrDefault();
-      if (first) {
-        Vue.set(first, 'isSelected', true);
-      }
-    }
-  }
-
-  public selectAllCommands() {
-    this.commands.forEach((c) => {
-      this.selectCommandWithSelectMode(c, true);
-    });
-  }
-
-  public selectEvenCommands() {
-    this.commands.forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 0);
-    });
-  }
-
-  public selectOddCommands() {
-    this.commands.forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 1);
-    });
-  }
-
-  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean) {
-    let isSelected = command.isSelected;
-
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      isSelected = value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
-      isSelected = isSelected || value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
-      isSelected = isSelected && value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_xor) {
-      isSelected = isSelected !== value;
-    } else {
-      NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
-    }
-
-    Vue.set(command, 'isSelected', isSelected);
-  }
-
-  public clearAllCommandSelections() {
-    Enumerable.from(this.commands).where((c) => c.isSelected === true).forEach((c) => {
-      c.isSelected = false;
-    });
-  }
-
-  public onExecutedCommand(date: api.GameDateTime, secondsNextCommand: number) {
-    const dateNumber = api.GameDateTime.toNumber(date);
-    const cmds = Enumerable.from(this.commands);
-    const executed = cmds.where((c) => api.GameDateTime.toNumber(c.gameDate) <= dateNumber).toArray();
-    let lastMonth = api.GameDateTime.addMonth(date, this.commands.length);
-    const nextMonth = api.GameDateTime.nextMonth(date);
-
-    // 実行されたコマンドを取得
-    const command = ArrayUtil.findUniquely(this.commands, dateNumber, (c) => api.GameDateTime.toNumber(c.gameDate));
-
-    // コマンドを削除
-    this.commands = cmds.except(executed).toArray();
-
-    // 末尾に空のコマンドを追加
-    let commandNumber = cmds.any() ? cmds.last().commandNumber : 1;
-    const addCount = executed.length;
-    for (let i = 0; i < addCount; i++) {
-      this.commands.push({
-        commandNumber,
-        name: '',
-        gameDate: lastMonth } as api.CharacterCommand);
-      lastMonth = api.GameDateTime.nextMonth(lastMonth);
-      commandNumber++;
-    }
-
-    // 次回更新までの秒数を設定
-    let skipMonthCount = 0;
-    if (nextMonth.year < def.UPDATE_START_YEAR) {
-      // 更新開始年以前の表示
-      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
-      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(nextMonth);
-    }
-    this.secondsOfNextCommand = secondsNextCommand + skipMonthCount * def.UPDATE_TIME;
-
-    // コマンド番号を整形
-    this.updateCommandData(date);
-
-    // 通知
-    if (date.year >= def.UPDATE_START_YEAR) {
-      if (command && command.type !== undefined && command.type !== 0) {
-        this.updateCommandName(command);
-        NotificationService.commandExecuted.notifyWithParameter(command.name);
-      } else {
-        NotificationService.emptyCommandExecuted.notify();
-      }
-    }
-  }
-
-  private updateCommandData(lastUpdatedGameDate: api.GameDateTime = this.character.lastUpdatedGameDate) {
-    let month = api.GameDateTime.nextMonth(lastUpdatedGameDate);
-    let skipMonthCount = 0;
-    if (month.year < def.UPDATE_START_YEAR) {
-      // 更新開始以降のコマンドのみを表示する
-      const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
-      skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(month);
-      month = newMonth;
-    }
-
-    // コマンド更新時間を初期化
-    const commandDate = api.DateTime.toDate(this.character.lastUpdated);
-    commandDate.setSeconds(commandDate.getSeconds() + skipMonthCount * def.UPDATE_TIME);
-    this.commands.forEach((cmd, index) => {
-      commandDate.setSeconds(commandDate.getSeconds() + def.UPDATE_TIME);
-      cmd.commandNumber = index + 1;
-      cmd.date = api.DateTime.fromDate(commandDate);
-    });
-  }
-
-  private updateCommandName(command: api.CharacterCommand) {
-    api.CharacterCommand.updateName(command);
-
-    // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13) {
-      // 移動、戦争
-      const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
-      if (targetTownId && targetTownId.numberValue) {
-        const town = this.getTown(targetTownId.numberValue);
-        command.name = command.name.replace('%0%', town.name);
-      } else {
-        command.name = 'エラー (' + command.type + ':A)';
-      }
-    }
+  public get isCommandInputing(): boolean {
+    return this.commands.inputer.isInputing;
   }
 
   // #endregion
@@ -1432,183 +1126,57 @@ export default class StatusModel {
 
   // #region ChatMessage
 
-  private addChatMessage(message: api.ChatMessage) {
+  public countryChat: ChatMessageContainer<api.Country>
+    = new ChatMessageContainer(
+      (mes, sendTo) => {
+        if (sendTo) {
+          return api.Api.postOtherCountryChatMessage(mes, this.characterIcon, sendTo);
+        } else {
+          return api.Api.postCountryChatMessage(mes, this.characterIcon);
+        }},
+      (id) => api.Api.getCountryChatMessage(id, 50));
+
+  public globalChat: ChatMessageContainer<any>
+    = new ChatMessageContainer(
+      (mes) => api.Api.postGlobalChatMessage(mes, this.characterIcon),
+      (id) => api.Api.getGlobalChatMessage(id, 50));
+
+  public privateChat: ChatMessageContainer<api.Character>
+    = new ChatMessageContainer(
+      (mes, sendTo) => {
+        if (sendTo) {
+          return api.Api.postPrivateChatMessage(mes, this.characterIcon, sendTo);
+        } else {
+          throw new Error();
+        }},
+      (id) => api.Api.getPrivateChatMessage(id, 50));
+
+  public get isPostingChat(): boolean {
+    return this.countryChat.isPosting || this.globalChat.isPosting || this.privateChat.isPosting;
+  }
+
+  private onReceiveChatMessage(message: api.ChatMessage) {
     if (message.type === api.ChatMessage.typeSelfCountry ||
         message.type === api.ChatMessage.typeOtherCountry) {
       // 自国宛
-      ArrayUtil.addLog(this.countryChatMessages, message);
+      this.countryChat.append(message);
     } else if (message.type === api.ChatMessage.typeGlobal) {
       // 全国宛
-      ArrayUtil.addLog(this.globalChatMessages, message);
+      this.globalChat.append(message);
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
-      ArrayUtil.addLog(this.privateChatMessages, message);
+      this.privateChat.append(message);
       if (message.character && message.character.id !== this.character.id && this.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
       }
     }
   }
 
-  public postCountryChat() {
-    this.postChat((message, icon) => api.Api.postCountryChatMessage(message, icon));
-  }
-
-  public postGlobalChat() {
-    this.postChat((message, icon) => api.Api.postGlobalChatMessage(message, icon));
-  }
-
-  public postPrivateChat(charaId: number, callback?: () => void) {
-    if (charaId > 0) {
-      this.postChat((message, icon) => api.Api.postPrivateChatMessage(message, icon, charaId));
-    }
-  }
-
-  public postOtherCountryChat(countryId: number, callback?: () => void) {
-    if (countryId > 0) {
-      this.postChat((message, icon) => api.Api.postOtherCountryChatMessage(message, icon, countryId));
-    }
-  }
-
-  private postChat(apiFunc: (message: string, icon: api.CharacterIcon) => Promise<any>, callback?: () => void) {
-    this.chatPostMessage = this.trimChatMessage(this.chatPostMessage);
-    const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
-    if (icon && this.chatPostMessage.length > 0) {
-      this.isPostingChat = true;
-      apiFunc(this.chatPostMessage, icon)
-        .then(() => {
-          this.chatPostMessage = '';
-          if (callback) {
-            callback();
-          }
-        })
-        .catch((ex) => {
-          if (ex.data) {
-            if (ex.data.code === api.ErrorCode.notPermissionError) {
-              NotificationService.postChatFailedBecauseNotPermission.notify();
-            } else if (ex.data.code === api.ErrorCode.countryNotFoundError ||
-                       ex.data.code === api.ErrorCode.characterNotFoundError) {
-              NotificationService.postChatFailedBecauseTargetNotFound.notify();
-            } else {
-              NotificationService.postChatFailed.notify();
-            }
-          } else {
-            NotificationService.postChatFailed.notify();
-          }
-        })
-        .finally(() => {
-          this.isPostingChat = false;
-        });
-    }
-  }
-
-  public loadOldGlobalChats() {
-    if (!this.hasLoadAllGlobalChats && !this.isLoadingMoreGlobalChats) {
-      this.loadOldChats(this.globalChatMessages,
-                        (id) => api.Api.getGlobalChatMessage(id, 50),
-                        (val) => this.isLoadingMoreGlobalChats = val,
-                        () => this.hasLoadAllGlobalChats = true);
-    }
-  }
-
-  public loadOldCountryChats() {
-    if (!this.hasLoadAllCountryChats && !this.isLoadingMoreCountryChats) {
-      this.loadOldChats(this.countryChatMessages,
-                        (id) => api.Api.getCountryChatMessage(id, 50),
-                        (val) => this.isLoadingMoreCountryChats = val,
-                        () => this.hasLoadAllCountryChats = true);
-    }
-  }
-
-  public loadOldPrivateChats() {
-    if (!this.hasLoadAllPrivateChats && !this.isLoadingMorePrivateChats) {
-      this.loadOldChats(this.privateChatMessages,
-                        (id) => api.Api.getPrivateChatMessage(id, 50),
-                        (val) => this.isLoadingMorePrivateChats = val,
-                        () => this.hasLoadAllPrivateChats = true);
-    }
-  }
-
-  private loadOldChats(messages: api.ChatMessage[],
-                       func: (sinceId: number) => Promise<api.ChatMessage[]>,
-                       setLoading: (val: boolean) => void,
-                       onLoadedAll: () => void) {
-    setLoading(true);
-    func(messages[messages.length - 1].id)
-      .then((mes) => {
-        if (mes.length > 0) {
-          Enumerable.from(mes).reverse().forEach((m) => {
-            ArrayUtil.addItem(messages, m);
-          });
-        } else {
-          onLoadedAll();
-        }
-      })
-      .catch(() => {
-        NotificationService.getChatFailed.notify();
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }
-
-  private trimChatMessage(text: string): string {
-    // Shift+Enterで投稿したときの、最後につく改行をのぞく
-    if (text.length > 0 && text[text.length - 1] === '\n') {
-      text = text.slice(0, text.length - 1);
-      if (text.length > 0 && text[text.length - 1] === '\r') {
-        text = text.slice(0, text.length - 1);
-      }
-    }
-    return text;
-  }
-
   // #endregion
 
   // #region ThreadBbs
 
-  private onThreadBbsItemReceived(item: api.ThreadBbsItem) {
-    let items: api.ThreadBbsItem[];
-    if (item.type === api.ThreadBbsItem.typeCountryBbs) {
-      items = this.countryBbsThreads;
-    } else { return; }
-
-    if (!item.isRemove) {
-      // 追加
-      if (!item.parentId) {
-        const thread = ArrayUtil.find(items, item.id);
-        if (!thread) {
-          if (!item.children) {
-            item.children = [];
-          }
-          items.unshift(item);
-        }
-      } else {
-        const thread = ArrayUtil.find(items, item.parentId);
-        if (thread) {
-          const child = ArrayUtil.find(thread.children, item.id);
-          if (!child) {
-            thread.children.unshift(item);
-          }
-        }
-      }
-    } else {
-      // 削除
-      if (!item.parentId) {
-        const thread = ArrayUtil.find(items, item.id);
-        if (thread) {
-          items.splice(items.indexOf(thread), 1);
-        }
-      } else {
-        const thread = ArrayUtil.find(items, item.parentId);
-        if (thread) {
-          const child = ArrayUtil.find(thread.children, item.id);
-          if (child) {
-            thread.children.splice(thread.children.indexOf(child), 1);
-          }
-        }
-      }
-    }
-  }
+  public countryThreadBbs = new ThreadBbs();
 
   // #endregion
 }

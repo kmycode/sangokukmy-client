@@ -47,8 +47,8 @@
             <button v-show="model.town.id === model.character.townId && model.town.countryId !== model.character.countryId" type="button" class="btn btn-secondary loading-container" :style="{ 'pointer-events': model.isScouting ? 'none' : 'all' }" @click="model.scoutTown()">諜報<div v-show="model.isScouting" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">武将（当時）</button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備（当時）</button>
-            <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
-            <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -126,26 +126,26 @@
           <div class="loading-container">
             <!-- 内政コマンド -->
             <div v-show="selectedCommandCategory === 0" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputCommand(1)">農業開発</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(2)">商業発展</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(6)">米施し</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(1)">農業開発</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(2)">商業発展</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(3)">技術開発</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(4)">城壁強化</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(5)">守兵増強</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(6)">米施し</button>
             </div>
             <!-- 増強コマンド -->
             <div v-show="selectedCommandCategory === 1" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputCommand(7)">農地開拓</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(8)">市場拡大</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(9)">城壁増築</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(7)">農地開拓</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(8)">市場拡大</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(9)">城壁増築</button>
             </div>
             <!-- 軍事コマンド -->
             <div v-show="selectedCommandCategory === 2" class="commands">
               <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
               <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
-              <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(13)">戦争</button>
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(14)">集合</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(12)">城の守備</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputMoveCommand(13)">戦争</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputCommand(14)">集合</button>
             </div>
             <!-- 計略コマンド -->
             <div v-show="selectedCommandCategory === 3" class="commands">
@@ -154,45 +154,45 @@
             </div>
             <!-- 個人コマンド -->
             <div v-show="selectedCommandCategory === 4" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(17)">移動</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputMoveCommand(17)">移動</button>
               <button type="button" class="btn btn-light" @click="isOpenTrainingDialog = true">能力強化</button>
               <!-- <button type="button" class="btn btn-light">米売買</button>
               <button type="button" class="btn btn-light">武器</button>
               <button type="button" class="btn btn-light">書物</button> -->
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(0)">何もしない</button>
-              <button type="button" class="btn btn-primary" @click="model.inputMoveCommand(23)">仕官</button>
+              <button type="button" class="btn btn-light" @click="model.commands.inputer.inputMoveCommand(0)">何もしない</button>
+              <button type="button" class="btn btn-primary" @click="model.commands.inputer.inputMoveCommand(23)">仕官</button>
               <!-- <button type="button" class="btn btn-light">下野</button> -->
             </div>
             <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
           </div>
           <!-- 選択ツール -->
           <div class="command-input-options">
-            <button type="button" class="btn btn-light" @click="model.clearAllCommandSelections()">クリア</button>
-            <button type="button" class="btn btn-light" @click="model.selectAllCommands()">全て</button>
-            <button type="button" class="btn btn-light" @click="model.selectOddCommands()">偶数</button>
-            <button type="button" class="btn btn-light" @click="model.selectEvenCommands()">奇数</button>
+            <button type="button" class="btn btn-light" @click="model.commands.inputer.clearAllCommandSelections()">クリア</button>
+            <button type="button" class="btn btn-light" @click="model.commands.inputer.selectAllCommands()">全て</button>
+            <button type="button" class="btn btn-light" @click="model.commands.inputer.selectOddCommands()">偶数</button>
+            <button type="button" class="btn btn-light" @click="model.commands.inputer.selectEvenCommands()">奇数</button>
             <!-- <button type="button" class="btn btn-light">ax+b</button> -->
           </div>
           <!-- 選択アルゴリズム -->
           <div class="command-select-options">
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 0, 'btn-info': model.commandSelectMode === 0 }" @click="model.commandSelectMode = 0">置換</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 1, 'btn-info': model.commandSelectMode === 1 }" @click="model.commandSelectMode = 1">OR</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 2, 'btn-info': model.commandSelectMode === 2 }" @click="model.commandSelectMode = 2">AND</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 3, 'btn-info': model.commandSelectMode === 3 }" @click="model.commandSelectMode = 3">XOR</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commands.inputer.commandSelectMode !== 0, 'btn-info': model.commands.inputer.commandSelectMode === 0 }" @click="model.commands.inputer.commandSelectMode = 0">置換</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commands.inputer.commandSelectMode !== 1, 'btn-info': model.commands.inputer.commandSelectMode === 1 }" @click="model.commands.inputer.commandSelectMode = 1">OR</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commands.inputer.commandSelectMode !== 2, 'btn-info': model.commands.inputer.commandSelectMode === 2 }" @click="model.commands.inputer.commandSelectMode = 2">AND</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commands.inputer.commandSelectMode !== 3, 'btn-info': model.commands.inputer.commandSelectMode === 3 }" @click="model.commands.inputer.commandSelectMode = 3">XOR</button>
           </div>
           <!-- 放置削除の通知 -->
           <div v-show="model.isShowDeleteTurn" class="command-delete-turn-notify">
             このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ model.characterDeleteTurn }}</span> ターンで削除されます
           </div>
           <div class="command-list">
-            <div v-for="command in model.commands"
+            <div v-for="command in model.commands.commands"
                  :key="command.commandNumber"
-                 :class="{ 'command-list-item': true, 'selected': command.isSelected }"
+                 :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect }"
                  @click="onCommandSelected(command, $event)">
               <div class="number">{{ command.commandNumber }}</div>
               <div class="command-information">
-                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ model.secondsOfNextCommand }}</span>秒</span></div>
+                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ model.commands.secondsOfNextCommand }}</span>秒</span></div>
                 <div class="command-text">{{ command.name }}</div>
               </div>
             </div>
@@ -215,10 +215,11 @@
               <CharacterIcon :icons="model.characterIcons"/>
               <div class="post-pair">
                 <div class="message-input-wrapper">
-                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage" @keyup.ctrl.enter.prevent.stop="postChat()" @keyup.meta.enter="postChat()"></textarea>
+                  <textarea ref="chatMessageInput" class="message-input" v-model="chatPostMessage" @keyup.ctrl.enter.prevent.stop="postChat()" @keyup.meta.enter="postChat()"></textarea>
                 </div>
-                <div v-show="(isSendToPrivate && selectedChatCategory === 1) || (isSendToCountry && selectedChatCategory === 0)" class="message-target"
-                     @click="isSendToPrivate = isSendToCountry = false">
+                <div v-show="(model.privateChat.sendTo && selectedChatCategory === 1) || (model.countryChat.sendTo && selectedChatCategory === 0)"
+                     class="message-target"
+                     @click="model.privateChat.sendTo = model.countryChat.sendTo = undefined">
                   <span class="target-text">{{ chatSendTargetName }} へ送信</span><span class="remove-mark">✕</span>
                 </div>
                 <div class="buttons">
@@ -228,28 +229,28 @@
             </div>
             <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
           </div>
-          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages" @scroll="onCountryChatScrolled">
-            <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
-            <div v-show="model.isLoadingMoreCountryChats" class="loading-container load-more">
+          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages" @scroll="onChatScrolled">
+            <ChatMessagePanel :messages="model.countryChat.messages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
+            <div v-show="model.countryChat.isLoading" class="loading-container load-more">
               <div class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
-          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages" @scroll="onPrivateChatScrolled">
-            <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
-            <div v-show="model.isLoadingMorePrivateChats" class="loading-container load-more">
+          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages" @scroll="onChatScrolled">
+            <ChatMessagePanel :messages="model.privateChat.messages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
+            <div v-show="model.privateChat.isLoading" class="loading-container load-more">
               <div class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
-          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages" @scroll="this.onGlobalChatScrolled">
-            <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
-            <div v-show="model.isLoadingMoreGlobalChats" class="loading-container load-more">
+          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages" @scroll="onChatScrolled">
+            <ChatMessagePanel :messages="model.globalChat.messages" :countries="model.countries"/>
+            <div v-show="model.globalChat.isLoading" class="loading-container load-more">
               <div class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
         </div>
         <!-- 会議室 -->
         <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
-          <ThreadBbs :countries="model.countries" :threads="model.countryBbsThreads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
+          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
       </div>
     </div>
@@ -293,7 +294,7 @@
             <button class="btn btn-light" @click="isOpenSoldierDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.inputSoldierCommand(10, selectedSoliderType, soldierNumber)">実行</button>
+            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, selectedSoliderType, soldierNumber)">実行</button>
           </div>
         </div>
       </div>
@@ -301,10 +302,10 @@
       <div v-show="isOpenTrainingDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">能力強化</h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 1)">武力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 2)">知力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 3)">統率</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 4)">人望</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 1)">武力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 2)">知力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 3)">統率</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 4)">人望</button>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
@@ -549,6 +550,7 @@ import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
 import { StatusParameter } from '@/models/status/statusparameter';
+import ChatMessageContainer, { IChatMessageContainer } from '@/models/status/chatmessagecontainer';
 import Enumerable from 'linq';
 
 @Component({
@@ -594,11 +596,7 @@ export default class StatusPage extends Vue {
   public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
-
-  public isSendToPrivate: boolean = false;
-  public isSendToCountry: boolean = false;
-  public chatPrivateTo: api.Character = new api.Character(-1);
-  public chatCountryTo: api.Country = new api.Country(-1);
+  public chatPostMessage: string = '';
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
@@ -622,22 +620,30 @@ export default class StatusPage extends Vue {
     }
   }
 
+  public get chatObj(): IChatMessageContainer | undefined {
+    if (this.selectedActionTab === 1) {
+      if (this.selectedChatCategory === 0) {
+        return this.model.countryChat;
+      } else if (this.selectedChatCategory === 1) {
+        return this.model.privateChat;
+      } else if (this.selectedChatCategory === 5) {
+        return this.model.globalChat;
+      }
+    }
+    return undefined;
+  }
+
   public get canSendChat(): boolean {
-    if (this.model.chatPostMessage.length === 0) {
-      return false;
-    }
-    if (this.selectedActionTab === 1 && this.selectedChatCategory === 1) {
-      // 個人宛
-      return this.isSendToPrivate;
-    }
-    return true;
+    const chatObj = this.chatObj;
+    return this.chatPostMessage.length !== 0 &&
+      chatObj !== undefined &&
+      chatObj.canSend;
   }
 
   public get chatSendTargetName(): string {
-    if (this.isSendToPrivate) {
-      return this.chatPrivateTo.name;
-    } else if (this.isSendToCountry) {
-      return this.chatCountryTo.name;
+    const chatObj = this.chatObj;
+    if (chatObj && chatObj.sendTo) {
+      return chatObj.sendTo.name;
     } else {
       return '';
     }
@@ -663,29 +669,27 @@ export default class StatusPage extends Vue {
 
   private onCommandSelected(command: api.CharacterCommand, event?: MouseEvent) {
     if (this.isMultiCommandsSelection) {
-      this.model.selectMultipleCommand(command);
+      this.model.commands.inputer.selectMultipleCommand(command);
     } else {
       if (event && event.shiftKey) {
-        this.model.selectMultipleCommand(command);
+        this.model.commands.inputer.selectMultipleCommand(command);
       } else {
-        this.model.selectSingleCommand(command);
+        this.model.commands.inputer.selectSingleCommand(command);
       }
     }
   }
 
   private readyPrivateChat(chara: api.Character) {
-    this.chatPrivateTo = chara;
-    this.isSendToPrivate = true;
-    this.isSendToCountry = false;
+    this.model.privateChat.sendTo = chara;
     this.selectedActionTab = 1;
     this.selectedChatCategory = 1;
-    (this.$refs.chatMessageInput as any).focus();
+    (this.$refs.chatMessageInput as HTMLFormElement).focus();
   }
 
   private readyPrivateChatById(id: number) {
     const chara = Enumerable
-      .from(this.model.privateChatMessages)
-      .concat(this.model.countryChatMessages)
+      .from(this.model.privateChat.messages)
+      .concat(this.model.countryChat.messages)
       .firstOrDefault((c) => {
         if (c.character) {
           return c.character.id === id;
@@ -699,12 +703,10 @@ export default class StatusPage extends Vue {
   }
 
   private readyOtherCountryChat(country: api.Country) {
-    this.chatCountryTo = country;
-    this.isSendToPrivate = false;
-    this.isSendToCountry = true;
+    this.model.countryChat.sendTo = country;
     this.selectedActionTab = 1;
     this.selectedChatCategory = 0;
-    (this.$refs.chatMessageInput as any).focus();
+    (this.$refs.chatMessageInput as HTMLFormElement).focus();
   }
 
   private readyOtherCountryChatById(id: number) {
@@ -716,21 +718,9 @@ export default class StatusPage extends Vue {
   }
 
   private postChat() {
-    if (this.selectedActionTab === 1) {
-      if (this.selectedChatCategory === 0) {
-        // 自国宛
-        if (!this.isSendToCountry) {
-          this.model.postCountryChat();
-        } else {
-          this.model.postOtherCountryChat(this.chatCountryTo.id, () => this.isSendToCountry = false);
-        }
-      } else if (this.selectedChatCategory === 1) {
-        // 個人宛
-        this.model.postPrivateChat(this.chatPrivateTo.id, () => this.isSendToPrivate = false);
-      } else if (this.selectedChatCategory === 5) {
-        // 全国宛
-        this.model.postGlobalChat();
-      }
+    const chatObj = this.chatObj;
+    if (chatObj) {
+      chatObj.postChatAsync(this.chatPostMessage);
     }
   }
 
@@ -742,21 +732,12 @@ export default class StatusPage extends Vue {
     }
   }
 
-  private onGlobalChatScrolled(event: any) {
+  private onChatScrolled(event: any) {
     if (this.isScrolled(event)) {
-      this.model.loadOldGlobalChats();
-    }
-  }
-
-  private onCountryChatScrolled(event: any) {
-    if (this.isScrolled(event)) {
-      this.model.loadOldCountryChats();
-    }
-  }
-
-  private onPrivateChatScrolled(event: any) {
-    if (this.isScrolled(event)) {
-      this.model.loadOldPrivateChats();
+      const chatObj = this.chatObj;
+      if (chatObj) {
+        chatObj.loadOldChatsAsync();
+      }
     }
   }
 
@@ -955,6 +936,10 @@ ul.nav {
         &:hover {
           background: #b1b1df;
         }
+      }
+      &.disabled {
+        opacity: 0.3;
+        cursor: default;
       }
       .number {
         font-size: 1rem;

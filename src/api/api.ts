@@ -482,7 +482,8 @@ export class CharacterCommand {
                      public parameters: CharacterCommandParameter[] = [],
                      public gameDate: GameDateTime = new GameDateTime(),
                      public date?: DateTime,
-                     public isSelected?: boolean) {}
+                     public isSelected?: boolean,
+                     public canSelect?: boolean) {}
 }
 
 /**
@@ -671,7 +672,8 @@ export class ThreadBbsItem implements IIdentitiedEntity {
                      public title: string,
                      public text: string,
                      public written: DateTime,
-                     public isRemove: boolean) {}
+                     public isRemove: boolean,
+                     public isOpen?: boolean) {}
 }
 
 export class Api {
