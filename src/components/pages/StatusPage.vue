@@ -720,7 +720,10 @@ export default class StatusPage extends Vue {
   private postChat() {
     const chatObj = this.chatObj;
     if (chatObj) {
-      chatObj.postChatAsync(this.chatPostMessage);
+      chatObj.postChatAsync(this.chatPostMessage)
+        .then(() => {
+          this.chatPostMessage = '';
+        });
     }
   }
 
