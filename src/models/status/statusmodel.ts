@@ -786,7 +786,10 @@ export default class StatusModel {
     alliance.status = status;
     alliance.requestedCountryId = countryB;
     alliance.insistedCountryId = countryA;
-    if (!old) {
+    if (!old ||
+      old.status === api.CountryAlliance.statusNone ||
+      old.status === api.CountryAlliance.statusBroken ||
+      old.status === api.CountryAlliance.statusDismissed) {
       alliance.breakingDelay = this.allianceBreakingDelay;
       alliance.isPublic = this.allianceIsPublic;
     } else {

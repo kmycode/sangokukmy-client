@@ -369,6 +369,7 @@ export abstract class CountryDipromacy {
 export class CountryAlliance extends CountryDipromacy {
   public static readonly typeId = 21;
 
+  public static readonly statusNone = 0;
   public static readonly statusRequesting = 1;
   public static readonly statusDismissed = 2;
   public static readonly statusAvailable = 3;
