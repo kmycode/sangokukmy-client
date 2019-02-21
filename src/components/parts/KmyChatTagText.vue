@@ -19,7 +19,9 @@ export default class KmyChatTagText extends Vue {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>');
+      .replace(/\n/g, '<br>')
+      .replace(new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))'), 
+               '<a href="$1" target="_blank">$1</a>');
   }
 }
 </script>
