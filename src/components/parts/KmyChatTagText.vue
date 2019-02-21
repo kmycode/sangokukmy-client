@@ -21,6 +21,7 @@ export default class KmyChatTagText extends Vue {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\n/g, '<br>')
+      .replace(/\\\[/g, '&#91;')
       .replace(/\[r\]/g, '<span style="color:red">')
       .replace(/\[g\]/g, '<span style="color:green">')
       .replace(/\[b\]/g, '<span style="color:blue">')
