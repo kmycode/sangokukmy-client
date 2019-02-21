@@ -60,6 +60,8 @@ export default class StatusModel {
   public isSendingWar: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
+  public isLoadingMoreCharacterLogs: boolean = false;
+  public hasLoadAllCharacterLogs: boolean = false;
 
   // #region Store and Compat Properties
 
@@ -972,10 +974,33 @@ export default class StatusModel {
       .finally(() => {
         this.isLoadingMoreMapLogs = false;
       });
-}
+  }
 
   private addCharacterLog(log: api.CharacterLog) {
     ArrayUtil.addLog(this.characterLogs, log, 50);
+  }
+
+  public loadOldCharacterLogs() {
+    if (this.isLoadingMoreCharacterLogs || this.hasLoadAllCharacterLogs) {
+      return;
+    }
+    this.isLoadingMoreCharacterLogs = true;
+    api.Api.getCharacterLog(this.characterLogs[this.characterLogs.length - 1].id, 50)
+      .then((logs) => {
+        if (logs.length > 0) {
+          Enumerable.from(logs).reverse().forEach((log) => {
+            ArrayUtil.addItem(this.characterLogs, log);
+          });
+        } else {
+          this.hasLoadAllCharacterLogs = true;
+        }
+      })
+      .catch(() => {
+        NotificationService.loadCharacterLogFailed.notify();
+      })
+      .finally(() => {
+        this.isLoadingMoreCharacterLogs = false;
+      });
   }
 
   // #endregion
