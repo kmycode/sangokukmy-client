@@ -6,11 +6,13 @@ import Enumerable from 'linq';
 export default class OnlineModel {
   public actives: api.CharacterOnline[] = [];
   public inactives: api.CharacterOnline[] = [];
-  private lastStatus: number = api.CharacterOnline.statusActive;
+  private lastSendStatus: number = api.CharacterOnline.statusOffline;
+  private lastStatus: number = api.CharacterOnline.statusOffline;
   private lastActiveSeconds: number = 0;
   private activeInMoment: boolean = false;
   private forceInactive: boolean = false;
   private timer: number = 0;
+  private timer2: number = 0;
 
   public get activeCharacters(): api.Character[] {
     return this.actives.map((o) => o.character);
@@ -69,6 +71,18 @@ export default class OnlineModel {
         }
       }
     }, 500);
+    this.timer2 = setInterval(() => {
+      if (this.lastSendStatus !== this.lastStatus) {
+        const status = this.lastStatus;
+        api.Api.setOnlineStatus(status)
+          .then(() => {
+            this.lastSendStatus = status;
+          });
+      }
+    }, 2000);
+
+    // まず自分の状態を送る
+    this.turnActive();
   }
 
   public dispose() {
@@ -82,6 +96,7 @@ export default class OnlineModel {
     document.removeEventListener('visibilitychange', this.visibilityStatusChangeListener);
     document.removeEventListener('mouseleave', this.forceInactiveListener);
     clearInterval(this.timer);
+    clearInterval(this.timer2);
   }
 
   private activeInMomentListener = () => {
@@ -118,14 +133,6 @@ export default class OnlineModel {
   }
 
   private setStatus(status: number) {
-    api.Api.setOnlineStatus(status)
-      .catch(() => {
-        setTimeout(() => {
-          if (this.lastStatus === status) {
-            this.setStatus(status);
-          }
-        }, 1000);
-      });
     this.lastStatus = status;
   }
 }
