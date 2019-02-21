@@ -136,6 +136,7 @@ $color-navigation-commands: #e0e0e0;
 #command-list {
   display: flex;
   flex-direction: column;
+  flex: 1;
   .nav {
     .active {
       background-color: #6bf;
