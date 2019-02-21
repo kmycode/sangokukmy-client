@@ -98,8 +98,8 @@
           <div class="content-main" @scroll="onMapLogScrolled($event)">
             <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
             <MapLogList v-show="selectedReportType === 1" :logs="model.characterLogs" type="character-log"/>
-            <div v-show="model.isLoadingMoreMapLogs" class="loading-container load-more">
-              <div class="loading"><div class="loading-icon"></div></div>
+            <div v-show="model.isLoadingMoreMapLogs || model.isLoadingMoreCharacterLogs" class="loading-container load-more">
+              <div class="loading" style="height:48px"><div class="loading-icon"></div></div>
             </div>
           </div>
           <div class="commands">
@@ -549,6 +549,10 @@ export default class StatusPage extends Vue {
     if (this.selectedReportType === 0) {
       if (this.isScrolled(event)) {
         this.model.loadOldMapLogs();
+      }
+    } else if (this.selectedReportType === 1) {
+      if (this.isScrolled(event)) {
+        this.model.loadOldCharacterLogs();
       }
     }
   }

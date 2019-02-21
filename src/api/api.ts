@@ -1085,6 +1085,16 @@ export class Api {
     }
   }
 
+  public static async getCharacterLog(sinceId: number, count: number = 50): Promise<CharacterLog[]> {
+    try {
+      const result = await axios.get<ApiArrayData<CharacterLog>>(
+        def.API_HOST + 'character/log?since=' + sinceId + '&count=' + count, this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async setOnlineStatus(status: number): Promise<any> {
     try {
       const statusText = status === CharacterOnline.statusActive ? 'active' : 'inactive';
