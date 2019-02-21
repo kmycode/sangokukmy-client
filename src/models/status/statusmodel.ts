@@ -21,19 +21,14 @@ import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
 import ThreadBbs from './threadbbs';
 import OnlineModel from './onlinemodel';
+import StatusStore from './statusstore';
+import UnitModel from './unitmodel';
 
 export default class StatusModel {
-  public hasInitialized: boolean = false;
-
   public gameDate: api.GameDateTime = new api.GameDateTime();
-  public countries: api.Country[] = [];
-  public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
   public countryParameters: StatusParameter[] = [];
-  public towns: api.TownBase[] = [];
   public scoutedTowns: api.ScoutedTown[] = [];
-  public town: api.TownBase = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townParameters: StatusParameter[] = [];
-  public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characterParameters: StatusParameter[] = [];
   public characterIcons: api.CharacterIcon[] = [];
   public mapLogs: api.MapLog[] = [];
@@ -41,20 +36,18 @@ export default class StatusModel {
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
-  public units: api.Unit[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
 
-  public allianceBreakingDelay: number = 0;
-  public allianceIsPublic: boolean = false;
-  public warStartDate: api.GameDateTime = new api.GameDateTime();
+  public newAllianceData: api.CountryAlliance = new api.CountryAlliance();
+  public newWarData: api.CountryWar = new api.CountryWar();
 
   private townCharacterLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
   private townDefenderLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
 
   public get isLoading(): boolean {
-    return this.isCommandInputing || this.isPostingChat || this.isUpdatingTownCharacters
+    return this.isCommandInputing || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
-      || this.isAppointing || this.isSendingAlliance || this.isSendingWar || this.isUpdatingUnit
+      || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
       || this.privateChat.isLoading;
   }
@@ -65,9 +58,38 @@ export default class StatusModel {
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
   public isSendingWar: boolean = false;
-  public isUpdatingUnit: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
+
+  // #region Store and Compat Properties
+
+  private store: StatusStore = new StatusStore();
+
+  public get character(): api.Character {
+    return this.store.character;
+  }
+
+  public get countries(): api.Country[] {
+    return this.store.countries;
+  }
+
+  public get country(): api.Country {
+    return this.store.country;
+  }
+
+  public get towns(): api.Town[] {
+    return this.store.towns;
+  }
+
+  public get town(): api.Town {
+    return this.store.town;
+  }
+
+  public get units(): api.Unit[] {
+    return this.store.units;
+  }
+
+  // #endregion
 
   // #region Properties
 
@@ -83,15 +105,6 @@ export default class StatusModel {
   public get characterTown(): api.Town {
     // 自分が所在している都市
     return this.getTown(this.character.townId);
-  }
-
-  public get characterDeleteTurn(): number {
-    // 放置削除ターン
-    return def.CHARACTER_DELETE_TURN - this.character.deleteTurn;
-  }
-
-  public get isShowDeleteTurn(): boolean {
-    return this.character.deleteTurn > 0 && def.UPDATE_START_YEAR <= this.gameDate.year;
   }
 
   public get countryColor(): number {
@@ -190,13 +203,6 @@ export default class StatusModel {
     }
   }
 
-  public unitMemberCharacters(unit: api.Unit): api.Character[] {
-    // 部隊のメンバの武将リスト
-    return Enumerable.from(unit.members)
-      .select((um) => um.character)
-      .toArray();
-  }
-
   // #endregion
 
   // #region Streaming
@@ -282,7 +288,7 @@ export default class StatusModel {
       }
     } else if (signal.type === 4) {
       // 初期データを送信し終えた
-      this.hasInitialized = true;
+      this.store.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
     } else if (signal.type === 5) {
       // 部隊が解散された
@@ -302,7 +308,7 @@ export default class StatusModel {
 
   private initializeGameDate(date: api.GameDateTime) {
     this.gameDate = date;
-    this.warStartDate = date;
+    this.newWarData.startGameDate = api.GameDateTime.addMonth(date, 12 * 12);
     this.commands.preInitialize(date);
   }
 
@@ -377,7 +383,7 @@ export default class StatusModel {
   }
 
   private setTown(town: api.Town) {
-    this.town = town;
+    this.store.town = town;
     this.townParameters = this.getTownParameters(town);
     Vue.set(this.town, 'scoutedGameDateTime', (this.town as any).scoutedGameDateTime);
   }
@@ -538,7 +544,7 @@ export default class StatusModel {
   }
 
   private setCountry(country: api.Country) {
-    this.country = country;
+    this.store.country = country;
     this.countryParameters = this.getCountryParameters(country);
   }
 
@@ -715,7 +721,7 @@ export default class StatusModel {
     this.updateCountryDiplomacies(alliance, (c) => c.alliances, (c, val) => c.alliances = val);
 
     // 自国に関係することなら通知する
-    if (this.hasInitialized &&
+    if (this.store.hasInitialized &&
         (alliance.requestedCountryId === this.character.countryId ||
          alliance.insistedCountryId === this.character.countryId)) {
       const targetCountry = alliance.requestedCountryId === this.character.countryId ?
@@ -736,7 +742,7 @@ export default class StatusModel {
     this.updateCountryDiplomacies(war, (c) => c.wars, (c, val) => c.wars = val);
 
     // 自国に関係することなら通知する
-    if (this.hasInitialized &&
+    if (this.store.hasInitialized &&
       (war.requestedCountryId === this.character.countryId ||
        war.insistedCountryId === this.character.countryId)) {
       const targetCountry = war.requestedCountryId === this.character.countryId ?
@@ -777,9 +783,10 @@ export default class StatusModel {
     });
   }
 
-  public setAlliance(status: number) {
+  public setAlliance() {
     const countryA = this.country.id;
     const countryB = this.character.countryId;
+    const status = this.newAllianceData.status;
 
     const old = Enumerable
       .from(this.characterCountry.alliances)
@@ -797,8 +804,8 @@ export default class StatusModel {
       old.status === api.CountryAlliance.statusNone ||
       old.status === api.CountryAlliance.statusBroken ||
       old.status === api.CountryAlliance.statusDismissed) {
-      alliance.breakingDelay = this.allianceBreakingDelay;
-      alliance.isPublic = this.allianceIsPublic;
+      alliance.breakingDelay = this.newAllianceData.breakingDelay;
+      alliance.isPublic = this.newAllianceData.isPublic;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
@@ -817,9 +824,10 @@ export default class StatusModel {
       });
   }
 
-  public setWar(status: number) {
+  public setWar() {
     const countryA = this.country.id;
     const countryB = this.character.countryId;
+    const status = this.newWarData.status;
 
     const old = Enumerable
       .from(this.characterCountry.wars)
@@ -834,7 +842,7 @@ export default class StatusModel {
     war.requestedCountryId = countryB;
     war.insistedCountryId = countryA;
     if (!old) {
-      war.startGameDate = this.warStartDate;
+      war.startGameDate = this.newWarData.startGameDate;
     } else {
       war.startGameDate = old.startGameDate;
     }
@@ -857,7 +865,7 @@ export default class StatusModel {
   // #region Character
 
   private initializeCharacter(character: api.Character) {
-    this.character = character;
+    this.store.character = character;
 
     // アイコンを初期化
     api.Api.getAllIcons()
@@ -877,10 +885,10 @@ export default class StatusModel {
       this.initializeCharacter(character);
     } else {
       if (this.character.countryId !== character.countryId) {
-        this.character = character;
+        this.store.character = character;
         this.onCountryChanged();
       } else {
-        this.character = character;
+        this.store.character = character;
       }
     }
     this.characterParameters = this.getCharacterParameters(character);
@@ -889,7 +897,7 @@ export default class StatusModel {
     if (this.town.id < 0) {
       const currentTown = ArrayUtil.find(this.towns, character.townId);
       if (currentTown) {
-        this.town = currentTown;
+        this.store.town = currentTown;
       }
     }
   }
@@ -933,169 +941,7 @@ export default class StatusModel {
 
   // #region Unit
 
-  public updateUnits() {
-    this.isUpdatingUnit = true;
-    api.Api.getUnits()
-      .then((units) => {
-        this.units = units;
-        units.forEach((u) => {
-          const leader = Enumerable.from(u.members)
-            .firstOrDefault((um) => um.post === api.UnitMember.postLeader);
-          if (leader) {
-            u.leader = leader;
-          }
-        });
-
-        // 自分が所属している部隊と、隊長かどうかを調べて反映する
-        let currentUnitPost = api.UnitMember.postNormal;
-        const currentUnit = Enumerable.from(units)
-          .firstOrDefault((u) => {
-            const member = Enumerable.from(u.members)
-              .firstOrDefault((um) => um.characterId === this.character.id);
-            if (member) {
-              currentUnitPost = member.post;
-              return true;
-            } else {
-              return false;
-            }
-          });
-
-        this.leaderUnit = new api.Unit(-1);
-        if (currentUnit) {
-          if (currentUnitPost === api.UnitMember.postLeader) {
-            this.leaderUnit = currentUnit;
-          }
-          Vue.set(currentUnit, 'isSelected', true);
-        }
-      })
-      .catch(() => {
-        NotificationService.unitLoadFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingUnit = false;
-      });
-  }
-
-  public toggleUnit(unit: api.Unit) {
-    const isSelected: boolean = !unit.isSelected;
-    this.isUpdatingUnit = true;
-
-    if (isSelected) {
-      let isSucceed = false;
-      api.Api.joinUnit(unit.id)
-        .then(() => {
-          NotificationService.unitJoined.notifyWithParameter(unit.name);
-          this.units.forEach((u) => { Vue.set(u, 'isSelected', false); });
-          Vue.set(unit, 'isSelected', true);
-          isSucceed = true;
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.unitJoinLimitedError) {
-            NotificationService.unitJoinFailedBecauseLimited.notifyWithParameter(unit.name);
-          } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
-            NotificationService.unitJoinFailedBecauseLeader.notifyWithParameter(unit.name);
-          } else if (ex.data.code === api.ErrorCode.meaninglessOperationError) {
-            NotificationService.unitJoinFailedBecauseCurrentUnit.notifyWithParameter(unit.name);
-          } else {
-            NotificationService.unitJoinFailed.notifyWithParameter(unit.name);
-          }
-        })
-        .finally(() => {
-          this.isUpdatingUnit = false;
-          if (isSucceed) {
-            this.updateUnits();
-          }
-        });
-    } else {
-      let isSucceed = false;
-      api.Api.leaveUnit()
-        .then(() => {
-          NotificationService.unitLeft.notifyWithParameter(unit.name);
-          Vue.set(unit, 'isSelected', false);
-          isSucceed = true;
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.invalidOperationError) {
-            NotificationService.unitLeaveFailedBecauseLeader.notifyWithParameter(unit.name);
-          } else {
-            NotificationService.unitLeaveFailed.notifyWithParameter(unit.name);
-          }
-        })
-        .finally(() => {
-          this.isUpdatingUnit = false;
-          if (isSucceed) {
-            this.updateUnits();
-          }
-        });
-    }
-  }
-
-  public createUnit() {
-    if (this.leaderUnit.id < 0) {
-      this.isUpdatingUnit = true;
-      let isSucceed = false;
-      api.Api.createUnit(this.leaderUnit)
-        .then(() => {
-          NotificationService.unitCreated.notifyWithParameter(this.leaderUnit.name);
-          isSucceed = true;
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.lackOfNameParameterError) {
-            NotificationService.unitCreateFailedBecauseLackOfParameters.notify();
-          } else {
-            NotificationService.unitCreateFailed.notifyWithParameter(this.leaderUnit.name);
-          }
-        })
-        .finally(() => {
-          this.isUpdatingUnit = false;
-          if (isSucceed) {
-            this.updateUnits();
-          }
-        });
-    }
-  }
-
-  public updateLeaderUnit() {
-    if (this.leaderUnit.id >= 0) {
-      this.isUpdatingUnit = true;
-      let isSucceed = false;
-      api.Api.updateUnit(this.leaderUnit.id, this.leaderUnit)
-        .then(() => {
-          NotificationService.unitUpdated.notifyWithParameter(this.leaderUnit.name);
-          isSucceed = true;
-        })
-        .catch(() => {
-          NotificationService.unitUpdateFailed.notifyWithParameter(this.leaderUnit.name);
-        })
-        .finally(() => {
-          this.isUpdatingUnit = false;
-          if (isSucceed) {
-            this.updateUnits();
-          }
-        });
-    }
-  }
-
-  public removeLeaderUnit() {
-    if (this.leaderUnit.id >= 0) {
-      this.isUpdatingUnit = true;
-      let isSucceed = false;
-      api.Api.removeUnit(this.leaderUnit.id)
-        .then(() => {
-          NotificationService.unitRemoved.notifyWithParameter(this.leaderUnit.name);
-          isSucceed = true;
-        })
-        .catch(() => {
-          NotificationService.unitRemoveFailed.notifyWithParameter(this.leaderUnit.name);
-        })
-        .finally(() => {
-          this.isUpdatingUnit = false;
-          if (isSucceed) {
-            this.updateUnits();
-          }
-        });
-    }
-  }
+  public unitModel = new UnitModel(this.store);
 
   // #endregion
 
@@ -1159,11 +1005,7 @@ export default class StatusModel {
         } else {
           throw new Error();
         }},
-      (id) => api.Api.getPrivateChatMessage(id, 50));
-
-  public get isPostingChat(): boolean {
-    return this.countryChat.isPosting || this.globalChat.isPosting || this.privateChat.isPosting;
-  }
+      (id) => api.Api.getPrivateChatMessage(id, 50), true);
 
   private onReceiveChatMessage(message: api.ChatMessage) {
     if (message.type === api.ChatMessage.typeSelfCountry ||
@@ -1176,7 +1018,7 @@ export default class StatusModel {
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
       this.privateChat.append(message);
-      if (message.character && message.character.id !== this.character.id && this.hasInitialized) {
+      if (message.character && message.character.id !== this.character.id && this.store.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
       }
     }

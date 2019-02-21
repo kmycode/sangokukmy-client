@@ -1,0 +1,251 @@
+<template>
+  <div id="command-list">
+    <!-- コマンド選択のタブ -->
+    <ul class="nav nav-pills nav-fill">
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">増強</a></li>
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
+      <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li> -->
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
+    </ul>
+    <div class="loading-container">
+      <!-- 内政コマンド -->
+      <div v-show="selectedCommandCategory === 0" class="commands">
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(1)">農業開発</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(2)">商業発展</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(3)">技術開発</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(4)">城壁強化</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(5)">守兵増強</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(6)">米施し</button>
+      </div>
+      <!-- 増強コマンド -->
+      <div v-show="selectedCommandCategory === 1" class="commands">
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(7)">農地開拓</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(8)">市場拡大</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(9)">城壁増築</button>
+      </div>
+      <!-- 軍事コマンド -->
+      <div v-show="selectedCommandCategory === 2" class="commands">
+        <button type="button" class="btn btn-light" @click="$emit('open', 'soldier')">徴兵</button>
+        <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(12)">城の守備</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(13)">戦争</button>
+        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(14)">集合</button>
+      </div>
+      <!-- 計略コマンド -->
+      <div v-show="selectedCommandCategory === 3" class="commands">
+        <!-- <button type="button" class="btn btn-light">登用</button>
+        <button type="button" class="btn btn-light">密偵</button> -->
+      </div>
+      <!-- 個人コマンド -->
+      <div v-show="selectedCommandCategory === 4" class="commands">
+        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(17)">移動</button>
+        <button type="button" class="btn btn-light" @click="$emit('open', 'training')">能力強化</button>
+        <!-- <button type="button" class="btn btn-light">米売買</button>
+        <button type="button" class="btn btn-light">武器</button>
+        <button type="button" class="btn btn-light">書物</button> -->
+        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
+        <button type="button" class="btn btn-primary" @click="list.inputer.inputMoveCommand(23)">仕官</button>
+        <!-- <button type="button" class="btn btn-light">下野</button> -->
+      </div>
+      <div class="loading" v-show="list.inputer.isCommandInputing"><div class="loading-icon"></div></div>
+    </div>
+    <!-- 選択ツール -->
+    <div class="command-input-options">
+      <button type="button" class="btn btn-light" @click="list.inputer.clearAllCommandSelections()">クリア</button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全て</button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶数</button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇数</button>
+      <!-- <button type="button" class="btn btn-light">ax+b</button> -->
+    </div>
+    <!-- 選択アルゴリズム -->
+    <div class="command-select-options">
+      <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
+      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
+      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
+      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 2, 'btn-info': list.inputer.commandSelectMode === 2 }" @click="list.inputer.commandSelectMode = 2">AND</button>
+      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 3, 'btn-info': list.inputer.commandSelectMode === 3 }" @click="list.inputer.commandSelectMode = 3">XOR</button>
+    </div>
+    <!-- 放置削除の通知 -->
+    <div v-show="isShowDeleteTurn" class="command-delete-turn-notify">
+      このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ deleteTurn }}</span> ターンで削除されます
+    </div>
+    <div class="command-list">
+      <div v-for="command in list.commands"
+            :key="command.commandNumber"
+            :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect }"
+            @click="onCommandSelected(command, $event)">
+        <div class="number">{{ command.commandNumber }}</div>
+        <div class="command-information">
+          <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
+          <div class="command-text">{{ command.name }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script lang="ts">
+import { Component, Vue, Prop } from 'vue-property-decorator';
+import * as api from '@/api/api';
+import CommandList from '@/models/status/commandlist';
+import * as def from '@/common/definitions';
+
+@Component({
+  components: {
+  },
+})
+export default class CommandListView extends Vue {
+  @Prop() private list!: CommandList;
+  @Prop() private characterDeleteTurn!: number;
+  private selectedCommandCategory: number = 0;
+  private isMultiCommandsSelection: boolean = false;
+
+  private get deleteTurn(): number {
+    return def.CHARACTER_DELETE_TURN - this.characterDeleteTurn;
+  }
+
+  public get isShowDeleteTurn(): boolean {
+    let isShow = this.characterDeleteTurn > 0;
+    const firstCommand = this.list.commands.length > 0 ?
+      this.list.commands[this.list.commands.length - 1] : undefined;
+    if (firstCommand) {
+      isShow = isShow && def.UPDATE_START_YEAR < firstCommand.gameDate.year;
+    }
+    return isShow;
+  }
+
+  private onCommandSelected(command: api.CharacterCommand, event?: MouseEvent) {
+    if (this.isMultiCommandsSelection) {
+      this.list.inputer.selectMultipleCommand(command);
+    } else {
+      if (event && event.shiftKey) {
+        this.list.inputer.selectMultipleCommand(command);
+      } else {
+        this.list.inputer.selectSingleCommand(command);
+      }
+    }
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+
+$color-navigation-commands: #e0e0e0;
+
+#command-list {
+  display: flex;
+  flex-direction: column;
+  .nav {
+    .active {
+      background-color: #6bf;
+    }
+  }
+  .commands {
+    display: flex;
+    flex-flow: row wrap;
+    button {
+      margin: 4px 4px 0 0;
+      &.btn-light {
+        background-color: #e7e7e7;
+        &:hover {
+          background-color: #bbb;
+        }
+      }
+    }
+  }
+  .command-input-options {
+    margin-top: 4px;
+    padding: 0 0 4px 4px;
+    background-color: $color-navigation-commands;
+    display: flex;
+    flex-flow: row wrap;
+    button {
+      margin: 4px 4px 0 0;
+    }
+  }
+  .command-select-options {
+    margin-top: 4px;
+    padding: 0 0 4px 4px;
+    display: flex;
+    flex-flow: row wrap;
+    button {
+      margin: 4px 4px 0 0;
+    }
+  }
+  .command-delete-turn-notify {
+    color: white;
+    background-color: #e7a;
+    padding: 4px 8px;
+    .number {
+      font-weight: bold;
+      font-size: 24px;
+    }
+  }
+  .command-list {
+    flex: 1;
+    margin-top: 4px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .command-list-item {
+    background: #f4f4ff;
+    padding: 2px 4px;
+    display: flex;
+    border-bottom: 1px dashed #ccf;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color .1s ease-in;
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background: #e4e4f6;
+    }
+    &.selected {
+      background: #c6caf0;
+      &:hover {
+        background: #b1b1df;
+      }
+    }
+    &.disabled {
+      opacity: 0.3;
+      cursor: default;
+    }
+    .number {
+      font-size: 1rem;
+      width: 3rem;
+      height: 2.5rem;
+      line-height: 2.5rem;
+      text-align: center;
+    }
+    .command-information {
+      flex: 1;
+      .command-helper {
+        font-size: 0.9rem;
+        height: 1.1rem;
+        line-height: 1.1rem;
+        .realdate {
+          font-size: 0.8rem;
+          margin-left: 24px;
+          color: #777;
+        }
+        .rest {
+          margin-left: 24px;
+          .rest-time {
+            margin: 0 4px;
+            font-weight: bold;
+            color: red;
+          }
+        }
+      }
+      .command-text {
+        font-size: 1.1rem;
+        height: 1.4rem;
+        line-height: 1.4rem;
+        font-weight: bold;
+      }
+    }
+  }
+}
+</style>

@@ -2,6 +2,7 @@ import * as api from '@/api/api';
 import Enumerable from 'linq';
 import ArrayUtil from '@/models/common/arrayutil';
 import NotificationService from '@/services/notificationservice';
+import Vue from 'vue';
 
 export interface IChatMessageContainer {
   messages: api.ChatMessage[];
@@ -22,13 +23,13 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public isPosting: boolean = false;
   public isLoading: boolean = false;
   public isUnread: boolean = false;
-  public sendTo?: T;
+  public sendTo: T = {} as T;
   private hasLoadAll: boolean = false;
   private isOpenPrivate: boolean = false;
 
   public get canSend(): boolean {
     if (this.isNeedSendTo) {
-      return this.sendTo !== undefined;
+      return this.sendTo !== undefined && this.sendTo.id > 0;
     } else {
       return true;
     }
