@@ -39,10 +39,10 @@ export default class OnlineModel {
       }
     } else {
       if (old1) {
-        this.actives = this.actives.filter((o) => o.character.id === online.character.id);
+        this.actives = this.actives.filter((o) => o.character.id !== online.character.id);
       }
       if (old2) {
-        this.inactives = this.inactives.filter((o) => o.character.id === online.character.id);
+        this.inactives = this.inactives.filter((o) => o.character.id !== online.character.id);
       }
     }
   }
