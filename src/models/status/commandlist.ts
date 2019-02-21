@@ -6,9 +6,10 @@ import ArrayUtil from '@/models/common/arrayutil';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
 import CommandInputer from './commandinputer';
+import StatusStore from './statusstore';
 
 export default class CommandList {
-  public inputer: CommandInputer = new CommandInputer(this.getTowns);
+  public inputer: CommandInputer = new CommandInputer(this.store);
   public secondsOfNextCommand: number = 0;
   private isInitialized: boolean = false;
   private timer: number = 0;
@@ -17,7 +18,7 @@ export default class CommandList {
     return this.inputer.commands;
   }
 
-  public constructor(private getTowns: () => api.Town[]) {
+  public constructor(private store: StatusStore) {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }
 
