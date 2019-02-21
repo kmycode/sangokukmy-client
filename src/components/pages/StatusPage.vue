@@ -561,6 +561,7 @@ export default class StatusPage extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/bootstrap-helper.scss';
 @import '@/scss/country-color.scss';
 @import '@/scss/global-colors.scss';
 
@@ -638,7 +639,10 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
-  min-height: 140px;
+  min-height: 180px;
+  @include media-query-lower(sm) {
+    height: 400px;
+  }
   border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
