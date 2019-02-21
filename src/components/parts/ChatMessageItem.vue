@@ -6,7 +6,9 @@
         <div class="text"><KmyChatTagText :text="message.message"/></div>
         <div class="commands">
           <button v-if="canSendPrivate && message.character.id !== myCharacterId" @click="$emit('chat-private', message.character.id)" type="button" class="btn btn-light btn-sm">個宛</button>
+          <button v-if="canSendPrivate && message.character.id === myCharacterId" @click="$emit('chat-private', message.typeData2)" type="button" class="btn btn-outline-dark btn-sm">再送</button>
           <button v-if="canSendOtherCountry && message.characterCountryId !== myCountryId" @click="$emit('chat-other-country', message.characterCountryId)" type="button" class="btn btn-warning btn-sm">国宛</button>
+          <button v-if="canSendOtherCountry && message.type === 2 && message.typeData === myCountryId" @click="$emit('chat-other-country', message.typeData2)" type="button" class="btn btn-outline-dark btn-sm">再送</button>
         </div>
       </div>
       <div class="message-footer">
