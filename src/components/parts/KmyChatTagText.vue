@@ -12,6 +12,7 @@ import * as api from './../../api/api';
   },
 })
 export default class KmyChatTagText extends Vue {
+  private static readonly reg = new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))');
   @Prop() private text!: string;
 
   private get formatedText(): string {
@@ -20,8 +21,7 @@ export default class KmyChatTagText extends Vue {
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
       .replace(/\n/g, '<br>')
-      .replace(new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))'), 
-               '<a href="$1" target="_blank">$1</a>');
+      .replace(KmyChatTagText.reg, '<a href="$1" target="_blank">$1</a>');
   }
 }
 </script>
