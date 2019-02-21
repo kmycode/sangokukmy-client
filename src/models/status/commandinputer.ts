@@ -5,6 +5,7 @@ import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
 import ArrayUtil from '../common/arrayutil';
+import StatusStore from './statusstore';
 
 export enum CommandSelectMode {
   /**
@@ -30,7 +31,7 @@ export default class CommandInputer {
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
-  public constructor(private getTowns: () => api.Town[]) {}
+  public constructor(private store: StatusStore) {}
 
   public inputCommand(commandType: number) {
     this.inputCommandPrivate(commandType);
@@ -43,9 +44,9 @@ export default class CommandInputer {
     });
   }
 
-  public inputMoveCommand(commandType: number, town: api.Town) {
+  public inputMoveCommand(commandType: number) {
     this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, town.id));
+      c.parameters.push(new api.CharacterCommandParameter(1, this.store.town.id));
     });
   }
 
@@ -186,7 +187,7 @@ export default class CommandInputer {
       // 移動、戦争
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetTownId && targetTownId.numberValue) {
-        const town = ArrayUtil.find(this.getTowns(), targetTownId.numberValue);
+        const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
         command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
       } else {
         command.name = 'エラー (' + command.type + ':A)';

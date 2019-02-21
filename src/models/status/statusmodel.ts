@@ -933,7 +933,7 @@ export default class StatusModel {
 
   // #region Command
 
-  public commands: CommandList = new CommandList(() => this.towns);
+  public commands: CommandList = new CommandList(this.store);
 
   public get isCommandInputing(): boolean {
     return this.commands.inputer.isInputing;
