@@ -130,7 +130,7 @@
           </ul>
         </div>
         <!-- コマンド入力 -->
-        <div v-show="selectedActionTab === 0" class="right-side-content content-command" style="display:flex">
+        <div v-show="selectedActionTab === 0" class="right-side-content content-command" style="display:flex;flex-direction:column">
           <CommandListView :list="model.commands"
                            :characterDeleteTurn="model.character.deleteTurn"
                            @open="openCommandDialog($event)"/>
