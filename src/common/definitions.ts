@@ -42,7 +42,7 @@ export const CHARACTER_DELETE_TURN = 500;
 /**
  * 次の階級に上がるまでに必要な階級値
  */
-export const NEXT_LANK = 1000;
+export const NEXT_LANK = 800;
 
 /**
  * 国色の数
