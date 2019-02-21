@@ -133,6 +133,9 @@ export default class ApiStreaming {
       case api.ThreadBbsItem.typeId:
         this.fire(obj.type, obj.data as api.ThreadBbsItem);
         break;
+      case api.CharacterOnline.typeId:
+        this.fire(obj.type, obj.data as api.CharacterOnline);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;

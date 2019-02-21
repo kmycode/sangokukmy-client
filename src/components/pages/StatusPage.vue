@@ -5,7 +5,8 @@
       <div class="col-lg-7 col-md-6">
         <div id="current-display-wrapper">
           <div id="system-button-group">
-            <!--<button type="button" class="btn btn-secondary">aaa</button>-->
+            <button type="button" class="btn btn-info" v-show="!isShowOnlines" @click="isShowOnlines = true">ON</button>
+            <button type="button" class="btn btn-info" v-show="isShowOnlines" @click="isShowOnlines = false">地図</button>
           </div>
           <div id="current-display">
             <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
@@ -17,11 +18,26 @@
         </div>
         <div id="map-container">
           <Map
+            v-show="!isShowOnlines"
             :towns="model.towns"
             :countries="model.countries"
             :town="model.town"
             :currentTown="model.characterTown"
             @selected="model.selectTown($event)"/>
+          <div v-show="isShowOnlines" class="online-list">
+            <div class="online-list-item">
+              <h3>ACTIVE</h3>
+              <MiniCharacterList
+                :countries="model.countries"
+                :characters="model.onlines.activeCharacters"/>
+            </div>
+            <div class="online-list-item">
+              <h3>INACTIVE</h3>
+              <MiniCharacterList
+                :countries="model.countries"
+                :characters="model.onlines.inactiveCharacters"/>
+            </div>
+          </div>
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
@@ -47,8 +63,8 @@
             <button v-show="model.town.id === model.character.townId && model.town.countryId !== model.character.countryId" type="button" class="btn btn-secondary loading-container" :style="{ 'pointer-events': model.isScouting ? 'none' : 'all' }" @click="model.scoutTown()">諜報<div v-show="model.isScouting" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">武将（当時）</button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備（当時）</button>
-            <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
-            <button type="button" class="btn btn-secondary loading-container" @click="model.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -58,7 +74,7 @@
             <StatusParametersPanel :parameters="model.characterParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info" @click="model.updateUnits(); isShowCreateUnitForm = false; isOpenUnitsDialog = true">部隊</button>
+            <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -68,9 +84,9 @@
             <StatusParametersPanel :parameters="model.countryParameters"/>
           </div>
           <div class="commands">
-            <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isShowCreateUnitForm = false; isOpenCountryCharactersDialog = true">武将</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.updateUnits(); isOpenUnitsDialog = true">部隊</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true; selectedAllianceStatus = -1">同盟</button>
+            <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
+            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
             <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
@@ -114,92 +130,13 @@
           </ul>
         </div>
         <!-- コマンド入力 -->
-        <div v-show="selectedActionTab === 0" class="right-side-content content-command">
-          <!-- コマンド選択のタブ -->
-          <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">増強</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
-            <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li> -->
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
-          </ul>
-          <div class="loading-container">
-            <!-- 内政コマンド -->
-            <div v-show="selectedCommandCategory === 0" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputCommand(1)">農業開発</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(2)">商業発展</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(3)">技術開発</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(4)">城壁強化</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(5)">守兵増強</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(6)">米施し</button>
-            </div>
-            <!-- 増強コマンド -->
-            <div v-show="selectedCommandCategory === 1" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputCommand(7)">農地開拓</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(8)">市場拡大</button>
-              <button type="button" class="btn btn-light" @click="model.inputCommand(9)">城壁増築</button>
-            </div>
-            <!-- 軍事コマンド -->
-            <div v-show="selectedCommandCategory === 2" class="commands">
-              <button type="button" class="btn btn-light" @click="isOpenSoldierDialog = true">徴兵</button>
-              <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
-              <button type="button" class="btn btn-light" @click="model.inputCommand(12)">城の守備</button>
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(13)">戦争</button>
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(14)">集合</button>
-            </div>
-            <!-- 計略コマンド -->
-            <div v-show="selectedCommandCategory === 3" class="commands">
-              <!-- <button type="button" class="btn btn-light">登用</button>
-              <button type="button" class="btn btn-light">密偵</button> -->
-            </div>
-            <!-- 個人コマンド -->
-            <div v-show="selectedCommandCategory === 4" class="commands">
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(17)">移動</button>
-              <button type="button" class="btn btn-light" @click="isOpenTrainingDialog = true">能力強化</button>
-              <!-- <button type="button" class="btn btn-light">米売買</button>
-              <button type="button" class="btn btn-light">武器</button>
-              <button type="button" class="btn btn-light">書物</button> -->
-              <button type="button" class="btn btn-light" @click="model.inputMoveCommand(0)">何もしない</button>
-              <button type="button" class="btn btn-primary" @click="model.inputMoveCommand(23)">仕官</button>
-              <!-- <button type="button" class="btn btn-light">下野</button> -->
-            </div>
-            <div class="loading" v-show="model.isCommandInputing"><div class="loading-icon"></div></div>
-          </div>
-          <!-- 選択ツール -->
-          <div class="command-input-options">
-            <button type="button" class="btn btn-light" @click="model.clearAllCommandSelections()">クリア</button>
-            <button type="button" class="btn btn-light" @click="model.selectAllCommands()">全て</button>
-            <button type="button" class="btn btn-light" @click="model.selectOddCommands()">偶数</button>
-            <button type="button" class="btn btn-light" @click="model.selectEvenCommands()">奇数</button>
-            <!-- <button type="button" class="btn btn-light">ax+b</button> -->
-          </div>
-          <!-- 選択アルゴリズム -->
-          <div class="command-select-options">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 0, 'btn-info': model.commandSelectMode === 0 }" @click="model.commandSelectMode = 0">置換</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 1, 'btn-info': model.commandSelectMode === 1 }" @click="model.commandSelectMode = 1">OR</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 2, 'btn-info': model.commandSelectMode === 2 }" @click="model.commandSelectMode = 2">AND</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-info': model.commandSelectMode !== 3, 'btn-info': model.commandSelectMode === 3 }" @click="model.commandSelectMode = 3">XOR</button>
-          </div>
-          <!-- 放置削除の通知 -->
-          <div v-show="model.isShowDeleteTurn" class="command-delete-turn-notify">
-            このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ model.characterDeleteTurn }}</span> ターンで削除されます
-          </div>
-          <div class="command-list">
-            <div v-for="command in model.commands"
-                 :key="command.commandNumber"
-                 :class="{ 'command-list-item': true, 'selected': command.isSelected }"
-                 @click="onCommandSelected(command, $event)">
-              <div class="number">{{ command.commandNumber }}</div>
-              <div class="command-information">
-                <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ model.secondsOfNextCommand }}</span>秒</span></div>
-                <div class="command-text">{{ command.name }}</div>
-              </div>
-            </div>
-          </div>
+        <div v-show="selectedActionTab === 0" class="right-side-content content-command" style="display:flex;flex-direction:column">
+          <CommandListView :list="model.commands"
+                           :characterDeleteTurn="model.character.deleteTurn"
+                           @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->
-        <div v-show="selectedActionTab === 1" class="right-side-content content-chat">
+        <div v-show="selectedActionTab === 1" class="right-side-content content-chat" style="display:flex;flex-direction:column">
           <!-- 手紙の種類選択のタブ -->
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
@@ -209,47 +146,36 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
           </ul>
-          <!-- 投稿フォーム -->
-          <div v-if="selectedActionTab === 1 && selectedChatCategory !== 4" class="loading-container">
-            <div :class="'chat-new-message country-color-' + model.characterCountryColor">
-              <CharacterIcon :icons="model.characterIcons"/>
-              <div class="post-pair">
-                <div class="message-input-wrapper">
-                  <textarea ref="chatMessageInput" class="message-input" v-model="model.chatPostMessage" @keyup.ctrl.enter.prevent.stop="postChat()" @keyup.meta.enter="postChat()"></textarea>
-                </div>
-                <div v-show="(isSendToPrivate && selectedChatCategory === 1) || (isSendToCountry && selectedChatCategory === 0)" class="message-target"
-                     @click="isSendToPrivate = isSendToCountry = false">
-                  <span class="target-text">{{ chatSendTargetName }} へ送信</span><span class="remove-mark">✕</span>
-                </div>
-                <div class="buttons">
-                  <button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button>
-                </div>
-              </div>
-            </div>
-            <div class="loading" v-show="model.isPostingChat"><div class="loading-icon"></div></div>
+          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :model="model.countryChat"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"
+                              :canSendOtherCountry="model.canDiplomacy"
+                              :myCountryId="model.character.countryId"
+                              @chat-other-country="readyOtherCountryChatById($event)"
+                              @call-focus="callCountryChatFocus = $event"/>
           </div>
-          <div v-show="selectedChatCategory === 0 && selectedActionTab === 1" class="messages" @scroll="onCountryChatScrolled">
-            <ChatMessagePanel :messages="model.countryChatMessages" :countries="model.countries" :canSendOtherCountry="model.canDiplomacy" :myCountryId="model.character.countryId" @chat-other-country="readyOtherCountryChatById($event)"/>
-            <div v-show="model.isLoadingMoreCountryChats" class="loading-container load-more">
-              <div class="loading"><div class="loading-icon"></div></div>
-            </div>
+          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :model="model.privateChat"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"
+                              canSendPrivate="true"
+                              :myCharacterId="model.character.id"
+                              @chat-private="readyPrivateChatById($event)"
+                              @call-focus="callPrivateChatFocus = $event"/>
           </div>
-          <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages" @scroll="onPrivateChatScrolled">
-            <ChatMessagePanel :messages="model.privateChatMessages" :countries="model.countries" canSendPrivate="true" :myCharacterId="model.character.id" @chat-private="readyPrivateChatById($event)"/>
-            <div v-show="model.isLoadingMorePrivateChats" class="loading-container load-more">
-              <div class="loading"><div class="loading-icon"></div></div>
-            </div>
-          </div>
-          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages" @scroll="this.onGlobalChatScrolled">
-            <ChatMessagePanel :messages="model.globalChatMessages" :countries="model.countries"/>
-            <div v-show="model.isLoadingMoreGlobalChats" class="loading-container load-more">
-              <div class="loading"><div class="loading-icon"></div></div>
-            </div>
+          <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :model="model.globalChat"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"/>
           </div>
         </div>
         <!-- 会議室 -->
         <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
-          <ThreadBbs :countries="model.countries" :threads="model.countryBbsThreads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
+          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
       </div>
     </div>
@@ -293,7 +219,7 @@
             <button class="btn btn-light" @click="isOpenSoldierDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.inputSoldierCommand(10, selectedSoliderType, soldierNumber)">実行</button>
+            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, selectedSoliderType, soldierNumber)">実行</button>
           </div>
         </div>
       </div>
@@ -301,10 +227,10 @@
       <div v-show="isOpenTrainingDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">能力強化</h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 1)">武力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 2)">知力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 3)">統率</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.inputTrainingCommand(18, 4)">人望</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 1)">武力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 2)">知力</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 3)">統率</button>
+          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 4)">人望</button>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
@@ -375,53 +301,21 @@
       <!-- 同盟 -->
       <div v-show="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
-        <div class="dialog-content loading-container">
-          {{ model.countryAllianceStatus.name }}
-          <div v-if="model.canDiplomacy">
-            <button v-show="model.countryAllianceStatus.id ===   1" class="btn btn-secondary" @click="selectedAllianceStatus = 0" href="#">撤回</button>
-            <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-secondary" @click="selectedAllianceStatus = 2" href="#">拒否</button>
-            <button v-show="model.countryAllianceStatus.id === 101" class="btn btn-primary"   @click="selectedAllianceStatus = 3" href="#">承認</button>
-            <button v-show="model.countryAllianceStatus.id ===   0 || model.countryAllianceStatus.id === 2 || model.countryAllianceStatus.id === 5" class="btn btn-secondary" @click="selectedAllianceStatus = 1" href="#">同盟申入</button>
-            <button v-show="model.countryAllianceStatus.id ===   3" class="btn btn-secondary" @click="selectedAllianceStatus = 4" href="#">破棄</button>
-            <div v-show="selectedAllianceStatus === 0" class="content-section">
-              <h3>同盟申入撤回</h3>
-            </div>
-            <div v-show="selectedAllianceStatus === 2" class="content-section">
-              <h3>同盟打診拒否</h3>
-            </div>
-            <div v-show="selectedAllianceStatus === 3" class="content-section">
-              <h3>同盟打診承認（同盟開始）</h3>
-            </div>
-            <div v-show="selectedAllianceStatus === 4" class="content-section">
-              <h3>同盟破棄</h3>
-            </div>
-            <div v-show="selectedAllianceStatus === 1" class="content-section">
-              <h3>同盟申入</h3>
-              <div class="form-group">
-                <label for="allianceOption2">破棄猶予（ヶ月）</label>
-                <input type="number" max="48" min="0" id="allianceOption2" class="form-control" v-model="model.allianceBreakingDelay">
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="allianceOption1" v-model="model.allianceIsPublic">
-                <label class="form-check-label" for="allianceOption1">
-                  同盟関係を公表する
-                </label>
-              </div>
-            </div>
-          </div>
-          <div v-if="model.countryAlliance !== undefined && model.countryAllianceStatus.id !== 0 && model.countryAllianceStatus.id !== 2 && model.countryAllianceStatus.id !== 5" class="content-section current-diplomacy">
-            <h3>同盟条件</h3>
-            破棄猶予：{{ model.countryAlliance.breakingDelay }}ヶ月<br>
-            公表：{{ model.countryAlliance.isPublic ? 'する' : 'しない' }}
-          </div>
-          <div class="loading" v-show="model.isSendingAlliance"><div class="loading-icon"></div></div>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <AllianceView :diplomacy="model.countryAlliance"
+                        :status="model.countryAllianceStatus"
+                        :newData="model.newAllianceData"
+                        :isSending="model.isSendingAlliance"
+                        :canEdit="model.canDiplomacy"
+                        :isShow="isOpenAllianceDialog"
+                        style="flex:1"/>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
             <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenAllianceDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedAllianceStatus >= 0" @click="model.setAlliance(selectedAllianceStatus); isOpenAllianceDialog = false">承認</button>
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="model.newAllianceData.status >= 0" @click="model.setAlliance(); isOpenAllianceDialog = false">承認</button>
             <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenAllianceDialog = false">閉じる</button>
           </div>
         </div>
@@ -429,33 +323,21 @@
       <!-- 戦争 -->
       <div v-show="isOpenWarDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">戦争：{{ model.country.name }}</h2>
-        <div class="dialog-content loading-container">
-          {{ model.countryWarStatus.name }}
-          <div v-if="model.canDiplomacy">
-            <button v-show="model.countryWarStatus.id ===   0" class="btn btn-secondary" @click="selectedWarStatus = 4" href="#">宣戦布告</button>
-            <!--
-            <button v-show="model.countryWarStatus.id ===   4 || model.countryWarStatus.id === 1" class="btn btn-secondary" @click="selectedWarStatus = 2" href="#">停戦申入</button>
-            <button v-show="model.countryWarStatus.id === 102" class="btn btn-secondary" @click="selectedWarStatus = 3" href="#">停戦承認</button>
-            <button v-show="model.countryWarStatus.id === 102" class="btn btn-primary"   @click="selectedWarStatus = 4" href="#">停戦拒否</button>
-            <button v-show="model.countryWarStatus.id ===   2" class="btn btn-primary"   @click="selectedWarStatus = 4" href="#">停戦撤回</button>
-            -->
-            <div v-show="selectedWarStatus === 4 && model.countryWarStatus.id === 0" class="content-section">
-              <h3>宣戦布告</h3>
-              <GameDateTimePicker v-model="model.warStartDate"/>
-            </div>
-          </div>
-          <div v-if="model.countryWar !== undefined && model.countryWarStatus.id !== 0" class="content-section current-diplomacy">
-            <h3>戦争</h3>
-            {{ model.countryWar.startGameDate | gamedate }} 開戦
-          </div>
-          <div class="loading" v-show="model.isSendingWar"><div class="loading-icon"></div></div>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <WarView :diplomacy="model.countryWar"
+                   :status="model.countryWarStatus"
+                   :newData="model.newWarData"
+                   :isSending="model.isSendingWar"
+                   :canEdit="model.canDiplomacy"
+                   :isShow="isOpenWarDialog"
+                   style="flex:1"/>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
             <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenWarDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="selectedWarStatus >= 0" @click="model.setWar(selectedWarStatus); isOpenWarDialog = false">承認</button>
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="model.newWarData.status >= 0" @click="model.setWar(); isOpenWarDialog = false">承認</button>
             <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenWarDialog = false">閉じる</button>
           </div>
         </div>
@@ -463,50 +345,10 @@
       <!-- 部隊 -->
       <div v-show="isOpenUnitsDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} の部隊</h2>
-        <div class="dialog-content loading-container">
-          <div style="width:100%;height:100%;overflow:auto;margin:0;">
-            <div v-if="model.leaderUnit.id >= 0">
-              <h3>{{ model.leaderUnit.name }}</h3>
-              <div class="unit-form">
-                <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
-                <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
-                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !model.leaderUnit.isLimited, 'btn-secondary': model.leaderUnit.isLimited }" @click="model.leaderUnit.isLimited = !model.leaderUnit.isLimited">入隊を制限する</button><br>
-                <div class="button-group">
-                  <button class="btn btn-primary" @click="model.updateLeaderUnit()" href="#">保存</button>
-                  <button class="btn btn-light" @click="isShowUnitLeaderOperations = !isShowUnitLeaderOperations" href="#">その他の操作</button>
-                  <button v-show="isShowUnitLeaderOperations" class="btn btn-danger" @click="model.removeLeaderUnit()" href="#">削除</button>
-                </div>
-              </div>
-            </div>
-            <div v-else>
-              <button class="btn btn-secondary" @click="isShowCreateUnitForm = true" href="#">部隊作成</button>
-              <div v-show="isShowCreateUnitForm" class="unit-form">
-                <h3>部隊作成</h3>
-                <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
-                <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
-                <div class="button-group">
-                  <button class="btn btn-primary" @click="model.createUnit()" href="#">作成</button>
-                </div>
-              </div>
-            </div>
-            <div class="unit-list">
-              <div v-for="unit in model.units"
-                    :key="unit.id"
-                    :class="{ 'unit-list-item': true, 'selected': unit.isSelected }"
-                    @click="model.toggleUnit(unit)">
-                <div class="left-side">
-                  <CharacterIcon :icon="unit.leader.character.mainIcon"/>
-                </div>
-                <div class="right-side">
-                  <div class="unit-name">{{ unit.name }}<span v-show="unit.isLimited" class="unit-limited">制限中</span></div>
-                  <div class="unit-message">{{ unit.message }}</div>
-                  <div class="unit-leader">隊長: {{ unit.leader.character.name }}</div>
-                  <div class="unit-members"><MiniCharacterList :characters="model.unitMemberCharacters(unit)" :countries="model.countries"/></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="loading" v-show="model.isUpdatingUnit"><div class="loading-icon"></div></div>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <UnitListView :model="model.unitModel"
+                        :isShow="isOpenUnitsDialog"
+                        style="flex:1"/>
         </div>
         <div class="dialog-footer">
           <div class="left-side"></div>
@@ -545,11 +387,17 @@ import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
 import ThreadBbs from '@/components/parts/ThreadBbs.vue';
+import CommandListView from '@/components/parts/status/CommandList.vue';
+import AllianceView from '@/components/parts/status/AllianceView.vue';
+import WarView from '@/components/parts/status/WarView.vue';
+import UnitListView from '@/components/parts/status/UnitView.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
 import { StatusParameter } from '@/models/status/statusparameter';
+import ChatMessageContainer, { IChatMessageContainer } from '@/models/status/chatmessagecontainer';
 import Enumerable from 'linq';
+import EventObject from '@/models/common/EventObject';
 
 @Component({
   components: {
@@ -563,6 +411,10 @@ import Enumerable from 'linq';
     GameDateTimePicker,
     BattleLogView,
     ThreadBbs,
+    CommandListView,
+    AllianceView,
+    WarView,
+    UnitListView,
   },
 })
 export default class StatusPage extends Vue {
@@ -573,7 +425,6 @@ export default class StatusPage extends Vue {
   public selectedReportType: number = 0;
   public selectedActionTab: number = 0;
   public selectedActionTabSubPanel: number = 0;
-  public selectedCommandCategory: number = 0;
   public selectedChatCategory: number = 0;
   public selectedSoliderType: number = 1;
   public isOpenSoldierDialog: boolean = false;
@@ -586,25 +437,28 @@ export default class StatusPage extends Vue {
   public isOpenUnitsDialog: boolean = false;
   public isOpenBattleLogDialog: boolean = false;
   public isLoadingBattleLog: boolean = false;
-  public selectedAllianceStatus: number = 0;
   public selectedWarStatus: number = 0;
-  public isShowUnitLeaderOperations: boolean = false;
-  public isShowCreateUnitForm: boolean = false;
 
-  public isMultiCommandsSelection: boolean = false;
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
+  public isShowOnlines: boolean = false;
 
-  public isSendToPrivate: boolean = false;
-  public isSendToCountry: boolean = false;
-  public chatPrivateTo: api.Character = new api.Character(-1);
-  public chatCountryTo: api.Country = new api.Country(-1);
+  public callCountryChatFocus?: EventObject;
+  public callPrivateChatFocus?: EventObject;
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog;
+  }
+
+  public openCommandDialog(event: string) {
+    if (event === 'training') {
+      this.isOpenTrainingDialog = true;
+    } else if (event === 'soldier') {
+      this.isOpenSoldierDialog = true;
+    }
   }
 
   public closeDialogs() {
@@ -622,28 +476,20 @@ export default class StatusPage extends Vue {
     }
   }
 
-  public get canSendChat(): boolean {
-    if (this.model.chatPostMessage.length === 0) {
-      return false;
+  public get chatObj(): IChatMessageContainer | undefined {
+    if (this.selectedActionTab === 1) {
+      if (this.selectedChatCategory === 0) {
+        return this.model.countryChat;
+      } else if (this.selectedChatCategory === 1) {
+        return this.model.privateChat;
+      } else if (this.selectedChatCategory === 5) {
+        return this.model.globalChat;
+      }
     }
-    if (this.selectedActionTab === 1 && this.selectedChatCategory === 1) {
-      // 個人宛
-      return this.isSendToPrivate;
-    }
-    return true;
+    return undefined;
   }
 
-  public get chatSendTargetName(): string {
-    if (this.isSendToPrivate) {
-      return this.chatPrivateTo.name;
-    } else if (this.isSendToCountry) {
-      return this.chatCountryTo.name;
-    } else {
-      return '';
-    }
-  }
-
-  public created() {
+  public mounted() {
     this.model.onCreate();
   }
 
@@ -657,35 +503,19 @@ export default class StatusPage extends Vue {
     this.model.onCreate();
   }
 
-  private toggleMultiSelection() {
-    this.isMultiCommandsSelection = !this.isMultiCommandsSelection;
-  }
-
-  private onCommandSelected(command: api.CharacterCommand, event?: MouseEvent) {
-    if (this.isMultiCommandsSelection) {
-      this.model.selectMultipleCommand(command);
-    } else {
-      if (event && event.shiftKey) {
-        this.model.selectMultipleCommand(command);
-      } else {
-        this.model.selectSingleCommand(command);
-      }
-    }
-  }
-
   private readyPrivateChat(chara: api.Character) {
-    this.chatPrivateTo = chara;
-    this.isSendToPrivate = true;
-    this.isSendToCountry = false;
+    this.model.privateChat.sendTo = chara;
     this.selectedActionTab = 1;
     this.selectedChatCategory = 1;
-    (this.$refs.chatMessageInput as any).focus();
+    if (this.callPrivateChatFocus) {
+      this.callPrivateChatFocus.fire();
+    }
   }
 
   private readyPrivateChatById(id: number) {
     const chara = Enumerable
-      .from(this.model.privateChatMessages)
-      .concat(this.model.countryChatMessages)
+      .from(this.model.privateChat.messages)
+      .concat(this.model.countryChat.messages)
       .firstOrDefault((c) => {
         if (c.character) {
           return c.character.id === id;
@@ -699,12 +529,12 @@ export default class StatusPage extends Vue {
   }
 
   private readyOtherCountryChat(country: api.Country) {
-    this.chatCountryTo = country;
-    this.isSendToPrivate = false;
-    this.isSendToCountry = true;
+    this.model.countryChat.sendTo = country;
     this.selectedActionTab = 1;
     this.selectedChatCategory = 0;
-    (this.$refs.chatMessageInput as any).focus();
+    if (this.callCountryChatFocus) {
+      this.callCountryChatFocus.fire();
+    }
   }
 
   private readyOtherCountryChatById(id: number) {
@@ -712,25 +542,6 @@ export default class StatusPage extends Vue {
       .firstOrDefault((c) => c.id === id);
     if (country) {
       this.readyOtherCountryChat(country);
-    }
-  }
-
-  private postChat() {
-    if (this.selectedActionTab === 1) {
-      if (this.selectedChatCategory === 0) {
-        // 自国宛
-        if (!this.isSendToCountry) {
-          this.model.postCountryChat();
-        } else {
-          this.model.postOtherCountryChat(this.chatCountryTo.id, () => this.isSendToCountry = false);
-        }
-      } else if (this.selectedChatCategory === 1) {
-        // 個人宛
-        this.model.postPrivateChat(this.chatPrivateTo.id, () => this.isSendToPrivate = false);
-      } else if (this.selectedChatCategory === 5) {
-        // 全国宛
-        this.model.postGlobalChat();
-      }
     }
   }
 
@@ -742,24 +553,6 @@ export default class StatusPage extends Vue {
     }
   }
 
-  private onGlobalChatScrolled(event: any) {
-    if (this.isScrolled(event)) {
-      this.model.loadOldGlobalChats();
-    }
-  }
-
-  private onCountryChatScrolled(event: any) {
-    if (this.isScrolled(event)) {
-      this.model.loadOldCountryChats();
-    }
-  }
-
-  private onPrivateChatScrolled(event: any) {
-    if (this.isScrolled(event)) {
-      this.model.loadOldPrivateChats();
-    }
-  }
-
   private isScrolled(event: any): boolean {
     // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
     return (event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight;
@@ -768,6 +561,7 @@ export default class StatusPage extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/bootstrap-helper.scss';
 @import '@/scss/country-color.scss';
 @import '@/scss/global-colors.scss';
 
@@ -777,11 +571,6 @@ $left-side-fixed-height: $current-display-height + $nav-tab-height;
 $right-side-fixed-height: $nav-tab-height;
 
 $color-navigation-commands: #e0e0e0;
-
-// infinite scrollで、リストの一番下につける、loading-container付きのdivにつけるクラス
-.load-more {
-  height: 40px;
-}
 
 // Bootstrapによるタブ
 ul.nav {
@@ -829,6 +618,18 @@ ul.nav {
 #map-container {
   height: calc(65vh - #{$left-side-fixed-height});
   min-height: 320px;
+
+  .online-list {
+    padding: 8px;
+
+    .online-list-item {
+      margin-bottom: 24px;
+      h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+      }
+    }
+  }
 }
 
 // 情報欄のタブ
@@ -838,7 +639,10 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
-  min-height: 140px;
+  min-height: 180px;
+  @include media-query-lower(sm) {
+    height: 400px;
+  }
   border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
@@ -881,187 +685,14 @@ ul.nav {
   height: calc(100vh - #{$right-side-fixed-height});
   padding-top: 8px;
 
-  &.content-command {
-    display: flex;
-    flex-direction: column;
-    .nav {
-      .active {
-        background-color: #6bf;
-      }
-    }
-    .commands {
-      display: flex;
-      flex-flow: row wrap;
-      button {
-        margin: 4px 4px 0 0;
-        &.btn-light {
-          background-color: #e7e7e7;
-          &:hover {
-            background-color: #bbb;
-          }
-        }
-      }
-    }
-    .command-input-options {
-      margin-top: 4px;
-      padding: 0 0 4px 4px;
-      background-color: $color-navigation-commands;
-      display: flex;
-      flex-flow: row wrap;
-      button {
-        margin: 4px 4px 0 0;
-      }
-    }
-    .command-select-options {
-      margin-top: 4px;
-      padding: 0 0 4px 4px;
-      display: flex;
-      flex-flow: row wrap;
-      button {
-        margin: 4px 4px 0 0;
-      }
-    }
-    .command-delete-turn-notify {
-      color: white;
-      background-color: #e7a;
-      padding: 4px 8px;
-      .number {
-        font-weight: bold;
-        font-size: 24px;
-      }
-    }
-    .command-list {
-      flex: 1;
-      margin-top: 4px;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-    .command-list-item {
-      background: #f4f4ff;
-      padding: 2px 4px;
-      display: flex;
-      border-bottom: 1px dashed #ccf;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color .1s ease-in;
-      &:last-child {
-        border-bottom: none;
-      }
-      &:hover {
-        background: #e4e4f6;
-      }
-      &.selected {
-        background: #c6caf0;
-        &:hover {
-          background: #b1b1df;
-        }
-      }
-      .number {
-        font-size: 1rem;
-        width: 3rem;
-        height: 2.5rem;
-        line-height: 2.5rem;
-        text-align: center;
-      }
-      .command-information {
-        flex: 1;
-        .command-helper {
-          font-size: 0.9rem;
-          height: 1.1rem;
-          line-height: 1.1rem;
-          .realdate {
-            font-size: 0.8rem;
-            margin-left: 24px;
-            color: #777;
-          }
-          .rest {
-            margin-left: 24px;
-            .rest-time {
-              margin: 0 4px;
-              font-weight: bold;
-              color: red;
-            }
-          }
-        }
-        .command-text {
-          font-size: 1.1rem;
-          height: 1.4rem;
-          line-height: 1.4rem;
-          font-weight: bold;
-        }
-      }
-    }
-  }
-
   &.content-chat {
     display: flex;
     flex-direction: column;
 
-    .nav {
-      .active {
-        background-color: #6bf;
-      }
-    }
-
-    .chat-new-message {
-      display: flex;
-      padding: 6px;
-      border-bottom-width: 2px;
-      border-bottom-style: solid;
-      @include country-color-light('background-color');
-      @include country-color-deep('border-bottom-color');
-
-      .post-pair {
-        padding-left: 6px;
-        display: flex;
-        flex-direction: column;
-        flex: 1;
-
-        .message-input-wrapper {
-          flex: 1;
-          
-          .message-input, .message-input textarea {
-            height: 72px;
-            width: 100%;
-            border: 0;
-            padding: 4px;
-            font-size: 0.9rem;
-          }
-        }
-
-        .message-target {
-          padding: 4px 12px;
-            margin-top: -8px;
-          cursor: pointer;
-          transition: all .2s ease-in;
-
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.16);
-            .remove-mark {
-              visibility: visible;
-            }
-          }
-
-          .target-text {
-            padding: 4px 24px 4px 0;
-          }
-
-          .remove-mark {
-            visibility: hidden;
-            font-weight: bold;
-          }
-        }
-
-        .buttons {
-          text-align: right;
-        }
-      }
-    }
-
     .messages {
       flex: 1;
-      overflow: auto;
-      -webkit-overflow-scrolling: touch;
+      display: flex;
+      flex-direction: column;
     }
   }
 
@@ -1128,10 +759,6 @@ ul.nav {
         margin-top: 24px;
       }
 
-      .current-diplomacy {
-        background: #dedede;
-      }
-
       .soltype-detail {
         margin-top: 12px;
 
@@ -1151,67 +778,6 @@ ul.nav {
         }
         .text {
           font-size: 1rem;
-        }
-      }
-
-      .unit-list {
-        margin-top: 12px;
-
-        .unit-list-item {
-          display: flex;
-          cursor: pointer;
-          padding: 4px;
-          transition: background-color .14s ease-in;
-
-          &:hover {
-            background-color: #dee0f3;
-          }
-
-          &.selected {
-            background-color: #c9cce7;
-
-            &:hover {
-              background-color: #acb0d1;
-            }
-          }
-
-          .right-side {
-            flex: 1;
-            padding-left: 8px;
-
-            .unit-name {
-              font-size: 24px;
-            }
-
-            .unit-limited {
-              color: red;
-              margin-left: 16px;
-              font-size: 14px;
-              font-weight: bold;
-            }
-
-            .unit-message {
-              padding: 4px 0;
-              color: #888;
-            }
-          }
-        }
-      }
-
-      .unit-form {
-        .unit-message-input {
-          min-width: 70%;
-          margin: 4px 0;
-        }
-
-        .button-group {
-          text-align: right;
-        }
-
-        .input-label {
-          color: #666;
-          width: 6.5em;
-          display: inline-block;
         }
       }
 
