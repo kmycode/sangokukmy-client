@@ -10,7 +10,12 @@
           <div v-if="system.gameDateTime.year < 24">更新開始: <span class="number">24</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year >= 24 && system.gameDateTime.year < 48">主要国戦闘解除: <span class="number">48</span>年<span class="number">01</span>月より</div>
           <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
-          <div class="onlines"></div>
+          <div class="onlines">
+            <MiniCharacterList
+              class="online-list"
+              :countries="countries"
+              :characters="onlines.allCharacters"/>
+          </div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
@@ -90,18 +95,21 @@ import Footer from '../common/Footer.vue';
 import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
+import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
 import ArrayUtil from '../../models/common/arrayutil';
 import Streaming from './../../api/streaming';
 import ApiStreaming from './../../api/apistreaming';
 import * as api from './../../api/api';
 import * as def from '@/common/definitions';
+import OnlineModel from '@/models/status/onlinemodel';
 
 @Component({
   components: {
     MapLogList,
     MapLogLine,
     RealDateTime,
+    MiniCharacterList,
     Footer,
   },
 })
@@ -110,8 +118,10 @@ export default class TopPage extends Vue {
   private m2logs = new Array<api.MapLog>();
   private updateLogs = new Array<api.CharacterUpdateLog>();
   private system: api.SystemData = new api.SystemData();
+  private countries: api.Country[] = [];
   private nextMonthSeconds = 0;
   private isLoadingSystem = true;
+  private onlines = new OnlineModel();
 
   private nextMonthSecondsTimer = 0;
 
@@ -141,6 +151,9 @@ export default class TopPage extends Vue {
 
       this.isLoadingSystem = false;
     });
+    ApiStreaming.top.on<api.Country>(api.Country.typeId, (log) => {
+      ArrayUtil.addItem(this.countries, log);
+    });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
       ArrayUtil.addLog(this.mlogs, log, 5);
       if (log.isImportant) {
@@ -156,6 +169,9 @@ export default class TopPage extends Vue {
         location.reload();
       }
     });
+    ApiStreaming.top.on<api.CharacterOnline>(
+      api.CharacterOnline.typeId,
+      (obj) => this.onlines.onOnlineDataReceived(obj));
     ApiStreaming.top.start();
   }
 
@@ -184,6 +200,15 @@ h1 { color: #420; }
   }
   h3 {
     font-size: 1.6rem;
+  }
+}
+
+.onlines {
+  background: white;
+  margin-top: 12px;
+
+  .online-list {
+    margin: 4px 8px;
   }
 }
 </style>

@@ -22,6 +22,13 @@ export default class OnlineModel {
     return this.inactives.map((o) => o.character);
   }
 
+  public get allCharacters(): api.Character[] {
+    return Enumerable.from(this.actives)
+      .concat(this.inactives)
+      .select((o) => o.character)
+      .toArray();
+  }
+
   public onOnlineDataReceived(online: api.CharacterOnline) {
     const old1 = Enumerable.from(this.actives).firstOrDefault((o) => o.character.id === online.character.id);
     const old2 = Enumerable.from(this.inactives).firstOrDefault((o) => o.character.id === online.character.id);
