@@ -293,7 +293,8 @@ export class Character implements IIdentitiedEntity {
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
-                     public mainIcon?: CharacterIcon) {}
+                     public mainIcon?: CharacterIcon,
+                     public reinforcement?: Reinforcement) {}
 }
 
 /**
@@ -686,6 +687,24 @@ export class CharacterOnline {
 
   public constructor(public status: number,
                      public character: Character) {}
+}
+
+export class Reinforcement {
+  public static readonly typeId = 28;
+
+  public static readonly statusNone = 0;
+  public static readonly statusRequesting = 1;
+  public static readonly statusRequestDismissed = 2;
+  public static readonly statusRequestCanceled = 3;
+  public static readonly statusActive = 4;
+  public static readonly statusReturned = 5;
+  public static readonly statusSubmited = 6;
+
+  public constructor(public id: number,
+                     public characterId: number,
+                     public characterCountryId: number,
+                     public requestedCountryId: number,
+                     public status: number) {}
 }
 
 export class Api {
@@ -1099,6 +1118,20 @@ export class Api {
     try {
       const statusText = status === CharacterOnline.statusActive ? 'active' : 'inactive';
       await axios.put(def.API_HOST + 'online/' + statusText, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setReinforcementStatus(status: number,
+                                             characterId?: number,
+                                             requestedCountryId?: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'country/reinforcement', {
+        status,
+        characterId,
+        requestedCountryId,
+      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

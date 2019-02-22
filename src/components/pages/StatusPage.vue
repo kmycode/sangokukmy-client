@@ -75,6 +75,15 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+            <span v-show="model.readyForReinforcement"
+                  v-for="rein in model.store.reinforcements"
+                  :key="rein.id">
+              <button v-show="rein.status === 1" type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 4, rein.requestedCountryId)">{{ model.getCountry(rein.requestedCountryId).name }}へ援軍<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+              <button v-show="rein.status === 1" type="button" class="btn btn-danger loading-container" @click="model.setReinforcementStatus(model.character, 2, rein.requestedCountryId)">拒否<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+            </span>
+            <span v-show="!model.readyForReinforcement">
+              <button type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 5)">帰還<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+            </span>
           </div>
         </div>
         <!-- 国情報 -->
@@ -286,7 +295,10 @@
             :myCountryId="model.character.countryId"
             :myCharacterId="model.character.id"
             :canEdit="model.canAppoint"
+            :canReinforcement="model.canDiplomacy && (model.countryAllianceStatus.id === 3 || model.countryAllianceStatus.id === 6 || model.countryAllianceStatus.id === 106)"
             canPrivateChat="true"
+            @reinforcement-request="model.setReinforcementStatus($event, 1)"
+            @reinforcement-cancel="model.setReinforcementStatus($event, 3)"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
             @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>

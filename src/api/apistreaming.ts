@@ -136,6 +136,9 @@ export default class ApiStreaming {
       case api.CharacterOnline.typeId:
         this.fire(obj.type, obj.data as api.CharacterOnline);
         break;
+      case api.Reinforcement.typeId:
+        this.fire(obj.type, obj.data as api.Reinforcement);
+        break;
       default:
         this.fire(obj.type, obj.data);
         break;

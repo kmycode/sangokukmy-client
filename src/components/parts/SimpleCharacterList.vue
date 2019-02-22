@@ -12,9 +12,12 @@
           <div class="name">{{ chara.name }}</div>
           <div class="commands">
           </div>
-          <div class="chat" v-if="canPrivateChat && chara.id !== myCharacterId">
-            <button class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+          <div class="commands">
+            <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6)) && getPostName(chara.id, chara.countryId) !== '君主'" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
+            <button v-if="canReinforcement && chara.countryId !== myCountryId && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
+            <button v-if="canPrivateChat && chara.id !== myCharacterId" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
           </div>
+          <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
           <div v-else class="post-selection">
             <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
@@ -85,6 +88,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canPrivateChat!: boolean;
+  @Prop({
+    default: false,
+  }) public canReinforcement!: boolean;
 
   private isOpenPostsPopup: boolean = false;
 
@@ -152,8 +158,17 @@ export default class SimpleCharacterList extends Vue {
           flex: 1;
         }
 
-        .chat {
+        .commands {
           margin-right: 16px;
+          button {
+            margin-left: 4px;
+          }
+        }
+
+        .reinforcement-status {
+          margin: 4px 12px 0 0;
+          color: green;
+          font-weight: bold;
         }
 
         .post, .post-selection {

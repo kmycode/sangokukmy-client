@@ -404,6 +404,62 @@ export default class NotificationService {
     '武将ログ取得失敗',
     '武将ログ取得に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly requestReinforcementSucceed = new NotificationServiceItem(
+    '援軍要請',
+    '{0} に援軍要請しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly requestReinforcementFailed = new NotificationServiceItem(
+    '援軍要請失敗',
+    '援軍要請に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly cancelReinforcementSucceed = new NotificationServiceItem(
+    '援軍要請取消',
+    '{0} への援軍要請を取り消しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly cancelReinforcementFailed = new NotificationServiceItem(
+    '援軍要請取消失敗',
+    '援軍要請の取り消しに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly reinforcementRequested = new NotificationServiceItem(
+    '援軍要求',
+    '{0} から援軍要請がありました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly reinforcementCanceled = new NotificationServiceItem(
+    '援軍要求取り消し',
+    '{0} からの援軍要請は取り消されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly dismissReinforcementSucceed = new NotificationServiceItem(
+    '援軍拒否',
+    '{0} への援軍要請を拒否しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly dismissReinforcementFailed = new NotificationServiceItem(
+    '援軍拒否失敗',
+    '援軍要請の拒否に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly applyReinforcementSucceed = new NotificationServiceItem(
+    '援軍承諾',
+    '{0} へ援軍に行きました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly applyReinforcementFailed = new NotificationServiceItem(
+    '援軍承諾失敗',
+    '援軍に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly returnReinforcementSucceed = new NotificationServiceItem(
+    '援軍より帰還',
+    '援軍を終了し、本国へ帰還しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly returnReinforcementFailed = new NotificationServiceItem(
+    '援軍帰還失敗',
+    '帰還に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly submitReinforcementSucceed = new NotificationServiceItem(
+    '帰順',
+    '{0} に帰順しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly submitReinforcementFailed = new NotificationServiceItem(
+    '帰順失敗',
+    '帰順に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

@@ -232,6 +232,9 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(16, '建国', '#008'),
   new EventType(17, '仕官', '#008'),
   new EventType(18, '放置', 'black'),
+  new EventType(19, '派遣', '#800'),
+  new EventType(20, '帰還', '#800'),
+  new EventType(21, '帰順', '#008'),
 ];
 
 /**
