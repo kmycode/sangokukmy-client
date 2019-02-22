@@ -54,6 +54,7 @@ export default class StatusModel {
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
+  public isUpdatingReinforcement: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -205,6 +206,11 @@ export default class StatusModel {
     }
   }
 
+  public get readyForReinforcement(): boolean {
+    return !Enumerable.from(this.store.reinforcements)
+      .any((r) => r.status === api.Reinforcement.statusActive);
+  }
+
   // #endregion
 
   // #region Streaming
@@ -258,6 +264,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterOnline>(
       api.CharacterOnline.typeId,
       (obj) => this.onlines.onOnlineDataReceived(obj));
+    ApiStreaming.status.on<api.Reinforcement>(
+      api.Reinforcement.typeId,
+      (obj) => this.onReinforcementReceived(obj));
     ApiStreaming.status.start();
   }
 
@@ -860,6 +869,110 @@ export default class StatusModel {
       .finally(() => {
         this.isSendingWar = false;
       });
+  }
+
+  private onReinforcementReceived(reinforcement: api.Reinforcement) {
+    if (reinforcement.characterId === this.store.character.id) {
+      ArrayUtil.addItemUniquely(this.store.reinforcements,
+                                reinforcement,
+                                (r) => r.characterId + '-' + r.requestedCountryId);
+      if (reinforcement.status === api.Reinforcement.statusRequesting) {
+        NotificationService.reinforcementRequested.notifyWithParameter(
+          this.getCountry(reinforcement.requestedCountryId).name);
+      } else if (reinforcement.status === api.Reinforcement.statusRequestCanceled) {
+        NotificationService.reinforcementCanceled.notifyWithParameter(
+          this.getCountry(reinforcement.requestedCountryId).name);
+      }
+    } else if (this.country.id === reinforcement.characterCountryId ||
+               this.country.id === reinforcement.requestedCountryId) {
+      const countryCharacter = Enumerable
+        .from(this.countryCharacters)
+        .firstOrDefault((c) => c.id === reinforcement.characterId);
+      if (countryCharacter) {
+        countryCharacter.reinforcement = reinforcement;
+      }
+    }
+  }
+
+  public setReinforcementStatus(character: api.Character, status: number, targetCountry?: number) {
+    if (this.isUpdatingCountryCharacters || this.isUpdatingReinforcement) {
+      return;
+    }
+    if (status === api.Reinforcement.statusRequesting) {
+      this.isUpdatingCountryCharacters = true;
+      api.Api.setReinforcementStatus(status, character.id, this.store.country.id)
+        .then(() => {
+          NotificationService.requestReinforcementSucceed.notifyWithParameter(character.name);
+        })
+        .catch(() => {
+          NotificationService.requestReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingCountryCharacters = false;
+        });
+    } else if (status === api.Reinforcement.statusRequestCanceled) {
+      this.isUpdatingCountryCharacters = true;
+      api.Api.setReinforcementStatus(status, character.id, this.store.country.id)
+        .then(() => {
+          NotificationService.cancelReinforcementSucceed.notifyWithParameter(character.name);
+        })
+        .catch(() => {
+          NotificationService.cancelReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingCountryCharacters = false;
+        });
+    } else if (status === api.Reinforcement.statusRequestDismissed && targetCountry) {
+      this.isUpdatingReinforcement = true;
+      api.Api.setReinforcementStatus(status, character.id, targetCountry)
+        .then(() => {
+          NotificationService.dismissReinforcementSucceed
+            .notifyWithParameter(this.getCountry(targetCountry).name);
+        })
+        .catch(() => {
+          NotificationService.dismissReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingReinforcement = false;
+        });
+    } else if (status === api.Reinforcement.statusActive && targetCountry) {
+      this.isUpdatingReinforcement = true;
+      api.Api.setReinforcementStatus(status, character.id, targetCountry)
+        .then(() => {
+          NotificationService.applyReinforcementSucceed
+            .notifyWithParameter(this.getCountry(targetCountry).name);
+        })
+        .catch(() => {
+          NotificationService.applyReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingReinforcement = false;
+        });
+    } else if (status === api.Reinforcement.statusReturned) {
+      this.isUpdatingReinforcement = true;
+      api.Api.setReinforcementStatus(status, character.id, this.character.countryId)
+        .then(() => {
+          NotificationService.returnReinforcementSucceed.notify();
+        })
+        .catch(() => {
+          NotificationService.returnReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingReinforcement = false;
+        });
+    } else if (status === api.Reinforcement.statusSubmited) {
+      this.isUpdatingReinforcement = true;
+      api.Api.setReinforcementStatus(status, character.id, this.character.countryId)
+        .then(() => {
+          NotificationService.submitReinforcementSucceed.notifyWithParameter(this.characterCountry.name);
+        })
+        .catch(() => {
+          NotificationService.submitReinforcementFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingReinforcement = false;
+        });
+    }
   }
 
   // #endregion
