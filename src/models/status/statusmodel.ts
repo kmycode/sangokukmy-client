@@ -1189,8 +1189,19 @@ export default class StatusModel {
                message.type === api.ChatMessage.typePromotionRefused) {
       // 登用
       this.promotions.append(message);
-      if (message.character && message.character.id !== this.character.id && this.store.hasInitialized) {
-        NotificationService.promotionReceived.notifyWithParameter(message.character.name);
+      if (this.store.hasInitialized) {
+        if (message.type === api.ChatMessage.typePromotion &&
+          message.character &&
+          message.character.id !== this.character.id) {
+          NotificationService.promotionReceived.notifyWithParameter(message.character.name);
+        } else if (message.character && message.character.id === this.character.id) {
+          if (message.type === api.ChatMessage.typePromotionAccepted) {
+            NotificationService.myPromotionAccepted.notifyWithParameter(message.receiverName);
+          } else if (message.type === api.ChatMessage.typePromotionRefused) {
+            NotificationService.myPromotionRefused.notifyWithParameter(message.receiverName);
+          }
+        }
+        console.dir(message);
       }
     }
   }

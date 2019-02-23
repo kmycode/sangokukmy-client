@@ -107,6 +107,11 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       this.isLoading = true;
       await api.Api.setPromotionStatus(id, status);
       message.type = status;
+      if (status === api.ChatMessage.typePromotionAccepted && message.character) {
+        NotificationService.promotionAccepted.notifyWithParameter(message.character.name);
+      } else if (status === api.ChatMessage.typePromotionRefused && message.character) {
+        NotificationService.promotionRefused.notifyWithParameter(message.character.name);
+      }
     } catch (ex) {
       if (ex.data) {
         if (ex.data.code === api.ErrorCode.invalidOperationError) {

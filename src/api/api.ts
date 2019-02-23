@@ -603,6 +603,7 @@ export class ChatMessage implements IIdentitiedEntity {
                      public type: number,
                      public message: string,
                      public posted: DateTime,
+                     public receiverName: string,
                      public character?: CharacterChatData,
                      public characterIcon?: CharacterIcon,
                      public typeData?: number,

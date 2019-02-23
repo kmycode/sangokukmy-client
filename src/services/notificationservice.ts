@@ -460,6 +460,22 @@ export default class NotificationService {
     '帰順失敗',
     '帰順に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly promotionAccepted = new NotificationServiceItem(
+    '登用受諾',
+    '{0} からの登用を受託しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly promotionRefused = new NotificationServiceItem(
+    '登用拒否',
+    '{0} からの登用を拒否しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly myPromotionAccepted = new NotificationServiceItem(
+    '登用受諾',
+    '{0} は、あなたからの登用を受託しました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly myPromotionRefused = new NotificationServiceItem(
+    '登用拒否',
+    '{0} は、あなたからの登用を拒否しました',
+    NotificationServiceItemDefaultType.information);
   public static readonly promotionFailed = new NotificationServiceItem(
     '登用文操作失敗',
     '登用文の操作に失敗しました',
