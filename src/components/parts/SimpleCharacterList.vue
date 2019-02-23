@@ -1,7 +1,7 @@
 <template>
   <div class="simple-character-list">
     <div
-      :class="'item country-color-' + getCountryColorId(chara.countryId)"
+      :class="'item country-color-' + getCountryColorId(chara.countryId) + (canSelect ? ' selectable' : '') + (value.id === chara.id ? ' selected' : '')"
       v-for="chara in characters"
       :key="chara.id">
       <div class="icon">
@@ -56,6 +56,7 @@
           </span>
         </div>
       </div>
+      <div class="select-cover" @click="$emit('input', chara)"></div>
     </div>
   </div>
 </template>
@@ -91,6 +92,12 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canReinforcement!: boolean;
+  @Prop({
+    default: false,
+  }) public canSelect!: boolean;
+  @Prop({
+    default: () => new api.Character(-1),
+  }) public value!: api.Character;
 
   private isOpenPostsPopup: boolean = false;
 
@@ -142,6 +149,33 @@ export default class SimpleCharacterList extends Vue {
     border-bottom-style: dashed;
     @include country-color-light('background-color');
     @include country-color-deep('border-bottom-color');
+
+    &.selectable {
+      position: relative;
+
+      &:hover {
+        .select-cover {
+          background-color: rgba(0, 0, 0, 0.14);
+        }
+      }
+
+      &.selected {
+        .select-cover {
+          background-color: rgba(0, 0, 0, 0.28);
+        }
+      }
+
+      .select-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparent;
+        transition: background-color .12s ease-out;
+        cursor: pointer;
+      }
+    }
 
     .information {
       display: flex;

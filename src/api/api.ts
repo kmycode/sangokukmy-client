@@ -594,6 +594,9 @@ export class ChatMessage implements IIdentitiedEntity {
   public static readonly typeTown = 5;
   public static readonly typeGlobal = 6;
   public static readonly typeSimpleBbs = 7;
+  public static readonly typePromotion = 8;
+  public static readonly typePromotionAccepted = 9;
+  public static readonly typePromotionRefused = 10;
 
   public constructor(public id: number,
                      public characterCountryId: number,
@@ -746,6 +749,16 @@ export class Api {
   public static async setCommands(commands: CharacterCommand[]) {
     try {
       await axios.put(def.API_HOST + 'commands', commands, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getCharacter(id: number): Promise<Character> {
+    try {
+      const result = await axios.get<ApiData<Character>>
+        (def.API_HOST + 'character/' + id, this.authHeader);
+      return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -951,6 +964,17 @@ export class Api {
       await axios.post(def.API_HOST + 'chat/country/' + toCountryId, {
         message: mes,
         characterIconId: icon.id,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setPromotionStatus(messageId: number, status: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'chat/promotion', {
+        id: messageId,
+        type: status,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

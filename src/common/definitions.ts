@@ -164,6 +164,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(12, '城の守備'),
   new CommandNameResolver(13, '%0% へ侵攻'),
   new CommandNameResolver(14, '集合'),
+  new CommandNameResolver(15, '%読込中% を登用'),
   new CommandNameResolver(17, '%0% へ移動'),
   new CommandNameResolver(18, '{0} を強化', (format, params) => {
     if (params) {
@@ -235,6 +236,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(19, '派遣', '#800'),
   new EventType(20, '帰還', '#800'),
   new EventType(21, '帰順', '#008'),
+  new EventType(22, '仕官', '#008'),
 ];
 
 /**

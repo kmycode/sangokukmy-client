@@ -21,7 +21,7 @@ export default class UnitModel {
   }
 
   public constructor(private store: StatusStore) {}
-  
+
   public updateUnits() {
     this.isUpdating = true;
     api.Api.getUnits()

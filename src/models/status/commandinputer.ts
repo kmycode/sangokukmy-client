@@ -56,6 +56,13 @@ export default class CommandInputer {
     });
   }
 
+  public inputPromotionCommand(commandType: number, targetId: number, message: string) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, targetId));
+      c.parameters.push(new api.CharacterCommandParameter(2, undefined, message));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -189,6 +196,21 @@ export default class CommandInputer {
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
         command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
+      } else {
+        command.name = 'エラー (' + command.type + ':A)';
+      }
+    } else if (command.type === 15) {
+      // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
+      // 登用
+      const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+      if (targetCharacterId && targetCharacterId.numberValue) {
+        api.Api.getCharacter(targetCharacterId.numberValue)
+          .then((chara) => {
+            command.name = command.name.replace('%読込中%', chara.name);
+          })
+          .catch(() => {
+            command.name = 'エラー (' + command.type + ':B)';
+          });
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }

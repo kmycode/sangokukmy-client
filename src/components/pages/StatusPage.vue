@@ -124,6 +124,7 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 3 }" @click.prevent.stop="selectedActionTab = 3" href="#">登用</a></li>
             <!-- <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span v-show="selectedActionTabSubPanel === 0">会議室</span>
               </a>
@@ -186,6 +187,18 @@
         <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
+        <!-- 登用 -->
+        <div v-show="selectedActionTab === 3" class="right-side-content content-chat" style="display:flex;flex-direction:column">
+          <div class="messages">
+            <ChatMessagePanel :model="model.promotions"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"
+                              :myCountryId="model.character.countryId"
+                              :myCharacterId="model.character.id"
+                              :canPost="false"/>
+          </div>
+        </div>
       </div>
     </div>
     <!-- ダイアログ -->
@@ -244,6 +257,34 @@
         <div class="dialog-footer">
           <div class="left-side">
             <button class="btn btn-light" @click="isOpenTrainingDialog = false">キャンセル</button>
+          </div>
+        </div>
+      </div>
+      <!-- 登用 -->
+      <div v-show="isOpenPromotionDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">登用</h2>
+        <div class="dialog-content dialog-content-promotion loading-container">
+          <div class="dialog-content-promotion-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.oppositionCharacters"
+                canSelect="true"
+                v-model="promotionTarget"/>
+            </div>
+            <div class="promotion-input">
+              登用文を入力してください...<br>
+              <textarea v-model="promotionMessage"></textarea>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingOppositionCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenPromotionDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="promotionTarget.id > 0 && promotionMessage !== ''" @click="model.commands.inputer.inputPromotionCommand(15, promotionTarget.id, promotionMessage); isOpenPromotionDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -388,7 +429,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
@@ -449,11 +490,14 @@ export default class StatusPage extends Vue {
   public isOpenUnitsDialog: boolean = false;
   public isOpenBattleLogDialog: boolean = false;
   public isLoadingBattleLog: boolean = false;
+  public isOpenPromotionDialog: boolean = false;
   public selectedWarStatus: number = 0;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
   public isShowOnlines: boolean = false;
+  public promotionTarget: api.Character = new api.Character(-1);
+  public promotionMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -462,7 +506,7 @@ export default class StatusPage extends Vue {
     return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
-      || this.isOpenBattleLogDialog;
+      || this.isOpenBattleLogDialog || this.isOpenPromotionDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -470,6 +514,11 @@ export default class StatusPage extends Vue {
       this.isOpenTrainingDialog = true;
     } else if (event === 'soldier') {
       this.isOpenSoldierDialog = true;
+    } else if (event === 'promotion') {
+      this.model.updateOppositionCharacters();
+      this.promotionTarget.id = -1;
+      this.promotionMessage = '';
+      this.isOpenPromotionDialog = true;
     }
   }
 
@@ -477,7 +526,7 @@ export default class StatusPage extends Vue {
     this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
-      this.isOpenBattleLogDialog = false;
+      this.isOpenBattleLogDialog = this.isOpenPromotionDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -801,6 +850,26 @@ ul.nav {
         button {
           margin: 0 16px 0 0;
           width: 80px;
+        }
+      }
+
+      &.dialog-content-promotion {
+        .dialog-content-promotion-main {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+
+          .character-list {
+            flex: 1;
+            overflow: auto;
+          }
+
+          .promotion-input {
+            textarea {
+              width: 100%;
+              height: 100px;
+            }
+          }
         }
       }
     }

@@ -460,6 +460,26 @@ export default class NotificationService {
     '帰順失敗',
     '帰順に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailed = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailedBecauseInvalidTypeOrCountry = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました。登用文でないか、仕官しようとした国がすでに滅亡している可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailedBecauseNoCountry = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました。仕官しようとした国がすでに滅亡している可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailedBecauseNoCharacter = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました。武将が見つかりません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly promotionReceived = new NotificationServiceItem(
+    '登用',
+    '{0} から登用を受け取りました',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
