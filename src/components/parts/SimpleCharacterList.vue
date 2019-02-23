@@ -19,18 +19,18 @@
           </div>
           <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-          <div v-else class="post-selection">
+          <div v-else-if="chara.countryId > 0" class="post-selection">
             <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
               {{ getPostName(chara.id, chara.countryId) }}
             </button>
-              <div class="dropdown-menu" :style="(isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
-              </div>
+            <div class="dropdown-menu" :style="(isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+            </div>
           </div>
         </div>
         <div class="parameters">
