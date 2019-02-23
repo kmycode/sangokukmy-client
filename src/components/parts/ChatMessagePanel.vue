@@ -39,6 +39,7 @@
             :canSendOtherCountry="canSendOtherCountry"
             :myCharacterId="myCharacterId"
             :myCountryId="myCountryId"
+            :isLoading="model.isLoading"
             @chat-private="$emit('chat-private', $event)"
             @chat-other-country="$emit('chat-other-country', $event)"
             @promotion-refuse="model.setPromotionStatusAsync($event, 10)"
