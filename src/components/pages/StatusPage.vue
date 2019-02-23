@@ -754,6 +754,12 @@ ul.nav {
     display: flex;
     flex-direction: column;
 
+    .nav {
+      .active {
+        background-color: #6bf;
+      }
+    }
+
     .messages {
       flex: 1;
       display: flex;
