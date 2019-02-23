@@ -79,6 +79,10 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(10, '智攻兵', 250, '知力x0.7', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, '連弩兵', 300, '80', '10', '連弩を持った兵士'),
   new SoldierType(12, '壁守兵', 350, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
+  new SoldierType(100, '守兵A', 32767, '0', '0', ''),
+  new SoldierType(101, '守兵B', 32767, '0', '0', ''),
+  new SoldierType(102, '守兵C', 32767, '0', '0', ''),
+  new SoldierType(103, '守兵D', 32767, '0', '0', ''),
 ];
 
 /**
