@@ -131,7 +131,7 @@
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
-                  <div class="text">{{ getCountryMessage(country).message }}</div>
+                  <div class="text"><KmyChatTagText :text="getCountryMessage(country).message"/></div>
                   <div class="writer" v-if="getCountryMessage(country).message">{{ getCountryMessage(country).writerCharacterName }} ({{ getCountryPostName(getCountryMessage(country).writerPost) }}) より</div>
                 </div>
               </div>
@@ -204,6 +204,7 @@ import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import LoginService from '@/models/character/loginservice';
 import ValueUtil from '@/models/common/ValueUtil';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 
 declare const grecaptcha: any;
 
@@ -213,6 +214,7 @@ declare const grecaptcha: any;
     CharacterIcon,
     CharacterIconPicker,
     CountryColorPicker,
+    KmyChatTagText,
   },
 })
 export default class EntryPage extends Vue {
