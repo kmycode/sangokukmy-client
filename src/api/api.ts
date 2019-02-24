@@ -511,7 +511,7 @@ export class CharacterIcon {
   public static readonly default: CharacterIcon = CharacterIcon.createDefault();
 
   public static isDefault(icon: CharacterIcon): boolean {
-    if (icon && (icon.isNotDefaultPrivate || !icon.id)) {
+    if (icon && (icon.isNotDefaultPrivate || (!icon.id && icon.fileName === ''))) {
       return true;
     } else {
       return false;
