@@ -265,7 +265,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
   public static getClassName(chara: Character): string {
-    const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length);
+    const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
     return def.CLASS_NAMES[lank];
   }
 
