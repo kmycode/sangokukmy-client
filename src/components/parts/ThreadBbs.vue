@@ -189,6 +189,7 @@ export default class ThreadBbs extends Vue {
 .thread {
   @include country-color-light('background-color');
   @include country-color-deep('color');
+  word-wrap: break-word;
   border-radius: 16px 16px 8px 8px;
   overflow: hidden;
   margin: 24px 0;
@@ -207,6 +208,7 @@ export default class ThreadBbs extends Vue {
       }
       .thread-text {
         flex: 1;
+        width: 0;
         padding: 4px 8px;
         @include country-color-deep('background-color');
         @include country-color-light('color');
@@ -242,6 +244,8 @@ export default class ThreadBbs extends Vue {
       }
       .child-message {
         align-self: center;
+        flex: 1;
+        width: 0;
       }
     }
   }

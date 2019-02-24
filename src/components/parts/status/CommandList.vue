@@ -34,13 +34,13 @@
       </div>
       <!-- 計略コマンド -->
       <div v-show="selectedCommandCategory === 3" class="commands">
-        <!-- <button type="button" class="btn btn-light">登用</button>
-        <button type="button" class="btn btn-light">密偵</button> -->
+        <!-- <button type="button" class="btn btn-light">密偵</button> -->
       </div>
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
         <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(17)">移動</button>
         <button type="button" class="btn btn-light" @click="$emit('open', 'training')">能力強化</button>
+        <button type="button" class="btn btn-light" @click="$emit('open', 'promotion')">登用</button>
         <!-- <button type="button" class="btn btn-light">米売買</button>
         <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
@@ -48,7 +48,7 @@
         <button type="button" class="btn btn-primary" @click="list.inputer.inputMoveCommand(23)">仕官</button>
         <!-- <button type="button" class="btn btn-light">下野</button> -->
       </div>
-      <div class="loading" v-show="list.inputer.isCommandInputing"><div class="loading-icon"></div></div>
+      <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
     </div>
     <!-- 選択ツール -->
     <div class="command-input-options">

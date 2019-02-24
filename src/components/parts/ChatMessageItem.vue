@@ -9,6 +9,14 @@
           <button v-if="canSendPrivate && message.character.id === myCharacterId" @click="$emit('chat-private', message.typeData2)" type="button" class="btn btn-outline-dark btn-sm">再送</button>
           <button v-if="canSendOtherCountry && message.characterCountryId !== myCountryId" @click="$emit('chat-other-country', message.characterCountryId)" type="button" class="btn btn-warning btn-sm">国宛</button>
           <button v-if="canSendOtherCountry && message.type === 2 && message.typeData === myCountryId" @click="$emit('chat-other-country', message.typeData2)" type="button" class="btn btn-outline-dark btn-sm">再送</button>
+          <button v-if="message.type === 8 && message.typeData2 === myCharacterId" class="loading-container btn btn-danger" @click="$emit('promotion-refuse', message.id)">
+            拒否<div class="loading" v-show="isLoading"><div class="loading-icon"></div></div>
+          </button>
+          <button v-if="message.type === 8 && message.typeData2 === myCharacterId" class="loading-container btn btn-primary" @click="$emit('promotion-apply', message.id)">
+            承諾<div class="loading" v-show="isLoading"><div class="loading-icon"></div></div>
+          </button>
+          <span v-if="message.type === 9" style="color:red;font-weight:bold">承諾しました</span>
+          <span v-if="message.type === 10" style="color:blue;font-weight:bold">丁重に断りました</span>
         </div>
       </div>
       <div class="message-footer">
@@ -52,6 +60,9 @@ export default class ChatMessageItem extends Vue {
   @Prop({
     default: 0,
   }) public myCountryId!: number;
+  @Prop({
+    default: false,
+  }) public isLoading!: boolean;
 
   private get countryColor(): number {
     const country = ArrayUtil.find(this.countries, this.message.characterCountryId);

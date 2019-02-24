@@ -1,7 +1,7 @@
 <template>
   <div class="chat-message-panel">
     <!-- 投稿フォーム -->
-    <div class="loading-container">
+    <div v-if="canPost" class="loading-container">
       <div :class="'chat-new-message country-color-' + countryColor">
         <CharacterIcon :icons="icons"/>
         <div class="post-pair">
@@ -39,8 +39,11 @@
             :canSendOtherCountry="canSendOtherCountry"
             :myCharacterId="myCharacterId"
             :myCountryId="myCountryId"
+            :isLoading="model.isLoading"
             @chat-private="$emit('chat-private', $event)"
-            @chat-other-country="$emit('chat-other-country', $event)"/>
+            @chat-other-country="$emit('chat-other-country', $event)"
+            @promotion-refuse="model.setPromotionStatusAsync($event, 10)"
+            @promotion-apply="model.setPromotionStatusAsync($event, 9)"/>
         </div>
       </transition-group>
       <div v-show="model.isLoading" class="loading-container load-more">
@@ -79,6 +82,9 @@ export default class ChatMessagePanel extends Vue {
   @Prop({
     default: false,
   }) public canSendOtherCountry!: boolean;
+  @Prop({
+    default: true,
+  }) public canPost!: boolean;
   @Prop({
     default: 0,
   }) public myCountryId!: number;

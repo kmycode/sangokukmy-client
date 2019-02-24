@@ -18,7 +18,11 @@ export interface IChatMessageContainer {
   loadOldChatsAsync(): Promise<any>;
 }
 
-export default class ChatMessageContainer<T extends api.IIdentitiedEntity> implements IChatMessageContainer {
+export interface IPromotionChatMessageContainer extends IChatMessageContainer {
+  setPromotionStatusAsync(id: number, status: number): Promise<any>;
+}
+
+export default class ChatMessageContainer<T extends api.IIdentitiedEntity> implements IPromotionChatMessageContainer {
   public messages: api.ChatMessage[] = [];
   public isPosting: boolean = false;
   public isLoading: boolean = false;
@@ -49,7 +53,14 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
                      private isNeedSendTo: boolean = false) {}
 
   public append(message: api.ChatMessage) {
-    ArrayUtil.addLog(this.messages, message);
+    const old = ArrayUtil.find(this.messages, message.id);
+    if (old) {
+      old.type = message.type;
+      old.message = message.message;
+    } else {
+      this.messages.unshift(message);
+    }
+
     if (!this.isOpen) {
       this.isUnread = true;
     }
@@ -87,6 +98,36 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       } finally {
         this.isPosting = false;
       }
+    }
+  }
+
+  public async setPromotionStatusAsync(id: number, status: number): Promise<any> {
+    try {
+      const message = Enumerable.from(this.messages).first((m) => m.id === id);
+      this.isLoading = true;
+      await api.Api.setPromotionStatus(id, status);
+      message.type = status;
+      if (status === api.ChatMessage.typePromotionAccepted && message.character) {
+        NotificationService.promotionAccepted.notifyWithParameter(message.character.name);
+      } else if (status === api.ChatMessage.typePromotionRefused && message.character) {
+        NotificationService.promotionRefused.notifyWithParameter(message.character.name);
+      }
+    } catch (ex) {
+      if (ex.data) {
+        if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.promotionFailedBecauseInvalidTypeOrCountry.notify();
+        } else if (ex.data.code === api.ErrorCode.countryNotFoundError) {
+          NotificationService.promotionFailedBecauseNoCountry.notify();
+        } else if (ex.data.code === api.ErrorCode.characterNotFoundError) {
+          NotificationService.promotionFailedBecauseNoCharacter.notify();
+        } else {
+          NotificationService.promotionFailed.notify();
+        }
+      } else {
+        NotificationService.promotionFailed.notify();
+      }
+    } finally {
+      this.isLoading = false;
     }
   }
 

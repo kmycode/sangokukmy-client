@@ -1,7 +1,7 @@
 <template>
   <div class="simple-character-list">
     <div
-      :class="'item country-color-' + getCountryColorId(chara.countryId)"
+      :class="'item country-color-' + getCountryColorId(chara.countryId) + (canSelect ? ' selectable' : '') + (value.id === chara.id ? ' selected' : '')"
       v-for="chara in characters"
       :key="chara.id">
       <div class="icon">
@@ -19,18 +19,18 @@
           </div>
           <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
           <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-          <div v-else class="post-selection">
-            <button class="btn btn-secondary dropdown-toggle" type="button" @click="isOpenPostsPopup = !isOpenPostsPopup">
+          <div v-else-if="chara.countryId > 0" class="post-selection">
+            <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
               {{ getPostName(chara.id, chara.countryId) }}
             </button>
-              <div class="dropdown-menu" :style="(isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="isOpenPostsPopup = false; $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
-              </div>
+            <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+            </div>
           </div>
         </div>
         <div class="parameters">
@@ -56,6 +56,7 @@
           </span>
         </div>
       </div>
+      <div class="select-cover" @click="$emit('input', chara)"></div>
     </div>
   </div>
 </template>
@@ -91,6 +92,12 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canReinforcement!: boolean;
+  @Prop({
+    default: false,
+  }) public canSelect!: boolean;
+  @Prop({
+    default: () => new api.Character(-1),
+  }) public value!: api.Character;
 
   private isOpenPostsPopup: boolean = false;
 
@@ -128,6 +135,10 @@ export default class SimpleCharacterList extends Vue {
       return '雑兵';
     }
   }
+
+  private togglePostsPopup(chara: api.Character) {
+    Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
+  }
 }
 </script>
 
@@ -142,6 +153,33 @@ export default class SimpleCharacterList extends Vue {
     border-bottom-style: dashed;
     @include country-color-light('background-color');
     @include country-color-deep('border-bottom-color');
+
+    &.selectable {
+      position: relative;
+
+      &:hover {
+        .select-cover {
+          background-color: rgba(0, 0, 0, 0.14);
+        }
+      }
+
+      &.selected {
+        .select-cover {
+          background-color: rgba(0, 0, 0, 0.28);
+        }
+      }
+
+      .select-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparent;
+        transition: background-color .12s ease-out;
+        cursor: pointer;
+      }
+    }
 
     .information {
       display: flex;

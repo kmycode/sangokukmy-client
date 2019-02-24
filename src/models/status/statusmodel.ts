@@ -37,6 +37,7 @@ export default class StatusModel {
   public townDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
+  public oppositionCharacters: api.Character[] = [];
 
   public newAllianceData: api.CountryAlliance = new api.CountryAlliance();
   public newWarData: api.CountryWar = new api.CountryWar();
@@ -49,12 +50,13 @@ export default class StatusModel {
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
-      || this.privateChat.isLoading;
+      || this.privateChat.isLoading || this.isUpdatingOppositionCharacters;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
   public isUpdatingReinforcement: boolean = false;
+  public isUpdatingOppositionCharacters: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -876,12 +878,14 @@ export default class StatusModel {
       ArrayUtil.addItemUniquely(this.store.reinforcements,
                                 reinforcement,
                                 (r) => r.characterId + '-' + r.requestedCountryId);
-      if (reinforcement.status === api.Reinforcement.statusRequesting) {
-        NotificationService.reinforcementRequested.notifyWithParameter(
-          this.getCountry(reinforcement.requestedCountryId).name);
-      } else if (reinforcement.status === api.Reinforcement.statusRequestCanceled) {
-        NotificationService.reinforcementCanceled.notifyWithParameter(
-          this.getCountry(reinforcement.requestedCountryId).name);
+      if (this.store.hasInitialized) {
+        if (reinforcement.status === api.Reinforcement.statusRequesting) {
+          NotificationService.reinforcementRequested.notifyWithParameter(
+            this.getCountry(reinforcement.requestedCountryId).name);
+        } else if (reinforcement.status === api.Reinforcement.statusRequestCanceled) {
+          NotificationService.reinforcementCanceled.notifyWithParameter(
+            this.getCountry(reinforcement.requestedCountryId).name);
+        }
       }
     } else if (this.country.id === reinforcement.characterCountryId ||
                this.country.id === reinforcement.requestedCountryId) {
@@ -1042,6 +1046,22 @@ export default class StatusModel {
     return ps;
   }
 
+  public updateOppositionCharacters() {
+    if (!this.isUpdatingOppositionCharacters) {
+      this.isUpdatingOppositionCharacters = true;
+      api.Api.getAllCharactersBelongsCountry(0)
+        .then((charas) => {
+          this.oppositionCharacters = charas;
+        })
+        .catch(() => {
+          NotificationService.getCountryCharactersFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingOppositionCharacters = false;
+        });
+    }
+  }
+
   // #endregion
 
   // #region Command
@@ -1145,6 +1165,11 @@ export default class StatusModel {
         }},
       (id) => api.Api.getPrivateChatMessage(id, 50), true);
 
+  public promotions: ChatMessageContainer<any>
+    = new ChatMessageContainer(
+      () => { throw new Error(); },
+      async () => [], true);
+
   private onReceiveChatMessage(message: api.ChatMessage) {
     if (message.type === api.ChatMessage.typeSelfCountry ||
         message.type === api.ChatMessage.typeOtherCountry) {
@@ -1158,6 +1183,25 @@ export default class StatusModel {
       this.privateChat.append(message);
       if (message.character && message.character.id !== this.character.id && this.store.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
+      }
+    } else if (message.type === api.ChatMessage.typePromotion ||
+               message.type === api.ChatMessage.typePromotionAccepted ||
+               message.type === api.ChatMessage.typePromotionRefused) {
+      // 登用
+      this.promotions.append(message);
+      if (this.store.hasInitialized) {
+        if (message.type === api.ChatMessage.typePromotion &&
+          message.character &&
+          message.character.id !== this.character.id) {
+          NotificationService.promotionReceived.notifyWithParameter(message.character.name);
+        } else if (message.character && message.character.id === this.character.id) {
+          if (message.type === api.ChatMessage.typePromotionAccepted) {
+            NotificationService.myPromotionAccepted.notifyWithParameter(message.receiverName);
+          } else if (message.type === api.ChatMessage.typePromotionRefused) {
+            NotificationService.myPromotionRefused.notifyWithParameter(message.receiverName);
+          }
+        }
+        console.dir(message);
       }
     }
   }
