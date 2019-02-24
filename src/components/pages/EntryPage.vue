@@ -122,6 +122,21 @@
               :currentTown="town"
               @selected="onTownChanged($event)"/>
           </div>
+          <div class="country-list">
+            <div :class="'country-list-item row country-color-' + country.colorId + (!town.id || town.countryId === country.id ? ' selected' : '')"
+                 v-for="country in countries"
+                 :key="country.id"
+                 v-show="!country.hasOverthrown">
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}</div>
+              <div :class="'col-md-9 country-message country-color-' + country.colorId">
+                <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
+                <div class="message">
+                  <div class="text">{{ getCountryMessage(country).message }}</div>
+                  <div class="writer" v-if="getCountryMessage(country).message">{{ getCountryMessage(country).writerCharacterName }} ({{ getCountryPostName(getCountryMessage(country).writerPost) }}) より</div>
+                </div>
+              </div>
+            </div>
+          </div>
           <div class="detail">
             地図上の都市をクリックして選択してください。選択した都市に国があれば、そこへ仕官します
           </div>
@@ -188,6 +203,7 @@ import * as def from '@/common/definitions';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import LoginService from '@/models/character/loginservice';
+import ValueUtil from '@/models/common/ValueUtil';
 
 declare const grecaptcha: any;
 
@@ -212,6 +228,7 @@ export default class EntryPage extends Vue {
 
   private system: api.SystemData = new api.SystemData();
   private countries: api.Country[] = [];
+  private countryMessages: api.CountryMessage[] = [];
   private extraData: api.EntryExtraData = api.EntryExtraData.default;
   private towns: api.Town[] = [];
   private nextMonthSeconds = 0;
@@ -338,6 +355,19 @@ export default class EntryPage extends Vue {
     }
   }
 
+  private getCountryMessage(country: api.Country): api.CountryMessage {
+    const data = ArrayUtil.findUniquely(this.countryMessages, country.id, (cm) => cm.countryId);
+    if (data) {
+      return data;
+    } else {
+      return new api.CountryMessage();
+    }
+  }
+
+  private getCountryPostName(post: number): string {
+    return ValueUtil.getPostName(post);
+  }
+
   private created() {
     this.character.strong = 5;
     this.character.intellect = 5;
@@ -352,6 +382,11 @@ export default class EntryPage extends Vue {
     });
     ApiStreaming.top.on<api.Country>(api.Country.typeId, (log) => {
       ArrayUtil.addItem(this.countries, log);
+    });
+    ApiStreaming.top.on<api.CountryMessage>(api.CountryMessage.typeId, (log) => {
+      if (log.type === api.CountryMessage.typeSolicitation) {
+        ArrayUtil.addItemUniquely(this.countryMessages, log, (cm) => cm.countryId);
+      }
     });
     ApiStreaming.top.on<api.Town>(api.Town.typeId, (log) => {
       ArrayUtil.addItem(this.towns, log);
@@ -433,6 +468,7 @@ export default class EntryPage extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/country-color.scss';
 span.number { font-weight: bold; }
 
 .section {
@@ -470,6 +506,45 @@ span.number { font-weight: bold; }
 
     input {
       width: 100%;
+    }
+
+    .country-list {
+      margin: 8px 16px;
+      overflow: hidden;
+      border-radius: 16px;
+      .country-list-item {
+        @include country-color-light('background-color');
+        @include country-color-deep('color');
+        @include country-color-deep('border-bottom-color');
+        padding: 8px;
+        opacity: 0.5;
+        border-bottom-width: 3px;
+        border-bottom-style: double;
+        &:last-child {
+          border-bottom-width: 0;
+        }
+        &.selected {
+          opacity: 1;
+        }
+        .country-name {
+          align-self: center;
+        }
+        .country-message {
+          display: flex;
+          align-items: center;
+          .icon {
+            margin-right: 12px;
+          }
+          .message {
+            flex: 1;
+          }
+          .writer {
+            text-align: right;
+            font-weight: bold;
+            font-size: 0.8em;
+          }
+        }
+      }
     }
   }
 }

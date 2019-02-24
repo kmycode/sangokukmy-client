@@ -496,6 +496,26 @@ export default class NotificationService {
     '登用',
     '{0} から登用を受け取りました',
     NotificationServiceItemDefaultType.information);
+  public static readonly countryCommandersMessageSet = new NotificationServiceItem(
+    '指令更新',
+    '指令を更新しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countryCommandersMessageSetFailed = new NotificationServiceItem(
+    '指令更新失敗',
+    '指令更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly countryCommandersMessageUpdated = new NotificationServiceItem(
+    '指令更新',
+    '指令が更新されました',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly countrySolicitationMessageSet = new NotificationServiceItem(
+    '勧誘文更新',
+    '新規登録者勧誘文を更新しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countrySolicitationMessageSetFailed = new NotificationServiceItem(
+    '勧誘文更新失敗',
+    '新規登録者勧誘文更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

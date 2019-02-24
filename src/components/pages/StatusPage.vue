@@ -123,20 +123,17 @@
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 3 }" @click.prevent.stop="selectedActionTab = 3" href="#">登用</a></li>
-            <!-- <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
-                <span v-show="selectedActionTabSubPanel === 0">会議室</span>
+            <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
+            <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
+                <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span>登用</span>
+                <span v-show="selectedActionTabSubPanel === 1">国設定</span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">会議室</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">登用</a>
-                <a class="dropdown-item" href="#">情報</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">専用BBS</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">登用</a>
+                <a  v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
+                <div v-if="false" class="dropdown-divider"></div>
               </div>
-            </li> -->
+            </li>
           </ul>
         </div>
         <!-- コマンド入力 -->
@@ -188,7 +185,7 @@
           <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
         <!-- 登用 -->
-        <div v-show="selectedActionTab === 3" class="right-side-content content-chat" style="display:flex;flex-direction:column">
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-chat" style="display:flex;flex-direction:column">
           <div class="messages">
             <ChatMessagePanel :model="model.promotions"
                               :countries="model.countries"
@@ -197,6 +194,29 @@
                               :myCountryId="model.character.countryId"
                               :myCharacterId="model.character.id"
                               :canPost="false"/>
+          </div>
+        </div>
+        <!-- 国設定 -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 1 && model.canCountrySetting" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+          <div class="setting-list">
+            <div class="setting-row">
+              <h3 :class="'country-color-' + model.characterCountryColor">新規登録者勧誘文</h3>
+              <div class="current-message">
+                <h4>現在のメッセージ</h4>
+                <div :class="'current-message-content country-color-' + model.characterCountryColor">
+                  <KmyChatTagText v-if="model.countrySolicitationMessage.message" :text="model.countrySolicitationMessage.message"/>
+                  <span v-if="!model.countrySolicitationMessage.message" class="message-empty">なし</span>
+                  <div class="current-message-writer">
+                    {{ model.countrySolicitationMessage.writerCharacterName }} ({{ model.getPostName(model.countrySolicitationMessage.writerPost) }})
+                  </div>
+                </div>
+              </div>
+              <textarea v-model="newCountrySolicitationMessage"></textarea>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="newCountrySolicitationMessage = model.countrySolicitationMessage.message">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updateCountrySolicitationMessage(newCountrySolicitationMessage)">承認</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -444,6 +464,7 @@ import CommandListView from '@/components/parts/status/CommandList.vue';
 import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import StatusModel from '@/models/status/statusmodel';
@@ -468,6 +489,7 @@ import EventObject from '@/models/common/EventObject';
     AllianceView,
     WarView,
     UnitListView,
+    KmyChatTagText,
   },
 })
 export default class StatusPage extends Vue {
@@ -498,6 +520,8 @@ export default class StatusPage extends Vue {
   public isShowOnlines: boolean = false;
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
+  public newCountryCommandersMessage: string = '';
+  public newCountrySolicitationMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -770,6 +794,54 @@ ul.nav {
   &.content-meeting {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+  }
+
+  &.content-setting {
+    .setting-list {
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+
+      .setting-row {
+        h3 {
+          @include country-color-deep('background-color');
+          @include country-color-light('color');
+          padding: 2px 8px;
+          border-radius: 8px;
+        }
+        .current-message {
+          margin: 4px 8px;
+          h4 {
+            color: gray;
+            font-size: 1.2rem;
+          }
+          .current-message-content {
+            margin: 0 12px;
+            padding: 4px 8px;
+            @include country-color-light('background-color');
+            @include country-color-deep('color');
+            .current-message-writer {
+              text-align: right;
+              margin-top: 8px;
+              font-size: 0.9rem;
+              font-weight: bold;
+            }
+          }
+          .message-empty {
+            color: gray;
+          }
+        }
+        textarea {
+          width: 100%;
+          height: 120px;
+        }
+        .buttons {
+          text-align: right;
+          button {
+            margin-left: 4px;
+          }
+        }
+      }
+    }
   }
 }
 

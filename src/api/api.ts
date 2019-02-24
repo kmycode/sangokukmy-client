@@ -313,6 +313,21 @@ export class CountryPost {
                      public character: Character) {}
 }
 
+export class CountryMessage {
+  public static readonly typeId = 29;
+
+  public static readonly typeCommanders = 1;
+  public static readonly typeSolicitation = 2;
+  public static readonly typeUnified = 3;
+
+  public constructor(public type: number = 0,
+                     public countryId: number = 0,
+                     public message: string = '',
+                     public writerCharacterName: string = '',
+                     public writerPost: number = 0,
+                     public writerIcon: CharacterIcon = new CharacterIcon()) {}
+}
+
 /**
  * 国
  */
@@ -496,7 +511,7 @@ export class CharacterIcon {
   public static readonly default: CharacterIcon = CharacterIcon.createDefault();
 
   public static isDefault(icon: CharacterIcon): boolean {
-    if (icon && icon.isNotDefaultPrivate) {
+    if (icon && (icon.isNotDefaultPrivate || !icon.id)) {
       return true;
     } else {
       return false;
@@ -861,6 +876,17 @@ export class Api {
           type: post,
           characterId,
         }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryMessage(message: string, type: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'country/messages', {
+        message,
+        type,
+      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
