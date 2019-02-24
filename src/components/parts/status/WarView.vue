@@ -2,14 +2,14 @@
   <div class="diplomacy-view loading-container">
     {{ status.name }}
     <div v-if="canEdit">
-      <button v-show="status.id ===   0" class="btn btn-secondary" @click="newData.status = 4" href="#">宣戦布告</button>
+      <button v-show="status.id ===   0 || status.id === 3" class="btn btn-secondary" @click="newData.status = 4" href="#">宣戦布告</button>
       <!--
       <button v-show="status.id ===   4 || status.id === 1" class="btn btn-secondary" @click="newData.status = 2" href="#">停戦申入</button>
       <button v-show="status.id === 102" class="btn btn-secondary" @click="newData.status = 3" href="#">停戦承認</button>
       <button v-show="status.id === 102" class="btn btn-primary"   @click="newData.status = 4" href="#">停戦拒否</button>
       <button v-show="status.id ===   2" class="btn btn-primary"   @click="newData.status = 4" href="#">停戦撤回</button>
       -->
-      <div v-show="newData.status === 4 && status.id === 0" class="content-section">
+      <div v-show="newData.status === 4 && (status.id === 0 || status.id === 3)" class="content-section">
         <h3>宣戦布告</h3>
         <GameDateTimePicker v-model="newData.startGameDate"/>
       </div>

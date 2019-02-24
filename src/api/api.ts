@@ -265,7 +265,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
   public static getClassName(chara: Character): string {
-    const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length);
+    const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
     return def.CLASS_NAMES[lank];
   }
 
@@ -311,6 +311,21 @@ export class CountryPost {
                      public countryId: number = 0,
                      public characterId: number = 0,
                      public character: Character) {}
+}
+
+export class CountryMessage {
+  public static readonly typeId = 29;
+
+  public static readonly typeCommanders = 1;
+  public static readonly typeSolicitation = 2;
+  public static readonly typeUnified = 3;
+
+  public constructor(public type: number = 0,
+                     public countryId: number = 0,
+                     public message: string = '',
+                     public writerCharacterName: string = '',
+                     public writerPost: number = 0,
+                     public writerIcon: CharacterIcon = new CharacterIcon()) {}
 }
 
 /**
@@ -496,7 +511,7 @@ export class CharacterIcon {
   public static readonly default: CharacterIcon = CharacterIcon.createDefault();
 
   public static isDefault(icon: CharacterIcon): boolean {
-    if (icon && icon.isNotDefaultPrivate) {
+    if (icon && (icon.isNotDefaultPrivate || (!icon.id && icon.fileName === ''))) {
       return true;
     } else {
       return false;
@@ -861,6 +876,17 @@ export class Api {
           type: post,
           characterId,
         }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryMessage(message: string, type: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'country/messages', {
+        message,
+        type,
+      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

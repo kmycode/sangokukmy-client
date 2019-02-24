@@ -23,6 +23,7 @@ import ThreadBbs from './threadbbs';
 import OnlineModel from './onlinemodel';
 import StatusStore from './statusstore';
 import UnitModel from './unitmodel';
+import ValueUtil from '../common/ValueUtil';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -41,6 +42,8 @@ export default class StatusModel {
 
   public newAllianceData: api.CountryAlliance = new api.CountryAlliance();
   public newWarData: api.CountryWar = new api.CountryWar();
+  public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
+  public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
 
   private townCharacterLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
   private townDefenderLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
@@ -50,11 +53,13 @@ export default class StatusModel {
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
-      || this.privateChat.isLoading || this.isUpdatingOppositionCharacters;
+      || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
+      || this.isUpdatingCountrySettings;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
+  public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
   public isScouting: boolean = false;
@@ -269,6 +274,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Reinforcement>(
       api.Reinforcement.typeId,
       (obj) => this.onReinforcementReceived(obj));
+    ApiStreaming.status.on<api.CountryMessage>(
+      api.CountryMessage.typeId,
+      (obj) => this.onCountryMessageReceived(obj));
     ApiStreaming.status.start();
   }
 
@@ -375,6 +383,7 @@ export default class StatusModel {
           if (scoutedTown) {
             this.townCharacters = scoutedTown.characters;
             this.townDefenders = scoutedTown.defenders;
+            scoutedTown.countryId = town.countryId;
             this.setTown(scoutedTown);
           } else {
             this.setTown(town);
@@ -651,6 +660,48 @@ export default class StatusModel {
 
   // #endregion
 
+  // #region CountryMessage
+
+  private onCountryMessageReceived(message: api.CountryMessage) {
+    if (message.countryId === this.character.countryId) {
+      if (message.type === api.CountryMessage.typeCommanders) {
+        this.countryCommandersMessage = message;
+      } else if (message.type === api.CountryMessage.typeSolicitation) {
+        this.countrySolicitationMessage = message;
+      }
+    }
+  }
+
+  public updateCountryCommandersMessage(message: string) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryMessage(message, api.CountryMessage.typeCommanders)
+      .then(() => {
+        NotificationService.countryCommandersMessageSet.notify();
+      })
+      .catch(() => {
+        NotificationService.countryCommandersMessageSetFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
+  public updateCountrySolicitationMessage(message: string) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryMessage(message, api.CountryMessage.typeSolicitation)
+      .then(() => {
+        NotificationService.countrySolicitationMessageSet.notify();
+      })
+      .catch(() => {
+        NotificationService.countrySolicitationMessageSetFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
+  // #endregion
+
   // #region CountryPost
 
   private updateCountryPost(post: api.CountryPost) {
@@ -704,6 +755,10 @@ export default class StatusModel {
     }
   }
 
+  public getPostName(post: number): string {
+    return ValueUtil.getPostName(post);
+  }
+
   // #endregion
 
   // #region CountryPermissions
@@ -716,6 +771,12 @@ export default class StatusModel {
 
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canCountrySetting(): boolean {
+    // 自分が国の設定を行う権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
@@ -854,7 +915,7 @@ export default class StatusModel {
     war.status = status;
     war.requestedCountryId = countryB;
     war.insistedCountryId = countryA;
-    if (!old) {
+    if (!old || old.status === api.CountryWar.statusStoped) {
       war.startGameDate = this.newWarData.startGameDate;
     } else {
       war.startGameDate = old.startGameDate;
@@ -1201,7 +1262,6 @@ export default class StatusModel {
             NotificationService.myPromotionRefused.notifyWithParameter(message.receiverName);
           }
         }
-        console.dir(message);
       }
     }
   }

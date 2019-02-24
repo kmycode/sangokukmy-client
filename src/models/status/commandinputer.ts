@@ -31,6 +31,10 @@ export default class CommandInputer {
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
+  public get canInput(): boolean {
+    return Enumerable.from(this.commands).any((c) => c.isSelected === true);
+  }
+
   public constructor(private store: StatusStore) {}
 
   public inputCommand(commandType: number) {

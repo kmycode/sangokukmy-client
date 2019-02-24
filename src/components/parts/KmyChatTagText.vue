@@ -14,13 +14,15 @@ import * as api from './../../api/api';
 export default class KmyChatTagText extends Vue {
   private static readonly reg = new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))');
   @Prop() private text!: string;
+  @Prop({
+    default: true,
+  }) private isNewLine!: boolean;
 
   private get formatedText(): string {
     let text = this.text
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/\n/g, '<br>')
       .replace(/\\\[/g, '&#91;')
       .replace(/\[r\]/g, '<span style="color:red">')
       .replace(/\[g\]/g, '<span style="color:green">')
@@ -31,6 +33,9 @@ export default class KmyChatTagText extends Vue {
       .replace(/\[-b\]/g, '</span>')
       .replace(/\[-s\]/g, '</span>')
       .replace(KmyChatTagText.reg, '<a href="$1" target="_blank">$1</a>');
+    if (this.isNewLine) {
+      text = text.replace(/\n/g, '<br>');
+    }
     const spanStart = text.match(/<span/gm);
     const spanEnd = text.match(/<\/span/gm);
     if (spanStart && spanEnd) {
