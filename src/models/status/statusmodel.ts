@@ -375,6 +375,7 @@ export default class StatusModel {
           if (scoutedTown) {
             this.townCharacters = scoutedTown.characters;
             this.townDefenders = scoutedTown.defenders;
+            scoutedTown.countryId = town.countryId;
             this.setTown(scoutedTown);
           } else {
             this.setTown(town);
