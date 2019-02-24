@@ -905,7 +905,7 @@ export default class StatusModel {
     war.status = status;
     war.requestedCountryId = countryB;
     war.insistedCountryId = countryA;
-    if (!old) {
+    if (!old || old.status === api.CountryWar.statusStoped) {
       war.startGameDate = this.newWarData.startGameDate;
     } else {
       war.startGameDate = old.startGameDate;
