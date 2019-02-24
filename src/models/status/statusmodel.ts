@@ -53,11 +53,13 @@ export default class StatusModel {
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
-      || this.privateChat.isLoading || this.isUpdatingOppositionCharacters;
+      || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
+      || this.isUpdatingCountrySettings;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
+  public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
   public isScouting: boolean = false;
@@ -671,22 +673,30 @@ export default class StatusModel {
   }
 
   public updateCountryCommandersMessage(message: string) {
+    this.isUpdatingCountrySettings = true;
     api.Api.setCountryMessage(message, api.CountryMessage.typeCommanders)
       .then(() => {
         NotificationService.countryCommandersMessageSet.notify();
       })
       .catch(() => {
         NotificationService.countryCommandersMessageSetFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
       });
   }
 
   public updateCountrySolicitationMessage(message: string) {
+    this.isUpdatingCountrySettings = true;
     api.Api.setCountryMessage(message, api.CountryMessage.typeSolicitation)
       .then(() => {
         NotificationService.countrySolicitationMessageSet.notify();
       })
       .catch(() => {
         NotificationService.countrySolicitationMessageSetFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
       });
   }
 
