@@ -11,26 +11,26 @@
     <div class="loading-container">
       <!-- 内政コマンド -->
       <div v-show="selectedCommandCategory === 0" class="commands">
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(1)">農業開発</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(2)">商業発展</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(3)">技術開発</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(4)">城壁強化</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(5)">守兵増強</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(6)">米施し</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(1)">農業開発</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(2)">商業発展</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(3)">技術開発</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(4)">城壁強化</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(5)">守兵増強</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
       </div>
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(7)">農地開拓</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(8)">市場拡大</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(9)">城壁増築</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(7)">農地開拓</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(8)">市場拡大</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(9)">城壁増築</button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
-        <button type="button" class="btn btn-light" @click="$emit('open', 'soldier')">徴兵</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier')">徴兵</button>
         <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(12)">城の守備</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(13)">戦争</button>
-        <button type="button" class="btn btn-light" @click="list.inputer.inputCommand(14)">集合</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)">城の守備</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
       <!-- 計略コマンド -->
       <div v-show="selectedCommandCategory === 3" class="commands">
@@ -38,14 +38,14 @@
       </div>
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
-        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(17)">移動</button>
-        <button type="button" class="btn btn-light" @click="$emit('open', 'training')">能力強化</button>
-        <button type="button" class="btn btn-light" @click="$emit('open', 'promotion')">登用</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')">能力強化</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
         <!-- <button type="button" class="btn btn-light">米売買</button>
         <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
-        <button type="button" class="btn btn-light" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
-        <button type="button" class="btn btn-primary" @click="list.inputer.inputMoveCommand(23)">仕官</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
+        <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
         <!-- <button type="button" class="btn btn-light">下野</button> -->
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
