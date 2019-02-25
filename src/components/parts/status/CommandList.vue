@@ -27,7 +27,7 @@
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier')">徴兵</button>
-        <!-- <button type="button" class="btn btn-light">兵士訓練</button> -->
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)">兵士訓練</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)">城の守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>

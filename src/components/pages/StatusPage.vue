@@ -262,6 +262,7 @@
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 800" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 10">智攻兵</a>
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 900" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 11">連弩兵</a>
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 999" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 12">壁守兵</a>
+              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 500" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 14">井闌</a>
             </div>
           </div>
           <div class="soltype-detail">
@@ -591,7 +592,8 @@ export default class StatusPage extends Vue {
     this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
-      this.isOpenBattleLogDialog = this.isOpenPromotionDialog = false;
+      this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
+      this.isOpenCommandersDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

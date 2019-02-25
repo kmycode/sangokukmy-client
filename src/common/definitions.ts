@@ -67,8 +67,8 @@ export class SoldierType {
 }
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, '雑兵', 10, '0', '0'),
-  new SoldierType(2, '禁兵', 10, '20', '20'),
-  new SoldierType(100, '雑兵・禁兵', 10, '0 / 20', '0 / 20', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に20のボーナスを得る'),
+  new SoldierType(2, '禁兵', 10, '15', '15'),
+  new SoldierType(100, '雑兵・禁兵', 10, '0 / 10', '0 / 10', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に10のボーナスを得る'),
   new SoldierType(3, '軽歩兵',  20, '10', '0', '軽装備の歩兵'),
   new SoldierType(4, '弓兵',    30, '0', '15', '弓を持った兵士'),
   new SoldierType(5, '軽騎兵',  50, '35', '10', '軽装備の騎兵'),
@@ -79,6 +79,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(10, '智攻兵', 250, '知力x0.7', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, '連弩兵', 300, '80', '10', '連弩を持った兵士'),
   new SoldierType(12, '壁守兵', 350, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
+  new SoldierType(14, '井闌', 100, '20', '20', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
   new SoldierType(100, '守兵A', 32767, '0', '0', ''),
   new SoldierType(101, '守兵B', 32767, '0', '0', ''),
   new SoldierType(102, '守兵C', 32767, '0', '0', ''),
@@ -165,6 +166,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (10:1)';
     }
   }),
+  new CommandNameResolver(11, '兵士訓練'),
   new CommandNameResolver(12, '城の守備'),
   new CommandNameResolver(13, '%0% へ侵攻'),
   new CommandNameResolver(14, '集合'),
