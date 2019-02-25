@@ -592,7 +592,8 @@ export default class StatusPage extends Vue {
     this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
-      this.isOpenBattleLogDialog = this.isOpenPromotionDialog = false;
+      this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
+      this.isOpenCommandersDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
