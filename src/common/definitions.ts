@@ -166,6 +166,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (10:1)';
     }
   }),
+  new CommandNameResolver(11, '兵士訓練'),
   new CommandNameResolver(12, '城の守備'),
   new CommandNameResolver(13, '%0% へ侵攻'),
   new CommandNameResolver(14, '集合'),
