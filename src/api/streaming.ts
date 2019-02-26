@@ -117,32 +117,35 @@ export default class Streaming {
   private receiveLoop() {
     const ajax = this.ajax;
     if (ajax != null) {
-      if (this.length !== ajax.responseText.length || this.isLastError) {
-        const updatedText = ajax.responseText.slice(this.length);
-        this.length = ajax.responseText.length;
+      try {
+        if (this.length !== ajax.responseText.length || this.isLastError) {
+          const updatedText = ajax.responseText.slice(this.length);
+          this.length = ajax.responseText.length;
 
-        // JSONになおしてイベント発行
-        this.isLastError = false;
-        const lines = updatedText.split('\n');
-        const availableLines = lines.filter((line) => line);
-        availableLines.forEach((line) => {
-          this.output(line);
-        });
+          // JSONになおしてイベント発行
+          this.isLastError = false;
+          const lines = updatedText.split('\n');
+          const availableLines = lines.filter((line) => line);
+          availableLines.forEach((line) => {
+            this.output(line);
+          });
 
-        // 最後のデータがエラーなら、最後のデータを後でもう一度
-        if (this.isLastError) {
-          const lastAvailableLine = availableLines[availableLines.length - 1];
-          this.length -= Enumerable.from(lines)
-            .skipWhile((line) => line !== lastAvailableLine)
-            .sum((line) => line.length + 1);
-          if (updatedText[updatedText.length - 1] !== '\n') {
-            this.length--;
+          // 最後のデータがエラーなら、最後のデータを後でもう一度
+          if (this.isLastError) {
+            const lastAvailableLine = availableLines[availableLines.length - 1];
+            this.length -= Enumerable.from(lines)
+              .skipWhile((line) => line !== lastAvailableLine)
+              .sum((line) => line.length + 1);
+            if (updatedText[updatedText.length - 1] !== '\n') {
+              this.length--;
+            }
           }
         }
+      } finally {
+        // 並列処理を防止するため、setIntervalは使わない
+        setTimeout(() => this.receiveLoop(), 100);
       }
 
-      // 並列処理を防止するため、setIntervalは使わない
-      setTimeout(() => this.receiveLoop(), 100);
     }
   }
 
