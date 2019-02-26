@@ -12,7 +12,7 @@ import * as api from './../../api/api';
   },
 })
 export default class KmyChatTagText extends Vue {
-  private static readonly reg = new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))');
+  private static readonly reg = new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))', 'g');
   @Prop() private text!: string;
   @Prop({
     default: true,
