@@ -23,9 +23,6 @@ export default class CommandInputer {
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
-  private lastAxbA: number = 0;
-  private lastAxbB: number = 0;
-
   public get canInput(): boolean {
     return Enumerable.from(this.commands).any((c) => c.isSelected === true);
   }
@@ -184,15 +181,9 @@ export default class CommandInputer {
     if (a === 0) {
       return;
     }
-    this.lastAxbA = a;
-    this.lastAxbB = b;
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
       Vue.set(c, 'isPreview', c.commandNumber % a === b);
     });
-  }
-
-  private updatePreviewAxbCommands() {
-    this.previewAxbCommands(this.lastAxbA, this.lastAxbB);
   }
 
   public removePreviews() {
@@ -213,13 +204,12 @@ export default class CommandInputer {
   public setRanged(isRanged: boolean) {
     this.commands.forEach((c) => {
       const selected = c.isSelected;
-      c.isSelected = isRanged ? false : c.canSelect;
+      Vue.set(c, 'isSelected', isRanged ? false : c.canSelect);
       Vue.set(c, 'canSelect', isRanged ? selected : true);
     });
-    this.updatePreviewAxbCommands();
   }
 
-  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean, isPreview: boolean = false) {
+  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean) {
     if (!command.canSelect) {
       return;
     }
@@ -234,7 +224,11 @@ export default class CommandInputer {
       NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
     }
 
-    Vue.set(command, isPreview ? 'isPreview' : 'isSelected', isSelected);
+    if (command.isSelected !== undefined) {
+      command.isSelected = isSelected;
+    } else {
+      Vue.set(command, 'isSelected', isSelected);
+    }
   }
 
   public clearAllCommandSelections() {
