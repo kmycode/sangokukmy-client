@@ -34,25 +34,27 @@
           </div>
         </div>
       </div>
-      <div v-for="child in thread.children"
-           :key="child.id"
-           :class="'child country-color-' + getItemCountry(child).colorId">
-        <div class="child-row">
-          <div class="child-icon">
-            <CharacterIcon :icon="child.character.mainIcon"/>
+      <transition-group name="message" tag="div">
+        <div v-for="child in thread.children"
+            :key="child.id"
+            :class="'child country-color-' + getItemCountry(child).colorId">
+          <div class="child-row">
+            <div class="child-icon">
+              <CharacterIcon :icon="child.character.mainIcon"/>
+            </div>
+            <div class="child-message">
+              <KmyChatTagText :text="child.text"/>
+            </div>
           </div>
-          <div class="child-message">
-            <KmyChatTagText :text="child.text"/>
+          <div class="item-footer">
+            <span class="character-name">{{ child.character.name }}</span>
+            <span class="country-name">{{ getItemCountry(child).name }}</span>
+            <span class="item-date">{{ child.written | realdate }}</span>
+            <button v-show="canRemove && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">操作</button>
+            <button v-show="getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-danger" @click="remove(child)">削除</button>
           </div>
         </div>
-        <div class="item-footer">
-          <span class="character-name">{{ child.character.name }}</span>
-          <span class="country-name">{{ getItemCountry(child).name }}</span>
-          <span class="item-date">{{ child.written | realdate }}</span>
-          <button v-show="canRemove && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">操作</button>
-          <button v-show="getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-danger" @click="remove(child)">削除</button>
-        </div>
-      </div>
+      </transition-group>
     </div>
     <div class="loading" v-show="isUpdating"><div class="loading-icon"></div></div>
   </div>
@@ -251,6 +253,18 @@ export default class ThreadBbs extends Vue {
       }
     }
   }
+}
+
+.message-enter-active, .message-leave-active {
+  transition: opacity .2s;
+}
+
+.message-enter, .message-leave-to {
+  opacity: 0;
+}
+
+.message-move {
+  transition: transform .2s;
 }
 </style>
 
