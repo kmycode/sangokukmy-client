@@ -65,6 +65,7 @@
     <!-- 選択アルゴリズム -->
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
+      <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged)">範囲</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 2, 'btn-info': list.inputer.commandSelectMode === 2 }" @click="list.inputer.commandSelectMode = 2">AND</button>
@@ -105,6 +106,7 @@ export default class CommandListView extends Vue {
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;
+  private isRanged: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;

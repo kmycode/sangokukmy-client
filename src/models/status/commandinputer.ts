@@ -31,6 +31,9 @@ export default class CommandInputer {
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
+  private lastAxbA: number = 0;
+  private lastAxbB: number = 0;
+
   public get canInput(): boolean {
     return Enumerable.from(this.commands).any((c) => c.isSelected === true);
   }
@@ -177,20 +180,29 @@ export default class CommandInputer {
 
   public selectEvenCommands() {
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 0);
+      this.selectCommandWithSelectMode(c, c.commandNumber % 2 === 1);
     });
   }
 
   public selectOddCommands() {
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 1);
+      this.selectCommandWithSelectMode(c, c.commandNumber % 2 === 0);
     });
   }
 
   public previewAxbCommands(a: number, b: number) {
+    if (a === 0) {
+      return;
+    }
+    this.lastAxbA = a;
+    this.lastAxbB = b;
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      Vue.set(c, 'isPreview', (index + 1) % a === b);
+      Vue.set(c, 'isPreview', c.commandNumber % a === b);
     });
+  }
+
+  private updatePreviewAxbCommands() {
+    this.previewAxbCommands(this.lastAxbA, this.lastAxbB);
   }
 
   public removePreviews() {
@@ -204,8 +216,17 @@ export default class CommandInputer {
       return;
     }
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, (index + 1) % a === b);
+      this.selectCommandWithSelectMode(c, c.commandNumber % a === b);
     });
+  }
+
+  public setRanged(isRanged: boolean) {
+    this.commands.forEach((c) => {
+      const selected = c.isSelected;
+      c.isSelected = isRanged ? false : c.canSelect;
+      Vue.set(c, 'canSelect', isRanged ? selected : true);
+    });
+    this.updatePreviewAxbCommands();
   }
 
   private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean, isPreview: boolean = false) {
