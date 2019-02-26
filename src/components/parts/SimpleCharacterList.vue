@@ -4,57 +4,62 @@
       :class="'item country-color-' + getCountryColorId(chara.countryId) + (canSelect ? ' selectable' : '') + (value.id === chara.id ? ' selected' : '')"
       v-for="chara in characters"
       :key="chara.id">
-      <div class="icon">
-        <CharacterIcon :icon="chara.mainIcon"/>
-      </div>
-      <div class="information">
-        <div class="standard">
-          <div class="name">{{ chara.name }}</div>
-          <div class="commands">
-          </div>
-          <div class="commands">
-            <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6)) && getPostName(chara.id, chara.countryId) !== '君主'" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
-            <button v-if="canReinforcement && chara.countryId !== myCountryId && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
-            <button v-if="canPrivateChat && chara.id !== myCharacterId" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
-          </div>
-          <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
-          <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-          <div v-else-if="chara.countryId > 0" class="post-selection">
-            <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
-              {{ getPostName(chara.id, chara.countryId) }}
-            </button>
-            <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
-              <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+      <div class="item-character-info">
+        <div class="icon">
+          <CharacterIcon :icon="chara.mainIcon"/>
+        </div>
+        <div class="information">
+          <div class="standard">
+            <div class="name">{{ chara.name }}</div>
+            <div class="commands">
+            </div>
+            <div class="commands">
+              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6)) && getPostName(chara.id, chara.countryId) !== '君主'" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
+              <button v-if="canReinforcement && chara.countryId !== myCountryId && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
+              <button v-if="canPrivateChat && chara.id !== myCharacterId" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+            </div>
+            <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
+            <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
+            <div v-else-if="chara.countryId > 0" class="post-selection">
+              <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
+                {{ getPostName(chara.id, chara.countryId) }}
+              </button>
+              <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎馬将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+              </div>
             </div>
           </div>
+          <div class="parameters">
+            <span class="parameter-item">
+              <span class="parameter-name">武力</span>
+              <span class="parameter-value">{{ chara.strong }}</span>
+            </span>
+            <span class="parameter-item">
+              <span class="parameter-name">知力</span>
+              <span class="parameter-value">{{ chara.intellect }}</span>
+            </span>
+            <span class="parameter-item">
+              <span class="parameter-name">統率</span>
+              <span class="parameter-value">{{ chara.leadership }}</span>
+            </span>
+            <span class="parameter-item">
+              <span class="parameter-name">人望</span>
+              <span class="parameter-value">{{ chara.popularity }}</span>
+            </span>
+            <span v-if="hasSoldierData(chara)" class="parameter-item">
+              <span class="parameter-name">{{ getSoldierTypeName(chara.soldierType) }}</span>
+              <span class="parameter-value">{{ chara.soldierNumber }}</span>
+            </span>
+          </div>
         </div>
-        <div class="parameters">
-          <span class="parameter-item">
-            <span class="parameter-name">武力</span>
-            <span class="parameter-value">{{ chara.strong }}</span>
-          </span>
-          <span class="parameter-item">
-            <span class="parameter-name">知力</span>
-            <span class="parameter-value">{{ chara.intellect }}</span>
-          </span>
-          <span class="parameter-item">
-            <span class="parameter-name">統率</span>
-            <span class="parameter-value">{{ chara.leadership }}</span>
-          </span>
-          <span class="parameter-item">
-            <span class="parameter-name">人望</span>
-            <span class="parameter-value">{{ chara.popularity }}</span>
-          </span>
-          <span v-if="hasSoldierData(chara)" class="parameter-item">
-            <span class="parameter-name">{{ getSoldierTypeName(chara.soldierType) }}</span>
-            <span class="parameter-value">{{ chara.soldierNumber }}</span>
-          </span>
-        </div>
+      </div>
+      <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
+        <span class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</span>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
     </div>
@@ -136,6 +141,12 @@ export default class SimpleCharacterList extends Vue {
     }
   }
 
+  private getCharacterNextTime(time: api.DateTime): api.DateTime {
+    const dt = api.DateTime.toDate(time);
+    dt.setSeconds(dt.getSeconds() + def.UPDATE_TIME);
+    return api.DateTime.fromDate(dt);
+  }
+
   private togglePostsPopup(chara: api.Character) {
     Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
   }
@@ -147,89 +158,105 @@ export default class SimpleCharacterList extends Vue {
 
 .simple-character-list {
   .item {
-    display: flex;
     padding: 4px;
     border-bottom-width: 1px;
     border-bottom-style: dashed;
     @include country-color-light('background-color');
     @include country-color-deep('border-bottom-color');
 
-    &.selectable {
-      position: relative;
+    .item-character-info {
+      display: flex;
 
-      &:hover {
+      &.selectable {
+        position: relative;
+
+        &:hover {
+          .select-cover {
+            background-color: rgba(0, 0, 0, 0.14);
+          }
+        }
+
+        &.selected {
+          .select-cover {
+            background-color: rgba(0, 0, 0, 0.28);
+          }
+        }
+
         .select-cover {
-          background-color: rgba(0, 0, 0, 0.14);
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: transparent;
+          transition: background-color .12s ease-out;
+          cursor: pointer;
         }
       }
 
-      &.selected {
-        .select-cover {
-          background-color: rgba(0, 0, 0, 0.28);
-        }
-      }
+      .information {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        flex: 1;
+        margin-left: 12px;
 
-      .select-cover {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: transparent;
-        transition: background-color .12s ease-out;
-        cursor: pointer;
+        .standard {
+          display: flex;
+
+          .name {
+            font-size: 1.6rem;
+            flex: 1;
+          }
+
+          .commands {
+            margin-right: 16px;
+            button {
+              margin-left: 4px;
+            }
+          }
+
+          .reinforcement-status {
+            margin: 4px 12px 0 0;
+            color: green;
+            font-weight: bold;
+          }
+
+          .post, .post-selection {
+            margin: 4px 12px 0 0;
+          }
+        }
+
+        .parameters {
+          .parameter-item {
+            padding-right: 12px;
+            .parameter-name {
+              font-size: 0.8rem;
+              color: #666;
+              padding-right: 4px;
+            }
+            .parameter-value {
+              display: inline-block;
+              font-size: 1rem;
+              font-weight: bold;
+              width: 2rem;
+              text-align: center;
+            }
+          }
+        }
       }
     }
 
-    .information {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      flex: 1;
-      margin-left: 12px;
+    .item-commands {
+      margin: 4px 4px 0;
 
-      .standard {
-        display: flex;
-
-        .name {
-          font-size: 1.6rem;
-          flex: 1;
-        }
-
-        .commands {
-          margin-right: 16px;
-          button {
-            margin-left: 4px;
-          }
-        }
-
-        .reinforcement-status {
-          margin: 4px 12px 0 0;
-          color: green;
-          font-weight: bold;
-        }
-
-        .post, .post-selection {
-          margin: 4px 12px 0 0;
-        }
+      .next-update {
+        background-color: rgba(0, 0, 0, 0.4);
+        color: white;
+        padding: 2px;
       }
-
-      .parameters {
-        .parameter-item {
-          padding-right: 12px;
-          .parameter-name {
-            font-size: 0.8rem;
-            color: #666;
-            padding-right: 4px;
-          }
-          .parameter-value {
-            display: inline-block;
-            font-size: 1rem;
-            font-weight: bold;
-            width: 2rem;
-            text-align: center;
-          }
-        }
+      .num {
+        font-weight: bold;
       }
     }
   }
