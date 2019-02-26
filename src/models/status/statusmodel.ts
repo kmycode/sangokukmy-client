@@ -677,8 +677,13 @@ export default class StatusModel {
   private onCountryMessageReceived(message: api.CountryMessage) {
     if (message.countryId === this.character.countryId) {
       if (message.type === api.CountryMessage.typeCommanders) {
+        // 指令
         this.countryCommandersMessage = message;
+        if (this.store.hasInitialized && message.writerCharacterName !== this.store.character.name) {
+          NotificationService.countryCommandersMessageUpdated.notify();
+        }
       } else if (message.type === api.CountryMessage.typeSolicitation) {
+        // 新規登録者勧誘文
         this.countrySolicitationMessage = message;
       }
     }

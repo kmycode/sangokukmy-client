@@ -507,7 +507,7 @@ export default class NotificationService {
   public static readonly countryCommandersMessageUpdated = new NotificationServiceItem(
     '指令更新',
     '指令が更新されました',
-    NotificationServiceItemDefaultType.warning);
+    NotificationServiceItemDefaultType.information);
   public static readonly countrySolicitationMessageSet = new NotificationServiceItem(
     '勧誘文更新',
     '新規登録者勧誘文を更新しました',
