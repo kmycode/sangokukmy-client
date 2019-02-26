@@ -188,7 +188,6 @@ export default class CommandInputer {
   }
 
   public previewAxbCommands(a: number, b: number) {
-    console.log('' + a + '  ' + b);
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
       Vue.set(c, 'isPreview', (index + 1) % a === b);
     });
@@ -198,7 +197,6 @@ export default class CommandInputer {
     this.commands.forEach((c) => {
       Vue.set(c, 'isPreview', false);
     });
-    console.log('remove');
   }
 
   public selectAxbCommands(a: number, b: number) {
