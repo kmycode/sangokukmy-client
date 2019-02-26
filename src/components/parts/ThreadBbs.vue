@@ -17,7 +17,7 @@
             <CharacterIcon :icon="thread.character.mainIcon"/>
           </div>
           <div :class="'thread-text country-color-' + getItemCountry(thread).colorId">
-            {{ thread.text }}
+            <KmyChatTagText :text="thread.text"/>
           </div>
         </div>
         <div class="item-footer">
@@ -42,7 +42,7 @@
             <CharacterIcon :icon="child.character.mainIcon"/>
           </div>
           <div class="child-message">
-            {{ child.text }}
+            <KmyChatTagText :text="child.text"/>
           </div>
         </div>
         <div class="item-footer">
@@ -61,6 +61,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
@@ -74,6 +75,7 @@ class ThreadBbsReplyData {
 @Component({
   components: {
     CharacterIcon,
+    KmyChatTagText,
   },
 })
 export default class ThreadBbs extends Vue {
