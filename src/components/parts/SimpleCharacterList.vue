@@ -164,35 +164,35 @@ export default class SimpleCharacterList extends Vue {
     @include country-color-light('background-color');
     @include country-color-deep('border-bottom-color');
 
-    .item-character-info {
-      display: flex;
+    &.selectable {
+      position: relative;
 
-      &.selectable {
-        position: relative;
-
-        &:hover {
-          .select-cover {
-            background-color: rgba(0, 0, 0, 0.14);
-          }
-        }
-
-        &.selected {
-          .select-cover {
-            background-color: rgba(0, 0, 0, 0.28);
-          }
-        }
-
+      &:hover {
         .select-cover {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-color: transparent;
-          transition: background-color .12s ease-out;
-          cursor: pointer;
+          background-color: rgba(0, 0, 0, 0.14);
         }
       }
+
+      &.selected {
+        .select-cover {
+          background-color: rgba(0, 0, 0, 0.28);
+        }
+      }
+
+      .select-cover {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: transparent;
+        transition: background-color .12s ease-out;
+        cursor: pointer;
+      }
+    }
+
+    .item-character-info {
+      display: flex;
 
       .information {
         display: flex;
