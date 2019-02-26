@@ -16,14 +16,6 @@ export enum CommandSelectMode {
    * OR
    */
   mode_or = 1,
-  /**
-   * AND
-   */
-  mode_and = 2,
-  /**
-   * XOR
-   */
-  mode_xor = 3,
 }
 
 export default class CommandInputer {
@@ -139,8 +131,6 @@ export default class CommandInputer {
     if (this.commandSelectMode === CommandSelectMode.replace) {
       this.clearAllCommandSelections();
       Vue.set(command, 'isSelected', true);
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
-      Vue.set(command, 'isSelected', true);
     } else {
       Vue.set(command, 'isSelected', !command.isSelected);
     }
@@ -240,10 +230,6 @@ export default class CommandInputer {
       isSelected = value;
     } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
       isSelected = isSelected || value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
-      isSelected = isSelected && value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_xor) {
-      isSelected = isSelected !== value;
     } else {
       NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
     }

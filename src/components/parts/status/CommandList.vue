@@ -68,8 +68,6 @@
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged)">範囲</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 2, 'btn-info': list.inputer.commandSelectMode === 2 }" @click="list.inputer.commandSelectMode = 2">AND</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 3, 'btn-info': list.inputer.commandSelectMode === 3 }" @click="list.inputer.commandSelectMode = 3">XOR</button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-show="isShowDeleteTurn" class="command-delete-turn-notify">
