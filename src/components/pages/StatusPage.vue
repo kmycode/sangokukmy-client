@@ -484,6 +484,45 @@
           </div>
         </div>
       </div>
+      <!-- 米売買 -->
+      <div v-show="isOpenRiceDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">米売買</h2>
+        <div class="dialog-content dialog-content-rice">
+          <div class="content">
+            <div class="row">
+              <div class="content-row col-lg-4">
+                <div class="label">現在の相場</div><div class="value">{{ model.characterTownRiceTrend }}</div>
+              </div>
+              <div class="content-row col-lg-4 col-md-6">
+                <div class="label">金10000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
+              </div>
+              <div class="content-row col-lg-4 col-md-6">
+                <div class="label">米10000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
+              </div>
+            </div>
+            <div class="commands">
+              <button type="button" :class="{ 'btn': true, 'btn-secondary': selectedRiceStatus === 1, 'btn-outline-secondary': selectedRiceStatus !== 1, }" @click="selectedRiceStatus = 1">金→米</button>
+              <button type="button" :class="{ 'btn': true, 'btn-secondary': selectedRiceStatus === 2, 'btn-outline-secondary': selectedRiceStatus !== 2, }" @click="selectedRiceStatus = 2">米→金</button>
+            </div>
+            <div v-show="selectedRiceStatus === 1" class="command-parameters">
+              <h3>金→米</h3>
+              金 <input type="number" v-model.number="payRiceOrMoney"> → 米 <span class="result">{{ model.characterTownMoneyToRicePrice(payRiceOrMoney) }}</span>
+            </div>
+            <div v-show="selectedRiceStatus === 2" class="command-parameters">
+              <h3>米→金</h3>
+              米 <input type="number" v-model.number="payRiceOrMoney"> → 金 <span class="result">{{ model.characterTownRiceToMoneyPrice(payRiceOrMoney) }}</span>
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenRiceDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 10000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -554,7 +593,9 @@ export default class StatusPage extends Vue {
   public isLoadingBattleLog: boolean = false;
   public isOpenPromotionDialog: boolean = false;
   public isOpenCommandersDialog: boolean = false;
+  public isOpenRiceDialog: boolean = false;
   public selectedWarStatus: number = 0;
+  public selectedRiceStatus: number = 0;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
@@ -563,6 +604,7 @@ export default class StatusPage extends Vue {
   public promotionMessage: string = '';
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
+  public payRiceOrMoney: number = 0;
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -572,7 +614,7 @@ export default class StatusPage extends Vue {
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
-      || this.isOpenCommandersDialog;
+      || this.isOpenCommandersDialog || this.isOpenRiceDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -585,6 +627,10 @@ export default class StatusPage extends Vue {
       this.promotionTarget.id = -1;
       this.promotionMessage = '';
       this.isOpenPromotionDialog = true;
+    } else if (event === 'rice') {
+      this.selectedRiceStatus = 0;
+      this.payRiceOrMoney = 0;
+      this.isOpenRiceDialog = true;
     }
   }
 
@@ -593,7 +639,7 @@ export default class StatusPage extends Vue {
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
-      this.isOpenCommandersDialog = false;
+      this.isOpenCommandersDialog = this.isOpenRiceDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1019,6 +1065,46 @@ ul.nav {
           font-size: 0.9em;
           font-weight: bold;
           margin-top: 12px;
+        }
+      }
+
+      &.dialog-content-rice {
+        .content {
+          margin: 0 24px;
+          .content-row {
+            background-color: #dedede;
+            padding: 8px 16px;
+            text-align: center;
+            &:first-child {
+              background: none;
+            }
+            .label {
+              color: #666;
+            }
+            .value {
+              font-weight: bold;
+            }
+          }
+          .commands {
+            margin-top: 16px;
+            button {
+              margin-right: 8px;
+            }
+          }
+          .command-parameters {
+            margin-top: 24px;
+            input {
+              font-size: 2em;
+              width: 5em;
+              padding: 0 12px;
+              text-align: right;
+            }
+            .result {
+              font-weight: bold;
+              color: red;
+              font-size: 1.4em;
+            }
+          }
         }
       }
     }

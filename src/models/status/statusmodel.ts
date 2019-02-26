@@ -218,6 +218,18 @@ export default class StatusModel {
       .any((r) => r.status === api.Reinforcement.statusActive);
   }
 
+  public get characterTownRiceTrend(): number {
+    return api.Town.getRiceTrend(this.characterTown);
+  }
+
+  public characterTownRiceToMoneyPrice(assets: number = def.RICE_BUY_MAX): number {
+    return api.Town.getRiceToMoneyPrice(this.characterTown, assets);
+  }
+
+  public characterTownMoneyToRicePrice(assets: number = def.RICE_BUY_MAX): number {
+    return api.Town.getMoneyToRicePrice(this.characterTown, assets);
+  }
+
   // #endregion
 
   // #region Streaming

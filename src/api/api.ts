@@ -446,7 +446,7 @@ export class CountryWar extends CountryDipromacy {
 
 export abstract class TownBase implements IIdentitiedEntity {
   public static getRiceTrend(town: TownBase): number {
-    return Math.round(town.ricePrice * 1000) / 1000;
+    return Math.round(town.ricePrice * 1000000) / 1000000;
   }
 
   public static getRiceToMoneyPrice(town: TownBase, rice: number): number {
@@ -816,6 +816,23 @@ export class Api {
       const result = await axios.get<{ commands: CharacterCommand[], secondsNextCommand: number }>
         (def.API_HOST + 'commands', this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 武将のコマンドを取得（欠番がある場合もあるので注意）
+   */
+  public static async getCommands(months: GameDateTime[]): Promise<CharacterCommand[]> {
+    try {
+      const parameters = Enumerable.from(months)
+        .select((m) => GameDateTime.toNumber(m))
+        .toArray()
+        .join(',');
+      const result = await axios.get<{ commands: CharacterCommand[], secondsNextCommand: number }>
+        (def.API_HOST + 'commands?months=' + parameters, this.authHeader);
+      return result.data.commands;
     } catch (ex) {
       throw Api.pickException(ex);
     }

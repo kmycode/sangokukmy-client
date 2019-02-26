@@ -41,8 +41,8 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')">能力強化</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
-        <!-- <button type="button" class="btn btn-light">米売買</button>
-        <button type="button" class="btn btn-light">武器</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
+        <!-- <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
         <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>

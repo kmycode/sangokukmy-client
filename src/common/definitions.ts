@@ -54,6 +54,8 @@ export const COUNTRY_COLOR_NUM = 8;
  */
 export const DEFAULT_ICON_NUM = 98;
 
+export const RICE_BUY_MAX = 10000;
+
 /**
  * 兵種
  */
@@ -201,6 +203,33 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return format.replace('{0}', name);
     } else {
       return 'エラー (18:1)';
+    }
+  }),
+  new CommandNameResolver(19, '米売買', (_, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const type = p.firstOrDefault((pp) => pp.type === 1);
+      const assets = p.firstOrDefault((pp) => pp.type === 2);
+      const result = p.firstOrDefault((pp) => pp.type === 3);
+      if (!type || !assets) {
+        return 'エラー (19:2)';
+      }
+      if (!type.numberValue || !assets.numberValue) {
+        return 'エラー (19:3)';
+      }
+      if (type.numberValue !== 1 && type.numberValue !== 2) {
+        return 'エラー (19:4)';
+      }
+
+      if (!result || result.numberValue === undefined) {
+        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' を米に交換' :
+                                        '米 ' + assets.numberValue + ' を金に交換';
+      } else {
+        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' → 米 ' + result.numberValue :
+                                        '米 ' + assets.numberValue + ' → 金 ' + result.numberValue;
+      }
+    } else {
+      return 'エラー (19:1)';
     }
   }),
   new CommandNameResolver(23, '仕官'),

@@ -67,6 +67,16 @@ export default class CommandInputer {
     });
   }
 
+  public inputRiceCommand(commandType: number, type: number, assets: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      const result = type === 1 ? api.Town.getMoneyToRicePrice(this.store.town, assets) :
+                                  api.Town.getRiceToMoneyPrice(this.store.town, assets);
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
+      c.parameters.push(new api.CharacterCommandParameter(2, assets));
+      c.parameters.push(new api.CharacterCommandParameter(3, result));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -85,6 +95,24 @@ export default class CommandInputer {
             c.isSelected = false;
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+
+          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
+          if (commandType === 19) {
+            // 米売買
+            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
+              .then((commands) => {
+                Enumerable
+                  .from(commands)
+                  .join(selectCommands,
+                        (c) => api.GameDateTime.toNumber(c.gameDate),
+                        (c) => api.GameDateTime.toNumber(c.gameDate),
+                        (n, o) => { return { oldCommand: o, newCommand: n, }; })
+                  .forEach((data) => {
+                    data.oldCommand.parameters = data.newCommand.parameters;
+                    this.updateCommandName(data.oldCommand);
+                  });
+              });
+          }
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
