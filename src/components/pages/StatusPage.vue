@@ -218,7 +218,7 @@
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
-            <div class="setting-row loading-container">
+            <div v-if="model.canCountrySettingExceptForCommands" class="setting-row loading-container">
               <h3 :class="'country-color-' + model.characterCountryColor">新規登録者勧誘文</h3>
               <div class="current-message">
                 <h4>現在のメッセージ</h4>
