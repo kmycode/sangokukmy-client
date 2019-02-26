@@ -41,8 +41,8 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')">能力強化</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
-        <!-- <button type="button" class="btn btn-light">米売買</button>
-        <button type="button" class="btn btn-light">武器</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
+        <!-- <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
         <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
@@ -52,19 +52,22 @@
     </div>
     <!-- 選択ツール -->
     <div class="command-input-options">
-      <button type="button" class="btn btn-light" @click="list.inputer.clearAllCommandSelections()">クリア</button>
+      <button type="button" class="btn btn-light" @click="list.inputer.clearAllCommandSelections()">消去</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全て</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶数</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇数</button>
-      <!-- <button type="button" class="btn btn-light">ax+b</button> -->
+      <button type="button" class="btn btn-light" @click="isOpenAxb = !isOpenAxb">ax+b</button>
+    </div>
+    <div v-show="isOpenAxb" class="command-input-axb">
+      <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0" :max="axbA - 1">
+      <button type="button" class="btn btn-light btn-sm" @click="list.inputer.selectAxbCommands(axbA, axbB)">入力</button>
     </div>
     <!-- 選択アルゴリズム -->
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
+      <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged)">範囲</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 2, 'btn-info': list.inputer.commandSelectMode === 2 }" @click="list.inputer.commandSelectMode = 2">AND</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 3, 'btn-info': list.inputer.commandSelectMode === 3 }" @click="list.inputer.commandSelectMode = 3">XOR</button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-show="isShowDeleteTurn" class="command-delete-turn-notify">
@@ -73,7 +76,7 @@
     <div class="command-list">
       <div v-for="command in list.commands"
             :key="command.commandNumber"
-            :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect }"
+            :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
             @click="onCommandSelected(command, $event)">
         <div class="number">{{ command.commandNumber }}</div>
         <div class="command-information">
@@ -86,7 +89,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import CommandList from '@/models/status/commandlist';
 import * as def from '@/common/definitions';
@@ -100,6 +103,11 @@ export default class CommandListView extends Vue {
   @Prop() private characterDeleteTurn!: number;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
+  private isOpenAxb: boolean = false;
+  private isRanged: boolean = false;
+
+  private axbA: number = 3;
+  private axbB: number = 0;
 
   private get deleteTurn(): number {
     return def.CHARACTER_DELETE_TURN - this.characterDeleteTurn;
@@ -113,6 +121,17 @@ export default class CommandListView extends Vue {
       isShow = isShow && def.UPDATE_START_YEAR < firstCommand.gameDate.year;
     }
     return isShow;
+  }
+
+  @Watch('axbA')
+  @Watch('axbB')
+  @Watch('isOpenAxb')
+  private updatePreview() {
+    if (this.isOpenAxb) {
+      this.list.inputer.previewAxbCommands(this.axbA, this.axbB);
+    } else {
+      this.list.inputer.removePreviews();
+    }
   }
 
   private onCommandSelected(command: api.CharacterCommand, event?: MouseEvent) {
@@ -165,6 +184,21 @@ $color-navigation-commands: #e0e0e0;
       margin: 4px 4px 0 0;
     }
   }
+  .command-input-axb {
+    height: 44px;
+    margin: 0;
+    padding: 0 4px 8px;
+    background-color: $color-navigation-commands;
+    input {
+      width: 4em;
+      padding: 0 8px;
+      font-size: 1.4em;
+      text-align: right;
+    }
+    button {
+      margin-left: 8px;
+    }
+  }
   .command-select-options {
     margin-top: 4px;
     padding: 0 0 4px 4px;
@@ -203,10 +237,16 @@ $color-navigation-commands: #e0e0e0;
     &:hover {
       background: #e4e4f6;
     }
+    &.previewed {
+      background: #fec;
+    }
     &.selected {
       background: #c6caf0;
       &:hover {
         background: #b1b1df;
+      }
+      &.previewed {
+        background: #afa474;
       }
     }
     &.disabled {

@@ -54,6 +54,8 @@ export const COUNTRY_COLOR_NUM = 8;
  */
 export const DEFAULT_ICON_NUM = 98;
 
+export const RICE_BUY_MAX = 10000;
+
 /**
  * 兵種
  */
@@ -79,7 +81,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(10, '智攻兵', 250, '知力x0.7', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, '連弩兵', 300, '80', '10', '連弩を持った兵士'),
   new SoldierType(12, '壁守兵', 350, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
-  new SoldierType(14, '井闌', 100, '20', '20', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
+  new SoldierType(14, '井闌', 300, '0', '0', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
   new SoldierType(100, '守兵A', 32767, '0', '0', ''),
   new SoldierType(101, '守兵B', 32767, '0', '0', ''),
   new SoldierType(102, '守兵C', 32767, '0', '0', ''),
@@ -201,6 +203,33 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return format.replace('{0}', name);
     } else {
       return 'エラー (18:1)';
+    }
+  }),
+  new CommandNameResolver(19, '米売買', (_, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const type = p.firstOrDefault((pp) => pp.type === 1);
+      const assets = p.firstOrDefault((pp) => pp.type === 2);
+      const result = p.firstOrDefault((pp) => pp.type === 3);
+      if (!type || !assets) {
+        return 'エラー (19:2)';
+      }
+      if (!type.numberValue || !assets.numberValue) {
+        return 'エラー (19:3)';
+      }
+      if (type.numberValue !== 1 && type.numberValue !== 2) {
+        return 'エラー (19:4)';
+      }
+
+      if (!result || result.numberValue === undefined) {
+        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' を米に交換' :
+                                        '米 ' + assets.numberValue + ' を金に交換';
+      } else {
+        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' → 米 ' + result.numberValue :
+                                        '米 ' + assets.numberValue + ' → 金 ' + result.numberValue;
+      }
+    } else {
+      return 'エラー (19:1)';
     }
   }),
   new CommandNameResolver(23, '仕官'),

@@ -247,6 +247,38 @@ export class CharacterUpdateLog implements IIdentitiedEntity {
               public isFirstAtMonth: boolean) {}
 }
 
+export class CharacterSoldierType {
+  constructor(public id: number,
+              public status: number,
+              public name: string,
+              public money: number,
+              public ricePerTurn: number,
+              public technology: number,
+              public researchCost: number,
+              public baseAttack: number,
+              public baseDefend: number,
+              public strongAttack: number,
+              public strongDefend: number,
+              public intellectAttack: number,
+              public intellectDefend: number,
+              public leadershipAttack: number,
+              public leadershipDefend: number,
+              public popularityAttack: number,
+              public popularityDefend: number,
+              public rushProbability: number,
+              public rushAttack: number,
+              public rushDefend: number,
+              public rushAgainstAttack: number,
+              public rushAgainstDefend: number,
+              public continuousProbability: number,
+              public continuousAttack: number,
+              public continuousDefend: number,
+              public wallAttack: number,
+              public wallDefend: number,
+              public throughDefendersProbability: number,
+              public recovery: number) {}
+}
+
 /**
  * 認証データ
  */
@@ -413,6 +445,18 @@ export class CountryWar extends CountryDipromacy {
 }
 
 export abstract class TownBase implements IIdentitiedEntity {
+  public static getRiceTrend(town: TownBase): number {
+    return Math.round(town.ricePrice * 1000000) / 1000000;
+  }
+
+  public static getRiceToMoneyPrice(town: TownBase, rice: number): number {
+    return Math.floor(TownBase.getRiceTrend(town) * rice);
+  }
+  
+  public static getMoneyToRicePrice(town: TownBase, money: number): number {
+    return Math.floor((2 - TownBase.getRiceTrend(town)) * money);
+  }
+
   public constructor(public id: number = 0,
                      public type: number = 0,
                      public countryId: number = 0,
@@ -431,7 +475,8 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public wallguard: number = 0,
                      public wallguardMax: number = 0,
                      public security: number = 0,
-                     public ricePrice: number = 0) {}
+                     public ricePrice: number = 0,
+                     public buildings: TownBuilding[] = []) {}
 }
 
 /**
@@ -466,6 +511,15 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 
   public characters: Character[] = [];
   public defenders: Character[] = [];
+}
+
+/**
+ * 施設
+ */
+export class TownBuilding {
+  constructor(public type: number,
+              public value: number,
+              public valueMax: number) {}
 }
 
 /**
@@ -672,6 +726,15 @@ export class BattleLog {
                      public lines: BattleLogLine[] = []) {}
 }
 
+export class CountryResearch {
+  public constructor(public id: number,
+                     public status: number,
+                     public type: number,
+                     public level: number,
+                     public progress: number,
+                     public progressMax: number) {}
+}
+
 export class ThreadBbsReply {
   public title: string = '';
   public text: string = '';
@@ -753,6 +816,23 @@ export class Api {
       const result = await axios.get<{ commands: CharacterCommand[], secondsNextCommand: number }>
         (def.API_HOST + 'commands', this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * 武将のコマンドを取得（欠番がある場合もあるので注意）
+   */
+  public static async getCommands(months: GameDateTime[]): Promise<CharacterCommand[]> {
+    try {
+      const parameters = Enumerable.from(months)
+        .select((m) => GameDateTime.toNumber(m))
+        .toArray()
+        .join(',');
+      const result = await axios.get<{ commands: CharacterCommand[], secondsNextCommand: number }>
+        (def.API_HOST + 'commands?months=' + parameters, this.authHeader);
+      return result.data.commands;
     } catch (ex) {
       throw Api.pickException(ex);
     }

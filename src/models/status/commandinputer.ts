@@ -16,20 +16,15 @@ export enum CommandSelectMode {
    * OR
    */
   mode_or = 1,
-  /**
-   * AND
-   */
-  mode_and = 2,
-  /**
-   * XOR
-   */
-  mode_xor = 3,
 }
 
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
   public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
+
+  private lastAxbA: number = 0;
+  private lastAxbB: number = 0;
 
   public get canInput(): boolean {
     return Enumerable.from(this.commands).any((c) => c.isSelected === true);
@@ -67,6 +62,16 @@ export default class CommandInputer {
     });
   }
 
+  public inputRiceCommand(commandType: number, type: number, assets: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      const result = type === 1 ? api.Town.getMoneyToRicePrice(this.store.town, assets) :
+                                  api.Town.getRiceToMoneyPrice(this.store.town, assets);
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
+      c.parameters.push(new api.CharacterCommandParameter(2, assets));
+      c.parameters.push(new api.CharacterCommandParameter(3, result));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -85,6 +90,24 @@ export default class CommandInputer {
             c.isSelected = false;
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+
+          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
+          if (commandType === 19) {
+            // 米売買
+            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
+              .then((commands) => {
+                Enumerable
+                  .from(commands)
+                  .join(selectCommands,
+                        (c) => api.GameDateTime.toNumber(c.gameDate),
+                        (c) => api.GameDateTime.toNumber(c.gameDate),
+                        (n, o) => { return { oldCommand: o, newCommand: n, }; })
+                  .forEach((data) => {
+                    data.oldCommand.parameters = data.newCommand.parameters;
+                    this.updateCommandName(data.oldCommand);
+                  });
+              });
+          }
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
@@ -107,8 +130,6 @@ export default class CommandInputer {
     }
     if (this.commandSelectMode === CommandSelectMode.replace) {
       this.clearAllCommandSelections();
-      Vue.set(command, 'isSelected', true);
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
       Vue.set(command, 'isSelected', true);
     } else {
       Vue.set(command, 'isSelected', !command.isSelected);
@@ -149,17 +170,56 @@ export default class CommandInputer {
 
   public selectEvenCommands() {
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 0);
+      this.selectCommandWithSelectMode(c, c.commandNumber % 2 === 1);
     });
   }
 
   public selectOddCommands() {
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, index % 2 === 1);
+      this.selectCommandWithSelectMode(c, c.commandNumber % 2 === 0);
     });
   }
 
-  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean) {
+  public previewAxbCommands(a: number, b: number) {
+    if (a === 0) {
+      return;
+    }
+    this.lastAxbA = a;
+    this.lastAxbB = b;
+    this.commands.filter((c) => c.canSelect).forEach((c, index) => {
+      Vue.set(c, 'isPreview', c.commandNumber % a === b);
+    });
+  }
+
+  private updatePreviewAxbCommands() {
+    this.previewAxbCommands(this.lastAxbA, this.lastAxbB);
+  }
+
+  public removePreviews() {
+    this.commands.forEach((c) => {
+      Vue.set(c, 'isPreview', false);
+    });
+  }
+
+  public selectAxbCommands(a: number, b: number) {
+    if (a === 0) {
+      return;
+    }
+    this.commands.filter((c) => c.canSelect).forEach((c, index) => {
+      this.selectCommandWithSelectMode(c, c.commandNumber % a === b);
+    });
+  }
+
+  public setRanged(isRanged: boolean) {
+    this.commands.forEach((c) => {
+      const selected = c.isSelected;
+      c.isSelected = isRanged ? false : c.canSelect;
+      Vue.set(c, 'canSelect', isRanged ? selected : true);
+    });
+    this.updatePreviewAxbCommands();
+  }
+
+  private selectCommandWithSelectMode(command: api.CharacterCommand, value: boolean, isPreview: boolean = false) {
     if (!command.canSelect) {
       return;
     }
@@ -170,15 +230,11 @@ export default class CommandInputer {
       isSelected = value;
     } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
       isSelected = isSelected || value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_and) {
-      isSelected = isSelected && value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_xor) {
-      isSelected = isSelected !== value;
     } else {
       NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
     }
 
-    Vue.set(command, 'isSelected', isSelected);
+    Vue.set(command, isPreview ? 'isPreview' : 'isSelected', isSelected);
   }
 
   public clearAllCommandSelections() {

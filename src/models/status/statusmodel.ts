@@ -218,6 +218,18 @@ export default class StatusModel {
       .any((r) => r.status === api.Reinforcement.statusActive);
   }
 
+  public get characterTownRiceTrend(): number {
+    return api.Town.getRiceTrend(this.characterTown);
+  }
+
+  public characterTownRiceToMoneyPrice(assets: number = def.RICE_BUY_MAX): number {
+    return api.Town.getRiceToMoneyPrice(this.characterTown, assets);
+  }
+
+  public characterTownMoneyToRicePrice(assets: number = def.RICE_BUY_MAX): number {
+    return api.Town.getMoneyToRicePrice(this.characterTown, assets);
+  }
+
   // #endregion
 
   // #region Streaming
@@ -665,8 +677,13 @@ export default class StatusModel {
   private onCountryMessageReceived(message: api.CountryMessage) {
     if (message.countryId === this.character.countryId) {
       if (message.type === api.CountryMessage.typeCommanders) {
+        // 指令
         this.countryCommandersMessage = message;
+        if (this.store.hasInitialized && message.writerCharacterName !== this.store.character.name) {
+          NotificationService.countryCommandersMessageUpdated.notify();
+        }
       } else if (message.type === api.CountryMessage.typeSolicitation) {
+        // 新規登録者勧誘文
         this.countrySolicitationMessage = message;
       }
     }
@@ -776,6 +793,12 @@ export default class StatusModel {
   }
 
   public get canCountrySetting(): boolean {
+    // 自分が国の設定を行う権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 3));
+  }
+
+  public get canCountrySettingExceptForCommands(): boolean {
     // 自分が国の設定を行う権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
