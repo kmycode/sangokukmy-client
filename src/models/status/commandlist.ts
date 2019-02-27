@@ -22,6 +22,11 @@ export default class CommandList {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }
 
+  public reset() {
+    this.isInitialized = false;
+    this.preInitialize(new api.GameDateTime(0, 1));
+  }
+
   public preInitialize(gamedate: api.GameDateTime) {
     // 武将データ入手前のコマンド一覧初期化
     this.inputer.commands = [];

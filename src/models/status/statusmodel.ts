@@ -289,10 +289,16 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryMessage>(
       api.CountryMessage.typeId,
       (obj) => this.onCountryMessageReceived(obj));
+    ApiStreaming.status.onBeforeReconnect = () => {
+      this.store.character.id = -1;
+      this.store.hasInitialized = false;
+      this.commands.reset();
+    };
     ApiStreaming.status.start();
   }
 
   public onDestroy() {
+    ApiStreaming.status.onBeforeReconnect = undefined;
     ApiStreaming.status.stop();
     this.commands.dispose();
     this.onlines.dispose();

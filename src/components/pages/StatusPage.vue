@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid loading-container">
     <div class="row">
       <!-- 左カラム -->
       <div class="col-lg-7 col-md-6">
@@ -524,6 +524,7 @@
         </div>
       </div>
     </div>
+    <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
 </template>
 

@@ -125,6 +125,7 @@ body {
 .loading-container {
   position: relative;
   .loading {
+    z-index: 100;
     position: absolute;
     overflow: hidden;
     top: 0;
