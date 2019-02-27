@@ -325,6 +325,7 @@ export class Character implements IIdentitiedEntity {
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
+                     public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
 }

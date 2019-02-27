@@ -483,6 +483,13 @@ export default class StatusModel {
     this.isUpdatingTownCharacters = true;
     api.Api.getAllCharactersAtTown(this.town.id)
       .then((characters) => {
+        characters.forEach((c) => {
+          if (c.commands) {
+            c.commands.forEach((cc) => {
+              this.commands.inputer.updateCommandName(cc);
+            });
+          }
+        });
         this.townCharacters = characters;
       })
       .catch(() => {
@@ -641,6 +648,13 @@ export default class StatusModel {
     this.isUpdatingCountryCharacters = true;
     api.Api.getAllCharactersBelongsCountry(this.country.id)
       .then((characters) => {
+        characters.forEach((c) => {
+          if (c.commands) {
+            c.commands.forEach((cc) => {
+              this.commands.inputer.updateCommandName(cc);
+            });
+          }
+        });
         this.countryCharacters = characters;
       })
       .catch(() => {
