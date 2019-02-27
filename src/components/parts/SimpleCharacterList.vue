@@ -275,6 +275,7 @@ export default class SimpleCharacterList extends Vue {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
+        font-size: 0.9em;
 
         .command {
           .name-no-input {
