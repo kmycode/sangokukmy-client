@@ -605,7 +605,7 @@ export default class StatusPage extends Vue {
   public promotionMessage: string = '';
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
-  public payRiceOrMoney: number = 0;
+  public payRiceOrMoney: number = def.RICE_BUY_MAX;
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -630,7 +630,6 @@ export default class StatusPage extends Vue {
       this.isOpenPromotionDialog = true;
     } else if (event === 'rice') {
       this.selectedRiceStatus = 0;
-      this.payRiceOrMoney = 0;
       this.isOpenRiceDialog = true;
     }
   }
