@@ -12,7 +12,9 @@ export default class ThreadBbs {
   }
 
   public set isOpen(value: boolean) {
-    this.isUnread = false;
+    if (value) {
+      this.isUnread = false;
+    }
     this.isOpenPrivate = value;
   }
 
