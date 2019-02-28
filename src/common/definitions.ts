@@ -272,6 +272,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(20, '帰還', '#800'),
   new EventType(21, '帰順', '#008'),
   new EventType(22, '仕官', '#008'),
+  new EventType(23, '異民族', '#088'),
 ];
 
 /**
