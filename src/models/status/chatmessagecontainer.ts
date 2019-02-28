@@ -45,7 +45,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
 
   public set isOpen(value: boolean) {
     this.isUnread = false;
-    this.isOpen = value;
+    this.isOpenPrivate = value;
   }
 
   public constructor(private post: (message: string, sendTo?: number) => Promise<any>,

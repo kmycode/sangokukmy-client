@@ -329,6 +329,11 @@ export default class StatusModel {
       // 初期データを送信し終えた
       this.store.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
+      this.countryChat.isUnread =
+        this.privateChat.isUnread =
+        this.globalChat.isUnread =
+        this.promotions.isUnread =
+        this.countryThreadBbs.isUnread = false;
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
