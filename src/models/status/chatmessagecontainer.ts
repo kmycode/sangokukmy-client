@@ -44,7 +44,9 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   }
 
   public set isOpen(value: boolean) {
-    this.isUnread = false;
+    if (value) {
+      this.isUnread = false;
+    }
     this.isOpenPrivate = value;
   }
 
