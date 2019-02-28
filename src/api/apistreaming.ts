@@ -22,6 +22,11 @@ export default class ApiStreaming {
   public static status = new ApiStreaming(def.API_HOST + 'streaming/status', 'GET', true);
 
   /**
+   * エラー発生時の再接続の前に呼び出される
+   */
+  public onBeforeReconnect?: () => void;
+
+  /**
    * 前回接続でエラーが発生していたか
    */
   private isLastError: boolean = false;
@@ -178,6 +183,9 @@ export default class ApiStreaming {
     // 自分で停止したわけでなければ、再接続を試みる
     if (this.isStreaming) {
       this.stop();
+      if (this.onBeforeReconnect) {
+        this.onBeforeReconnect();
+      }
       setTimeout(() => {
         if (!this.isStreaming) {
           this.start();

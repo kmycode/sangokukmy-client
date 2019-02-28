@@ -2,4 +2,15 @@
 
 .current-diplomacy {
   background: #dedede;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+.editor {
+  .form-check {
+    padding-left: 0;
+  }
+  .content-section {
+    margin-top: 8px;
+  }
 }

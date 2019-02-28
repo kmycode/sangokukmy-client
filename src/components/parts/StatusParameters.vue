@@ -1,6 +1,6 @@
 <template>
   <div class="parameters">
-    <div v-for="param in parameters" :key="param.name" :class="'item' + (param.type === 4 ? ' item-character-icon' : param.type === 5 ? ' item-twin' : '')">
+    <div v-for="param in parameters" :key="param.id" :class="'item' + (param.type === 4 ? ' item-character-icon' : param.type === 5 ? ' item-twin' : '')">
       <div v-if="param.type === 1" class="item-container">
         <div class="bar-background"></div>
         <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>

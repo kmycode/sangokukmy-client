@@ -59,7 +59,12 @@
         </div>
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
-        <span class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</span>
+        <div class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</div>
+        <div v-if="chara.commands && chara.commands.length > 0" class="commands">
+          <div class="command"
+               v-for="command in chara.commands"
+               :key="getCommandUniqueKey(command)"><span v-if="command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+        </div>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
     </div>
@@ -145,6 +150,10 @@ export default class SimpleCharacterList extends Vue {
     const dt = api.DateTime.toDate(time);
     dt.setSeconds(dt.getSeconds() + def.UPDATE_TIME);
     return api.DateTime.fromDate(dt);
+  }
+
+  private getCommandUniqueKey(cmd: api.CharacterCommand): number {
+    return api.GameDateTime.toNumber(cmd.gameDate);
   }
 
   private togglePostsPopup(chara: api.Character) {
@@ -249,14 +258,45 @@ export default class SimpleCharacterList extends Vue {
 
     .item-commands {
       margin: 4px 4px 0;
+      display: flex;
 
       .next-update {
         background-color: rgba(0, 0, 0, 0.4);
         color: white;
         padding: 2px;
+        align-self: center;
       }
       .num {
         font-weight: bold;
+      }
+
+      .commands {
+        margin-left: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        font-size: 0.9em;
+
+        .command {
+          .name-no-input {
+            color: #999;
+          }
+          .next {
+            color: #aaa;
+            margin: 0 8px;
+          }
+          &:first-child {
+            .name {
+              font-size: 1.2em;
+              font-weight: bold;
+            }
+          }
+          &:last-child {
+            .next {
+              display: none;
+            }
+          }
+        }
       }
     }
   }

@@ -289,10 +289,16 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryMessage>(
       api.CountryMessage.typeId,
       (obj) => this.onCountryMessageReceived(obj));
+    ApiStreaming.status.onBeforeReconnect = () => {
+      this.store.character.id = -1;
+      this.store.hasInitialized = false;
+      this.commands.reset();
+    };
     ApiStreaming.status.start();
   }
 
   public onDestroy() {
+    ApiStreaming.status.onBeforeReconnect = undefined;
     ApiStreaming.status.stop();
     this.commands.dispose();
     this.onlines.dispose();
@@ -323,6 +329,11 @@ export default class StatusModel {
       // 初期データを送信し終えた
       this.store.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
+      this.countryChat.isUnread =
+        this.privateChat.isUnread =
+        this.globalChat.isUnread =
+        this.promotions.isUnread =
+        this.countryThreadBbs.isUnread = false;
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -477,6 +488,13 @@ export default class StatusModel {
     this.isUpdatingTownCharacters = true;
     api.Api.getAllCharactersAtTown(this.town.id)
       .then((characters) => {
+        characters.forEach((c) => {
+          if (c.commands) {
+            c.commands.forEach((cc) => {
+              this.commands.inputer.updateCommandName(cc);
+            });
+          }
+        });
         this.townCharacters = characters;
       })
       .catch(() => {
@@ -592,20 +610,20 @@ export default class StatusModel {
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
     }
     if (country.alliances) {
-      country.alliances.forEach((ca, index) => {
+      country.alliances.forEach((ca) => {
         const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
         if (status) {
           const targetCountry = ca.requestedCountryId === country.id ? ca.insistedCountry : ca.requestedCountry;
-          ps.push(new TextStatusParameter(index + '-' + status.name, targetCountry.name));
+          ps.push(new TextStatusParameter(status.name, targetCountry.name));
         }
       });
     }
     if (country.wars) {
-      country.wars.forEach((cw, index) => {
+      country.wars.forEach((cw) => {
         const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
         if (status) {
           const targetCountry = cw.requestedCountryId === country.id ? cw.insistedCountry : cw.requestedCountry;
-          ps.push(new TextStatusParameter(index + '-' + status.name, targetCountry.name));
+          ps.push(new TextStatusParameter(status.name, targetCountry.name));
         }
       });
     }
@@ -635,6 +653,13 @@ export default class StatusModel {
     this.isUpdatingCountryCharacters = true;
     api.Api.getAllCharactersBelongsCountry(this.country.id)
       .then((characters) => {
+        characters.forEach((c) => {
+          if (c.commands) {
+            c.commands.forEach((cc) => {
+              this.commands.inputer.updateCommandName(cc);
+            });
+          }
+        });
         this.countryCharacters = characters;
       })
       .catch(() => {
@@ -675,17 +700,16 @@ export default class StatusModel {
   // #region CountryMessage
 
   private onCountryMessageReceived(message: api.CountryMessage) {
-    if (message.countryId === this.character.countryId) {
-      if (message.type === api.CountryMessage.typeCommanders) {
-        // 指令
-        this.countryCommandersMessage = message;
-        if (this.store.hasInitialized && message.writerCharacterName !== this.store.character.name) {
-          NotificationService.countryCommandersMessageUpdated.notify();
-        }
-      } else if (message.type === api.CountryMessage.typeSolicitation) {
-        // 新規登録者勧誘文
-        this.countrySolicitationMessage = message;
+    if (message.type === api.CountryMessage.typeCommanders) {
+      // 指令
+      this.countryCommandersMessage = message;
+      if (this.store.hasInitialized && message.writerCharacterName !== this.store.character.name) {
+        NotificationService.countryCommandersMessageUpdated.notify();
       }
+    } else if (message.type === api.CountryMessage.typeSolicitation &&
+               message.countryId === this.store.character.countryId) {
+      // 新規登録者勧誘文
+      this.countrySolicitationMessage = message;
     }
   }
 

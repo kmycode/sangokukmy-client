@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid">
+  <div class="container-fluid loading-container">
     <div class="row">
       <!-- 左カラム -->
       <div class="col-lg-7 col-md-6">
@@ -122,14 +122,14 @@
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#">コマンド</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#">手紙</a></li>
-            <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#">会議室</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
-                <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span>登用</span>
+                <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></span>
                 <span v-show="selectedActionTabSubPanel === 1">国設定</span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false">登用</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
                 <a  v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
                 <div v-if="false" class="dropdown-divider"></div>
               </div>
@@ -146,9 +146,9 @@
         <div v-show="selectedActionTab === 1" class="right-side-content content-chat" style="display:flex;flex-direction:column">
           <!-- 手紙の種類選択のタブ -->
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#">自国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#">個人</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#">全国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#"><span class="tab-text">自国<span class="tab-notify" v-show="model.countryChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#"><span class="tab-text">個人<span class="tab-notify" v-show="model.privateChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#"><span class="tab-text">全国<span class="tab-notify" v-show="model.globalChat.isUnread"></span></span></a></li>
             <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
@@ -524,6 +524,7 @@
         </div>
       </div>
     </div>
+    <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
 </template>
 
@@ -604,7 +605,7 @@ export default class StatusPage extends Vue {
   public promotionMessage: string = '';
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
-  public payRiceOrMoney: number = 0;
+  public payRiceOrMoney: number = def.RICE_BUY_MAX;
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -629,7 +630,6 @@ export default class StatusPage extends Vue {
       this.isOpenPromotionDialog = true;
     } else if (event === 'rice') {
       this.selectedRiceStatus = 0;
-      this.payRiceOrMoney = 0;
       this.isOpenRiceDialog = true;
     }
   }
@@ -661,6 +661,29 @@ export default class StatusPage extends Vue {
       }
     }
     return undefined;
+  }
+
+  @Watch('selectedChatCategory')
+  @Watch('selectedActionTab')
+  @Watch('selectedActionTabSubPanel')
+  public onChatTabChanged() {
+    this.model.countryChat.isOpen =
+      this.model.privateChat.isOpen =
+      this.model.globalChat.isOpen =
+      this.model.promotions.isOpen =
+      this.model.countryThreadBbs.isOpen = false;
+    if (this.selectedActionTab === 1) {
+      const obj = this.chatObj;
+      if (obj) {
+        obj.isOpen = true;
+      }
+    } else if (this.selectedActionTab === 3) {
+      if (this.selectedActionTabSubPanel === 0) {
+        this.model.promotions.isOpen = true;
+      }
+    } else if (this.selectedActionTab === 2) {
+      this.model.countryThreadBbs.isOpen = true;
+    }
   }
 
   public mounted() {
@@ -869,6 +892,20 @@ ul.nav {
       background-color: $global-table-border;
       color: $global-table-background;
     }
+  }
+}
+
+// 右側通知のバッジ
+.tab-text {
+  position: relative;
+  .tab-notify {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 4px);
+    border-radius: 50%;
+    width: 6px;
+    height: 6px;
+    background: red;
   }
 }
 

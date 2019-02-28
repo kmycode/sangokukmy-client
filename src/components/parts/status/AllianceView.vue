@@ -1,12 +1,17 @@
 <template>
   <div class="diplomacy-view loading-container">
-    {{ status.name }}
-    <div v-if="canEdit">
-      <button v-show="status.id ===   1" class="btn btn-secondary" @click="newData.status = 0" href="#">撤回</button>
-      <button v-show="status.id === 101" class="btn btn-secondary" @click="newData.status = 2" href="#">拒否</button>
-      <button v-show="status.id === 101" class="btn btn-primary"   @click="newData.status = 3" href="#">承認</button>
-      <button v-show="status.id ===   0 || status.id === 2 || status.id === 5" class="btn btn-secondary" @click="newData.status = 1" href="#">同盟申入</button>
-      <button v-show="status.id ===   3" class="btn btn-secondary" @click="newData.status = 4" href="#">破棄</button>
+    <div :class="'current-status alert alert-' + (status.id === 101 ? 'primary' : status.id === 3 ? 'success' : status.id === 4 ? 'warning' : 'info')">{{ status.name }}</div>
+    <div v-if="diplomacy !== undefined && status.id !== 0 && status.id !== 2 && status.id !== 5" class="content-section current-diplomacy">
+      <h3>同盟条件</h3>
+      破棄猶予：{{ diplomacy.breakingDelay }}ヶ月<br>
+      公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}
+    </div>
+    <div v-if="canEdit" class="editor">
+      <button v-show="status.id ===   1" :class="{ 'btn': true, 'btn-secondary': newData.status === 0, 'btn-outline-secondary': newData.status !== 0 }" @click="newData.status = 0" href="#">撤回</button>
+      <button v-show="status.id === 101" :class="{ 'btn': true, 'btn-secondary': newData.status === 2, 'btn-outline-secondary': newData.status !== 2 }" @click="newData.status = 2" href="#">拒否</button>
+      <button v-show="status.id === 101" :class="{ 'btn': true, 'btn-secondary': newData.status === 3, 'btn-outline-secondary': newData.status !== 3 }" @click="newData.status = 3" href="#">承認</button>
+      <button v-show="status.id ===   0 || status.id === 2 || status.id === 5" :class="{ 'btn': true, 'btn-secondary': newData.status === 1, 'btn-outline-secondary': newData.status !== 1 }" @click="newData.status = 1" href="#">同盟申入</button>
+      <button v-show="status.id ===   3" :class="{ 'btn': true, 'btn-secondary': newData.status === 4, 'btn-outline-secondary': newData.status !== 4 }" @click="newData.status = 4" href="#">破棄</button>
       <div v-show="newData.status === 0" class="content-section">
         <h3>同盟申入撤回</h3>
       </div>
@@ -26,17 +31,9 @@
           <input type="number" max="48" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
         </div>
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="allianceOption1" v-model="newData.isPublic">
-          <label class="form-check-label" for="allianceOption1">
-            同盟関係を公表する
-          </label>
+          <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟関係を公表する</button>
         </div>
       </div>
-    </div>
-    <div v-if="diplomacy !== undefined && status.id !== 0 && status.id !== 2 && status.id !== 5" class="content-section current-diplomacy">
-      <h3>同盟条件</h3>
-      破棄猶予：{{ diplomacy.breakingDelay }}ヶ月<br>
-      公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}
     </div>
     <div class="loading" v-show="isSending"><div class="loading-icon"></div></div>
   </div>

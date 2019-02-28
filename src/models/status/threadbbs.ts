@@ -4,6 +4,17 @@ import Enumerable from 'linq';
 
 export default class ThreadBbs {
   public threads: api.ThreadBbsItem[] = [];
+  public isUnread: boolean = false;
+  private isOpenPrivate: boolean = false;
+
+  public get isOpen(): boolean {
+    return this.isOpenPrivate;
+  }
+
+  public set isOpen(value: boolean) {
+    this.isUnread = false;
+    this.isOpenPrivate = value;
+  }
 
   public onItemReceived(item: api.ThreadBbsItem) {
 
@@ -30,6 +41,9 @@ export default class ThreadBbs {
             thread.children.unshift(item);
           }
         }
+      }
+      if (!this.isOpen) {
+        this.isUnread = true;
       }
     } else {
       // 削除

@@ -1,7 +1,11 @@
 <template>
   <div class="diplomacy-view loading-container">
-    {{ status.name }}
-    <div v-if="canEdit">
+    <div :class="'current-status alert alert-' + (status.id === 4 ? 'warning' : status.id === 1 ? 'danger' : 'info')">{{ status.name }}</div>
+    <div v-if="diplomacy !== undefined && status.id !== 0" class="content-section current-diplomacy">
+      <h3>戦争</h3>
+      {{ diplomacy.startGameDate | gamedate }} 開戦
+    </div>
+    <div v-if="canEdit" class="editor">
       <button v-show="status.id ===   0 || status.id === 3" class="btn btn-secondary" @click="newData.status = 4" href="#">宣戦布告</button>
       <!--
       <button v-show="status.id ===   4 || status.id === 1" class="btn btn-secondary" @click="newData.status = 2" href="#">停戦申入</button>
@@ -13,10 +17,6 @@
         <h3>宣戦布告</h3>
         <GameDateTimePicker v-model="newData.startGameDate"/>
       </div>
-    </div>
-    <div v-if="diplomacy !== undefined && status.id !== 0" class="content-section current-diplomacy">
-      <h3>戦争</h3>
-      {{ diplomacy.startGameDate | gamedate }} 開戦
     </div>
     <div class="loading" v-show="isSending"><div class="loading-icon"></div></div>
   </div>
