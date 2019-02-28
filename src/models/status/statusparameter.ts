@@ -30,9 +30,16 @@ export enum StatusParameterType {
 }
 
 export abstract class StatusParameter {
+  private static idCount: number = 1;
+
+  public id: number = 0;
+
   public abstract get type(): StatusParameterType;
 
-  public constructor(public readonly name: string) {}
+  public constructor(public readonly name: string) {
+    this.id = StatusParameter.idCount;
+    StatusParameter.idCount++;
+  }
 }
 
 export class RangedStatusParameter extends StatusParameter {
