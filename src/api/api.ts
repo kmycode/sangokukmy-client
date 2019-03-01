@@ -376,6 +376,7 @@ export class Country {
                      public posts: CountryPost[] = [],
                      public alliances: CountryAlliance[] = [],
                      public wars: CountryWar[] = [],
+                     public townWars: TownWar[] = [],
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public lastMoneyIncomes?: number,
@@ -443,6 +444,18 @@ export class CountryWar extends CountryDipromacy {
   public requestedStopCountryId: number = 0;
   public requestedStopCountry: Country = new Country();
   public startGameDate: GameDateTime = new GameDateTime();
+}
+
+export class TownWar extends CountryDipromacy {
+  public static readonly typeId = 30;
+
+  public static readonly statusInReady = 1;
+  public static readonly statusAvailable = 2;
+  public static readonly statusTerminated = 3;
+
+  public gameDate: GameDateTime = new GameDateTime();
+  public townId: number = 0;
+  public town: Town = new Town();
 }
 
 export abstract class TownBase implements IIdentitiedEntity {
@@ -994,6 +1007,15 @@ export class Api {
     try {
       await axios.put
         (def.API_HOST + 'country/' + war.insistedCountryId + '/war', war, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setTownWar(townId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'town/' + townId + '/war', {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

@@ -66,6 +66,7 @@ export default class StatusModel {
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
   public isSendingWar: boolean = false;
+  public isSendingTownWar: boolean = false;
   public isLoadingMoreMapLogs: boolean = false;
   public hasLoadAllMapLogs: boolean = false;
   public isLoadingMoreCharacterLogs: boolean = false;
@@ -140,6 +141,27 @@ export default class StatusModel {
   public get characterCountryColor(): number {
     // 自分の所属する国の国色
     return this.getCountry(this.character.countryId).colorId;
+  }
+
+  public get characterCountryLastTownWar(): api.TownWar | undefined {
+    // 自国最後の攻略
+    return Enumerable.from(this.getCountry(this.character.countryId).townWars)
+      .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
+      .firstOrDefault();
+  }
+
+  public get characterCountryTownWarStatus(): def.TownWarStatus {
+    const last = Enumerable.from(this.getCountry(this.character.countryId).townWars)
+      .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
+      .firstOrDefault();
+    if (last) {
+      const status = Enumerable.from(def.TOWN_WAR_STATUSES)
+        .firstOrDefault((s) => s.id === last.status);
+      if (status) {
+        return status;
+      }
+    }
+    return def.TOWN_WAR_STATUSES[0];
   }
 
   public get countryAlliance(): api.CountryAlliance | undefined {
@@ -256,6 +278,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryWar>(
       api.CountryWar.typeId,
       (obj) => this.updateCountryWar(obj));
+    ApiStreaming.status.on<api.TownWar>(
+      api.TownWar.typeId,
+      (obj) => this.updateTownWar(obj));
     ApiStreaming.status.on<api.CountryPost>(
       api.CountryPost.typeId,
       (obj) => this.updateCountryPost(obj));
@@ -559,6 +584,9 @@ export default class StatusModel {
       }
       if (!country.wars || country.wars.length === 0) {
         country.wars = old.wars;
+      }
+      if (!country.townWars || country.townWars.length === 0) {
+        country.townWars = old.townWars;
       }
     }
 
@@ -878,6 +906,27 @@ export default class StatusModel {
     }
   }
 
+  private updateTownWar(war: api.TownWar) {
+    war.town = this.getTown(war.townId);
+    this.updateCountryDiplomacies(war, (c) => c.townWars, (c, val) => c.townWars = val);
+
+    // 自国に関係することなら通知する
+    if (this.store.hasInitialized &&
+      war.status === api.TownWar.statusInReady &&
+      (war.requestedCountryId === this.character.countryId ||
+       war.insistedCountryId === this.character.countryId)) {
+      if (this.character.countryId === war.requestedCountryId) {
+        NotificationService.townWarSentByMyCountry.notifyWithParameter(
+          api.GameDateTime.toFormatedString(war.gameDate), war.town.name);
+      } else if (this.character.countryId === war.insistedCountryId) {
+        NotificationService.townWarSentByOtherCountry.notifyWithParameter(
+          api.GameDateTime.toFormatedString(war.gameDate),
+          war.requestedCountry.name,
+          war.town.name);
+      }
+    }
+  }
+
   private updateCountryDiplomacies<T extends api.CountryDipromacy>(
        diplomacy: T,
        itemsProperty: (country: api.Country) => T[],
@@ -901,6 +950,7 @@ export default class StatusModel {
 
       // 保存
       itemsSetter(country, newItems);
+      console.dir(country);
     });
   }
 
@@ -978,6 +1028,22 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isSendingWar = false;
+      });
+  }
+
+  public setTownWar() {
+    this.isSendingTownWar = true;
+    api.Api.setTownWar(this.town.id)
+      .then(() => {
+        NotificationService.townWarSent.notifyWithParameter(
+          api.GameDateTime.toFormatedString(api.GameDateTime.nextMonth(this.gameDate)),
+          this.town.name);
+      })
+      .catch(() => {
+        NotificationService.townWarFailed.notifyWithParameter(this.town.name);
+      })
+      .finally(() => {
+        this.isSendingTownWar = false;
       });
   }
 
