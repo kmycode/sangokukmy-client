@@ -65,6 +65,7 @@
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備（当時）</button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
+            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
           </div>
         </div>
         <!-- 武将情報 -->
@@ -436,6 +437,30 @@
           </div>
         </div>
       </div>
+      <!-- 攻略 -->
+      <div v-show="isOpenTownWarDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.townCountryColor">攻略：{{ model.town.name }}</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <TownWarView :current="model.gameDate"
+                       :lastWar="model.characterCountryLastTownWar"
+                       :status="model.characterCountryTownWarStatus"
+                       :town="model.town"
+                       :isSending="model.isSendingTownWar"
+                       :canEdit="model.canDiplomacy"
+                       :isShow="isOpenTownWarDialog"
+                       @can-apply="canTownWar = $event"
+                       style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" v-if="model.canDiplomacy" @click="isOpenTownWarDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-if="model.canDiplomacy" v-show="canTownWar" @click="model.setTownWar(); isOpenTownWarDialog = false">承認</button>
+            <button class="btn btn-light" v-if="!model.canDiplomacy" @click="isOpenTownWarDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
       <!-- 部隊 -->
       <div v-show="isOpenUnitsDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} の部隊</h2>
@@ -543,6 +568,7 @@ import ThreadBbs from '@/components/parts/ThreadBbs.vue';
 import CommandListView from '@/components/parts/status/CommandList.vue';
 import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
+import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
@@ -568,6 +594,7 @@ import EventObject from '@/models/common/EventObject';
     CommandListView,
     AllianceView,
     WarView,
+    TownWarView,
     UnitListView,
     KmyChatTagText,
   },
@@ -595,6 +622,7 @@ export default class StatusPage extends Vue {
   public isOpenPromotionDialog: boolean = false;
   public isOpenCommandersDialog: boolean = false;
   public isOpenRiceDialog: boolean = false;
+  public isOpenTownWarDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -606,6 +634,7 @@ export default class StatusPage extends Vue {
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
   public payRiceOrMoney: number = def.RICE_BUY_MAX;
+  public canTownWar: boolean = false;
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -615,7 +644,7 @@ export default class StatusPage extends Vue {
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
-      || this.isOpenCommandersDialog || this.isOpenRiceDialog;
+      || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -639,7 +668,7 @@ export default class StatusPage extends Vue {
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
-      this.isOpenCommandersDialog = this.isOpenRiceDialog = false;
+      this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

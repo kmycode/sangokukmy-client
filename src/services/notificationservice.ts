@@ -516,6 +516,22 @@ export default class NotificationService {
     '勧誘文更新失敗',
     '新規登録者勧誘文更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly townWarSent = new NotificationServiceItem(
+    '攻略布告',
+    '{0}、 {1} への攻略を布告しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townWarFailed = new NotificationServiceItem(
+    '攻略布告失敗',
+    '{0} への攻略布告に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townWarSentByMyCountry = new NotificationServiceItem(
+    '攻略布告',
+    '{0}、 {1} へ攻略します',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly townWarSentByOtherCountry = new NotificationServiceItem(
+    '攻略布告',
+    '{0}、 {1} は {2} へ攻略します',
+    NotificationServiceItemDefaultType.warning);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

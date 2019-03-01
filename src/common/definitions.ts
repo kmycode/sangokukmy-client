@@ -273,6 +273,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(21, '帰順', '#008'),
   new EventType(22, '仕官', '#008'),
   new EventType(23, '異民族', '#088'),
+  new EventType(24, '農民反乱', '#088'),
+  new EventType(25, '攻略', '#080'),
 ];
 
 /**
@@ -327,4 +329,18 @@ export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
   new CountryWarStatus(2, '停戦協議中'),
   new CountryWarStatus(3, '停戦'),
   new CountryWarStatus(4, '開戦前'),
+];
+
+/**
+ * 攻略状態
+ */
+export class TownWarStatus {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+export const TOWN_WAR_STATUSES: TownWarStatus[] = [
+  new TownWarStatus(0, '戦争関係なし'),
+  new TownWarStatus(1, '開戦前'),
+  new TownWarStatus(2, '攻略中'),
+  new TownWarStatus(3, '交戦終了'),
 ];
