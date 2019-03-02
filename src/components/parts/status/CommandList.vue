@@ -11,11 +11,11 @@
     <div class="loading-container">
       <!-- 内政コマンド -->
       <div v-show="selectedCommandCategory === 0" class="commands">
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(1)">農業開発</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(2)">商業発展</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(3)">技術開発</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(4)">城壁強化</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(5)">守兵増強</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(1)">農業<span class="redundant-text">開発</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(2)">商業<span class="redundant-text">発展</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(3)">技術<span class="redundant-text">開発</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(4)">城壁<span class="redundant-text">強化</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(5)">守兵<span class="redundant-text">増強</span></button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(30)">緊急米施し</button>
       </div>
@@ -28,8 +28,8 @@
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier')">徴兵</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)">兵士訓練</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)">城の守備</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
@@ -40,7 +40,7 @@
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')">能力強化</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')"><span class="redundant-text">能力</span>強化</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
         <!-- <button type="button" class="btn btn-light">武器</button>
@@ -150,6 +150,7 @@ export default class CommandListView extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/bootstrap-helper.scss';
 
 $color-navigation-commands: #e0e0e0;
 
@@ -167,6 +168,11 @@ $color-navigation-commands: #e0e0e0;
     flex-flow: row wrap;
     button {
       margin: 4px 4px 0 0;
+      @include media-query-lower(sm) {
+        .redundant-text {
+          display: none;
+        }
+      }
       &.btn-light {
         background-color: #e7e7e7;
         &:hover {
