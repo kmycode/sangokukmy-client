@@ -490,7 +490,12 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public wallguardMax: number = 0,
                      public security: number = 0,
                      public ricePrice: number = 0,
-                     public buildings: TownBuilding[] = []) {}
+                     public townBuilding: number = 0,
+                     public townBuildingValue: number = 0,
+                     public countryBuilding: number = 0,
+                     public countryBuildingValue: number = 0,
+                     public countryLaboratory: number = 0,
+                     public countryLaboratoryValue: number = 0) {}
 }
 
 /**
@@ -525,15 +530,6 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 
   public characters: Character[] = [];
   public defenders: Character[] = [];
-}
-
-/**
- * 施設
- */
-export class TownBuilding {
-  constructor(public type: number,
-              public value: number,
-              public valueMax: number) {}
 }
 
 /**
