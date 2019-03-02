@@ -473,6 +473,25 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
+
+      const townBuilding = Enumerable
+        .from(def.TOWN_BUILDINGS)
+        .firstOrDefault((b) => b.id === town.townBuilding);
+      const countryBuilding = Enumerable
+        .from(def.COUNTRY_BUILDINGS)
+        .firstOrDefault((b) => b.id === town.countryBuilding);
+      const countryLaboratory = Enumerable
+        .from(def.COUNTRY_LABORATORIES)
+        .firstOrDefault((b) => b.id === town.countryLaboratory);
+      if (townBuilding && townBuilding.id) {
+        ps.push(new RangedStatusParameter(townBuilding.name, town.townBuildingValue, 2000));
+      }
+      if (countryBuilding && countryBuilding.id) {
+        ps.push(new RangedStatusParameter(countryBuilding.name, town.countryBuildingValue, 2000));
+      }
+      if (countryLaboratory && countryLaboratory.id) {
+        ps.push(new RangedStatusParameter(countryLaboratory.name, town.countryLaboratoryValue, 2000));
+      }
     }
     if (town.id === this.character.townId || town.countryId === this.character.countryId) {
       const countParam = new NoRangeDelayStatusParameter('滞在');
