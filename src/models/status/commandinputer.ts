@@ -87,24 +87,6 @@ export default class CommandInputer {
             c.isSelected = false;
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
-
-          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
-          if (commandType === 19) {
-            // 米売買
-            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
-              .then((commands) => {
-                Enumerable
-                  .from(commands)
-                  .join(selectCommands,
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (n, o) => { return { oldCommand: o, newCommand: n, }; })
-                  .forEach((data) => {
-                    data.oldCommand.parameters = data.newCommand.parameters;
-                    this.updateCommandName(data.oldCommand);
-                  });
-              });
-          }
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
