@@ -755,6 +755,7 @@ export class ThreadBbsItem implements IIdentitiedEntity {
   public static readonly typeId = 26;
 
   public static readonly typeCountryBbs = 1;
+  public static readonly typeGlobalBbs = 2;
 
   public constructor(public id: number,
                      public type: number,
@@ -1197,6 +1198,26 @@ export class Api {
   public static async removeCountryBbsItem(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'bbs/country/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async writeGlobalBbsItem(text: string, parentId: number = 0, title: string = ''): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'bbs/global', {
+        text,
+        parentId,
+        title,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async removeGlobalBbsItem(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'bbs/global/' + id, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

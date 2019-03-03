@@ -304,7 +304,7 @@ export default class StatusModel {
       (obj) => this.onReceiveChatMessage(obj));
     ApiStreaming.status.on<api.ThreadBbsItem>(
       api.ThreadBbsItem.typeId,
-      (obj) => this.countryThreadBbs.onItemReceived(obj));
+      (obj) => this.onBbsItemReceived(obj));
     ApiStreaming.status.on<api.CharacterOnline>(
       api.CharacterOnline.typeId,
       (obj) => this.onlines.onOnlineDataReceived(obj));
@@ -354,11 +354,13 @@ export default class StatusModel {
       // 初期データを送信し終えた
       this.store.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
+      this.globalThreadBbs.sortThreads();
       this.countryChat.isUnread =
         this.privateChat.isUnread =
         this.globalChat.isUnread =
         this.promotions.isUnread =
-        this.countryThreadBbs.isUnread = false;
+        this.countryThreadBbs.isUnread =
+        this.globalThreadBbs.isUnread = false;
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -1403,6 +1405,15 @@ export default class StatusModel {
   // #region ThreadBbs
 
   public countryThreadBbs = new ThreadBbs();
+  public globalThreadBbs = new ThreadBbs();
+
+  private onBbsItemReceived(item: api.ThreadBbsItem) {
+    if (item.type === api.ThreadBbsItem.typeCountryBbs) {
+      this.countryThreadBbs.onItemReceived(item);
+    } else if (item.type === api.ThreadBbsItem.typeGlobalBbs) {
+      this.globalThreadBbs.onItemReceived(item);
+    }
+  }
 
   // #endregion
 
