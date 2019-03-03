@@ -61,7 +61,7 @@
       <button type="button" class="btn btn-light" @click="isOpenAxb = !isOpenAxb">ax+b</button>
     </div>
     <div v-show="isOpenAxb" class="command-input-axb">
-      <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0" :max="axbA - 1">
+      <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0">
       <button type="button" class="btn btn-light btn-sm" @click="list.inputer.selectAxbCommands(axbA, axbB)">選択</button>
     </div>
     <!-- 選択アルゴリズム -->
