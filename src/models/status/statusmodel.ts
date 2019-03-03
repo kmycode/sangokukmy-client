@@ -14,6 +14,7 @@ import { StatusParameter,
   CharacterIconStatusParameter,
   TwinNoRangeAndRangedStatusParameter,
   NoRangeDelayStatusParameter,
+  TwinTextAndRangedStatusParameter,
 } from '@/models/status/statusparameter';
 import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
@@ -486,7 +487,8 @@ export default class StatusModel {
         .from(def.COUNTRY_LABORATORIES)
         .firstOrDefault((b) => b.id === town.countryLaboratory);
       if (townBuilding && townBuilding.id) {
-        ps.push(new RangedStatusParameter(townBuilding.name, town.townBuildingValue, 2000));
+        ps.push(new TwinTextAndRangedStatusParameter(
+          '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
       }
       if (countryBuilding && countryBuilding.id) {
         ps.push(new RangedStatusParameter(countryBuilding.name, town.countryBuildingValue, 2000));

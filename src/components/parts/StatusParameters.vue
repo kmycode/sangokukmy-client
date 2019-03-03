@@ -1,6 +1,6 @@
 <template>
   <div class="parameters">
-    <div v-for="param in parameters" :key="param.id" :class="'item' + (param.type === 4 ? ' item-character-icon' : param.type === 5 ? ' item-twin' : '')">
+    <div v-for="param in parameters" :key="param.id" :class="'item' + (param.type === 4 ? ' item-character-icon' : (param.type === 5 || param.type === 7) ? ' item-twin' : '')">
       <div v-if="param.type === 1" class="item-container">
         <div class="bar-background"></div>
         <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
@@ -28,10 +28,10 @@
           <CharacterIcon :icons="param.icons"/>
         </div>
       </div>
-      <div v-if="param.type === 5" class="item-container">
+      <div v-if="param.type === 5 || param.type === 7" class="item-container">
         <div class="twin-part">
           <div class="name">{{ param.name }}</div>
-          <div class="value value-norange">
+          <div :class="'value ' + (param.type === 5 ? 'value-norange' : 'value-text')">
             <span class="current">{{ param.value }}</span>
           </div>
         </div>
