@@ -490,7 +490,12 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public wallguardMax: number = 0,
                      public security: number = 0,
                      public ricePrice: number = 0,
-                     public buildings: TownBuilding[] = []) {}
+                     public townBuilding: number = 0,
+                     public townBuildingValue: number = 0,
+                     public countryBuilding: number = 0,
+                     public countryBuildingValue: number = 0,
+                     public countryLaboratory: number = 0,
+                     public countryLaboratoryValue: number = 0) {}
 }
 
 /**
@@ -525,15 +530,6 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 
   public characters: Character[] = [];
   public defenders: Character[] = [];
-}
-
-/**
- * 施設
- */
-export class TownBuilding {
-  constructor(public type: number,
-              public value: number,
-              public valueMax: number) {}
 }
 
 /**
@@ -759,6 +755,7 @@ export class ThreadBbsItem implements IIdentitiedEntity {
   public static readonly typeId = 26;
 
   public static readonly typeCountryBbs = 1;
+  public static readonly typeGlobalBbs = 2;
 
   public constructor(public id: number,
                      public type: number,
@@ -1201,6 +1198,26 @@ export class Api {
   public static async removeCountryBbsItem(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'bbs/country/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async writeGlobalBbsItem(text: string, parentId: number = 0, title: string = ''): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'bbs/global', {
+        text,
+        parentId,
+        title,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async removeGlobalBbsItem(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'bbs/global/' + id, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

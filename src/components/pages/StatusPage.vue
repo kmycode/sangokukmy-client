@@ -126,13 +126,19 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
-                <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></span>
-                <span v-show="selectedActionTabSubPanel === 1">国設定</span>
+                <span class="tab-text">
+                  <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span>登用</span>
+                  <span v-show="selectedActionTabSubPanel === 1">国設定</span>
+                  <span v-show="selectedActionTabSubPanel === 2">全国会議室</span>
+                  <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
+                </span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
                 <a  v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
-                <div v-if="false" class="dropdown-divider"></div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
               </div>
             </li>
           </ul>
@@ -183,7 +189,7 @@
         </div>
         <!-- 会議室 -->
         <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
-          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
+          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" :bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
         </div>
         <!-- 登用 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-chat" style="display:flex;flex-direction:column">
@@ -239,6 +245,10 @@
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
+        </div>
+        <!-- 全国会議室 -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2" class="right-side-content content-meeting">
+          <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false"/>
         </div>
       </div>
     </div>
@@ -390,6 +400,26 @@
           <div class="left-side"></div>
           <div class="right-side">
             <button class="btn btn-light" @click="isOpenCountryCharactersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
+      <!-- 無所属武将 -->
+      <div v-show="isOpenOppositionCharactersDialog" class="dialog-body">
+        <h2 class="dialog-title country-color-0">無所属 の武将</h2>
+        <div class="dialog-content loading-container">
+          <SimpleCharacterList
+            :countries="model.countries"
+            :characters="model.oppositionCharacters"
+            :myCountryId="model.character.countryId"
+            :myCharacterId="model.character.id"
+            canPrivateChat="true"
+            @private-chat="readyPrivateChat($event); isOpenOppositionCharactersDialog = false"/>
+          <div class="loading" v-show="model.isUpdatingOppositionCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenOppositionCharactersDialog = false">閉じる</button>
           </div>
         </div>
       </div>
@@ -623,6 +653,7 @@ export default class StatusPage extends Vue {
   public isOpenCommandersDialog: boolean = false;
   public isOpenRiceDialog: boolean = false;
   public isOpenTownWarDialog: boolean = false;
+  public isOpenOppositionCharactersDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -644,7 +675,8 @@ export default class StatusPage extends Vue {
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
-      || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog;
+      || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
+      || this.isOpenOppositionCharactersDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -668,7 +700,8 @@ export default class StatusPage extends Vue {
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
-      this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog = false;
+      this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
+      this.isOpenOppositionCharactersDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -700,7 +733,8 @@ export default class StatusPage extends Vue {
       this.model.privateChat.isOpen =
       this.model.globalChat.isOpen =
       this.model.promotions.isOpen =
-      this.model.countryThreadBbs.isOpen = false;
+      this.model.countryThreadBbs.isOpen =
+      this.model.globalThreadBbs.isOpen = false;
     if (this.selectedActionTab === 1) {
       const obj = this.chatObj;
       if (obj) {
@@ -709,6 +743,8 @@ export default class StatusPage extends Vue {
     } else if (this.selectedActionTab === 3) {
       if (this.selectedActionTabSubPanel === 0) {
         this.model.promotions.isOpen = true;
+      } else if (this.selectedActionTabSubPanel === 2) {
+        this.model.globalThreadBbs.isOpen = true;
       }
     } else if (this.selectedActionTab === 2) {
       this.model.countryThreadBbs.isOpen = true;

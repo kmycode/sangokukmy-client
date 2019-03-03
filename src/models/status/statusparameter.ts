@@ -27,6 +27,10 @@ export enum StatusParameterType {
    * 遅延ロードされる値
    */
   noRangeDelay = 6,
+  /**
+   * textとrangedの順に並べてくっつけたもの
+   */
+  twinTextAndRanged = 7,
 }
 
 export abstract class StatusParameter {
@@ -134,6 +138,43 @@ export class TwinNoRangeAndRangedStatusParameter extends NoRangeStatusParameter 
   }
 
   public constructor(name: string, value: number, extraName: string, extraValueVal: number, extraMaxVal: number) {
+    super(name, value);
+    this.ranged = new RangedStatusParameter(extraName, extraValueVal, extraMaxVal);
+  }
+}
+
+export class TwinTextAndRangedStatusParameter extends TextStatusParameter {
+  private readonly ranged: RangedStatusParameter;
+
+  public get type(): StatusParameterType {
+    return StatusParameterType.twinTextAndRanged;
+  }
+
+  public get extraName(): string {
+    return this.ranged.name;
+  }
+
+  public get extraValue(): number {
+    return this.ranged.value;
+  }
+
+  public set extraValue(value: number) {
+    this.ranged.value = value;
+  }
+
+  public get extraMax(): number {
+    return this.ranged.max;
+  }
+
+  public set extraMax(value: number) {
+    this.ranged.max = value;
+  }
+
+  public get extraValueRadio(): number {
+    return this.ranged.valueRatio;
+  }
+
+  public constructor(name: string, value: string, extraName: string, extraValueVal: number, extraMaxVal: number) {
     super(name, value);
     this.ranged = new RangedStatusParameter(extraName, extraValueVal, extraMaxVal);
   }

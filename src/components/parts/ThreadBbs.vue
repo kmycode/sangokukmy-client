@@ -29,8 +29,8 @@
           <div class="text"><textarea class="text" v-model="getThreadReply(thread).data.text"></textarea></div>
           <div class="buttons">
             <button type="button" class="btn btn-primary" @click="write(getThreadReply(thread).data)">リプライ</button>
-            <button v-show="canRemove && (canRemoveAll || characterId === thread.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">その他の操作</button>
-            <button v-show="getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === thread.character.id)" type="button" class="btn btn-danger" @click="remove(thread)">スレッド削除</button>
+            <button v-show="bbsType === 1 && canRemove && (canRemoveAll || characterId === thread.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">その他の操作</button>
+            <button v-show="bbsType === 1 && getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === thread.character.id)" type="button" class="btn btn-danger" @click="remove(thread)">スレッド削除</button>
           </div>
         </div>
       </div>
@@ -134,33 +134,61 @@ export default class ThreadBbs extends Vue {
       NotificationService.countryBbsPostFailedBecauseEmptyTitle.notify();
     } else {
       this.isUpdating = true;
-      api.Api.writeCountryBbsItem(item.text, item.parentId, item.title)
-        .then(() => {
-          NotificationService.countryBbsPosted.notify();
-          item.title = '';
-          item.text = '';
-        })
-        .catch(() => {
-          NotificationService.countryBbsPostFailed.notify();
-        })
-        .finally(() => {
-          this.isUpdating = false;
-        });
+      if (this.bbsType === 1) {
+        api.Api.writeCountryBbsItem(item.text, item.parentId, item.title)
+          .then(() => {
+            NotificationService.countryBbsPosted.notify();
+            item.title = '';
+            item.text = '';
+          })
+          .catch(() => {
+            NotificationService.countryBbsPostFailed.notify();
+          })
+          .finally(() => {
+            this.isUpdating = false;
+          });
+      } else if (this.bbsType === 2) {
+        api.Api.writeGlobalBbsItem(item.text, item.parentId, item.title)
+          .then(() => {
+            NotificationService.countryBbsPosted.notify();
+            item.title = '';
+            item.text = '';
+          })
+          .catch(() => {
+            NotificationService.countryBbsPostFailed.notify();
+          })
+          .finally(() => {
+            this.isUpdating = false;
+          });
+      }
     }
   }
 
   private remove(item: api.ThreadBbsItem) {
     this.isUpdating = true;
-    api.Api.removeCountryBbsItem(item.id)
-      .then(() => {
-        NotificationService.countryBbsRemoved.notify();
-      })
-      .catch(() => {
-        NotificationService.countryBbsRemoveFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdating = false;
-      });
+    if (this.bbsType === 1) {
+      api.Api.removeCountryBbsItem(item.id)
+        .then(() => {
+          NotificationService.countryBbsRemoved.notify();
+        })
+        .catch(() => {
+          NotificationService.countryBbsRemoveFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdating = false;
+        });
+    } else if (this.bbsType === 2) {
+      api.Api.removeGlobalBbsItem(item.id)
+        .then(() => {
+          NotificationService.countryBbsRemoved.notify();
+        })
+        .catch(() => {
+          NotificationService.countryBbsRemoveFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdating = false;
+        });
+    }
   }
 }
 </script>
@@ -240,6 +268,8 @@ export default class ThreadBbs extends Vue {
     border-top-style: dashed;
     padding: 0 8px 12px;
     @include country-color-deep('border-top-color');
+    @include country-color-deep('color');
+    @include country-color-light('background-color');
     .child-row {
       display: flex;
       .child-icon {

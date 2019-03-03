@@ -14,6 +14,7 @@ import { StatusParameter,
   CharacterIconStatusParameter,
   TwinNoRangeAndRangedStatusParameter,
   NoRangeDelayStatusParameter,
+  TwinTextAndRangedStatusParameter,
 } from '@/models/status/statusparameter';
 import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
@@ -304,7 +305,7 @@ export default class StatusModel {
       (obj) => this.onReceiveChatMessage(obj));
     ApiStreaming.status.on<api.ThreadBbsItem>(
       api.ThreadBbsItem.typeId,
-      (obj) => this.countryThreadBbs.onItemReceived(obj));
+      (obj) => this.onBbsItemReceived(obj));
     ApiStreaming.status.on<api.CharacterOnline>(
       api.CharacterOnline.typeId,
       (obj) => this.onlines.onOnlineDataReceived(obj));
@@ -354,11 +355,13 @@ export default class StatusModel {
       // 初期データを送信し終えた
       this.store.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
+      this.globalThreadBbs.sortThreads();
       this.countryChat.isUnread =
         this.privateChat.isUnread =
         this.globalChat.isUnread =
         this.promotions.isUnread =
-        this.countryThreadBbs.isUnread = false;
+        this.countryThreadBbs.isUnread =
+        this.globalThreadBbs.isUnread = false;
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -473,6 +476,26 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
+
+      const townBuilding = Enumerable
+        .from(def.TOWN_BUILDINGS)
+        .firstOrDefault((b) => b.id === town.townBuilding);
+      const countryBuilding = Enumerable
+        .from(def.COUNTRY_BUILDINGS)
+        .firstOrDefault((b) => b.id === town.countryBuilding);
+      const countryLaboratory = Enumerable
+        .from(def.COUNTRY_LABORATORIES)
+        .firstOrDefault((b) => b.id === town.countryLaboratory);
+      if (townBuilding && townBuilding.id) {
+        ps.push(new TwinTextAndRangedStatusParameter(
+          '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
+      }
+      if (countryBuilding && countryBuilding.id) {
+        ps.push(new RangedStatusParameter(countryBuilding.name, town.countryBuildingValue, 2000));
+      }
+      if (countryLaboratory && countryLaboratory.id) {
+        ps.push(new RangedStatusParameter(countryLaboratory.name, town.countryLaboratoryValue, 2000));
+      }
     }
     if (town.id === this.character.townId || town.countryId === this.character.countryId) {
       const countParam = new NoRangeDelayStatusParameter('滞在');
@@ -1384,6 +1407,15 @@ export default class StatusModel {
   // #region ThreadBbs
 
   public countryThreadBbs = new ThreadBbs();
+  public globalThreadBbs = new ThreadBbs();
+
+  private onBbsItemReceived(item: api.ThreadBbsItem) {
+    if (item.type === api.ThreadBbsItem.typeCountryBbs) {
+      this.countryThreadBbs.onItemReceived(item);
+    } else if (item.type === api.ThreadBbsItem.typeGlobalBbs) {
+      this.globalThreadBbs.onItemReceived(item);
+    }
+  }
 
   // #endregion
 

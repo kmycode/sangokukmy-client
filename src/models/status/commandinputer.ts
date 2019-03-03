@@ -182,7 +182,7 @@ export default class CommandInputer {
       return;
     }
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      Vue.set(c, 'isPreview', c.commandNumber % a === b);
+      Vue.set(c, 'isPreview', c.commandNumber >= b && c.commandNumber % a === b % a);
     });
   }
 
@@ -197,7 +197,7 @@ export default class CommandInputer {
       return;
     }
     this.commands.filter((c) => c.canSelect).forEach((c, index) => {
-      this.selectCommandWithSelectMode(c, c.commandNumber % a === b);
+      this.selectCommandWithSelectMode(c, c.commandNumber >= b && c.commandNumber % a === b % a);
     });
   }
 

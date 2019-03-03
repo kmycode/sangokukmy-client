@@ -234,6 +234,9 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(23, '仕官'),
   new CommandNameResolver(30, '緊急米施し'),
+  new CommandNameResolver(31, '都市施設強化'),
+  new CommandNameResolver(32, '国家施設強化'),
+  new CommandNameResolver(33, '研究所強化'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -344,4 +347,37 @@ export const TOWN_WAR_STATUSES: TownWarStatus[] = [
   new TownWarStatus(1, '開戦前'),
   new TownWarStatus(2, '攻略中'),
   new TownWarStatus(3, '交戦終了'),
+];
+
+export class BuildingType {
+  public constructor(public id: number,
+                     public name: string) {}
+}
+/**
+ * 都市施設
+ */
+export const TOWN_BUILDINGS: BuildingType[] = [
+  new BuildingType(0, '都市施設なし'),
+  new BuildingType(1, '堤防'),
+  new BuildingType(2, '蝗害対策'),
+  new BuildingType(3, '診療所'),
+  new BuildingType(4, '建築詰所'),
+  new BuildingType(5, '経済評論'),
+  new BuildingType(6, '道場'),
+  new BuildingType(7, '弁論の場'),
+  new BuildingType(8, '兵舎'),
+  new BuildingType(9, '憩いの泉'),
+  new BuildingType(10, '城壁開放'),
+];
+/**
+ * 国家施設
+ */
+export const COUNTRY_BUILDINGS: BuildingType[] = [
+  new BuildingType(0, '国家施設なし'),
+];
+/**
+ * 研究所
+ */
+export const COUNTRY_LABORATORIES: BuildingType[] = [
+  new BuildingType(0, '研究所なし'),
 ];
