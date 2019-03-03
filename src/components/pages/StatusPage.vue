@@ -132,7 +132,8 @@
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
                 <a  v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
-                <div v-if="false" class="dropdown-divider"></div>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
               </div>
             </li>
           </ul>
@@ -393,6 +394,26 @@
           </div>
         </div>
       </div>
+      <!-- 無所属武将 -->
+      <div v-show="isOpenOppositionCharactersDialog" class="dialog-body">
+        <h2 class="dialog-title country-color-0">無所属 の武将</h2>
+        <div class="dialog-content loading-container">
+          <SimpleCharacterList
+            :countries="model.countries"
+            :characters="model.oppositionCharacters"
+            :myCountryId="model.character.countryId"
+            :myCharacterId="model.character.id"
+            canPrivateChat="true"
+            @private-chat="readyPrivateChat($event); isOpenOppositionCharactersDialog = false"/>
+          <div class="loading" v-show="model.isUpdatingOppositionCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-light" @click="isOpenOppositionCharactersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
       <!-- 同盟 -->
       <div v-show="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
@@ -623,6 +644,7 @@ export default class StatusPage extends Vue {
   public isOpenCommandersDialog: boolean = false;
   public isOpenRiceDialog: boolean = false;
   public isOpenTownWarDialog: boolean = false;
+  public isOpenOppositionCharactersDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -644,7 +666,8 @@ export default class StatusPage extends Vue {
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
-      || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog;
+      || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
+      || this.isOpenOppositionCharactersDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -668,7 +691,8 @@ export default class StatusPage extends Vue {
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
-      this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog = false;
+      this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
+      this.isOpenOppositionCharactersDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
