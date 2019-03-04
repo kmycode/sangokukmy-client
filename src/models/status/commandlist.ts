@@ -18,6 +18,27 @@ export default class CommandList {
     return this.inputer.commands;
   }
 
+  public get canUseCountrySafe(): boolean {
+    // 国庫を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSafe);
+  }
+
+  public get canUseCountrySpy(): boolean {
+    // 諜報府を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSpy);
+  }
+
+  public get canUseCountryWork(): boolean {
+    // 職業斡旋を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingWork);
+  }
+
   public constructor(private store: StatusStore) {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }

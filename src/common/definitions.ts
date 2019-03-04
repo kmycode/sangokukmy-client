@@ -56,6 +56,15 @@ export const DEFAULT_ICON_NUM = 98;
 
 export const RICE_BUY_MAX = 10000;
 
+export const PAY_SAFE_MAX = 30000;
+
+/**
+ * 耐久ごとの、利用できる国庫の金の量
+ */
+export const SAFE_PER_ENDURANCE = 2000;
+
+export const COUNTRY_BUILDING_MAX = 2000;
+
 /**
  * 兵種
  */
@@ -237,6 +246,30 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(31, '都市施設強化'),
   new CommandNameResolver(32, '国家施設強化'),
   new CommandNameResolver(33, '研究所強化'),
+  new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const money = p.firstOrDefault((pp) => pp.type === 1);
+      if (!money || !money.numberValue) {
+        return 'エラー (34:2)';
+      }
+      return format.replace('{0}', money.numberValue.toString());
+    } else {
+      return 'エラー (34:1)';
+    }
+  }),
+  new CommandNameResolver(35, '国庫から %読込中% へ金 {1} を搬出', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const money = p.firstOrDefault((pp) => pp.type === 2);
+      if (!money || !money.numberValue) {
+        return 'エラー (35:2)';
+      }
+      return format.replace('{1}', money.numberValue.toString());
+    } else {
+      return 'エラー (35:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -374,6 +407,9 @@ export const TOWN_BUILDINGS: BuildingType[] = [
  */
 export const COUNTRY_BUILDINGS: BuildingType[] = [
   new BuildingType(0, '国家施設なし'),
+  new BuildingType(1, '国庫'),
+  new BuildingType(2, '諜報府'),
+  new BuildingType(3, '斡旋所'),
 ];
 /**
  * 研究所

@@ -578,6 +578,68 @@
           </div>
         </div>
       </div>
+      <!-- 国庫 -->
+      <div v-show="isOpenSafeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">国庫納入</h2>
+        <div class="dialog-content dialog-content-rice">
+          <div class="content">
+            <div class="row">
+              <div class="content-row col-sm-6">
+                <div class="label">最大容量</div><div class="value">金 {{ model.safeMaxValue | commaformat }}</div>
+              </div>
+              <div class="content-row col-sm-6">
+                <div class="label">現在の量</div><div class="value">金 {{ model.characterCountry.safeMoney | commaformat }}</div>
+              </div>
+            </div>
+            <div class="command-parameters">
+              金 <input type="number" v-model.number="paySafeMoney"> を納入
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSafeDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button v-show="paySafeMoney > 0 && paySafeMoney <= 30000" class="btn btn-primary" @click="model.commands.inputer.inputSafeInCommand(34, paySafeMoney); isOpenSafeDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 国庫搬出 -->
+      <div v-show="isOpenSafeOutDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">国庫搬出</h2>
+        <div class="dialog-content dialog-content-rice dialog-content-safe-out loading-container">
+          <div class="content dialog-content-safe-out-main">
+            <div class="row">
+              <div class="content-row col-sm-6">
+                <div class="label">最大容量</div><div class="value">金 {{ model.safeMaxValue | commaformat }}</div>
+              </div>
+              <div class="content-row col-sm-6">
+                <div class="label">現在の量</div><div class="value">金 {{ model.characterCountry.safeMoney | commaformat }}</div>
+              </div>
+            </div>
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countryCharacters"
+                canSelect="true"
+                v-model="paySafeTarget"/>
+            </div>
+            <div class="command-parameters">
+              金 <input type="number" v-model.number="paySafeMoney"> を搬出
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSafeOutDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button v-show="paySafeMoney > 0 && paySafeMoney <= 30000" class="btn btn-primary" @click="model.commands.inputer.inputSafeOutCommand(35, paySafeTarget.id, paySafeMoney); isOpenSafeOutDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -652,6 +714,8 @@ export default class StatusPage extends Vue {
   public isOpenPromotionDialog: boolean = false;
   public isOpenCommandersDialog: boolean = false;
   public isOpenRiceDialog: boolean = false;
+  public isOpenSafeDialog: boolean = false;
+  public isOpenSafeOutDialog: boolean = false;
   public isOpenTownWarDialog: boolean = false;
   public isOpenOppositionCharactersDialog: boolean = false;
   public selectedWarStatus: number = 0;
@@ -665,6 +729,8 @@ export default class StatusPage extends Vue {
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
   public payRiceOrMoney: number = def.RICE_BUY_MAX;
+  public paySafeMoney: number = def.PAY_SAFE_MAX;
+  public paySafeTarget: api.Character = new api.Character(-1);
   public canTownWar: boolean = false;
 
   public callCountryChatFocus?: EventObject;
@@ -676,7 +742,7 @@ export default class StatusPage extends Vue {
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
-      || this.isOpenOppositionCharactersDialog;
+      || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -692,6 +758,14 @@ export default class StatusPage extends Vue {
     } else if (event === 'rice') {
       this.selectedRiceStatus = 0;
       this.isOpenRiceDialog = true;
+    } else if (event === 'safe') {
+      this.paySafeMoney = def.PAY_SAFE_MAX;
+      this.isOpenSafeDialog = true;
+    } else if (event === 'safe-out') {
+      this.model.updateCharacterCountryCharacters();
+      this.paySafeMoney = def.PAY_SAFE_MAX;
+      this.paySafeTarget.id = -1;
+      this.isOpenSafeOutDialog = true;
     }
   }
 
@@ -701,7 +775,7 @@ export default class StatusPage extends Vue {
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
-      this.isOpenOppositionCharactersDialog = false;
+      this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1173,6 +1247,9 @@ ul.nav {
       &.dialog-content-rice {
         .content {
           margin: 0 24px;
+          .row {
+            margin-right: 0;
+          }
           .content-row {
             background-color: #dedede;
             padding: 8px 16px;
@@ -1206,6 +1283,20 @@ ul.nav {
               color: red;
               font-size: 1.4em;
             }
+          }
+        }
+      }
+
+      &.dialog-content-safe-out {
+        height: 100%;
+        .dialog-content-safe-out-main {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+
+          .character-list {
+            flex: 1;
+            overflow: auto;
           }
         }
       }

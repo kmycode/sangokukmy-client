@@ -69,6 +69,19 @@ export default class CommandInputer {
     });
   }
 
+  public inputSafeInCommand(commandType: number, money: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, money));
+    });
+  }
+
+  public inputSafeOutCommand(commandType: number, charaId: number, money: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, charaId));
+      c.parameters.push(new api.CharacterCommandParameter(2, money));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -235,9 +248,9 @@ export default class CommandInputer {
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
-    } else if (command.type === 15) {
+    } else if (command.type === 15 || command.type === 35) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
-      // 登用
+      // 登用、国庫搬出
       const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetCharacterId && targetCharacterId.numberValue) {
         api.Api.getCharacter(targetCharacterId.numberValue)

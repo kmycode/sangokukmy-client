@@ -380,7 +380,8 @@ export class Country {
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public lastMoneyIncomes?: number,
-                     public lastRiceIncomes?: number) {}
+                     public lastRiceIncomes?: number,
+                     public safeMoney?: number) {}
 }
 
 export class CountryExtraData {
@@ -510,6 +511,10 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly typeCommercial = 2;
   public static readonly typeFortress = 3;
   public static readonly typeLarge = 4;
+
+  public static readonly countryBuildingSafe = 1;
+  public static readonly countryBuildingSpy = 2;
+  public static readonly countryBuildingWork = 3;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;

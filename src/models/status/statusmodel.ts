@@ -15,6 +15,7 @@ import { StatusParameter,
   TwinNoRangeAndRangedStatusParameter,
   NoRangeDelayStatusParameter,
   TwinTextAndRangedStatusParameter,
+  LargeTextStatusParameter,
 } from '@/models/status/statusparameter';
 import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
@@ -251,6 +252,26 @@ export default class StatusModel {
 
   public characterTownMoneyToRicePrice(assets: number = def.RICE_BUY_MAX): number {
     return api.Town.getMoneyToRicePrice(this.characterTown, assets);
+  }
+
+  public get safeMaxValue(): number {
+    // 自国の金庫の最大容量
+    const items = Enumerable.from(this.towns)
+      .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSafe);
+    const val = this.calcCountryBuildingPower(items) * def.COUNTRY_BUILDING_MAX * def.SAFE_PER_ENDURANCE;
+    return Math.floor(val);
+  }
+
+  private calcCountryBuildingPower(towns: Enumerable.IEnumerable<api.TownBase>) {
+    let power = 0;
+    let addSize = 1;
+    towns
+      .orderByDescending((t) => t.countryBuildingValue)
+      .forEach((t) => {
+        power += (t.countryBuildingValue / def.COUNTRY_BUILDING_MAX) * addSize;
+        addSize *= 2.0 / 3;
+      });
+    return power;
   }
 
   // #endregion
@@ -599,6 +620,7 @@ export default class StatusModel {
       if (country.lastMoneyIncomes === undefined && this.character.countryId === country.id) {
         country.lastMoneyIncomes = old.lastMoneyIncomes;
         country.lastRiceIncomes = old.lastRiceIncomes;
+        country.safeMoney = old.safeMoney;
       }
 
       // 同盟データがｒｙ
@@ -656,9 +678,13 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
-    if (country.id > 0 && country.lastMoneyIncomes !== undefined && country.lastRiceIncomes !== undefined) {
+    if (country.id > 0 &&
+        country.lastMoneyIncomes !== undefined &&
+        country.lastRiceIncomes !== undefined &&
+        country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+      ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
     if (country.alliances) {
       country.alliances.forEach((ca) => {
@@ -700,9 +726,9 @@ export default class StatusModel {
     return api.Country.default;
   }
 
-  public updateCountryCharacters() {
+  public updateCountryCharacters(countryId: number = this.country.id) {
     this.isUpdatingCountryCharacters = true;
-    api.Api.getAllCharactersBelongsCountry(this.country.id)
+    api.Api.getAllCharactersBelongsCountry(countryId)
       .then((characters) => {
         characters.forEach((c) => {
           if (c.commands) {
@@ -719,6 +745,10 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingCountryCharacters = false;
       });
+  }
+
+  public updateCharacterCountryCharacters() {
+    this.updateCountryCharacters(this.character.countryId);
   }
 
   private onCountryChanged() {
@@ -973,7 +1003,6 @@ export default class StatusModel {
 
       // 保存
       itemsSetter(country, newItems);
-      console.dir(country);
     });
   }
 

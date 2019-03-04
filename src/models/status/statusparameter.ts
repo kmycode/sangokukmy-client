@@ -31,6 +31,10 @@ export enum StatusParameterType {
    * textとrangedの順に並べてくっつけたもの
    */
   twinTextAndRanged = 7,
+  /**
+   * フォントサイズ大きいテキスト
+   */
+  largeText = 8,
 }
 
 export abstract class StatusParameter {
@@ -93,6 +97,12 @@ export class TextStatusParameter extends StatusParameter {
 
   public constructor(name: string, public value: string) {
     super(name);
+  }
+}
+
+export class LargeTextStatusParameter extends TextStatusParameter {
+  public get type(): StatusParameterType {
+    return StatusParameterType.largeText;
   }
 }
 
