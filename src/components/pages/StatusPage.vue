@@ -147,6 +147,7 @@
         <div v-show="selectedActionTab === 0" class="right-side-content content-command" style="display:flex;flex-direction:column">
           <CommandListView :list="model.commands"
                            :characterDeleteTurn="model.character.deleteTurn"
+                           :canSafeOut="model.canSafeOut"
                            @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->

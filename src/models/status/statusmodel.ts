@@ -891,6 +891,12 @@ export default class StatusModel {
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
+  public get canSafeOut(): boolean {
+    // 自分が国庫搬出権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
