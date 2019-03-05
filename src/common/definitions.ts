@@ -270,6 +270,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (35:1)';
     }
   }),
+  new CommandNameResolver(36, '焼討'),
+  new CommandNameResolver(37, '扇動'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -312,6 +314,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(23, '異民族', '#088'),
   new EventType(24, '農民反乱', '#088'),
   new EventType(25, '攻略', '#080'),
+  new EventType(26, '焼討', '#2a4'),
+  new EventType(27, '扇動', '#2a4'),
 ];
 
 /**
