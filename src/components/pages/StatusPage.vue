@@ -269,7 +269,7 @@
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
             <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; selectedSoliderType = 1">雑兵・禁兵</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 1">雑兵・禁兵</a>
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 100" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 3">軽歩兵</a>
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 200" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 4">弓兵</a>
               <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 300" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 5">軽騎兵</a>
