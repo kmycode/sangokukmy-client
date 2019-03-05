@@ -3,11 +3,17 @@ import Enumerable from 'linq';
 import * as def from '@/common/definitions';
 import ArrayUtil from '../common/arrayutil';
 import NotificationService from '@/services/notificationservice';
+import StatusStore from './statusstore';
 
 export default class SoldierTypeModel {
-  public types: api.CharacterSoldierType[] = [];
   public isUpdating: boolean = false;
   public lastReceived: api.CharacterSoldierType = new api.CharacterSoldierType();
+
+  public get types(): api.CharacterSoldierType[] {
+    return this.store.soldierTypes;
+  }
+
+  public constructor(private store: StatusStore) {}
 
   public onItemReceived(item: api.CharacterSoldierType) {
     ArrayUtil.addItem(this.types, item);

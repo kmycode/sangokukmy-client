@@ -23,4 +23,5 @@ export default class StatusStore {
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public units: api.Unit[] = [];
   public reinforcements: api.Reinforcement[] = [];
+  public soldierTypes: api.CharacterSoldierType[] = [];
 }

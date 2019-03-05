@@ -33,10 +33,11 @@ export default class CommandInputer {
     this.inputCommandPrivate(commandType);
   }
 
-  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number) {
+  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number, isCustom: boolean) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, soldierType),
-                        new api.CharacterCommandParameter(2, soldierNumber));
+                        new api.CharacterCommandParameter(2, soldierNumber),
+                        new api.CharacterCommandParameter(3, isCustom ? 1 : 0));
     });
   }
 
@@ -247,6 +248,22 @@ export default class CommandInputer {
         command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
       } else {
         command.name = 'エラー (' + command.type + ':A)';
+      }
+    } else if (command.type === 10) {
+      // 徴兵
+      const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
+      if (isCustom && isCustom.numberValue === 1) {
+        const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+        if (typeId) {
+          const type = Enumerable.from(this.store.soldierTypes).firstOrDefault((t) => t.id === typeId.numberValue);
+          if (type) {
+            command.name = command.name.replace('%0%', type.name);
+          } else {
+            command.name = 'エラー (' + command.type + ':B)';
+          }
+        } else {
+          command.name = 'エラー (' + command.type + ':A)';
+        }
       }
     } else if (command.type === 15 || command.type === 35) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える

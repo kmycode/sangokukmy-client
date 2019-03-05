@@ -1302,7 +1302,7 @@ export default class StatusModel {
 
   // #region CharacterSoldierType
 
-  public soldierTypes = new SoldierTypeModel();
+  public soldierTypes = new SoldierTypeModel(this.store);
 
   // #endregion
 

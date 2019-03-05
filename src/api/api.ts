@@ -304,6 +304,15 @@ export class CharacterSoldierType {
     return parts.max((p) => p.technology);
   }
 
+  public static getDescription(type: CharacterSoldierType): string {
+    const parts = Enumerable
+      .from(CharacterSoldierType.getParts(type));
+    if (parts.count() <= 0) {
+      return '（なし）';
+    }
+    return parts.groupBy((t) => t.name).select((t) => t.key() + t.count().toString()).toArray().join(' + ');
+  }
+
   constructor(public id: number = 0,
               public status: number = 0,
               public name: string = '',
@@ -358,6 +367,7 @@ export class Character implements IIdentitiedEntity {
                      public popularity: number = 0,
                      public popularityEx: number = 0,
                      public soldierType: number = 0,
+                     public characterSoldierTypeId: number = 0,
                      public soldierNumber: number = 0,
                      public proficiency: number = 0,
                      public money: number = 0,
