@@ -532,6 +532,22 @@ export default class NotificationService {
     '攻略布告',
     '{0}、 {1} は {2} へ攻略します',
     NotificationServiceItemDefaultType.warning);
+  public static readonly soldierTypeAdded = new NotificationServiceItem(
+    '兵種追加',
+    '兵種 {0} を追加しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly soldierTypeAddFailed = new NotificationServiceItem(
+    '兵種追加失敗',
+    '兵種 {0} の追加に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly soldierTypeUpdated = new NotificationServiceItem(
+    '兵種更新',
+    '兵種 {0} を保存しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly soldierTypeUpdateFailed = new NotificationServiceItem(
+    '兵種更新失敗',
+    '兵種 {0} の更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

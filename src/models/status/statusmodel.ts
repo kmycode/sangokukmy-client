@@ -26,6 +26,7 @@ import OnlineModel from './onlinemodel';
 import StatusStore from './statusstore';
 import UnitModel from './unitmodel';
 import ValueUtil from '../common/ValueUtil';
+import SoldierTypeModel from './soldiertypemodel';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -336,6 +337,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryMessage>(
       api.CountryMessage.typeId,
       (obj) => this.onCountryMessageReceived(obj));
+    ApiStreaming.status.on<api.CharacterSoldierType>(
+      api.CharacterSoldierType.typeId,
+      (obj) => this.soldierTypes.onItemReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
@@ -1293,6 +1297,12 @@ export default class StatusModel {
         });
     }
   }
+
+  // #endregion
+
+  // #region CharacterSoldierType
+
+  public soldierTypes = new SoldierTypeModel();
 
   // #endregion
 

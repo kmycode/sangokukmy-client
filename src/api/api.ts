@@ -248,35 +248,73 @@ export class CharacterUpdateLog implements IIdentitiedEntity {
 }
 
 export class CharacterSoldierType {
-  constructor(public id: number,
-              public status: number,
-              public name: string,
-              public money: number,
-              public ricePerTurn: number,
-              public technology: number,
-              public researchCost: number,
-              public baseAttack: number,
-              public baseDefend: number,
-              public strongAttack: number,
-              public strongDefend: number,
-              public intellectAttack: number,
-              public intellectDefend: number,
-              public leadershipAttack: number,
-              public leadershipDefend: number,
-              public popularityAttack: number,
-              public popularityDefend: number,
-              public rushProbability: number,
-              public rushAttack: number,
-              public rushDefend: number,
-              public rushAgainstAttack: number,
-              public rushAgainstDefend: number,
-              public continuousProbability: number,
-              public continuousAttack: number,
-              public continuousDefend: number,
-              public wallAttack: number,
-              public wallDefend: number,
-              public throughDefendersProbability: number,
-              public recovery: number) {}
+  public static readonly typeId = 31;
+
+  public static readonly statusInDraft = 0;
+  public static readonly statusResearching = 1;
+  public static readonly statusAvailable = 2;
+  public static readonly statusRemoved = 3;
+
+  public static sumOfNumbers(type: CharacterSoldierType): number {
+    return type.commonSoldier + type.lightInfantory + type.archer +
+      type.lightCavalry + type.strongCrossbow + type.lightIntellect +
+      type.heavyInfantory + type.heavyCavalry + type.intellect +
+      type.repeatingCrossbow + type.strongGuards + type.seiran;
+  }
+
+  public static isVerify(type: CharacterSoldierType): boolean {
+    return type.commonSoldier >= 0 && type.lightInfantory >= 0 && type.archer >= 0 &&
+      type.lightCavalry >= 0 && type.strongCrossbow >= 0 && type.lightIntellect >= 0 &&
+      type.heavyInfantory >= 0 && type.heavyCavalry >= 0 && type.intellect >= 0 &&
+      type.repeatingCrossbow >= 0 && type.strongGuards >= 0 && type.seiran >= 0;
+  }
+
+  public static getParts(type: CharacterSoldierType): def.SoldierType[] {
+    const types = Enumerable.from(def.SOLDIER_TYPES);
+    return Enumerable.repeat(types.first((t) => t.id === 1), type.commonSoldier)
+      .concat(Enumerable.repeat(types.first((t) => t.id === 3), type.lightInfantory))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 4), type.archer))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 5), type.lightCavalry))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 6), type.strongCrossbow))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 7), type.lightIntellect))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 8), type.heavyInfantory))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 9), type.heavyCavalry))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 10), type.intellect))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 11), type.repeatingCrossbow))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 12), type.strongGuards))
+      .concat(Enumerable.repeat(types.first((t) => t.id === 14), type.seiran))
+      .toArray();
+  }
+
+  public static getMoney(type: CharacterSoldierType): number {
+    return Enumerable
+      .from(CharacterSoldierType.getParts(type))
+      .sum((p) => p.money);
+  }
+
+  public static getTechnology(type: CharacterSoldierType): number {
+    return Enumerable
+      .from(CharacterSoldierType.getParts(type))
+      .max((p) => p.technology);
+  }
+
+  constructor(public id: number = 0,
+              public status: number = 0,
+              public name: string = '',
+              public ricePerTurn: number = 0,
+              public researchCost: number = 0,
+              public commonSoldier: number = 0,
+              public lightInfantory: number = 0,
+              public archer: number = 0,
+              public lightCavalry: number = 0,
+              public strongCrossbow: number = 0,
+              public lightIntellect: number = 0,
+              public heavyInfantory: number = 0,
+              public heavyCavalry: number = 0,
+              public intellect: number = 0,
+              public repeatingCrossbow: number = 0,
+              public strongGuards: number = 0,
+              public seiran: number = 0) {}
 }
 
 /**
@@ -467,7 +505,7 @@ export abstract class TownBase implements IIdentitiedEntity {
   public static getRiceToMoneyPrice(town: TownBase, rice: number): number {
     return Math.floor(TownBase.getRiceTrend(town) * rice);
   }
-  
+
   public static getMoneyToRicePrice(town: TownBase, money: number): number {
     return Math.floor((2 - TownBase.getRiceTrend(town)) * money);
   }
@@ -1308,6 +1346,22 @@ export class Api {
         characterId,
         requestedCountryId,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addSoldierType(type: CharacterSoldierType): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async updateSoldierType(type: CharacterSoldierType): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

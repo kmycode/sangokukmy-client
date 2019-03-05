@@ -129,14 +129,16 @@
                 <span class="tab-text">
                   <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span>登用</span>
                   <span v-show="selectedActionTabSubPanel === 1">国設定</span>
-                  <span v-show="selectedActionTabSubPanel === 2">全国会議室</span>
+                  <span v-show="selectedActionTabSubPanel === 2">全国会議</span>
+                  <span v-show="selectedActionTabSubPanel === 4">兵種</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
-                <a  v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
+                <a v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
               </div>
@@ -250,6 +252,10 @@
         <!-- 全国会議室 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false"/>
+        </div>
+        <!-- 兵種設定 -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4" class="right-side-content content-soldier">
+          <CustomSoldierTypeView :model="model.soldierTypes"/>
         </div>
       </div>
     </div>
@@ -663,6 +669,7 @@ import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
 import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
+import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -690,6 +697,7 @@ import EventObject from '@/models/common/EventObject';
     TownWarView,
     UnitListView,
     KmyChatTagText,
+    CustomSoldierTypeView,
   },
 })
 export default class StatusPage extends Vue {
@@ -1072,6 +1080,11 @@ ul.nav {
   }
 
   &.content-meeting {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &.content-soldier {
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
