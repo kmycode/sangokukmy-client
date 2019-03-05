@@ -286,7 +286,7 @@
           <div class="soltype-detail">
             <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;transform:translateY(-6px)" v-model="soldierNumber">人</div>
             <div class="status">
-              <span class="item-head">金</span><span class="item-value">{{ soliderDetail.money }}</span>
+              <span class="item-head">金</span><span class="item-value">{{ soliderDetail.money }}0</span>
               <span class="item-head">攻撃力</span><span class="item-value">{{ soliderDetail.attackPower }}</span>
               <span class="item-head">防御力</span><span class="item-value">{{ soliderDetail.defencePower }}</span>
             </div>

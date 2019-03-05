@@ -287,15 +287,21 @@ export class CharacterSoldierType {
   }
 
   public static getMoney(type: CharacterSoldierType): number {
-    return Enumerable
-      .from(CharacterSoldierType.getParts(type))
-      .sum((p) => p.money);
+    const parts = Enumerable
+      .from(CharacterSoldierType.getParts(type));
+    if (parts.count() <= 0) {
+      return 0;
+    }
+    return parts.sum((p) => p.money);
   }
 
   public static getTechnology(type: CharacterSoldierType): number {
-    return Enumerable
-      .from(CharacterSoldierType.getParts(type))
-      .max((p) => p.technology);
+    const parts = Enumerable
+      .from(CharacterSoldierType.getParts(type));
+    if (parts.count() <= 0) {
+      return 0;
+    }
+    return parts.max((p) => p.technology);
   }
 
   constructor(public id: number = 0,

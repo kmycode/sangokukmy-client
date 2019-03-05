@@ -120,6 +120,17 @@
         <div class="label">井闌</div>
         <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.seiran"></div>
       </div>
+      <div class="data-row">
+        <div class="label">金</div>
+        <div class="result">{{ money }}</div>
+      </div>
+      <div class="data-row">
+        <div class="label">技術</div>
+        <div class="result">{{ technology }}</div>
+      </div>
+      <div class="alert alert-warning">
+        合計が 10 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
+      </div>
       <div class="buttons">
         <button type="button" class="btn btn-light" @click="cancel()">キャンセル</button>
         <button type="button" class="btn btn-primary" @click="save()">保存</button>
@@ -147,6 +158,14 @@ export default class CustomSOldierTypeView extends Vue {
   private isOpenSoliderDropdown: boolean = false;
   private selectedType: api.CharacterSoldierType = new api.CharacterSoldierType();
   private isNew: boolean = true;
+
+  private get money(): number {
+    return api.CharacterSoldierType.getMoney(this.selectedType);
+  }
+
+  private get technology(): number {
+    return api.CharacterSoldierType.getTechnology(this.selectedType);
+  }
 
   public constructor() {
     super();
