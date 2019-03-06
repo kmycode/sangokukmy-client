@@ -65,6 +65,10 @@
         <div class="label">井闌</div>
         <div class="value">{{ selectedType.seiran }}</div>
       </div>
+      <div class="data-row">
+        <div class="label">研究コスト残り</div>
+        <div class="value">{{ selectedType.researchCost }}</div>
+      </div>
     </div>
     <div v-if="selectedType && !selectedType.status" class="edit-type">
       <h3>{{ selectedType.name }}</h3>
@@ -102,7 +106,7 @@
       </div>
       <div class="data-row">
         <div class="label">重騎兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.commonSoldier"></div>
+        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.heavyCavalry"></div>
       </div>
       <div class="data-row">
         <div class="label">智攻兵</div>
@@ -127,6 +131,14 @@
       <div class="data-row">
         <div class="label">技術</div>
         <div class="result">{{ technology }}</div>
+      </div>
+      <div class="data-row">
+        <div class="label">研究費用（概算）</div>
+        <div class="result">{{ researchMoney }}</div>
+      </div>
+      <div class="data-row">
+        <div class="label">研究コスト（概算）</div>
+        <div class="result">{{ researchCost }}</div>
       </div>
       <div class="alert alert-warning">
         合計が 10 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
@@ -155,6 +167,7 @@ import Enumerable from 'linq';
 })
 export default class CustomSOldierTypeView extends Vue {
   @Prop() private model!: SoldierTypeModel;
+  @Prop() private buildingSize!: number;
   private isOpenSoliderDropdown: boolean = false;
   private selectedType: api.CharacterSoldierType = new api.CharacterSoldierType();
   private isNew: boolean = true;
@@ -165,6 +178,14 @@ export default class CustomSOldierTypeView extends Vue {
 
   private get technology(): number {
     return api.CharacterSoldierType.getTechnology(this.selectedType);
+  }
+
+  private get researchMoney(): number {
+    return api.CharacterSoldierType.getResearchMoney(this.selectedType, this.buildingSize);
+  }
+
+  private get researchCost(): number {
+    return api.CharacterSoldierType.getResearchCost(this.selectedType, this.buildingSize);
   }
 
   public constructor() {

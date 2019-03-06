@@ -255,7 +255,8 @@
         </div>
         <!-- 兵種設定 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4" class="right-side-content content-soldier">
-          <CustomSoldierTypeView :model="model.soldierTypes"/>
+          <CustomSoldierTypeView :model="model.soldierTypes"
+                                 :buildingSize="model.soldierLaboratorySize"/>
         </div>
       </div>
     </div>

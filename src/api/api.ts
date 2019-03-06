@@ -313,6 +313,25 @@ export class CharacterSoldierType {
     return parts.groupBy((t) => t.name).select((t) => t.key() + t.count().toString()).toArray().join(' + ');
   }
 
+  public static getResearchMoney(type: CharacterSoldierType, buildingSize: number): number {
+    const money = this.getMoney(type);
+    if (buildingSize <= 0) {
+      return -1;
+    } else {
+      return Math.floor(money * 160 / buildingSize);
+    }
+  }
+
+  public static getResearchCost(type: CharacterSoldierType, buildingSize: number): number {
+    const money = this.getMoney(type);
+    const technology = this.getTechnology(type);
+    if (buildingSize <= 0) {
+      return -1;
+    } else {
+      return Math.floor(money * (technology / 230) / buildingSize);
+    }
+  }
+
   constructor(public id: number = 0,
               public status: number = 0,
               public name: string = '',
@@ -570,6 +589,7 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly countryBuildingSafe = 1;
   public static readonly countryBuildingSpy = 2;
   public static readonly countryBuildingWork = 3;
+  public static readonly countryBuildingSoldier = 4;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;

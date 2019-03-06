@@ -263,6 +263,14 @@ export default class StatusModel {
     return Math.floor(val);
   }
 
+  public get soldierLaboratorySize(): number {
+    // 兵種研究所の強さ
+    const items = Enumerable.from(this.towns)
+    .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSoldier);
+    const val = this.calcCountryBuildingPower(items);
+    return val;
+  }
+
   private calcCountryBuildingPower(towns: Enumerable.IEnumerable<api.TownBase>) {
     let power = 0;
     let addSize = 1;
@@ -1285,7 +1293,7 @@ export default class StatusModel {
       if (soldierType) {
         ps.push(new TextStatusParameter('兵種', soldierType.name));
       } else {
-        ps.push(new TextStatusParameter('兵種A', def.SOLDIER_TYPES[0].name));
+        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
       }
     }
     ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
