@@ -1,9 +1,6 @@
-<template>
+﻿<template>
   <div id="entry-page" class="loading-container">
-    <div class="col-xg-6 offset-xg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
-      <div class="cancel">
-        <button type="button" class="btn btn-light" @click="$emit('entry-abort')">中止</button>
-      </div>
+    <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
       <div class="section">
         <h3>基本情報</h3>
         <div v-if="system.invitationCodeRequestedAtEntry" :class="{ 'form-row': true, 'error': !isOkInvitationCode, }">
@@ -189,7 +186,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
@@ -228,11 +225,11 @@ export default class EntryPage extends Vue {
   private isPublish: boolean = false;
   private invitationCode: string = '';
 
-  private system: api.SystemData = new api.SystemData();
-  private countries: api.Country[] = [];
-  private countryMessages: api.CountryMessage[] = [];
+  @Prop() private system!: api.SystemData;
+  @Prop() private countries!: api.Country[];
+  @Prop() private countryMessages!: api.CountryMessage[];
   private extraData: api.EntryExtraData = api.EntryExtraData.default;
-  private towns: api.Town[] = [];
+  @Prop() private towns!: api.Town[];
   private nextMonthSeconds = 0;
 
   private isLoadingExtraData = true;
@@ -377,32 +374,14 @@ export default class EntryPage extends Vue {
     this.character.popularity = 5;
 
     // ストリーミングを開始
-    ApiStreaming.top.clearEvents();
     ApiStreaming.top.on<api.SystemData>(api.SystemData.typeId, (log) => {
-      this.system = log;
       this.updateExtraData();
-    });
-    ApiStreaming.top.on<api.Country>(api.Country.typeId, (log) => {
-      ArrayUtil.addItem(this.countries, log);
-    });
-    ApiStreaming.top.on<api.CountryMessage>(api.CountryMessage.typeId, (log) => {
-      if (log.type === api.CountryMessage.typeSolicitation) {
-        ArrayUtil.addItemUniquely(this.countryMessages, log, (cm) => cm.countryId);
-      }
-    });
-    ApiStreaming.top.on<api.Town>(api.Town.typeId, (log) => {
-      ArrayUtil.addItem(this.towns, log);
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
       this.updateExtraData();
     });
-    ApiStreaming.top.on<api.ApiSignal>(api.ApiSignal.typeId, (signal) => {
-      if (signal.type === 7) {
-        // リセットされた
-        location.reload();
-      }
-    });
-    ApiStreaming.top.start();
+
+    this.updateExtraData();
   }
 
   private updateExtraData() {
@@ -461,10 +440,6 @@ export default class EntryPage extends Vue {
           this.isEntrying = false;
         });
     }
-  }
-
-  private destroyed() {
-    ApiStreaming.top.stop();
   }
 }
 </script>
