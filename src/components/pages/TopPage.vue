@@ -23,6 +23,10 @@
         <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
           <div v-show="isLoadingSystem && nextMonthSeconds <= -15" class="not-loading-message-panel">
             <h2>読込に通常より時間がかかっています...</h2>
+            <h3>ページのリロードで解決しますか？</h3>
+            <div>
+              このページを何度かリロードすることで解決することがあります。パソコンの場合は<code>Shift+F5</code>または<code>Shift+Cmd+R</code>、スマホの場合はデスクトップモード（iOSのSafariの場合は更新ボタン長押し）もお試しください
+            </div>
             <h3>お使いのネットワーク回線は通常より混雑していませんか？</h3>
             <div>
               他のサイト（<a href="https://google.com/" target="_blank">Google</a>など）にもアクセスして、ネットワーク回線に問題がないか確認してください
