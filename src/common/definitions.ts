@@ -283,6 +283,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(36, '焼討'),
   new CommandNameResolver(37, '扇動'),
+  new CommandNameResolver(38, '兵種 %0% を研究'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)

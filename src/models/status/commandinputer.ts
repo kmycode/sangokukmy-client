@@ -41,6 +41,12 @@ export default class CommandInputer {
     });
   }
 
+  public inputSoldierResearchCommand(commandType: number, soldierType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, soldierType));
+    });
+  }
+
   public inputMoveCommand(commandType: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, this.store.town.id));
@@ -249,10 +255,10 @@ export default class CommandInputer {
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
-    } else if (command.type === 10) {
-      // 徴兵
+    } else if (command.type === 10 || command.type === 38) {
+      // 徴兵、兵種研究
       const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
-      if (isCustom && isCustom.numberValue === 1) {
+      if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
         const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
         if (typeId) {
           const type = Enumerable.from(this.store.soldierTypes).firstOrDefault((t) => t.id === typeId.numberValue);

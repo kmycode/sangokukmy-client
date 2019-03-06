@@ -39,6 +39,13 @@ export default class CommandList {
                   t.countryBuilding === api.Town.countryBuildingWork);
   }
 
+  public get canUseCountrySoldier(): boolean {
+    // 兵種研究を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSoldier);
+  }
+
   public constructor(private store: StatusStore) {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }
