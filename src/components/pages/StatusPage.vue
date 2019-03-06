@@ -919,10 +919,13 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
-  min-height: 180px;
   @include media-query-lower(sm) {
-    height: 400px;
+    height: auto;
   }
+  @include media-query-lower(md) {
+    margin-bottom: 48px;
+  }
+  min-height: 180px;
   border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
@@ -939,11 +942,14 @@ ul.nav {
   }
   .content-main {
     height: calc(100% - 2rem - 48px);
+    @include media-query-lower(sm) {
+      height: 350px;
+    }
     overflow: auto;
     -webkit-overflow-scrolling: touch;
   }
   .commands {
-    height: 48px;
+    min-height: 48px;
     padding: 4px;
     background: $color-navigation-commands;
     button {
