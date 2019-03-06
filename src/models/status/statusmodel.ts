@@ -1271,13 +1271,24 @@ export default class StatusModel {
     ps.push(new NoRangeStatusParameter('貢献', character.contribution));
     ps.push(new NoRangeStatusParameter('階級値', character.classValue));
     ps.push(new TextStatusParameter('階級', api.Character.getClassName(character)));
-    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
-    if (soldierType) {
-      ps.push(new TextStatusParameter('兵種', soldierType.name));
+    if (character.soldierType !== 15) {
+      const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
+      if (soldierType) {
+        ps.push(new TextStatusParameter('兵種', soldierType.name));
+      } else {
+        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+      }
     } else {
-      ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+      const soldierType = Enumerable
+        .from(this.store.soldierTypes)
+        .firstOrDefault((st) => st.id === character.characterSoldierTypeId);
+      if (soldierType) {
+        ps.push(new TextStatusParameter('兵種', soldierType.name));
+      } else {
+        ps.push(new TextStatusParameter('兵種A', def.SOLDIER_TYPES[0].name));
+      }
     }
-    ps.push(new RangedStatusParameter('兵士', character.soldierNumber, character.leadership));
+    ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     return ps;
   }

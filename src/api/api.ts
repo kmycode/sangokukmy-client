@@ -379,6 +379,7 @@ export class Character implements IIdentitiedEntity {
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
+                     public characterSoldierType?: CharacterSoldierType,
                      public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
@@ -1378,6 +1379,16 @@ export class Api {
   public static async updateSoldierType(type: CharacterSoldierType): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getSoldierType(id: number): Promise<CharacterSoldierType> {
+    try {
+      const result = await axios.get<CharacterSoldierType>(
+        def.API_HOST + 'soldiertypes/' + id, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

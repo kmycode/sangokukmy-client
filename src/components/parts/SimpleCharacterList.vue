@@ -52,9 +52,12 @@
               <span class="parameter-value">{{ chara.popularity }}</span>
             </span>
             <span v-if="hasSoldierData(chara)" class="parameter-item">
-              <span class="parameter-name">{{ getSoldierTypeName(chara.soldierType) }}</span>
+              <span class="parameter-name">{{ getSoldierTypeName(chara) }}</span>
               <span class="parameter-value">{{ chara.soldierNumber }}</span>
             </span>
+          </div>
+          <div v-if="chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
+            {{ getSoldierTypeDescription(chara) }}
           </div>
         </div>
       </div>
@@ -137,12 +140,19 @@ export default class SimpleCharacterList extends Vue {
     return chara.soldierType !== undefined && chara.soldierType !== null;
   }
 
-  private getSoldierTypeName(type: number): string {
-    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === type);
+  private getSoldierTypeName(chara: api.Character): string {
+    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === chara.soldierType);
     if (soldierType) {
       return soldierType.name;
+    }
+    return '雑兵';
+  }
+
+  private getSoldierTypeDescription(chara: api.Character): string {
+    if (chara.characterSoldierType) {
+      return api.CharacterSoldierType.getDescription(chara.characterSoldierType);
     } else {
-      return '雑兵';
+      return this.getSoldierTypeName(chara) + '10';
     }
   }
 
