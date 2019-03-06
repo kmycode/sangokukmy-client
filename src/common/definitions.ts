@@ -80,7 +80,7 @@ export class SoldierType {
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, '雑兵', 1, 0, '0', '0'),
   new SoldierType(2, '禁兵', 1, 0, '15', '15'),
-  new SoldierType(100, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に10のボーナスを得る'),
+  new SoldierType(500, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に10のボーナスを得る'),
   new SoldierType(3, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
   new SoldierType(4, '弓兵',    3, 200,  '0', '15', '弓を持った兵士'),
   new SoldierType(5, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),

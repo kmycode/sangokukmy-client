@@ -804,7 +804,7 @@ export default class StatusPage extends Vue {
   public get soliderDetail(): def.SoldierType {
     if (!this.isCustomSoldierTypeSelected) {
       if (this.selectedSoliderType === 1) {
-        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 100);
+        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 500);
       } else {
         return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === this.selectedSoliderType);
       }
