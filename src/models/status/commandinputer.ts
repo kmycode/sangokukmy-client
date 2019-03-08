@@ -279,12 +279,18 @@ export default class CommandInputer {
       const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
       if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
         const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
-        if (typeId) {
+        if (typeId && typeId.numberValue) {
           const type = Enumerable.from(this.store.soldierTypes).firstOrDefault((t) => t.id === typeId.numberValue);
           if (type) {
             command.name = command.name.replace('%0%', type.name);
           } else {
-            command.name = 'エラー (' + command.type + ':B)';
+            api.Api.getSoldierType(typeId.numberValue)
+              .then((t) => {
+                command.name = command.name.replace('%0%', t.name);
+              })
+              .catch(() => {
+                command.name = 'エラー (' + command.type + ':B)';
+              });
           }
         } else {
           command.name = 'エラー (' + command.type + ':A)';
