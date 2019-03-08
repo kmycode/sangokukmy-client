@@ -284,13 +284,8 @@ export default class CommandInputer {
           if (type) {
             command.name = command.name.replace('%0%', type.name);
           } else {
-            api.Api.getSoldierType(typeId.numberValue)
-              .then((t) => {
-                command.name = command.name.replace('%0%', t.name);
-              })
-              .catch(() => {
-                command.name = 'エラー (' + command.type + ':B)';
-              });
+            // 自分のじゃない研究中の兵種は常に取得できない
+            command.name = '兵種研究';
           }
         } else {
           command.name = 'エラー (' + command.type + ':A)';
