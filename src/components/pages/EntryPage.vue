@@ -155,6 +155,19 @@
             建国する場合は、上のボタンをONにしてください
           </div>
         </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown, 'warning': town.type === 3 || town.type === 4 }">
+          <div class="label">選択都市の都市特化</div>
+          <div class="field">
+            <span v-show="town.type === 1">農業都市</span>
+            <span v-show="town.type === 2">商業都市</span>
+            <span v-show="town.type === 3">城塞都市</span>
+            <span v-show="town.type === 4">大都市</span>
+          </div>
+          <div class="detail">
+            <span v-show="town.type === 3">城塞都市は、<u>農業・商業最大がゼロになることがある</u>ため、<strong>初心者にはおすすめできません</strong></span>
+            <span v-show="town.type === 4">大都市に建国した場合、<u>太守府という都市施設が建てられ、序盤は特に苛烈な、大きなハンデを背負うことになる</u>ため、<strong>初心者にはおすすめできません</strong></span>
+          </div>
+        </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryName, }">
           <div class="label">国名</div>
           <div class="field">
@@ -476,6 +489,14 @@ span.number { font-weight: bold; }
       border-right-color: red;
       .detail {
         color: red;
+      }
+    }
+
+    &.warning {
+      background-color: #ffe;
+      border-right-color: #ff0;
+      .detail {
+        color: #992;
       }
     }
 
