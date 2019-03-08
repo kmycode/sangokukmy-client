@@ -267,7 +267,15 @@
       <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
-        <div class="dialog-content">
+        <div class="dialog-content dialog-content-soldier">
+          <div class="row">
+            <div class="content-row col-md-6">
+              <div class="label">統率</div><div class="value">{{ model.character.leadership }}</div>
+            </div>
+            <div class="content-row col-md-6">
+              <div class="label">現在の兵数</div><div class="value">{{ model.character.soldierNumber }}</div>
+            </div>
+          </div>
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
             <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
@@ -293,7 +301,7 @@
             </div>
           </div>
           <div class="soltype-detail">
-            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;transform:translateY(-6px)" v-model="soldierNumber">人</div>
+            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber">人</div>
             <div class="status">
               <span class="item-head">金</span>
               <span v-if="!isCustomSoldierTypeSelected" class="item-value">{{ soliderDetail.money }}0</span>
@@ -895,6 +903,7 @@ export default class StatusPage extends Vue {
           this.selectedCustomSoliderType.status !== api.CharacterSoldierType.statusAvailable) {
         this.isCustomSoldierTypeSelected = false;
       }
+      this.soldierNumber = this.model.character.leadership;
       this.isOpenSoldierDialog = true;
     } else if (event === 'promotion') {
       this.model.updateOppositionCharacters();
@@ -1384,25 +1393,44 @@ ul.nav {
         margin-top: 24px;
       }
 
-      .soltype-detail {
-        margin-top: 12px;
-
-        .title {
-          font-size: 1.8rem;
+      &.dialog-content-soldier {
+        .row {
+          margin-right: 0;
         }
-        .status {
-          font-size: 1.1rem;
-
-          .item-head {
-            color: #969;
+        .content-row {
+          background-color: #dedede;
+          padding: 8px 16px;
+          text-align: center;
+          &:first-child {
+            background: none;
           }
-          .item-value {
-            padding: 0 12px 0 4px;
+          .label {
+            color: #666;
+          }
+          .value {
             font-weight: bold;
           }
         }
-        .text {
-          font-size: 1rem;
+        .soltype-detail {
+          margin-top: 12px;
+
+          .title {
+            font-size: 1.8rem;
+          }
+          .status {
+            font-size: 1.1rem;
+
+            .item-head {
+              color: #969;
+            }
+            .item-value {
+              padding: 0 12px 0 4px;
+              font-weight: bold;
+            }
+          }
+          .text {
+            font-size: 1rem;
+          }
         }
       }
 
