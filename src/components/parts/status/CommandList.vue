@@ -21,18 +21,16 @@
       </div>
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(7)">農地開拓</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(8)">市場拡大</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(9)">城壁増築</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(32)">国家施設<span class="redundant-text">強化</span></button>
         <button v-if="list.canUseCountrySafe" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
         <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')">国庫搬出</button>
         <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(36)">焼討</button>
         <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(37)">扇動</button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政務官募集</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政務官配属</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政務官解任</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政<span class="redundant-text">務官</span>募集</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政<span class="redundant-text">務官</span>配属</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政<span class="redundant-text">務官</span>解任</button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
