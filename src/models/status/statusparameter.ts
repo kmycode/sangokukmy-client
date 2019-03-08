@@ -143,7 +143,7 @@ export class TwinNoRangeAndRangedStatusParameter extends NoRangeStatusParameter 
     this.ranged.max = value;
   }
 
-  public get extraValueRadio(): number {
+  public get extraValueRatio(): number {
     return this.ranged.valueRatio;
   }
 
@@ -180,7 +180,7 @@ export class TwinTextAndRangedStatusParameter extends TextStatusParameter {
     this.ranged.max = value;
   }
 
-  public get extraValueRadio(): number {
+  public get extraValueRatio(): number {
     return this.ranged.valueRatio;
   }
 
