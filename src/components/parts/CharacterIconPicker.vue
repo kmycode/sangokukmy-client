@@ -2,15 +2,28 @@
   <div class="parts-icon-picker">
     <button type="button" class="btn btn-secondary" @click="type = 1">デフォルト</button>
     <button type="button" class="btn btn-secondary" @click="type = 3">Gravatar</button><br>
-    <CharacterIcon :icon="value"/><br>
-    <div v-show="type === 1">
-      <div class="label">デフォルトアイコン番号（0-{{ defaultIconMax }}）</div>
-      <div class="input"><input type="number" :max="defaultIconMax" min="0" v-model="defaultIconId"></div>
-    </div>
-    <div v-show="type === 3">
-      <div class="label">Gravatarメールアドレス</div>
-      <div class="input"><input type="text" v-model="email"></div>
-      <div class="detail">メールアドレスはハッシュ化してから送信されます。一度ハッシュ化された文字列は復元不可能なので、データベースからメールアドレスを取得することはできないようになっています。</div>
+    <span class="main-icon">
+      <CharacterIcon :icon="value"/>
+    </span>
+    <div class="setting-block">
+      <div v-show="type === 1">
+        <div class="label">デフォルトアイコン番号（0-{{ defaultIconMax }}）</div>
+        <div class="input"><input type="number" :max="defaultIconMax" min="0" v-model="defaultIconId"></div>
+        <div class="default-icons">
+          <span v-for="i in 99"
+                :key="i"
+                @click="defaultIconId = i - 1"
+                class="icon-parent">
+            <img :src="getDefaultIconUri(i - 1)"/>
+            <span class="overlay"></span>
+          </span>
+        </div>
+      </div>
+      <div v-show="type === 3">
+        <div class="label">Gravatarメールアドレス</div>
+        <div class="input"><input type="text" v-model="email"></div>
+        <div class="detail">メールアドレスはハッシュ化してから送信されます。一度ハッシュ化された文字列は復元不可能なので、データベースからメールアドレスを取得することはできないようになっています。</div>
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +62,13 @@ export default class CharacterIconPicker extends Vue {
     }
   }
 
+  private getDefaultIconUri(id: number): string {
+    const d = new api.CharacterIcon();
+    d.fileName = id + '.gif';
+    d.type = 1;
+    return api.CharacterIcon.getUri(d);
+  }
+
   private generateNewValue(): api.CharacterIcon {
     const fileName = this.type === 1 ? this.defaultIconId + '.gif' :
                      this.type === 3 ? md5(this.email.toLowerCase()) :
@@ -63,4 +83,49 @@ export default class CharacterIconPicker extends Vue {
 </script>
 
 <style lang="scss">
+button {
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+
+.main-icon img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+}
+
+.default-icons {
+  .icon-parent {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    border-radius: 50%;
+    transition: border-radius .2s;
+    &:hover {
+      border-radius: 20%;
+      .overlay {
+        opacity: 0.2;
+      }
+    }
+    img {
+      width: 48px;
+      height: 48px;
+    }
+    .overlay {
+      transition: opacity .2s;
+      opacity: 0;
+      background-color: black;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+    }
+  }
+}
+
+.setting-block {
+  margin: 8px 0 0 0;
+}
 </style>

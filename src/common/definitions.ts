@@ -47,7 +47,7 @@ export const NEXT_LANK = 800;
 /**
  * 国色の数
  */
-export const COUNTRY_COLOR_NUM = 8;
+export const COUNTRY_COLOR_NUM = 11;
 
 /**
  * アイコン数
@@ -433,7 +433,11 @@ export const TOWN_BUILDINGS: BuildingType[] = [
   new BuildingType(7, '弁論の場'),
   new BuildingType(8, '兵舎'),
   new BuildingType(9, '憩いの泉'),
-  new BuildingType(10, '城壁開放'),
+  new BuildingType(10, '城門開放'),
+  new BuildingType(11, '修復拠点'),
+  new BuildingType(12, '屯所'),
+  new BuildingType(13, '災害対策拠点'),
+  new BuildingType(14, '太守府'),
 ];
 /**
  * 国家施設

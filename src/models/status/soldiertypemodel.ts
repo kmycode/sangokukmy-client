@@ -7,7 +7,6 @@ import StatusStore from './statusstore';
 
 export default class SoldierTypeModel {
   public isUpdating: boolean = false;
-  public lastReceived: api.CharacterSoldierType = new api.CharacterSoldierType();
 
   public get types(): api.CharacterSoldierType[] {
     return this.store.soldierTypes;
@@ -17,16 +16,15 @@ export default class SoldierTypeModel {
 
   public onItemReceived(item: api.CharacterSoldierType) {
     ArrayUtil.addItem(this.types, item);
-    this.lastReceived = item;
   }
 
-  public save(item: api.CharacterSoldierType, callback: () => void) {
+  public save(item: api.CharacterSoldierType, callback: (result: api.CharacterSoldierType) => void) {
     this.isUpdating = true;
     const func = !item.id ? api.Api.addSoldierType(item) : api.Api.updateSoldierType(item);
     func
-      .then(() => {
+      .then((result) => {
         NotificationService.soldierTypeUpdated.notifyWithParameter(item.name);
-        callback();
+        callback(result);
       })
       .catch(() => {
         NotificationService.soldierTypeUpdateFailed.notifyWithParameter(item.name);

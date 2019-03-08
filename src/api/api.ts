@@ -1394,17 +1394,21 @@ export class Api {
     }
   }
 
-  public static async addSoldierType(type: CharacterSoldierType): Promise<any> {
+  public static async addSoldierType(type: CharacterSoldierType): Promise<CharacterSoldierType> {
     try {
-      await axios.post(def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+      const result = await axios.post<CharacterSoldierType>
+        (def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
   }
 
-  public static async updateSoldierType(type: CharacterSoldierType): Promise<any> {
+  public static async updateSoldierType(type: CharacterSoldierType): Promise<CharacterSoldierType> {
     try {
-      await axios.put(def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+      const result = await axios.put<CharacterSoldierType>
+        (def.API_HOST + 'soldiertypes', JSON.parse(JSON.stringify(type)), this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

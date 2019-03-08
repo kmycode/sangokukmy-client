@@ -1,6 +1,11 @@
 ﻿<template>
   <div id="entry-page" class="loading-container">
     <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+      <div class="alert alert-primary">
+        <h3>重要なお知らせ</h3>
+        本ゲームは、以下のブラウザでは<strong>正常に操作できない場合がございます</strong>。なるべくご利用くださらないよう、お願い申し上げます。<br>
+        Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
+      </div>
       <div class="section">
         <h3>基本情報</h3>
         <div v-if="system.invitationCodeRequestedAtEntry" :class="{ 'form-row': true, 'error': !isOkInvitationCode, }">
@@ -124,7 +129,7 @@
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
-              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}</div>
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
@@ -135,7 +140,7 @@
             </div>
           </div>
           <div class="detail">
-            地図上の都市をクリックして選択してください。選択した都市に国があれば、そこへ仕官します
+            地図上の都市をクリックして選択してください。選択した都市に国があれば、そこへ仕官します。なお、48年1月までは、人数の多い国に仕官することはできません
           </div>
         </div>
       </div>
@@ -267,7 +272,12 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkTown(): boolean {
-    return this.town.id !== 0;
+    if (this.town.id !== 0) {
+      const extraData = this.getExtraData(this.town.countryId);
+      return !extraData.isJoinLimited;
+    } else {
+      return false;
+    }
   }
 
   private get isOkEstablishSelection(): boolean {
@@ -345,8 +355,8 @@ export default class EntryPage extends Vue {
     }, 100);
   }
 
-  private getExtraData(country: api.Country): api.CountryExtraData {
-    const data = ArrayUtil.findUniquely(this.extraData.countryData, country.id, (ed) => ed.countryId);
+  private getExtraData(countryId: number): api.CountryExtraData {
+    const data = ArrayUtil.findUniquely(this.extraData.countryData, countryId, (ed) => ed.countryId);
     if (data) {
       return data;
     } else {
@@ -448,6 +458,10 @@ export default class EntryPage extends Vue {
 @import '@/scss/country-color.scss';
 span.number { font-weight: bold; }
 
+#entry-page {
+  margin-top: 24px;
+}
+
 .section {
   margin: 24px 0;
 
@@ -505,12 +519,20 @@ span.number { font-weight: bold; }
         }
         .country-name {
           align-self: center;
+          .is-limited {
+            color: red;
+            font-weight: bold;
+          }
         }
         .country-message {
           display: flex;
           align-items: center;
           .icon {
             margin-right: 12px;
+            img {
+              width: 48px;
+              height: 48px;
+            }
           }
           .message {
             flex: 1;

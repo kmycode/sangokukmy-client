@@ -76,6 +76,9 @@
         <div class="label">名前</div>
         <div class="value"><input type="text" v-model="selectedType.name"></div>
       </div>
+      <div v-show="selectedType.name.length > 10" class="alert alert-warning">
+        文字数は10以下にしてください（現在：{{ selectedType.name.length }}）
+      </div>
       <div class="data-row">
         <div class="label">雑兵</div>
         <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.commonSoldier"></div>
@@ -141,7 +144,7 @@
         <div class="result">{{ researchCost }}</div>
       </div>
       <div class="alert alert-warning">
-        合計が 10 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
+        合計が 10 - 15 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
       </div>
       <div class="buttons">
         <button type="button" class="btn btn-light" @click="cancel()">キャンセル</button>
@@ -165,7 +168,7 @@ import Enumerable from 'linq';
   components: {
   },
 })
-export default class CustomSOldierTypeView extends Vue {
+export default class CustomSoldierTypeView extends Vue {
   @Prop() private model!: SoldierTypeModel;
   @Prop() private buildingSize!: number;
   private isOpenSoliderDropdown: boolean = false;
@@ -205,9 +208,10 @@ export default class CustomSOldierTypeView extends Vue {
   }
 
   private save() {
-    this.model.save(this.selectedType, () => {
+    this.model.save(this.selectedType, (result) => {
       if (this.isNew) {
-        this.createNew();
+        this.selectedType = result;
+        this.isNew = false;
       }
     });
   }

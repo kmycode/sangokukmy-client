@@ -536,10 +536,12 @@ export default class StatusModel {
           '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
       }
       if (countryBuilding && countryBuilding.id) {
-        ps.push(new RangedStatusParameter(countryBuilding.name, town.countryBuildingValue, 2000));
+        ps.push(new TwinTextAndRangedStatusParameter(
+          '国家施設', countryBuilding.name, '耐久', town.countryBuildingValue, 2000));
       }
       if (countryLaboratory && countryLaboratory.id) {
-        ps.push(new RangedStatusParameter(countryLaboratory.name, town.countryLaboratoryValue, 2000));
+        ps.push(new TwinTextAndRangedStatusParameter(
+          '国家研究', countryLaboratory.name, '耐久', town.countryLaboratoryValue, 2000));
       }
     }
     if (town.id === this.character.townId || town.countryId === this.character.countryId) {
