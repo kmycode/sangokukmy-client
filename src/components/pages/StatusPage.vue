@@ -1378,6 +1378,7 @@ ul.nav {
       flex: 1;
       padding: 4px 8px;
       overflow: auto;
+      -webkit-overflow-scrolling: touch;
 
       .content-section {
         margin-top: 24px;
