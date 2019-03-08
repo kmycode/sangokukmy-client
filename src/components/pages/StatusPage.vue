@@ -1192,11 +1192,13 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
+  overflow: hidden;
   @include media-query-lower(sm) {
     height: auto;
   }
   @include media-query-lower(md) {
     margin-bottom: 48px;
+    overflow: visible;
   }
   min-height: 180px;
   border-width: 0;
@@ -1214,7 +1216,7 @@ ul.nav {
     @include country-color-light('color');
   }
   .content-main {
-    height: calc(100% - 2rem - 48px);
+    height: calc(100% - 2rem - 44px);
     @include media-query-lower(sm) {
       height: 350px;
     }
@@ -1222,8 +1224,8 @@ ul.nav {
     -webkit-overflow-scrolling: touch;
   }
   .commands {
-    min-height: 48px;
-    padding: 4px;
+    min-height: 44px;
+    padding: 4px 4px 0 4px;
     background: $color-navigation-commands;
     button {
       margin-right: 4px;
