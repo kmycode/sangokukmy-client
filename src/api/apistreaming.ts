@@ -41,7 +41,7 @@ export default class ApiStreaming {
     // ストリーミングを初期化
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
     this.streaming.onError = (code, err) => this.onError(code, err);
-    this.streaming.uri = uri;
+    this.streaming.uri = uri + '?unique=' + Math.random() * 100000;
     this.streaming.method = method;
   }
 
