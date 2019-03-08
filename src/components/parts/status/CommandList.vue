@@ -80,8 +80,11 @@
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
     </div>
     <!-- 放置削除の通知 -->
-    <div v-show="isShowDeleteTurn" class="command-delete-turn-notify">
+    <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
       このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ deleteTurn }}</span> ターンで削除されます
+    </div>
+    <div v-else-if="list.isFewRemaining" class="alert alert-warning">
+      50ターン以内に、何も実行しないコマンドが存在します
     </div>
     <div class="command-list">
       <div v-for="command in list.commands"
@@ -227,9 +230,6 @@ $color-navigation-commands: #e0e0e0;
     }
   }
   .command-delete-turn-notify {
-    color: white;
-    background-color: #e7a;
-    padding: 4px 8px;
     .number {
       font-weight: bold;
       font-size: 24px;

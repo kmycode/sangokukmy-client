@@ -53,6 +53,13 @@ export default class CommandList {
                   t.countryBuilding === api.Town.countryBuildingSecretary);
   }
 
+  public get isFewRemaining(): boolean {
+    // コマンドの残りが少ない
+    return Enumerable.from(this.inputer.commands)
+      .where((c) => c.commandNumber <= 50)
+      .any((c) => c.type === 0);
+  }
+
   public constructor(private store: StatusStore) {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }
