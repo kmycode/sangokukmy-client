@@ -511,6 +511,10 @@ span.number { font-weight: bold; }
           align-items: center;
           .icon {
             margin-right: 12px;
+            img {
+              width: 48px;
+              height: 48px;
+            }
           }
           .message {
             flex: 1;
