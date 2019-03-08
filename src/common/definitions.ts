@@ -56,36 +56,47 @@ export const DEFAULT_ICON_NUM = 98;
 
 export const RICE_BUY_MAX = 10000;
 
+export const PAY_SAFE_MAX = 100000;
+
+/**
+ * 耐久ごとの、利用できる国庫の金の量
+ */
+export const SAFE_PER_ENDURANCE = 2000;
+
+export const COUNTRY_BUILDING_MAX = 2000;
+
 /**
  * 兵種
  */
 export class SoldierType {
   public constructor(public id: number,
                      public name: string,
-                     public money?: number,
+                     public money: number,
+                     public technology: number,
                      public attackPower?: string,
                      public defencePower?: string,
                      public description?: string) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
-  new SoldierType(1, '雑兵', 10, '0', '0'),
-  new SoldierType(2, '禁兵', 10, '15', '15'),
-  new SoldierType(100, '雑兵・禁兵', 10, '0 / 10', '0 / 10', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に10のボーナスを得る'),
-  new SoldierType(3, '軽歩兵',  20, '10', '0', '軽装備の歩兵'),
-  new SoldierType(4, '弓兵',    30, '0', '15', '弓を持った兵士'),
-  new SoldierType(5, '軽騎兵',  50, '35', '10', '軽装備の騎兵'),
-  new SoldierType(6, '強弩兵',  70, '10', '35', '弩を持った兵士'),
-  new SoldierType(7, '神鬼兵',  100, '知力', '0', '攻撃力に知力が補正として加算される'),
-  new SoldierType(8, '重歩兵',  125, '50', '30', '重装備の歩兵'),
-  new SoldierType(9, '重騎兵',  150, '60', '40', '重装備の騎兵'),
-  new SoldierType(10, '智攻兵', 175, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
-  new SoldierType(11, '連弩兵', 200, '90', '30', '連弩を持った兵士'),
-  new SoldierType(12, '壁守兵', 225, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
-  new SoldierType(14, '井闌', 300, '0', '0', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
-  new SoldierType(100, '守兵A', 32767, '0', '0', ''),
-  new SoldierType(101, '守兵B', 32767, '0', '0', ''),
-  new SoldierType(102, '守兵C', 32767, '0', '0', ''),
-  new SoldierType(103, '守兵D', 32767, '0', '0', ''),
+  new SoldierType(1, '雑兵', 1, 0, '0', '0'),
+  new SoldierType(2, '禁兵', 1, 0, '15', '15'),
+  new SoldierType(500, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', 'このゲームにおける最弱の兵士。ただし、首都で徴兵した場合は禁兵が徴兵され、攻撃力・防御力に10のボーナスを得る'),
+  new SoldierType(3, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
+  new SoldierType(4, '弓兵',    3, 200,  '0', '15', '弓を持った兵士'),
+  new SoldierType(5, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),
+  new SoldierType(6, '強弩兵',  7, 400, '10', '35', '弩を持った兵士'),
+  new SoldierType(7, '神鬼兵',  10, 500, '知力', '0', '攻撃力に知力が補正として加算される'),
+  new SoldierType(8, '重歩兵',  12, 600, '50', '30', '重装備の歩兵'),
+  new SoldierType(9, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
+  new SoldierType(10, '智攻兵', 17, 800, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
+  new SoldierType(11, '連弩兵', 20, 900, '90', '30', '連弩を持った兵士'),
+  new SoldierType(12, '壁守兵', 22, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
+  new SoldierType(14, '井闌', 30, 500, '0', '0', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
+  new SoldierType(15, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
+  new SoldierType(100, '守兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(101, '守兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(102, '守兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(103, '守兵D', 32767, 32767, '0', '0', ''),
 ];
 
 /**
@@ -154,15 +165,24 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       const p = Enumerable.from(params);
       const soldierType = p.firstOrDefault((pp) => pp.type === 1);
       const soldierNumber = p.firstOrDefault((pp) => pp.type === 2);
-      if (!soldierType || !soldierNumber) {
+      const isCustom = p.firstOrDefault((pp) => pp.type === 3);
+      if (!soldierType || !soldierNumber || !isCustom) {
         return 'エラー (10:2)';
       }
 
-      const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
-      if (type && soldierNumber.numberValue !== undefined) {
-        return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
+      if (isCustom.numberValue === 0) {
+        const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
+        if (type && soldierNumber.numberValue !== undefined) {
+          return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
+        } else {
+          return 'エラー (10:3)';
+        }
       } else {
-        return 'エラー (10:3)';
+        if (soldierNumber.numberValue) {
+          return format.replace('{0}', '%0%').replace('{1}', soldierNumber.numberValue.toString());
+        } else {
+          return 'エラー (10:4)';
+        }
       }
     } else {
       return 'エラー (10:1)';
@@ -237,6 +257,47 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(31, '都市施設強化'),
   new CommandNameResolver(32, '国家施設強化'),
   new CommandNameResolver(33, '研究所強化'),
+  new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const money = p.firstOrDefault((pp) => pp.type === 1);
+      if (!money || !money.numberValue) {
+        return 'エラー (34:2)';
+      }
+      return format.replace('{0}', money.numberValue.toString());
+    } else {
+      return 'エラー (34:1)';
+    }
+  }),
+  new CommandNameResolver(35, '国庫から %読込中% へ金 {1} を搬出', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const money = p.firstOrDefault((pp) => pp.type === 2);
+      if (!money || !money.numberValue) {
+        return 'エラー (35:2)';
+      }
+      return format.replace('{1}', money.numberValue.toString());
+    } else {
+      return 'エラー (35:1)';
+    }
+  }),
+  new CommandNameResolver(36, '焼討'),
+  new CommandNameResolver(37, '扇動'),
+  new CommandNameResolver(38, '兵種 %0% を研究'),
+  new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const type = p.firstOrDefault((pp) => pp.type === 1);
+      if (!type || !type.numberValue) {
+        return 'エラー (39:2)';
+      }
+      return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' : '集合官');
+    } else {
+      return 'エラー (39:1)';
+    }
+  }),
+  new CommandNameResolver(40, '政務官 %読込中% を 部隊 へ配属'),
+  new CommandNameResolver(41, '政務官 %読込中% を解任'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -279,6 +340,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(23, '異民族', '#088'),
   new EventType(24, '農民反乱', '#088'),
   new EventType(25, '攻略', '#080'),
+  new EventType(26, '焼討', '#2a4'),
+  new EventType(27, '扇動', '#2a4'),
 ];
 
 /**
@@ -374,6 +437,11 @@ export const TOWN_BUILDINGS: BuildingType[] = [
  */
 export const COUNTRY_BUILDINGS: BuildingType[] = [
   new BuildingType(0, '国家施設なし'),
+  new BuildingType(1, '国庫'),
+  new BuildingType(2, '諜報府'),
+  new BuildingType(3, '斡旋所'),
+  new BuildingType(4, '兵種研究所'),
+  new BuildingType(5, '政務庁'),
 ];
 /**
  * 研究所

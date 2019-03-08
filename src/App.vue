@@ -28,6 +28,9 @@ import * as api from '@/api/api';
 Vue.filter('zeroformat', (value: number, length: number): string | null => {
   return ('0000000000' + value).slice(-length);
 });
+Vue.filter('commaformat', (value: number): string | null => {
+  return Number(value).toLocaleString();
+});
 Vue.filter('gamedate', (value: api.GameDateTime): string => {
   return api.GameDateTime.toFormatedString(value);
 });

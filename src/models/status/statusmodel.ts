@@ -15,6 +15,7 @@ import { StatusParameter,
   TwinNoRangeAndRangedStatusParameter,
   NoRangeDelayStatusParameter,
   TwinTextAndRangedStatusParameter,
+  LargeTextStatusParameter,
 } from '@/models/status/statusparameter';
 import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
@@ -25,6 +26,7 @@ import OnlineModel from './onlinemodel';
 import StatusStore from './statusstore';
 import UnitModel from './unitmodel';
 import ValueUtil from '../common/ValueUtil';
+import SoldierTypeModel from './soldiertypemodel';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -144,6 +146,14 @@ export default class StatusModel {
     return this.getCountry(this.character.countryId).colorId;
   }
 
+  public get countrySecretaries(): api.Character[] {
+    return Enumerable
+      .from(this.countryCharacters)
+      .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
+                    c.aiType === api.Character.aiSecretaryUnitGather)
+      .toArray();
+  }
+
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
     return Enumerable.from(this.getCountry(this.character.countryId).townWars)
@@ -253,6 +263,34 @@ export default class StatusModel {
     return api.Town.getMoneyToRicePrice(this.characterTown, assets);
   }
 
+  public get safeMaxValue(): number {
+    // 自国の金庫の最大容量
+    const items = Enumerable.from(this.towns)
+      .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSafe);
+    const val = this.calcCountryBuildingPower(items) * def.COUNTRY_BUILDING_MAX * def.SAFE_PER_ENDURANCE;
+    return Math.floor(val);
+  }
+
+  public get soldierLaboratorySize(): number {
+    // 兵種研究所の強さ
+    const items = Enumerable.from(this.towns)
+    .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSoldier);
+    const val = this.calcCountryBuildingPower(items);
+    return val;
+  }
+
+  private calcCountryBuildingPower(towns: Enumerable.IEnumerable<api.TownBase>) {
+    let power = 0;
+    let addSize = 1;
+    towns
+      .orderByDescending((t) => t.countryBuildingValue)
+      .forEach((t) => {
+        power += (t.countryBuildingValue / def.COUNTRY_BUILDING_MAX) * addSize;
+        addSize *= 2.0 / 3;
+      });
+    return power;
+  }
+
   // #endregion
 
   // #region Streaming
@@ -315,6 +353,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryMessage>(
       api.CountryMessage.typeId,
       (obj) => this.onCountryMessageReceived(obj));
+    ApiStreaming.status.on<api.CharacterSoldierType>(
+      api.CharacterSoldierType.typeId,
+      (obj) => this.soldierTypes.onItemReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
@@ -371,6 +412,10 @@ export default class StatusModel {
     } else if (signal.type === 7) {
       // リセットされた
       location.reload();
+    } else if (signal.type === 8) {
+      // 守備中に戦闘があった
+      const notify = signal.data.isWin ? NotificationService.defenderWon : NotificationService.defenderLose;
+      notify.notifyWithParameter(signal.data.townName, signal.data.targetName);
     }
   }
 
@@ -599,6 +644,7 @@ export default class StatusModel {
       if (country.lastMoneyIncomes === undefined && this.character.countryId === country.id) {
         country.lastMoneyIncomes = old.lastMoneyIncomes;
         country.lastRiceIncomes = old.lastRiceIncomes;
+        country.safeMoney = old.safeMoney;
       }
 
       // 同盟データがｒｙ
@@ -656,9 +702,13 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
-    if (country.id > 0 && country.lastMoneyIncomes !== undefined && country.lastRiceIncomes !== undefined) {
+    if (country.id > 0 &&
+        country.lastMoneyIncomes !== undefined &&
+        country.lastRiceIncomes !== undefined &&
+        country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+      ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
     if (country.alliances) {
       country.alliances.forEach((ca) => {
@@ -700,9 +750,9 @@ export default class StatusModel {
     return api.Country.default;
   }
 
-  public updateCountryCharacters() {
+  public updateCountryCharacters(countryId: number = this.country.id) {
     this.isUpdatingCountryCharacters = true;
-    api.Api.getAllCharactersBelongsCountry(this.country.id)
+    api.Api.getAllCharactersBelongsCountry(countryId)
       .then((characters) => {
         characters.forEach((c) => {
           if (c.commands) {
@@ -719,6 +769,10 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingCountryCharacters = false;
       });
+  }
+
+  public updateCharacterCountryCharacters() {
+    this.updateCountryCharacters(this.character.countryId);
   }
 
   private onCountryChanged() {
@@ -861,6 +915,18 @@ export default class StatusModel {
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
+  public get canSafeOut(): boolean {
+    // 自分が国庫搬出権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canSecretary(): boolean {
+    // 自分が政務官任命権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
@@ -973,7 +1039,6 @@ export default class StatusModel {
 
       // 保存
       itemsSetter(country, newItems);
-      console.dir(country);
     });
   }
 
@@ -1232,13 +1297,24 @@ export default class StatusModel {
     ps.push(new NoRangeStatusParameter('貢献', character.contribution));
     ps.push(new NoRangeStatusParameter('階級値', character.classValue));
     ps.push(new TextStatusParameter('階級', api.Character.getClassName(character)));
-    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
-    if (soldierType) {
-      ps.push(new TextStatusParameter('兵種', soldierType.name));
+    if (character.soldierType !== 15) {
+      const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
+      if (soldierType) {
+        ps.push(new TextStatusParameter('兵種', soldierType.name));
+      } else {
+        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+      }
     } else {
-      ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+      const soldierType = Enumerable
+        .from(this.store.soldierTypes)
+        .firstOrDefault((st) => st.id === character.characterSoldierTypeId);
+      if (soldierType) {
+        ps.push(new TextStatusParameter('兵種', soldierType.name));
+      } else {
+        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
+      }
     }
-    ps.push(new RangedStatusParameter('兵士', character.soldierNumber, character.leadership));
+    ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     return ps;
   }
@@ -1258,6 +1334,12 @@ export default class StatusModel {
         });
     }
   }
+
+  // #endregion
+
+  // #region CharacterSoldierType
+
+  public soldierTypes = new SoldierTypeModel(this.store);
 
   // #endregion
 

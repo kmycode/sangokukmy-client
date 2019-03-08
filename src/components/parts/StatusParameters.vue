@@ -23,6 +23,12 @@
           <span class="current">{{ param.value }}</span>
         </div>
       </div>
+      <div v-if="param.type === 8" class="item-container">
+        <div class="name">{{ param.name }}</div>
+        <div class="value value-text value-text-large">
+          <span class="current">{{ param.value }}</span>
+        </div>
+      </div>
       <div v-if="param.type === 4" class="item-container">
         <div class="value value-icon">
           <CharacterIcon :icons="param.icons"/>
@@ -175,6 +181,11 @@ export default class StatusParametersPanel extends Vue {
           justify-content: center;
           .current {
             font-size: 0.9rem;
+          }
+          &.value-text-large {
+            .current {
+              font-size: 1.2rem;
+            }
           }
         }
       }

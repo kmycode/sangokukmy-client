@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div id="top-page">
     <div class="container">
       <div class="row">
@@ -23,6 +23,10 @@
         <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
           <div v-show="isLoadingSystem && nextMonthSeconds <= -15" class="not-loading-message-panel">
             <h2>読込に通常より時間がかかっています...</h2>
+            <h3>ページのリロードで解決しますか？</h3>
+            <div>
+              このページを何度かリロードすることで解決することがあります。パソコンの場合は<code>Shift+F5</code>または<code>Shift+Cmd+R</code>、スマホの場合はデスクトップモード（iOSのSafariの場合は更新ボタン長押し）もお試しください
+            </div>
             <h3>お使いのネットワーク回線は通常より混雑していませんか？</h3>
             <div>
               他のサイト（<a href="https://google.com/" target="_blank">Google</a>など）にもアクセスして、ネットワーク回線に問題がないか確認してください
@@ -56,7 +60,13 @@
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
-      <div class="row">
+      <div v-show="isEntry">
+        <EntryPage :system="system"
+                   :countries="countries"
+                   :countryMessages="countryMessages"
+                   :towns="towns"/>
+      </div>
+      <div v-show="!isEntry" class="row">
         <div class="top-content col-sm-12">
           <ul class="nav nav-tabs nav-fill">
             <li class="nav-item"><a class="nav-link active" href="#" @click.prevent.stop="">トップページ</a></li>
@@ -67,7 +77,7 @@
           </ul>
         </div>
       </div>
-      <div id="app-index" class="row">
+      <div v-show="!isEntry" id="app-index" class="row">
         <div class="col-sm-12 loading-container">
           <!--マップログ（細字）-->
           <div class="top-table-flat">
@@ -96,6 +106,7 @@ import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
+import EntryPage from '@/components/pages/EntryPage.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
 import ArrayUtil from '../../models/common/arrayutil';
 import Streaming from './../../api/streaming';
@@ -110,6 +121,7 @@ import OnlineModel from '@/models/status/onlinemodel';
     MapLogLine,
     RealDateTime,
     MiniCharacterList,
+    EntryPage,
     Footer,
   },
 })
@@ -119,18 +131,21 @@ export default class TopPage extends Vue {
   private updateLogs = new Array<api.CharacterUpdateLog>();
   private system: api.SystemData = new api.SystemData();
   private countries: api.Country[] = [];
+  private countryMessages: api.CountryMessage[] = [];
+  private towns: api.Town[] = [];
   private nextMonthSeconds = 0;
   private isLoadingSystem = true;
   private onlines = new OnlineModel();
 
   private nextMonthSecondsTimer = 0;
+  private isEntry = false;
 
   public login() {
     this.$emit('login-start');
   }
 
   public entry() {
-    this.$emit('entry-start');
+    this.isEntry = !this.isEntry;
   }
 
   private created() {
@@ -153,6 +168,14 @@ export default class TopPage extends Vue {
     });
     ApiStreaming.top.on<api.Country>(api.Country.typeId, (log) => {
       ArrayUtil.addItem(this.countries, log);
+    });
+    ApiStreaming.top.on<api.CountryMessage>(api.CountryMessage.typeId, (log) => {
+      if (log.type === api.CountryMessage.typeSolicitation) {
+        ArrayUtil.addItemUniquely(this.countryMessages, log, (cm) => cm.countryId);
+      }
+    });
+    ApiStreaming.top.on<api.Town>(api.Town.typeId, (log) => {
+      ArrayUtil.addItem(this.towns, log);
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
       ArrayUtil.addLog(this.mlogs, log, 5);

@@ -18,6 +18,48 @@ export default class CommandList {
     return this.inputer.commands;
   }
 
+  public get canUseCountrySafe(): boolean {
+    // 国庫を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSafe);
+  }
+
+  public get canUseCountrySpy(): boolean {
+    // 諜報府を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSpy);
+  }
+
+  public get canUseCountryWork(): boolean {
+    // 職業斡旋を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingWork);
+  }
+
+  public get canUseCountrySoldier(): boolean {
+    // 兵種研究を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSoldier);
+  }
+
+  public get canUseCountrySecretary(): boolean {
+    // 政務官を使えるか
+    return Enumerable.from(this.store.towns)
+      .any((t) => t.countryId === this.store.character.countryId &&
+                  t.countryBuilding === api.Town.countryBuildingSecretary);
+  }
+
+  public get isFewRemaining(): boolean {
+    // コマンドの残りが少ない
+    return Enumerable.from(this.inputer.commands)
+      .where((c) => c.commandNumber <= 50)
+      .any((c) => c.type === 0);
+  }
+
   public constructor(private store: StatusStore) {
     this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
   }

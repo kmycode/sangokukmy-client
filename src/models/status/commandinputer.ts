@@ -33,10 +33,17 @@ export default class CommandInputer {
     this.inputCommandPrivate(commandType);
   }
 
-  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number) {
+  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number, isCustom: boolean) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, soldierType),
-                        new api.CharacterCommandParameter(2, soldierNumber));
+                        new api.CharacterCommandParameter(2, soldierNumber),
+                        new api.CharacterCommandParameter(3, isCustom ? 1 : 0));
+    });
+  }
+
+  public inputSoldierResearchCommand(commandType: number, soldierType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, soldierType));
     });
   }
 
@@ -69,6 +76,38 @@ export default class CommandInputer {
     });
   }
 
+  public inputSafeInCommand(commandType: number, money: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, money));
+    });
+  }
+
+  public inputSafeOutCommand(commandType: number, charaId: number, money: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, charaId));
+      c.parameters.push(new api.CharacterCommandParameter(2, money));
+    });
+  }
+
+  public inputSecretaryAddCommand(commandType: number, type: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
+    });
+  }
+
+  public inputSecretaryCommand(commandType: number, id: number, unitId: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, unitId));
+    });
+  }
+
+  public inputSecretaryRemoveCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -87,24 +126,6 @@ export default class CommandInputer {
             c.isSelected = false;
           });
           NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
-
-          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
-          if (commandType === 19) {
-            // 米売買
-            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
-              .then((commands) => {
-                Enumerable
-                  .from(commands)
-                  .join(selectCommands,
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (n, o) => { return { oldCommand: o, newCommand: n, }; })
-                  .forEach((data) => {
-                    data.oldCommand.parameters = data.newCommand.parameters;
-                    this.updateCommandName(data.oldCommand);
-                  });
-              });
-          }
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
@@ -253,9 +274,44 @@ export default class CommandInputer {
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
-    } else if (command.type === 15) {
+    } else if (command.type === 10 || command.type === 38) {
+      // 徴兵、兵種研究
+      const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
+      if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
+        const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+        if (typeId) {
+          const type = Enumerable.from(this.store.soldierTypes).firstOrDefault((t) => t.id === typeId.numberValue);
+          if (type) {
+            command.name = command.name.replace('%0%', type.name);
+          } else {
+            command.name = 'エラー (' + command.type + ':B)';
+          }
+        } else {
+          command.name = 'エラー (' + command.type + ':A)';
+        }
+      }
+    } else if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
-      // 登用
+      // 登用、国庫搬出、政務官削除、配属
+
+      // 政務官配属（部隊名）
+      if (command.type === 40) {
+        const targetUnitId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 2);
+        if (targetUnitId && targetUnitId.numberValue) {
+          const unit = Enumerable.from(this.store.units).firstOrDefault((u) => u.id === targetUnitId.numberValue);
+          if (unit) {
+            command.name = command.name.replace('部隊', unit.name);
+          } else {
+            command.name = 'エラー (' + command.type + ':AB)';
+            return;
+          }
+        } else {
+          command.name = 'エラー (' + command.type + ':AA)';
+          return;
+        }
+      }
+
+      // 武将名をロード
       const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetCharacterId && targetCharacterId.numberValue) {
         api.Api.getCharacter(targetCharacterId.numberValue)

@@ -25,6 +25,14 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(8)">市場拡大</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(9)">城壁増築</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
+        <button v-if="list.canUseCountrySafe" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
+        <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')">国庫搬出</button>
+        <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(36)">焼討</button>
+        <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(37)">扇動</button>
+        <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政務官募集</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政務官配属</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政務官解任</button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
@@ -72,8 +80,11 @@
       <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
     </div>
     <!-- 放置削除の通知 -->
-    <div v-show="isShowDeleteTurn" class="command-delete-turn-notify">
+    <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
       このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ deleteTurn }}</span> ターンで削除されます
+    </div>
+    <div v-else-if="list.isFewRemaining" class="alert alert-warning">
+      50ターン以内に、何も実行しないコマンドが存在します
     </div>
     <div class="command-list">
       <div v-for="command in list.commands"
@@ -103,6 +114,8 @@ import * as def from '@/common/definitions';
 export default class CommandListView extends Vue {
   @Prop() private list!: CommandList;
   @Prop() private characterDeleteTurn!: number;
+  @Prop() private canSafeOut!: boolean;
+  @Prop() private canSecretary!: boolean;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;
@@ -217,9 +230,6 @@ $color-navigation-commands: #e0e0e0;
     }
   }
   .command-delete-turn-notify {
-    color: white;
-    background-color: #e7a;
-    padding: 4px 8px;
     .number {
       font-weight: bold;
       font-size: 24px;
