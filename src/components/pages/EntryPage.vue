@@ -129,7 +129,7 @@
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
-              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}</div>
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
@@ -140,7 +140,7 @@
             </div>
           </div>
           <div class="detail">
-            地図上の都市をクリックして選択してください。選択した都市に国があれば、そこへ仕官します
+            地図上の都市をクリックして選択してください。選択した都市に国があれば、そこへ仕官します。なお、48年1月までは、人数の多い国に仕官することはできません
           </div>
         </div>
       </div>
@@ -272,7 +272,12 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkTown(): boolean {
-    return this.town.id !== 0;
+    if (this.town.id !== 0) {
+      const extraData = this.getExtraData(this.town.countryId);
+      return !extraData.isJoinLimited;
+    } else {
+      return false;
+    }
   }
 
   private get isOkEstablishSelection(): boolean {
@@ -350,8 +355,8 @@ export default class EntryPage extends Vue {
     }, 100);
   }
 
-  private getExtraData(country: api.Country): api.CountryExtraData {
-    const data = ArrayUtil.findUniquely(this.extraData.countryData, country.id, (ed) => ed.countryId);
+  private getExtraData(countryId: number): api.CountryExtraData {
+    const data = ArrayUtil.findUniquely(this.extraData.countryData, countryId, (ed) => ed.countryId);
     if (data) {
       return data;
     } else {
@@ -514,6 +519,10 @@ span.number { font-weight: bold; }
         }
         .country-name {
           align-self: center;
+          .is-limited {
+            color: red;
+            font-weight: bold;
+          }
         }
         .country-message {
           display: flex;
