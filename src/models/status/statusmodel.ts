@@ -146,6 +146,14 @@ export default class StatusModel {
     return this.getCountry(this.character.countryId).colorId;
   }
 
+  public get countrySecretaries(): api.Character[] {
+    return Enumerable
+      .from(this.countryCharacters)
+      .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
+                    c.aiType === api.Character.aiSecretaryUnitGather)
+      .toArray();
+  }
+
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
     return Enumerable.from(this.getCountry(this.character.countryId).townWars)
@@ -905,6 +913,12 @@ export default class StatusModel {
 
   public get canSafeOut(): boolean {
     // 自分が国庫搬出権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canSecretary(): boolean {
+    // 自分が政務官任命権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }

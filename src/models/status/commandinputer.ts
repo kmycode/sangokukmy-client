@@ -89,6 +89,25 @@ export default class CommandInputer {
     });
   }
 
+  public inputSecretaryAddCommand(commandType: number, type: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
+    });
+  }
+
+  public inputSecretaryCommand(commandType: number, id: number, unitId: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, unitId));
+    });
+  }
+
+  public inputSecretaryRemoveCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -271,9 +290,28 @@ export default class CommandInputer {
           command.name = 'エラー (' + command.type + ':A)';
         }
       }
-    } else if (command.type === 15 || command.type === 35) {
+    } else if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
-      // 登用、国庫搬出
+      // 登用、国庫搬出、政務官削除、配属
+
+      // 政務官配属（部隊名）
+      if (command.type === 40) {
+        const targetUnitId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 2);
+        if (targetUnitId && targetUnitId.numberValue) {
+          const unit = Enumerable.from(this.store.units).firstOrDefault((u) => u.id === targetUnitId.numberValue);
+          if (unit) {
+            command.name = command.name.replace('部隊', unit.name);
+          } else {
+            command.name = 'エラー (' + command.type + ':AB)';
+            return;
+          }
+        } else {
+          command.name = 'エラー (' + command.type + ':AA)';
+          return;
+        }
+      }
+
+      // 武将名をロード
       const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetCharacterId && targetCharacterId.numberValue) {
         api.Api.getCharacter(targetCharacterId.numberValue)

@@ -284,6 +284,20 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(36, '焼討'),
   new CommandNameResolver(37, '扇動'),
   new CommandNameResolver(38, '兵種 %0% を研究'),
+  new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const type = p.firstOrDefault((pp) => pp.type === 1);
+      if (!type || !type.numberValue) {
+        return 'エラー (39:2)';
+      }
+      return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' : '集合官');
+    } else {
+      return 'エラー (39:1)';
+    }
+  }),
+  new CommandNameResolver(40, '政務官 %読込中% を 部隊 へ配属'),
+  new CommandNameResolver(41, '政務官 %読込中% を解任'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -426,6 +440,8 @@ export const COUNTRY_BUILDINGS: BuildingType[] = [
   new BuildingType(1, '国庫'),
   new BuildingType(2, '諜報府'),
   new BuildingType(3, '斡旋所'),
+  new BuildingType(4, '兵種研究所'),
+  new BuildingType(5, '政務庁'),
 ];
 /**
  * 研究所

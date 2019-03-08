@@ -150,6 +150,7 @@
           <CommandListView :list="model.commands"
                            :characterDeleteTurn="model.character.deleteTurn"
                            :canSafeOut="model.canSafeOut"
+                           :canSecretary="model.canSecretary"
                            @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->
@@ -696,6 +697,77 @@
           </div>
         </div>
       </div>
+      <!-- 政務官募集 -->
+      <div v-show="isOpenAddSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官募集</h2>
+        <div class="dialog-content dialog-content-training">
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官</button>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
+          <div class="alert alert-warning">１国で雇える政務官は１人までです（国家研究により変動の場合があります）</div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenAddSecretaryDialog = false">キャンセル</button>
+          </div>
+        </div>
+      </div>
+      <!-- 政務官 -->
+      <div v-show="isOpenSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属／転属</h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countrySecretaries"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+            <div class="unit-list">
+              <UnitPicker :units="model.unitModel.units"
+                          :countries="model.countries"
+                          v-model="targetUnit"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters || this.model.unitModel.isUpdating"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSecretaryDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0 && targetUnit.id > 0" @click="model.commands.inputer.inputSecretaryCommand(40, targetSecretary.id, targetUnit.id); isOpenSecretaryDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 政務官解任 -->
+      <div v-show="isOpenRemoveSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官解任</h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countrySecretaries"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+            <div class="unit-list">
+              <UnitPicker :units="model.unitModel.units"
+                          :countries="model.countries"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters || this.model.unitModel.isUpdating"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenRemoveSecretaryDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryRemoveCommand(41, targetSecretary.id); isOpenRemoveSecretaryDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -711,6 +783,7 @@ import MapLogList from '@/components/parts/MapLogList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
+import UnitPicker from '@/components/parts/UnitPicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
 import ThreadBbs from '@/components/parts/ThreadBbs.vue';
 import CommandListView from '@/components/parts/status/CommandList.vue';
@@ -738,6 +811,7 @@ import EventObject from '@/models/common/EventObject';
     SimpleCharacterList,
     MiniCharacterList,
     GameDateTimePicker,
+    UnitPicker,
     BattleLogView,
     ThreadBbs,
     CommandListView,
@@ -779,6 +853,9 @@ export default class StatusPage extends Vue {
   public isOpenSafeOutDialog: boolean = false;
   public isOpenTownWarDialog: boolean = false;
   public isOpenOppositionCharactersDialog: boolean = false;
+  public isOpenSecretaryDialog: boolean = false;
+  public isOpenAddSecretaryDialog: boolean = false;
+  public isOpenRemoveSecretaryDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -787,6 +864,8 @@ export default class StatusPage extends Vue {
   public isShowOnlines: boolean = false;
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
+  public targetSecretary: api.Character = new api.Character(-1);
+  public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
   public payRiceOrMoney: number = def.RICE_BUY_MAX;
@@ -804,7 +883,8 @@ export default class StatusPage extends Vue {
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
-      || this.isOpenResearchSoldierDialog;
+      || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
+      || this.isOpenRemoveSecretaryDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -836,6 +916,19 @@ export default class StatusPage extends Vue {
       this.isCustomSoldierTypeSelected = true;
       this.isOpenResearchSoldierDialog = true;
       this.selectedCustomSoliderType = new api.CharacterSoldierType();
+    } else if (event === 'secretary') {
+      this.targetSecretary.id = -1;
+      this.targetUnit.id = -1;
+      this.model.unitModel.updateUnits();
+      this.model.updateCharacterCountryCharacters();
+      this.isOpenSecretaryDialog = true;
+    } else if (event === 'secretary-add') {
+      this.isOpenAddSecretaryDialog = true;
+    } else if (event === 'secretary-remove') {
+      this.targetSecretary.id = -1;
+      this.model.unitModel.updateUnits();
+      this.model.updateCharacterCountryCharacters();
+      this.isOpenRemoveSecretaryDialog = true;
     }
   }
 
@@ -846,7 +939,8 @@ export default class StatusPage extends Vue {
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
-      this.isOpenResearchSoldierDialog = false;
+      this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
+      this.isOpenRemoveSecretaryDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1327,6 +1421,7 @@ ul.nav {
           .character-list {
             flex: 1;
             overflow: auto;
+            -webkit-overflow-scrolling: touch;
           }
 
           .promotion-input {
@@ -1334,6 +1429,26 @@ ul.nav {
               width: 100%;
               height: 100px;
             }
+          }
+        }
+      }
+
+      &.dialog-content-secretary {
+        .dialog-content-secretary-main {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+
+          .character-list {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .unit-list {
+            flex: 0.8;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
           }
         }
       }

@@ -30,6 +30,9 @@
         <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(36)">焼討</button>
         <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(37)">扇動</button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政務官募集</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政務官配属</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政務官解任</button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
@@ -109,6 +112,7 @@ export default class CommandListView extends Vue {
   @Prop() private list!: CommandList;
   @Prop() private characterDeleteTurn!: number;
   @Prop() private canSafeOut!: boolean;
+  @Prop() private canSecretary!: boolean;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;

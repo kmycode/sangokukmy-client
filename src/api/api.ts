@@ -368,6 +368,10 @@ export class AuthenticationData {
 export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
+  public static readonly aiHuman = 0;
+  public static readonly aiSecretaryPatroller = 8;
+  public static readonly aiSecretaryUnitGather = 9;
+
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
     return def.CLASS_NAMES[lank];
@@ -377,6 +381,7 @@ export class Character implements IIdentitiedEntity {
                      public aliasId: string = '',
                      public name: string = '',
                      public countryId: number = 0,
+                     public aiType: number = 0,
                      public strong: number = 0,
                      public strongEx: number = 0,
                      public intellect: number = 0,
@@ -590,6 +595,7 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly countryBuildingSpy = 2;
   public static readonly countryBuildingWork = 3;
   public static readonly countryBuildingSoldier = 4;
+  public static readonly countryBuildingSecretary = 5;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;
