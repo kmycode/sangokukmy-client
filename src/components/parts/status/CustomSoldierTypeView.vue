@@ -76,6 +76,9 @@
         <div class="label">名前</div>
         <div class="value"><input type="text" v-model="selectedType.name"></div>
       </div>
+      <div v-show="selectedType.name.length > 10" class="alert alert-warning">
+        文字数は10以下にしてください（現在：{{ selectedType.name.length }}）
+      </div>
       <div class="data-row">
         <div class="label">雑兵</div>
         <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.commonSoldier"></div>
