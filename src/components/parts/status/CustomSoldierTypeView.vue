@@ -141,7 +141,7 @@
         <div class="result">{{ researchCost }}</div>
       </div>
       <div class="alert alert-warning">
-        合計が 10 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
+        合計が 10 - 15 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
       </div>
       <div class="buttons">
         <button type="button" class="btn btn-light" @click="cancel()">キャンセル</button>
