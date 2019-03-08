@@ -187,11 +187,4 @@ export default class UnitModel {
         });
     }
   }
-
-  public unitMemberCharacters(unit: api.Unit): api.Character[] {
-    // 部隊のメンバの武将リスト
-    return Enumerable.from(unit.members)
-      .select((um) => um.character)
-      .toArray();
-  }
 }

@@ -26,20 +26,10 @@
         </div>
       </div>
       <div class="unit-list">
-        <div v-for="unit in model.units"
-              :key="unit.id"
-              :class="{ 'unit-list-item': true, 'selected': unit.isSelected }"
-              @click="model.toggleUnit(unit)">
-          <div class="left-side">
-            <CharacterIcon :icon="unit.leader.character.mainIcon"/>
-          </div>
-          <div class="right-side">
-            <div class="unit-name">{{ unit.name }}<span v-show="unit.isLimited" class="unit-limited">制限中</span></div>
-            <div class="unit-message">{{ unit.message }}</div>
-            <div class="unit-leader">隊長: {{ unit.leader.character.name }}</div>
-            <div class="unit-members"><MiniCharacterList :characters="model.unitMemberCharacters(unit)" :countries="model.countries"/></div>
-          </div>
-        </div>
+        <UnitPicker :units="model.units"
+                    :value="selectedUnit"
+                    :countries="model.countries"
+                    @input="model.toggleUnit($event)"/>
       </div>
     </div>
     <div class="loading" v-show="model.isUpdating"><div class="loading-icon"></div></div>
@@ -52,12 +42,15 @@ import * as api from '@/api/api';
 import UnitModel from '@/models/status/unitmodel';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import UnitPicker from '@/components/parts/UnitPicker.vue';
 import * as def from '@/common/definitions';
+import Enumerable from 'linq';
 
 @Component({
   components: {
     MiniCharacterList,
     CharacterIcon,
+    UnitPicker,
   },
 })
 export default class UnitListView extends Vue {
@@ -65,6 +58,10 @@ export default class UnitListView extends Vue {
   @Prop() private isShow!: boolean;
   private isShowUnitLeaderOperations: boolean = false;
   private isShowCreateUnitForm: boolean = false;
+
+  private get selectedUnit(): api.Unit | undefined {
+    return Enumerable.from(this.model.units).firstOrDefault((u) => u.isSelected);
+  }
 
   @Watch('isShow')
   private updateIsShow() {
@@ -77,50 +74,6 @@ export default class UnitListView extends Vue {
 
 <style lang="scss" scoped>
 #unit-list-view {
-
-  .unit-list {
-    margin-top: 12px;
-
-    .unit-list-item {
-      display: flex;
-      cursor: pointer;
-      padding: 4px;
-      transition: background-color .14s ease-in;
-
-      &:hover {
-        background-color: #dee0f3;
-      }
-
-      &.selected {
-        background-color: #c9cce7;
-
-        &:hover {
-          background-color: #acb0d1;
-        }
-      }
-
-      .right-side {
-        flex: 1;
-        padding-left: 8px;
-
-        .unit-name {
-          font-size: 24px;
-        }
-
-        .unit-limited {
-          color: red;
-          margin-left: 16px;
-          font-size: 14px;
-          font-weight: bold;
-        }
-
-        .unit-message {
-          padding: 4px 0;
-          color: #888;
-        }
-      }
-    }
-  }
 
   .unit-form {
     .unit-message-input {
