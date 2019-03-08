@@ -412,6 +412,10 @@ export default class StatusModel {
     } else if (signal.type === 7) {
       // リセットされた
       location.reload();
+    } else if (signal.type === 8) {
+      // 守備中に戦闘があった
+      const notify = signal.data.isWin ? NotificationService.defenderWon : NotificationService.defenderLose;
+      notify.notifyWithParameter(signal.data.townName, signal.data.targetName);
     }
   }
 

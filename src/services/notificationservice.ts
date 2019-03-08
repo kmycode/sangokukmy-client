@@ -548,6 +548,14 @@ export default class NotificationService {
     '兵種更新失敗',
     '兵種 {0} の更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly defenderWon = new NotificationServiceItem(
+    '守備勝利',
+    '{0} を守備中に {1} と戦闘し、勝利しました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly defenderLose = new NotificationServiceItem(
+    '守備敗北',
+    '{0} を守備中に {1} と戦闘し、敗北しました',
+    NotificationServiceItemDefaultType.warning);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
