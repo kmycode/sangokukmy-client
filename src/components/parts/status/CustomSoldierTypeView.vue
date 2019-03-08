@@ -165,7 +165,7 @@ import Enumerable from 'linq';
   components: {
   },
 })
-export default class CustomSOldierTypeView extends Vue {
+export default class CustomSoldierTypeView extends Vue {
   @Prop() private model!: SoldierTypeModel;
   @Prop() private buildingSize!: number;
   private isOpenSoliderDropdown: boolean = false;
@@ -205,9 +205,10 @@ export default class CustomSOldierTypeView extends Vue {
   }
 
   private save() {
-    this.model.save(this.selectedType, () => {
+    this.model.save(this.selectedType, (result) => {
       if (this.isNew) {
-        this.createNew();
+        this.selectedType = result;
+        this.isNew = false;
       }
     });
   }
