@@ -34,12 +34,12 @@ export default class CharacterIcon extends Vue {
 
 <style lang="scss" scoped>
 img {
-  border-radius: 32px;
+  border-radius: 50%;
   width: 64px;
   height: 64px;
   transition: border-radius .16s ease-in;
   &:hover {
-    border-radius: 8px;
+    border-radius: 20%;
   }
   &.hidden {
     visibility: hidden;
