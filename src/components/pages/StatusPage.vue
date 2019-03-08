@@ -658,7 +658,7 @@
             <button class="btn btn-light" @click="isOpenSafeDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button v-show="paySafeMoney > 0 && paySafeMoney <= 30000" class="btn btn-primary" @click="model.commands.inputer.inputSafeInCommand(34, paySafeMoney); isOpenSafeDialog = false">承認</button>
+            <button v-show="paySafeMoney > 0 && paySafeMoney <= 100000" class="btn btn-primary" @click="model.commands.inputer.inputSafeInCommand(34, paySafeMoney); isOpenSafeDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -693,7 +693,7 @@
             <button class="btn btn-light" @click="isOpenSafeOutDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button v-show="paySafeMoney > 0 && paySafeMoney <= 30000" class="btn btn-primary" @click="model.commands.inputer.inputSafeOutCommand(35, paySafeTarget.id, paySafeMoney); isOpenSafeOutDialog = false">承認</button>
+            <button v-show="paySafeMoney > 0 && paySafeMoney <= 100000" class="btn btn-primary" @click="model.commands.inputer.inputSafeOutCommand(35, paySafeTarget.id, paySafeMoney); isOpenSafeOutDialog = false">承認</button>
           </div>
         </div>
       </div>

@@ -56,7 +56,7 @@ export const DEFAULT_ICON_NUM = 98;
 
 export const RICE_BUY_MAX = 10000;
 
-export const PAY_SAFE_MAX = 30000;
+export const PAY_SAFE_MAX = 100000;
 
 /**
  * 耐久ごとの、利用できる国庫の金の量
