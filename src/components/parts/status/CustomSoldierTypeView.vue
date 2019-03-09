@@ -66,6 +66,14 @@
         <div class="value">{{ selectedType.seiran }}</div>
       </div>
       <div class="data-row">
+        <div class="label">兵1あたり金</div>
+        <div class="result">{{ money }}</div>
+      </div>
+      <div class="data-row">
+        <div class="label">徴兵に必要な技術</div>
+        <div class="result">{{ technology }}</div>
+      </div>
+      <div class="data-row">
         <div class="label">研究コスト残り</div>
         <div class="value">{{ selectedType.researchCost }}</div>
       </div>
@@ -128,11 +136,11 @@
         <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.seiran"></div>
       </div>
       <div class="data-row">
-        <div class="label">金</div>
+        <div class="label">兵1あたり金</div>
         <div class="result">{{ money }}</div>
       </div>
       <div class="data-row">
-        <div class="label">技術</div>
+        <div class="label">徴兵に必要な技術</div>
         <div class="result">{{ technology }}</div>
       </div>
       <div class="data-row">

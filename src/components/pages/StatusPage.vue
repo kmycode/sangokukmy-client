@@ -711,7 +711,8 @@
         <div class="dialog-content dialog-content-training">
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官</button>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
-          <div class="alert alert-warning">１国で雇える政務官は１人までです（国家研究により変動の場合があります）</div>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官</button>
+          <div class="alert alert-warning">１国で雇える政務官は３人までです（国家研究により変動の場合があります）<br>毎年1、7月に、国庫、なければ収入から代金を持っていきますので注意してください。代金は2000を基準に、政務庁の耐久によって決まります</div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
