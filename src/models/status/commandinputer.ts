@@ -280,12 +280,27 @@ export default class CommandInputer {
       if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
         const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
         if (typeId && typeId.numberValue) {
-          const type = Enumerable.from(this.store.soldierTypes).firstOrDefault((t) => t.id === typeId.numberValue);
+          const type = Enumerable
+            .from(this.store.soldierTypes)
+            .concat(this.store.soldierTypeCaches)
+            .firstOrDefault((t) => t.id === typeId.numberValue);
           if (type) {
             command.name = command.name.replace('%0%', type.name);
           } else {
-            // 自分のじゃない研究中の兵種は常に取得できない
-            command.name = '兵種研究';
+            if (command.type === 10) {
+              // 徴兵
+              api.Api.getSoldierType(typeId.numberValue)
+                .then((t) => {
+                  command.name = command.name.replace('%0%', t.name);
+                  this.store.soldierTypeCaches.push(t);
+                })
+                .catch(() => {
+                  command.name = 'エラー (' + command.type + ':C)';   // Bは欠番
+                });
+            } else {
+              // 自分のじゃない研究中の兵種は常に取得できない
+              command.name = '兵種研究';
+            }
           }
         } else {
           command.name = 'エラー (' + command.type + ':A)';
