@@ -1,6 +1,8 @@
 # 三国志NET KMY Version クライアント
 Node.jsとVue.jsとTypeScriptとSCSSでつくったる！！！！！！（フラグ）
 
+三国志NET KMY Versionは、[https://sangoku.kmycode.net/](https://sangoku.kmycode.net/) で稼働中です。興味のある方は参加してみてくださいなのですー。
+
 サーバは[こちら](https://github.com/kmycode/sangokukmy)へ
 
 ## 画像について
