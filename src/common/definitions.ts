@@ -416,6 +416,10 @@ export const TOWN_WAR_STATUSES: TownWarStatus[] = [
 ];
 
 export class BuildingType {
+  public static get default(): BuildingType {
+    return new BuildingType(0, '');
+  }
+
   public constructor(public id: number,
                      public name: string) {}
 }

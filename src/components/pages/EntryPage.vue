@@ -168,6 +168,14 @@
             <span v-show="town.type === 4">大都市に建国した場合、<u>太守府という都市施設が建てられ、序盤は特に苛烈な、大きなハンデを背負うことになる</u>ため、<strong>初心者にはおすすめできません</strong></span>
           </div>
         </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+          <div class="label">選択都市の国家施設</div>
+          <div class="field">
+            {{ countryBuilding.name }}
+          </div>
+          <div class="detail">
+          </div>
+        </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryName, }">
           <div class="label">国名</div>
           <div class="field">
@@ -350,6 +358,17 @@ export default class EntryPage extends Vue {
       this.isOkSumOfAttributes &&
       this.isOkInvitationCode
       ;
+  }
+
+  public get countryBuilding(): def.BuildingType {
+    const result = Enumerable
+      .from(def.COUNTRY_BUILDINGS)
+      .firstOrDefault((b) => this.town.countryBuilding === b.id);
+    if (result) {
+      return result;
+    } else {
+      return def.BuildingType.default;
+    }
   }
 
   private initializeRecaptcha() {
