@@ -23,7 +23,7 @@
             <input type="text" v-model="character.name">
           </div>
           <div class="detail">
-            1 - 12 文字になるようにしてください。他の人と同じ名前にはできません
+            1 - 12 文字になるようにしてください。他の人と同じ名前にはできません。_（アンダーバー）は使用できません
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkAliasId, }">
@@ -273,7 +273,8 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkName(): boolean {
-    return this.character.name !== '' && this.character.name.length >= 1 && this.character.name.length <= 12;
+    return this.character.name !== '' && this.character.name.length >= 1 && this.character.name.length <= 12
+      && !this.character.name.includes('_');
   }
 
   private get isOkAliasId(): boolean {
