@@ -27,11 +27,13 @@ export default class KmyChatTagText extends Vue {
       .replace(/\[r\]/g, '<span style="color:red">')
       .replace(/\[g\]/g, '<span style="color:green">')
       .replace(/\[b\]/g, '<span style="color:blue">')
+      .replace(/\[p\]/g, '<span style="color:purple">')
       .replace(/\[s\]/g, '<span style="font-weight:bold">')
       .replace(/\[-r\]/g, '</span>')
       .replace(/\[-g\]/g, '</span>')
       .replace(/\[-b\]/g, '</span>')
       .replace(/\[-s\]/g, '</span>')
+      .replace(/\[-p\]/g, '</span>')
       .replace(KmyChatTagText.reg, '<a href="$1" target="_blank">$1</a>');
     if (this.isNewLine) {
       text = text.replace(/\n/g, '<br>');
