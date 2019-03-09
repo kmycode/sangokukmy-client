@@ -4,12 +4,13 @@ import Enumerable from 'linq';
 
 export default class ArrayUtil {
 
-  public static addItem<T extends api.IIdentitiedEntity>(items: T[], item: T) {
-    this.addItemUniquely(items, item, (obj) => obj.id);
+  public static addItem<T extends api.IIdentitiedEntity>(items: T[], item: T): T | undefined {
+    return this.addItemUniquely(items, item, (obj) => obj.id);
   }
 
-  public static addItemUniquely<T>(items: T[], item: T, key: (obj: T) => any) {
+  public static addItemUniquely<T>(items: T[], item: T, key: (obj: T) => any): T | undefined {
     let i = -1;
+    let old: T | undefined;
     const addingKey = key(item);
     items.some((o, index) => {
       if (key(o) === addingKey) {
@@ -19,10 +20,13 @@ export default class ArrayUtil {
       return false;
     });
     if (i >= 0) {
+      old = items[i];
       Vue.set(items, i, item);
     } else {
       items.push(item);
+      old = undefined;
     }
+    return old;
   }
 
   public static addLog<T extends api.IIdentitiedEntity>(items: T[], item: T, maxLength: number = -1) {

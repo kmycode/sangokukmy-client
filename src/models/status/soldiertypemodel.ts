@@ -15,7 +15,12 @@ export default class SoldierTypeModel {
   public constructor(private store: StatusStore) {}
 
   public onItemReceived(item: api.CharacterSoldierType) {
-    ArrayUtil.addItem(this.types, item);
+    const old = ArrayUtil.addItem(this.types, item);
+    if (old) {
+      // 画面側の保持しているオブジェクトのステータスを変更する
+      old.status = item.status;
+      old.researchCost = item.researchCost;
+    }
   }
 
   public save(item: api.CharacterSoldierType, callback: (result: api.CharacterSoldierType) => void) {
