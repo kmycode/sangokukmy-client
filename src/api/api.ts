@@ -723,7 +723,9 @@ export class CharacterIcon {
                      public characterId: number = 0,
                      public isMain: boolean = false,
                      public type: number = 0,
-                     public fileName: string = '') {}
+                     public fileName: string = '',
+                     public file?: File,
+                     public isAvailable: boolean = true) {}
 }
 
 /**
@@ -1424,7 +1426,7 @@ export class Api {
     }
   }
 
-  public static async addCharacterIcon(type: number, fileName?: string, file?: HTMLInputElement)
+  public static async addCharacterIcon(type: number, fileName?: string, file?: File)
     : Promise<CharacterIcon> {
     try {
       const form = new FormData();
@@ -1432,8 +1434,8 @@ export class Api {
       if (fileName) {
         form.append('fileName', fileName);
       }
-      if (file && file.files && file.files.length > 0) {
-        form.append('files', file.files[0]);
+      if (file) {
+        form.append('files', file);
       }
       const result = await axios.post<CharacterIcon>(def.API_HOST + 'icons', form, this.authHeader);
       return result.data;

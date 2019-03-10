@@ -1342,14 +1342,16 @@ export default class StatusModel {
 
   // #region CharacterIcon
 
-  public addCharacterIcon(icon: api.CharacterIcon, file?: HTMLInputElement) {
+  public addCharacterIcon(icon: api.CharacterIcon) {
     if (this.isUpdatingCharacterIcons) {
       return;
     }
     this.isUpdatingCharacterIcons = true;
-    api.Api.addCharacterIcon(icon.type, icon.fileName, file)
+    api.Api.addCharacterIcon(icon.type, icon.fileName, icon.file)
       .then((i) => {
-        ArrayUtil.addItem(this.characterIcons, i);
+        if (icon.isAvailable) {
+          ArrayUtil.addItem(this.characterIcons, i);
+        }
         NotificationService.addedIcon.notify();
       })
       .catch(() => {
