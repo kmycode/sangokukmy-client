@@ -129,8 +129,9 @@
                 <span class="tab-text">
                   <span v-show="selectedActionTabSubPanel === 0"><span v-if="!model.character.countryId">！</span>登用</span>
                   <span v-show="selectedActionTabSubPanel === 1">国設定</span>
-                  <span v-show="selectedActionTabSubPanel === 2">全国会議</span>
+                  <span v-show="selectedActionTabSubPanel === 2">全会</span>
                   <span v-show="selectedActionTabSubPanel === 4">兵種</span>
+                  <span v-show="selectedActionTabSubPanel === 5">個人設定</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
@@ -138,6 +139,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
                 <a v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
@@ -247,6 +249,42 @@
                 <button type="button" class="btn btn-primary" @click="model.updateCountrySolicitationMessage(newCountrySolicitationMessage)">承認</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- 個人設定 -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5 && model.canCountrySetting" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+          <div class="setting-list">
+            <div class="setting-row loading-container">
+              <h3 :class="'country-color-' + model.characterCountryColor">アイコン</h3>
+              <div class="setting-section">
+                <h4>メインアイコン</h4>
+                <div>
+                  <CharacterIcon :icons="model.characterIcons"/>
+                </div>
+              </div>
+              <div class="setting-section">
+                <h4>すべてのアイコン</h4>
+                <div class="character-icon-selection">
+                  <div :class="{ 'item': true, 'selected': icon.id === selectedIconAtPrivateConfig.id }"
+                      v-for="icon in model.characterIcons"
+                      :key="icon.id"
+                      @click="selectedIconAtPrivateConfig = icon">
+                    <CharacterIcon :icon="icon"/>
+                    <div class="overlay"></div>
+                  </div>
+                  <div class="item item-new" @click="isOpenCharacterIconPickerDialog = true">
+                    ＋
+                    <div class="overlay"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="model.setMainCharacterIcon(selectedIconAtPrivateConfig.id)">メインに設定</button>
+                <button type="button" class="btn btn-light" @click="isShowIconOperations ^= true">操作</button>
+                <button v-show="isShowIconOperations" type="button" class="btn btn-danger" @click="model.deleteCharacterIcon(selectedIconAtPrivateConfig.id)">削除</button>
+              </div>
+              <div v-show="model.isUpdatingCharacterIcons" class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
         </div>
@@ -777,6 +815,21 @@
           </div>
         </div>
       </div>
+      <!-- 武将アイコン追加 -->
+      <div v-show="isOpenCharacterIconPickerDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">新規アイコン追加</h2>
+        <div class="dialog-content">
+          <CharacterIconPicker v-model="newIcon" :canUseFile="true"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCharacterIconPickerDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="isOpenCharacterIconPickerDialog = false; model.addCharacterIcon(newIcon); resetNewIcon()">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -793,6 +846,7 @@ import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
 import UnitPicker from '@/components/parts/UnitPicker.vue';
+import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
 import ThreadBbs from '@/components/parts/ThreadBbs.vue';
 import CommandListView from '@/components/parts/status/CommandList.vue';
@@ -821,6 +875,7 @@ import EventObject from '@/models/common/EventObject';
     MiniCharacterList,
     GameDateTimePicker,
     UnitPicker,
+    CharacterIconPicker,
     BattleLogView,
     ThreadBbs,
     CommandListView,
@@ -865,6 +920,7 @@ export default class StatusPage extends Vue {
   public isOpenSecretaryDialog: boolean = false;
   public isOpenAddSecretaryDialog: boolean = false;
   public isOpenRemoveSecretaryDialog: boolean = false;
+  public isOpenCharacterIconPickerDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -881,6 +937,9 @@ export default class StatusPage extends Vue {
   public paySafeMoney: number = def.PAY_SAFE_MAX;
   public paySafeTarget: api.Character = new api.Character(-1);
   public canTownWar: boolean = false;
+  public selectedIconAtPrivateConfig: api.CharacterIcon = new api.CharacterIcon(-1);
+  public newIcon: api.CharacterIcon = new api.CharacterIcon(-1, 0, false, 1, '0.gif');
+  public isShowIconOperations = false;
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -893,7 +952,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
-      || this.isOpenRemoveSecretaryDialog;
+      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -950,7 +1009,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
-      this.isOpenRemoveSecretaryDialog = false;
+      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1104,6 +1163,10 @@ export default class StatusPage extends Vue {
     // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
     return (event.target.scrollTop + 50 + event.target.offsetHeight) >= event.target.scrollHeight;
   }
+
+  private resetNewIcon() {
+    this.newIcon = new api.CharacterIcon(0, 0, false, 1, '0.gif');
+  }
 }
 </script>
 
@@ -1184,10 +1247,6 @@ ul.nav {
       }
     }
   }
-}
-
-// 情報欄のタブ
-#information-mode-tab {
 }
 
 // 情報欄
@@ -1301,12 +1360,15 @@ ul.nav {
           padding: 2px 8px;
           border-radius: 8px;
         }
+        h4 {
+          color: gray;
+          font-size: 1.2rem;
+        }
+        .setting-section {
+          margin: 8px 0 24px;
+        }
         .current-message {
           margin: 4px 8px;
-          h4 {
-            color: gray;
-            font-size: 1.2rem;
-          }
           .current-message-content {
             margin: 0 12px;
             padding: 4px 8px;
@@ -1323,6 +1385,43 @@ ul.nav {
             color: gray;
           }
         }
+
+        // 武将アイコン選択
+        .character-icon-selection {
+          display: flex;
+          flex-wrap: wrap;
+          .item {
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            .overlay {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              opacity: 0;
+              background: black;
+              transition: opacity .16s;
+              cursor: pointer;
+              &:hover {
+                opacity: 0.2;
+              }
+            }
+            &.selected {
+              border-color: #f4d;
+            }
+            &.item-new {
+              width: 68px;
+              height: 68px;
+              text-align: center;
+              line-height: 68px;
+              font-size: 48px;
+              font-weight: bold;
+            }
+          }
+        }
+
         textarea {
           width: 100%;
           height: 160px;

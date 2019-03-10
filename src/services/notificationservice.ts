@@ -556,6 +556,30 @@ export default class NotificationService {
     '守備敗北',
     '{0} を守備中に {1} と戦闘し、敗北しました',
     NotificationServiceItemDefaultType.warning);
+  public static readonly addedIcon = new NotificationServiceItem(
+    'アイコン追加',
+    'アイコンを追加しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly addIconFailed = new NotificationServiceItem(
+    'アイコン追加失敗',
+    'アイコン追加に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly deletedIcon = new NotificationServiceItem(
+    'アイコン削除',
+    'アイコンを削除しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly deleteIconFailed = new NotificationServiceItem(
+    'アイコン削除失敗',
+    'アイコン削除に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly setMainIcon = new NotificationServiceItem(
+    'メインアイコン設定',
+    '選択したアイコンをメインアイコンに設定しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly setMainIconFailed = new NotificationServiceItem(
+    'メインアイコン設定失敗',
+    'メインアイコン設定に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

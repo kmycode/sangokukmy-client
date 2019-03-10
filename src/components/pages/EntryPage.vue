@@ -59,7 +59,7 @@
             <CharacterIconPicker v-model="icon"/>
           </div>
           <div class="detail">
-            アイコンを設定します。Gravatarは、外部サービスのアイコンを利用するものです
+            アイコンを設定します。Gravatarは、外部サービスのアイコンを利用するものです。登録した後に自分で用意した画像をアップロードすることができます（PNG、JPEG、GIF）
           </div>
         </div>
       </div>
@@ -166,6 +166,14 @@
           <div class="detail">
             <span v-show="town.type === 3">城塞都市は、<u>農業・商業最大がゼロになることがある</u>ため、<strong>初心者にはおすすめできません</strong></span>
             <span v-show="town.type === 4">大都市に建国した場合、<u>太守府という都市施設が建てられ、序盤は特に苛烈な、大きなハンデを背負うことになる</u>ため、<strong>初心者にはおすすめできません</strong></span>
+          </div>
+        </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+          <div class="label">選択都市の都市施設</div>
+          <div class="field">
+            {{ townBuilding.name }}
+          </div>
+          <div class="detail">
           </div>
         </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
@@ -359,6 +367,17 @@ export default class EntryPage extends Vue {
       this.isOkSumOfAttributes &&
       this.isOkInvitationCode
       ;
+  }
+
+  public get townBuilding(): def.BuildingType {
+    const result = Enumerable
+      .from(def.TOWN_BUILDINGS)
+      .firstOrDefault((b) => this.town.townBuilding === b.id);
+    if (result) {
+      return result;
+    } else {
+      return def.BuildingType.default;
+    }
   }
 
   public get countryBuilding(): def.BuildingType {

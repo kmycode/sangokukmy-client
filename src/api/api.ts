@@ -723,7 +723,9 @@ export class CharacterIcon {
                      public characterId: number = 0,
                      public isMain: boolean = false,
                      public type: number = 0,
-                     public fileName: string = '') {}
+                     public fileName: string = '',
+                     public file?: File,
+                     public isAvailable: boolean = true) {}
 }
 
 /**
@@ -1419,6 +1421,40 @@ export class Api {
       const result = await axios.get<CharacterSoldierType>(
         def.API_HOST + 'soldiertypes/' + id, this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addCharacterIcon(type: number, fileName?: string, file?: File)
+    : Promise<CharacterIcon> {
+    try {
+      const form = new FormData();
+      form.append('type', type.toString());
+      if (fileName) {
+        form.append('fileName', fileName);
+      }
+      if (file) {
+        form.append('files', file);
+      }
+      const result = await axios.post<CharacterIcon>(def.API_HOST + 'icons', form, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setMainCharacterIcon(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'icons/' + id + '/main', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async deleteCharacterIcon(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'icons/' + id, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

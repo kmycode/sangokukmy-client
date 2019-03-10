@@ -1,8 +1,9 @@
 <template>
   <div class="parts-icon-picker">
-    <button type="button" class="btn btn-secondary" @click="type = 1">デフォルト</button>
-    <button type="button" class="btn btn-secondary" @click="type = 3">Gravatar</button><br>
-    <span class="main-icon">
+    <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 1, 'btn-outline-secondary': type !== 1 }" @click="type = 1">デフォルト</button>
+    <button v-if="canUseFile" type="button" :class="{ 'btn': true, 'btn-secondary': type === 2, 'btn-outline-secondary': type !== 2 }" @click="type = 2">ファイル</button>
+    <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 3, 'btn-outline-secondary': type !== 3 }" @click="type = 3">Gravatar</button><br>
+    <span class="main-icon" v-if="type !== 2">
       <CharacterIcon :icon="value"/>
     </span>
     <div class="setting-block">
@@ -18,6 +19,11 @@
             <span class="overlay"></span>
           </span>
         </div>
+      </div>
+      <div v-show="type === 2">
+        <div class="label">ファイル</div>
+        <div class="input"><input type="file" @change="selectedFile"></div>
+        <div class="detail">ファイルは、中央部分がトリミングされます。</div>
       </div>
       <div v-show="type === 3">
         <div class="label">Gravatarメールアドレス</div>
@@ -45,20 +51,34 @@ const md5 = require('md5');
 })
 export default class CharacterIconPicker extends Vue {
   @Prop() public value!: api.CharacterIcon;
+  @Prop({
+    default: false,
+  }) public canUseFile!: boolean;
   private defaultIconId: number = 0;
   private type: number = 1;
   private email: string = '';
+  private file?: File;
+  private onValueChanging = false;
 
   private get defaultIconMax(): number {
     return def.DEFAULT_ICON_NUM;
+  }
+
+  @Watch('value')
+  private getValue() {
+    this.onValueChanging = true;
+    this.type = this.value.type;
+    this.onValueChanging = false;
   }
 
   @Watch('defaultIconId')
   @Watch('type')
   @Watch('email')
   private onInput() {
-    if (this.defaultIconId >= 0 && this.defaultIconId <= def.DEFAULT_ICON_NUM) {
+    if (!this.onValueChanging) {
+      this.onValueChanging = true;
       this.$emit('input', this.generateNewValue());
+      this.onValueChanging = false;
     }
   }
 
@@ -77,7 +97,15 @@ export default class CharacterIconPicker extends Vue {
                                  this.value.characterId,
                                  this.value.isMain,
                                  this.type,
-                                 fileName);
+                                 fileName,
+                                 this.file);
+  }
+
+  private selectedFile(ev: any) {
+    if (ev.target.files && ev.target.files.length > 0) {
+      this.file = ev.target.files[0];
+      this.onInput();
+    }
   }
 }
 </script>
