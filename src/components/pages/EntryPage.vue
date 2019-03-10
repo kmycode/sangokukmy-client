@@ -169,6 +169,14 @@
           </div>
         </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+          <div class="label">選択都市の都市施設</div>
+          <div class="field">
+            {{ townBuilding.name }}
+          </div>
+          <div class="detail">
+          </div>
+        </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の国家施設</div>
           <div class="field">
             {{ countryBuilding.name }}
@@ -359,6 +367,17 @@ export default class EntryPage extends Vue {
       this.isOkSumOfAttributes &&
       this.isOkInvitationCode
       ;
+  }
+
+  public get townBuilding(): def.BuildingType {
+    const result = Enumerable
+      .from(def.TOWN_BUILDINGS)
+      .firstOrDefault((b) => this.town.townBuilding === b.id);
+    if (result) {
+      return result;
+    } else {
+      return def.BuildingType.default;
+    }
   }
 
   public get countryBuilding(): def.BuildingType {
