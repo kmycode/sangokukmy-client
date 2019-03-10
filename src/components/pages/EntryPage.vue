@@ -59,7 +59,7 @@
             <CharacterIconPicker v-model="icon"/>
           </div>
           <div class="detail">
-            アイコンを設定します。Gravatarは、外部サービスのアイコンを利用するものです
+            アイコンを設定します。Gravatarは、外部サービスのアイコンを利用するものです。登録した後に自分で用意した画像をアップロードすることができます（PNG、JPEG、GIF）
           </div>
         </div>
       </div>
