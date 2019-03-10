@@ -819,7 +819,7 @@
       <div v-show="isOpenCharacterIconPickerDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">新規アイコン追加</h2>
         <div class="dialog-content">
-          <CharacterIconPicker v-model="newIcon"/>
+          <CharacterIconPicker v-model="newIcon" :canUseFile="true"/>
         </div>
         <div class="dialog-footer">
           <div class="left-side">

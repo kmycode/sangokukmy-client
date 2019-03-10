@@ -1,9 +1,9 @@
 <template>
   <div class="parts-icon-picker">
     <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 1, 'btn-outline-secondary': type !== 1 }" @click="type = 1">デフォルト</button>
-    <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 2, 'btn-outline-secondary': type !== 2 }" @click="type = 2">ファイル</button>
+    <button v-if="canUseFile" type="button" :class="{ 'btn': true, 'btn-secondary': type === 2, 'btn-outline-secondary': type !== 2 }" @click="type = 2">ファイル</button>
     <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 3, 'btn-outline-secondary': type !== 3 }" @click="type = 3">Gravatar</button><br>
-    <span class="main-icon">
+    <span class="main-icon" v-if="type !== 2">
       <CharacterIcon :icon="value"/>
     </span>
     <div class="setting-block">
@@ -51,6 +51,9 @@ const md5 = require('md5');
 })
 export default class CharacterIconPicker extends Vue {
   @Prop() public value!: api.CharacterIcon;
+  @Prop({
+    default: false,
+  }) public canUseFile!: boolean;
   private defaultIconId: number = 0;
   private type: number = 1;
   private email: string = '';
