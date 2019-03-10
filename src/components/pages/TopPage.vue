@@ -64,7 +64,8 @@
         <EntryPage :system="system"
                    :countries="countries"
                    :countryMessages="countryMessages"
-                   :towns="towns"/>
+                   :towns="towns"
+                   @entry-succeed="$emit('entry-succeed')"/>
       </div>
       <div v-show="!isEntry" class="row">
         <div class="top-content col-sm-12">
