@@ -65,6 +65,7 @@ export default class StatusModel {
   public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
+  public isUpdatingCharacterIcons: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -1335,6 +1336,70 @@ export default class StatusModel {
           this.isUpdatingOppositionCharacters = false;
         });
     }
+  }
+
+  // #endregion
+
+  // #region CharacterIcon
+
+  public addCharacterIcon(icon: api.CharacterIcon, file?: HTMLInputElement) {
+    if (this.isUpdatingCharacterIcons) {
+      return;
+    }
+    this.isUpdatingCharacterIcons = true;
+    api.Api.addCharacterIcon(icon.type, icon.fileName, file)
+      .then((i) => {
+        ArrayUtil.addItem(this.characterIcons, i);
+        NotificationService.addedIcon.notify();
+      })
+      .catch(() => {
+        NotificationService.addIconFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCharacterIcons = false;
+      });
+  }
+
+  public setMainCharacterIcon(iconId: number) {
+    if (this.isUpdatingCharacterIcons) {
+      return;
+    }
+    this.isUpdatingCharacterIcons = true;
+    api.Api.setMainCharacterIcon(iconId)
+      .then(() => {
+        this.characterIcons.forEach((i) => {
+          if (i.id !== iconId) {
+            i.isMain = false;
+          } else {
+            i.isMain = true;
+          }
+        });
+        NotificationService.setMainIcon.notify();
+      })
+      .catch(() => {
+        NotificationService.setMainIconFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCharacterIcons = false;
+      });
+  }
+
+  public deleteCharacterIcon(iconId: number) {
+    if (this.isUpdatingCharacterIcons) {
+      return;
+    }
+    this.isUpdatingCharacterIcons = true;
+    api.Api.deleteCharacterIcon(iconId)
+      .then(() => {
+        this.characterIcons = Enumerable.from(this.characterIcons).where((c) => c.id !== iconId).toArray();
+        NotificationService.deletedIcon.notify();
+      })
+      .catch(() => {
+        NotificationService.deleteIconFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCharacterIcons = false;
+      });
   }
 
   // #endregion

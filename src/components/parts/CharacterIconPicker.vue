@@ -1,7 +1,7 @@
 <template>
   <div class="parts-icon-picker">
-    <button type="button" class="btn btn-secondary" @click="type = 1">デフォルト</button>
-    <button type="button" class="btn btn-secondary" @click="type = 3">Gravatar</button><br>
+    <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 1, 'btn-outline-secondary': type !== 1 }" @click="type = 1">デフォルト</button>
+    <button type="button" :class="{ 'btn': true, 'btn-secondary': type === 3, 'btn-outline-secondary': type !== 3 }" @click="type = 3">Gravatar</button><br>
     <span class="main-icon">
       <CharacterIcon :icon="value"/>
     </span>

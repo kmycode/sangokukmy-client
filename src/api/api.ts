@@ -1424,6 +1424,40 @@ export class Api {
     }
   }
 
+  public static async addCharacterIcon(type: number, fileName?: string, file?: HTMLInputElement)
+    : Promise<CharacterIcon> {
+    try {
+      const form = new FormData();
+      form.append('type', type.toString());
+      if (fileName) {
+        form.append('fileName', fileName);
+      }
+      if (file && file.files && file.files.length > 0) {
+        form.append('files', file.files[0]);
+      }
+      const result = await axios.post<CharacterIcon>(def.API_HOST + 'icons', form, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setMainCharacterIcon(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'icons/' + id + '/main', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async deleteCharacterIcon(id: number): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'icons/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 認証のときに利用するヘッダ
    */
