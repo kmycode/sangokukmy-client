@@ -14,7 +14,7 @@ export interface IChatMessageContainer {
   canSend: boolean;
   isOpen: boolean;
 
-  postChatAsync(message: string): Promise<any>;
+  postChatAsync(message: string, icon?: api.CharacterIcon): Promise<any>;
   loadOldChatsAsync(): Promise<any>;
 }
 
@@ -50,7 +50,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
     this.isOpenPrivate = value;
   }
 
-  public constructor(private post: (message: string, sendTo?: number) => Promise<any>,
+  public constructor(private post: (message: string, icon?: api.CharacterIcon, sendTo?: number) => Promise<any>,
                      private load: (sinceId: number) => Promise<api.ChatMessage[]>,
                      private isNeedSendTo: boolean = false) {}
 
@@ -72,7 +72,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
     this.messages = [];
   }
 
-  public async postChatAsync(message: string): Promise<any> {
+  public async postChatAsync(message: string, icon?: api.CharacterIcon): Promise<any> {
     if (message.length > 0) {
       this.isPosting = true;
 
@@ -82,7 +82,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       }
 
       try {
-        await this.post(message, sendToId);
+        await this.post(message, icon, sendToId);
       } catch (ex) {
         if (ex.data) {
           if (ex.data.code === api.ErrorCode.notPermissionError) {

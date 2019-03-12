@@ -2,23 +2,32 @@
   <div class="chat-message-panel">
     <!-- 投稿フォーム -->
     <div v-if="canPost" class="loading-container">
-      <div :class="'chat-new-message country-color-' + countryColor">
-        <CharacterIcon :icons="icons"/>
-        <div class="post-pair">
-          <div class="message-input-wrapper">
-            <textarea ref="chatMessageInput"
-                      class="message-input"
-                      v-model="chatPostMessage"
-                      @keyup.ctrl.enter.prevent.stop="postChat()"
-                      @keyup.meta.enter="postChat()"></textarea>
-          </div>
-          <div v-if="model.sendTo && model.sendTo.id"
-               class="message-target"
-               @click="model.sendTo = undefined">
-            <span class="target-text">{{ model.sendTo.name }} へ送信</span><span class="remove-mark">✕</span>
-          </div>
-          <div class="buttons">
-            <button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button>
+      <div :class="'chat-new-message-parent country-color-' + countryColor">
+        <div :class="{'icons': true}" v-show="isShowIcons">
+          <CharacterIcon v-for="icon in icons"
+                        :key="icon.id"
+                        :icon="icon"
+                        :canClick="true"
+                        @onclick="isShowIcons = false; selectedIcon = icon"/>
+        </div>
+        <div class="chat-new-message">
+          <CharacterIcon :icon="selectedIcon" :canClick="true" @onclick="isShowIcons ^= true"/>
+          <div class="post-pair">
+            <div class="message-input-wrapper">
+              <textarea ref="chatMessageInput"
+                        class="message-input"
+                        v-model="chatPostMessage"
+                        @keyup.ctrl.enter.prevent.stop="postChat()"
+                        @keyup.meta.enter="postChat()"></textarea>
+            </div>
+            <div v-if="model.sendTo && model.sendTo.id"
+                class="message-target"
+                @click="model.sendTo = undefined">
+              <span class="target-text">{{ model.sendTo.name }} へ送信</span><span class="remove-mark">✕</span>
+            </div>
+            <div class="buttons">
+              <button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button>
+            </div>
           </div>
         </div>
       </div>
@@ -92,9 +101,12 @@ export default class ChatMessagePanel extends Vue {
   private callFocus: EventObject = new EventObject(() => {
     (this.$refs.chatMessageInput as HTMLTextAreaElement).focus();
   });
+  private isShowIcons: boolean = false;
+  private selectedIcon: api.CharacterIcon = new api.CharacterIcon(-1);
 
   private mounted() {
     this.$emit('call-focus', this.callFocus);
+    this.onIconsChanged();
   }
 
   private get canSendChat(): boolean {
@@ -102,8 +114,16 @@ export default class ChatMessagePanel extends Vue {
       this.model.canSend;
   }
 
+  @Watch('icons')
+  private onIconsChanged() {
+    const icon = api.CharacterIcon.getMainOrFirst(this.icons);
+    if (icon) {
+      this.selectedIcon = icon;
+    }
+  }
+
   private postChat() {
-    this.model.postChatAsync(this.chatPostMessage)
+    this.model.postChatAsync(this.chatPostMessage, this.selectedIcon)
       .then(() => {
         this.chatPostMessage = '';
       });
@@ -135,13 +155,24 @@ export default class ChatMessagePanel extends Vue {
     }
   }
 
+  .chat-new-message-parent {
+    @include country-color-light('background-color');
+    @include country-color-deep('border-bottom-color');
+
+    .icons {
+      padding: 8px;
+      img {
+        width: 48px;
+        height: 48px;
+      }
+    }
+  }
+
   .chat-new-message {
     display: flex;
     padding: 6px;
     border-bottom-width: 2px;
     border-bottom-style: solid;
-    @include country-color-light('background-color');
-    @include country-color-deep('border-bottom-color');
 
     .post-pair {
       padding-left: 6px;
