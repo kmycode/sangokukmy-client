@@ -253,7 +253,7 @@
           </div>
         </div>
         <!-- 個人設定 -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5 && model.canCountrySetting" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5" class="right-side-content content-setting" style="display:flex;flex-direction:column">
           <div class="setting-list">
             <div class="setting-row loading-container">
               <h3 :class="'country-color-' + model.characterCountryColor">アイコン</h3>
