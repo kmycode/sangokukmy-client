@@ -1,5 +1,5 @@
 <template>
-  <img :class="mainUri ? '' : 'hidden'" :src="mainUri">
+  <img :class="{ 'hidden': !mainUri, 'clickable': canClick }" :src="mainUri" @click="clicked">
 </template>
 
 <script lang="ts">
@@ -17,6 +17,9 @@ export default class CharacterIcon extends Vue {
   @Prop({
     default: () => api.CharacterIcon.default,
   }) public icon!: api.CharacterIcon;
+  @Prop({
+    default: false,
+  }) public canClick!: boolean;
 
   private get mainUri(): string {
     if (api.CharacterIcon.isDefault(this.icon)) {
@@ -27,6 +30,12 @@ export default class CharacterIcon extends Vue {
       }
     } else {
       return api.CharacterIcon.getUri(this.icon);
+    }
+  }
+
+  private clicked() {
+    if (this.canClick) {
+      this.$emit('onclick');
     }
   }
 }
@@ -43,6 +52,9 @@ img {
   }
   &.hidden {
     visibility: hidden;
+  }
+  &.clickable {
+    cursor: pointer;
   }
 }
 </style>

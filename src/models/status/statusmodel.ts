@@ -1503,24 +1503,30 @@ export default class StatusModel {
 
   public countryChat: ChatMessageContainer<api.Country>
     = new ChatMessageContainer(
-      (mes, sendTo) => {
+      (mes, icon, sendTo) => {
+        if (!icon) {
+          icon = this.characterIcon;
+        }
         if (sendTo) {
-          return api.Api.postOtherCountryChatMessage(mes, this.characterIcon, sendTo);
+          return api.Api.postOtherCountryChatMessage(mes, icon, sendTo);
         } else {
-          return api.Api.postCountryChatMessage(mes, this.characterIcon);
+          return api.Api.postCountryChatMessage(mes, icon);
         }},
       (id) => api.Api.getCountryChatMessage(id, 50));
 
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
-      (mes) => api.Api.postGlobalChatMessage(mes, this.characterIcon),
+      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon),
       (id) => api.Api.getGlobalChatMessage(id, 50));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
-      (mes, sendTo) => {
+      (mes, icon, sendTo) => {
+        if (!icon) {
+          icon = this.characterIcon;
+        }
         if (sendTo) {
-          return api.Api.postPrivateChatMessage(mes, this.characterIcon, sendTo);
+          return api.Api.postPrivateChatMessage(mes, icon, sendTo);
         } else {
           throw new Error();
         }},
