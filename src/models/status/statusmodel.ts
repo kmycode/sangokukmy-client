@@ -1444,7 +1444,7 @@ export default class StatusModel {
   // #region Logs
 
   private addMapLog(log: api.MapLog) {
-    ArrayUtil.addLog(this.mapLogs, log, 50);
+    ArrayUtil.addLog(this.mapLogs, log);
   }
 
   public loadOldMapLogs() {
@@ -1471,7 +1471,7 @@ export default class StatusModel {
   }
 
   private addCharacterLog(log: api.CharacterLog) {
-    ArrayUtil.addLog(this.characterLogs, log, 50);
+    ArrayUtil.addLog(this.characterLogs, log);
   }
 
   public loadOldCharacterLogs() {
