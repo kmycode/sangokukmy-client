@@ -55,17 +55,20 @@
         </div>
       </div>
       <div class="row">
-        <div class="top-login-form col-sm-6 offset-sm-3">
-          <button type="button" class="btn btn-light" @click="login">ログイン</button>
-          <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
-        </div>
         <div v-if="isLoadingCurrentCharacter || currentCharacter.id" class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
-          <div v-if="currentCharacter.id" class="login-form">
-            <CharacterIcon :icon="currentCharacter.mainIcon"/>
-            <span class="name">{{ currentCharacter.name }}</span> でログイン中<br>
-            <button type="button" class="btn btn-primary" @click="goStatus">ステータス画面へ</button>
+          <div v-if="currentCharacter.id" style="text-align:center">
+            <div class="login-form">
+              <CharacterIcon :icon="currentCharacter.mainIcon"/>
+              <div><span class="name">{{ currentCharacter.name }}</span> でログイン中</div>
+              <button type="button" class="btn btn-primary" @click="goStatus">GO</button>
+            </div>
+            <button type="button" class="btn btn-light btn-sm" @click="entry">新規登録画面を確認</button>
           </div>
           <div class="loading" v-if="isLoadingCurrentCharacter"><div class="loading-icon"></div></div>
+        </div>
+        <div v-else class="top-login-form col-sm-6 offset-sm-3">
+          <button type="button" class="btn btn-light" @click="login">ログイン</button>
+          <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
       <div v-show="isEntry">
