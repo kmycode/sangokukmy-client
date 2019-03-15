@@ -949,6 +949,16 @@ export class Api {
     }
   }
 
+  public static async getMyCharacter(): Promise<Character> {
+    try {
+      const result = await axios.get<ApiData<Character>>
+        (def.API_HOST + 'character', this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async getCharacter(id: number): Promise<Character> {
     try {
       const result = await axios.get<ApiData<Character>>

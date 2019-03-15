@@ -482,7 +482,7 @@ export default class EntryPage extends Vue {
                     this.isPublish ? this.country : this.defaultCountry,
                     this.invitationCode)
         .then((auth) => {
-          LoginService.setAccessToken(auth.accessToken);
+          LoginService.setAccessToken(auth);
           this.$emit('entry-succeed');
         })
         .catch((ex) => {
