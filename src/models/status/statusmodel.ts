@@ -1319,7 +1319,6 @@ export default class StatusModel {
   private getCharacterParameters(character: api.Character): StatusParameter[] {
     const country = this.getCountry(character.countryId);
     const ps: StatusParameter[] = [];
-    ps.push(new CharacterIconStatusParameter('アイコン', this.characterIcons));
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TwinNoRangeAndRangedStatusParameter('武力', character.strong, 'EX', character.strongEx, 1000));
     ps.push(new TwinNoRangeAndRangedStatusParameter('知力', character.intellect, 'EX', character.intellectEx, 1000));

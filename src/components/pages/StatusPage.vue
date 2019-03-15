@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid loading-container">
+  <div id="status-root" class="container-fluid loading-container">
     <div class="row">
       <!-- 左カラム -->
       <div class="col-lg-7 col-md-6">
@@ -50,7 +50,7 @@
             </div>
           </div>
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
-            <h4 :class="'country-color-' + model.characterCountryColor">{{ model.character.name }}</h4>
+            <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="commands">
               <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
@@ -1193,6 +1193,23 @@ $right-side-fixed-height: $nav-tab-height;
 
 $color-navigation-commands: #e0e0e0;
 
+#status-root, #status-root > div.row {
+  @include media-query-lower(md) {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  & > div {
+    @include media-query-lower(md) {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
+
 // Bootstrapによるタブ
 ul.nav {
   font-size: 1rem;
@@ -1205,6 +1222,13 @@ ul.nav {
 #current-display-wrapper {
   display: flex;
   height: 40px;
+
+  @include media-query-lower(md) {
+    flex-direction: column;
+    height: auto;
+    align-items: center;
+    text-align: center;
+  }
 
   #current-display {
     flex: 1;
@@ -1305,6 +1329,9 @@ ul.nav {
     border-top: 2px dashed;
     @include country-color-deep('color');
     @include country-color-deep('border-top-color');
+    img {
+      margin-right: 8px;
+    }
   }
   .character-logs {
     margin-top: 16px;
