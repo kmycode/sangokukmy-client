@@ -1215,8 +1215,9 @@ ul.nav {
   #current-war-status {
     display: block;
     font-weight: bold;
-    line-height: calc(#{$current-display-height} - 4px);
+    line-height: calc(#{$current-display-height} - 10px);
     margin: 2px;
+    border: 3px solid #e00;
     color: white;
     padding: 0 12px;
     border-radius: 12px;
@@ -1224,7 +1225,8 @@ ul.nav {
       background-color: #e00;
     }
     &.in-ready {
-      background-color: #05c;
+      color: #e00;
+      border-style: dashed;
     }
   }
 }
