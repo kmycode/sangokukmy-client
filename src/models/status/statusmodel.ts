@@ -7,6 +7,7 @@ import ApiStreaming from '@/api/apistreaming';
 import * as api from '@/api/api';
 import Enumerable from 'linq';
 import * as def from '@/common/definitions';
+import * as current from '@/common/current';
 import { StatusParameter,
   NoRangeStatusParameter,
   RangedStatusParameter,
@@ -1592,6 +1593,11 @@ export default class StatusModel {
   // #region Online
 
   public onlines = new OnlineModel();
+
+  public logout() {
+    api.Api.logout();
+    current.setAuthorizationToken(new api.AuthenticationData('', 0, new api.DateTime()));
+  }
 
   // #endregion
 }

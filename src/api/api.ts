@@ -907,6 +907,14 @@ export class Api {
     }
   }
 
+  public static async logout(): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'logout', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 武将のすべてのコマンドを取得（欠番がある場合もあるので注意）
    */

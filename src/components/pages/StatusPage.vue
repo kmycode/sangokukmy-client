@@ -143,6 +143,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
             </li>
           </ul>
