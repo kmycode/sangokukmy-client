@@ -1489,7 +1489,7 @@ ul.nav {
     width: 70vw;
     height: 90vh;
     background: #efefef;
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1503,9 +1503,12 @@ ul.nav {
 
     .dialog-title {
       text-align: center;
-      padding: 4px;
-      @include country-color-deep('background-color');
-      @include country-color-light('color');
+      padding: 8px 0 4px;
+      border-bottom-width: 2px;
+      border-bottom-style: dotted;
+      @include country-color-deep('color');
+      @include country-color-deep('border-bottom-color');
+      @include country-color-light('background-color');
     }
 
     .dialog-content {
@@ -1694,7 +1697,7 @@ ul.nav {
     opacity: 1;
     pointer-events: all;
     .dialog-background {
-      opacity: 0.4;
+      opacity: 0.6;
     }
   }
 }
