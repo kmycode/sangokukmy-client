@@ -1246,6 +1246,7 @@ ul.nav {
   @include country-color-deep('border-color');
   @include media-query-lower(md) {
     height: auto;
+    max-height: 80vh;
     white-space: normal;
     line-height: 140%;
   }
