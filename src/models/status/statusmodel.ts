@@ -159,6 +159,7 @@ export default class StatusModel {
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
     return Enumerable.from(this.getCountry(this.character.countryId).townWars)
+      .where((tw) => tw.requestedCountryId === this.character.countryId)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
       .firstOrDefault();
   }
