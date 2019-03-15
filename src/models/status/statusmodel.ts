@@ -7,6 +7,7 @@ import ApiStreaming from '@/api/apistreaming';
 import * as api from '@/api/api';
 import Enumerable from 'linq';
 import * as def from '@/common/definitions';
+import * as current from '@/common/current';
 import { StatusParameter,
   NoRangeStatusParameter,
   RangedStatusParameter,
@@ -158,6 +159,7 @@ export default class StatusModel {
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
     return Enumerable.from(this.getCountry(this.character.countryId).townWars)
+      .where((tw) => tw.requestedCountryId === this.character.countryId)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
       .firstOrDefault();
   }
@@ -174,6 +176,21 @@ export default class StatusModel {
       }
     }
     return def.TOWN_WAR_STATUSES[0];
+  }
+
+  public get characterCountryWarWorstStatus(): def.CountryWarStatus {
+    const war = Enumerable
+      .from(this.characterCountry.wars)
+      .where((w) => w.status === api.CountryWar.statusAvailable ||
+                    w.status === api.CountryWar.statusInReady ||
+                    w.status === api.CountryWar.statusStopRequesting)
+      .orderBy((w) => w.status)
+      .firstOrDefault();
+    if (war) {
+      return Enumerable.from(def.COUNTRY_WAR_STATUSES).first((s) => s.id === war.status);
+    } else {
+      return def.COUNTRY_WAR_STATUSES[0];
+    }
   }
 
   public get countryAlliance(): api.CountryAlliance | undefined {
@@ -1302,7 +1319,6 @@ export default class StatusModel {
   private getCharacterParameters(character: api.Character): StatusParameter[] {
     const country = this.getCountry(character.countryId);
     const ps: StatusParameter[] = [];
-    ps.push(new CharacterIconStatusParameter('アイコン', this.characterIcons));
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TwinNoRangeAndRangedStatusParameter('武力', character.strong, 'EX', character.strongEx, 1000));
     ps.push(new TwinNoRangeAndRangedStatusParameter('知力', character.intellect, 'EX', character.intellectEx, 1000));
@@ -1592,6 +1608,11 @@ export default class StatusModel {
   // #region Online
 
   public onlines = new OnlineModel();
+
+  public logout() {
+    api.Api.logout();
+    current.setAuthorizationToken(new api.AuthenticationData('', 0, new api.DateTime()));
+  }
 
   // #endregion
 }

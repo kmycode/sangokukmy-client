@@ -1,30 +1,41 @@
 <template>
-  <div class="container-fluid loading-container">
+  <div id="status-root" class="container-fluid loading-container">
     <div class="row">
       <!-- 左カラム -->
       <div class="col-lg-7 col-md-6">
         <div id="current-display-wrapper">
           <div id="system-button-group">
-            <button type="button" class="btn btn-info" v-show="!isShowOnlines" @click="isShowOnlines = true">ON</button>
-            <button type="button" class="btn btn-info" v-show="isShowOnlines" @click="isShowOnlines = false">地図</button>
+            <ul class="nav nav-pills">
+              <li class="nav-item">
+                <a :class="{'nav-link': true, 'active': mapShowType === 0}" href="#" @click.prevent.stop="mapShowType = 0">地図</a>
+              </li>
+              <li class="nav-item">
+                <a :class="{'nav-link': true, 'active': mapShowType === 1}" href="#" @click.prevent.stop="mapShowType = 1">ON</a>
+              </li>
+              <li class="nav-item">
+                <a :class="{'nav-link': true, 'active': mapShowType === 2}" href="#" @click.prevent.stop="mapShowType = 2">武将</a>
+              </li>
+            </ul>
           </div>
           <div id="current-display">
             <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
             <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
           </div>
+          <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 1 || model.characterCountryWarWorstStatus.id === 2">戦争中</div>
+          <div id="current-war-status" class="in-ready" v-if="model.characterCountryWarWorstStatus.id === 4">戦争準備中</div>
         </div>
         <div id="directive" :class="'country-color-' + model.characterCountryColor" @click="isOpenCommandersDialog = true">
           指令: <KmyChatTagText :text="model.countryCommandersMessage.message" :isNewLine="false"/>
         </div>
         <div id="map-container">
           <Map
-            v-show="!isShowOnlines"
+            v-show="mapShowType === 0"
             :towns="model.towns"
             :countries="model.countries"
             :town="model.town"
             :currentTown="model.characterTown"
             @selected="model.selectTown($event)"/>
-          <div v-show="isShowOnlines" class="online-list">
+          <div v-show="mapShowType === 1" class="online-list">
             <div class="online-list-item">
               <h3>ACTIVE</h3>
               <MiniCharacterList
@@ -38,13 +49,37 @@
                 :characters="model.onlines.inactiveCharacters"/>
             </div>
           </div>
+          <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
+            <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
+            <div class="commands">
+              <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+              <span v-show="model.readyForReinforcement"
+                    v-for="rein in model.store.reinforcements"
+                    :key="rein.id">
+                <button v-show="rein.status === 1" type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 4, rein.requestedCountryId)">{{ model.getCountry(rein.requestedCountryId).name }}へ援軍<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+                <button v-show="rein.status === 1" type="button" class="btn btn-danger loading-container" @click="model.setReinforcementStatus(model.character, 2, rein.requestedCountryId)">拒否<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+              </span>
+              <span v-show="!model.readyForReinforcement">
+                <button type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 5)">帰還<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
+              </span>
+            </div>
+            <div class="content-main character-information-main">
+              <StatusParametersPanel :parameters="model.characterParameters"/>
+            </div>
+
+            <div class="content-main character-logs">
+              <MapLogList :logs="model.characterLogs" type="character-log"/>
+              <div v-show="model.isLoadingMoreCharacterLogs" class="loading-container load-more">
+                <div class="loading" style="height:48px"><div class="loading-icon"></div></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0" href="#">都市</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 1 }" @click.prevent.stop="selectedInformationTab = 1" href="#">武将</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2" href="#">国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">報告</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
           </ul>
         </div>
         <!-- 都市情報 -->
@@ -68,25 +103,6 @@
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
           </div>
         </div>
-        <!-- 武将情報 -->
-        <div v-show="selectedInformationTab === 1" :class="'information-content information-character country-color-' + model.characterCountryColor">
-          <h4 :class="'country-color-' + model.characterCountryColor">{{ model.character.name }}</h4>
-          <div class="content-main">
-            <StatusParametersPanel :parameters="model.characterParameters"/>
-          </div>
-          <div class="commands">
-            <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
-            <span v-show="model.readyForReinforcement"
-                  v-for="rein in model.store.reinforcements"
-                  :key="rein.id">
-              <button v-show="rein.status === 1" type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 4, rein.requestedCountryId)">{{ model.getCountry(rein.requestedCountryId).name }}へ援軍<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
-              <button v-show="rein.status === 1" type="button" class="btn btn-danger loading-container" @click="model.setReinforcementStatus(model.character, 2, rein.requestedCountryId)">拒否<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
-            </span>
-            <span v-show="!model.readyForReinforcement">
-              <button type="button" class="btn btn-warning loading-container" @click="model.setReinforcementStatus(model.character, 5)">帰還<div class="loading" v-show="model.isUpdatingReinforcement"><div class="loading-icon"></div></div></button>
-            </span>
-          </div>
-        </div>
         <!-- 国情報 -->
         <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId">
           <h4 :class="'country-color-' + model.country.colorId">{{ model.country.name }}</h4>
@@ -103,18 +119,12 @@
         </div>
         <!-- 報告 -->
         <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId">
-          <h4 v-show="selectedReportType === 0">報告（マップ）</h4>
-          <h4 v-show="selectedReportType === 1">報告（武将）</h4>
+          <h4>情勢</h4>
           <div class="content-main" @scroll="onMapLogScrolled($event)">
-            <MapLogList v-show="selectedReportType === 0" :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
-            <MapLogList v-show="selectedReportType === 1" :logs="model.characterLogs" type="character-log"/>
-            <div v-show="model.isLoadingMoreMapLogs || model.isLoadingMoreCharacterLogs" class="loading-container load-more">
+            <MapLogList :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
+            <div v-show="model.isLoadingMoreMapLogs" class="loading-container load-more">
               <div class="loading" style="height:48px"><div class="loading-icon"></div></div>
             </div>
-          </div>
-          <div class="commands">
-            <button type="button" class="btn btn-info" @click="selectedReportType = 0">マップ</button>
-            <button type="button" class="btn btn-info" @click="selectedReportType = 1">武将</button>
           </div>
         </div>
       </div>
@@ -143,6 +153,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
             </li>
           </ul>
@@ -892,7 +904,6 @@ export default class StatusPage extends Vue {
   public isOpenRightSidePopupMenu: boolean = false;
   public isOpenSoliderDropdown: boolean = false;
   public selectedInformationTab: number = 0;
-  public selectedReportType: number = 0;
   public selectedActionTab: number = 0;
   public selectedActionTabSubPanel: number = 0;
   public selectedChatCategory: number = 0;
@@ -926,7 +937,7 @@ export default class StatusPage extends Vue {
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
-  public isShowOnlines: boolean = false;
+  public mapShowType: number = 0;
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
   public targetSecretary: api.Character = new api.Character(-1);
@@ -1141,14 +1152,14 @@ export default class StatusPage extends Vue {
   }
 
   private onMapLogScrolled(event: any) {
-    if (this.selectedReportType === 0) {
-      if (this.isScrolled(event)) {
-        this.model.loadOldMapLogs();
-      }
-    } else if (this.selectedReportType === 1) {
-      if (this.isScrolled(event)) {
-        this.model.loadOldCharacterLogs();
-      }
+    if (this.isScrolled(event)) {
+      this.model.loadOldMapLogs();
+    }
+  }
+
+  private onCharacterLogScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      this.model.loadOldCharacterLogs();
     }
   }
 
@@ -1182,6 +1193,23 @@ $right-side-fixed-height: $nav-tab-height;
 
 $color-navigation-commands: #e0e0e0;
 
+#status-root, #status-root > div.row {
+  @include media-query-lower(md) {
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  & > div {
+    @include media-query-lower(md) {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
+  }
+}
+
 // Bootstrapによるタブ
 ul.nav {
   font-size: 1rem;
@@ -1195,6 +1223,13 @@ ul.nav {
   display: flex;
   height: 40px;
 
+  @include media-query-lower(md) {
+    flex-direction: column;
+    height: auto;
+    align-items: center;
+    text-align: center;
+  }
+
   #current-display {
     flex: 1;
     text-align: center;
@@ -1205,6 +1240,24 @@ ul.nav {
       font-weight: bold;
       color: #080;
       padding: 0 8px;
+    }
+  }
+
+  #current-war-status {
+    display: block;
+    font-weight: bold;
+    line-height: calc(#{$current-display-height} - 10px);
+    margin: 2px;
+    border: 3px solid #e00;
+    color: white;
+    padding: 0 12px;
+    border-radius: 12px;
+    &.in-war {
+      background-color: #e00;
+    }
+    &.in-ready {
+      color: #e00;
+      border-style: dashed;
     }
   }
 }
@@ -1226,6 +1279,7 @@ ul.nav {
   @include country-color-deep('border-color');
   @include media-query-lower(md) {
     height: auto;
+    max-height: 80vh;
     white-space: normal;
     line-height: 140%;
   }
@@ -1246,6 +1300,41 @@ ul.nav {
         margin-bottom: 8px;
       }
     }
+  }
+}
+
+// 武将情報
+.character-information {
+  height: calc(65vh - #{$left-side-fixed-height});
+  min-height: 320px;
+  overflow: auto;
+  @include country-color-deep('border-color');
+  @include country-color-light('background-color');
+  .commands {
+    text-align: right;
+    min-height: 44px;
+    padding: 4px 4px 0 4px;
+    border-bottom: 1px dotted black;
+    button {
+      margin-right: 4px;
+    }
+  }
+  h4 {
+    margin: 0;
+    padding: 12px 0;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    text-align: center;
+    font-weight: bold;
+    border-top: 2px dashed;
+    @include country-color-deep('color');
+    @include country-color-deep('border-top-color');
+    img {
+      margin-right: 8px;
+    }
+  }
+  .character-logs {
+    margin-top: 16px;
   }
 }
 
@@ -1278,7 +1367,7 @@ ul.nav {
   .content-main {
     height: calc(100% - 2rem - 44px);
     @include media-query-lower(sm) {
-      height: 350px;
+      height: 350px !important;
     }
     overflow: auto;
     -webkit-overflow-scrolling: touch;
@@ -1297,6 +1386,9 @@ ul.nav {
     h4 {
       background-color: $global-table-border;
       color: $global-table-background;
+    }
+    .content-main {
+      height: calc(100% - 2rem);
     }
   }
 }
@@ -1466,7 +1558,7 @@ ul.nav {
     width: 70vw;
     height: 90vh;
     background: #efefef;
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -1480,9 +1572,12 @@ ul.nav {
 
     .dialog-title {
       text-align: center;
-      padding: 4px;
-      @include country-color-deep('background-color');
-      @include country-color-light('color');
+      padding: 8px 0 4px;
+      border-bottom-width: 2px;
+      border-bottom-style: dotted;
+      @include country-color-deep('color');
+      @include country-color-deep('border-bottom-color');
+      @include country-color-light('background-color');
     }
 
     .dialog-content {
@@ -1671,7 +1766,7 @@ ul.nav {
     opacity: 1;
     pointer-events: all;
     .dialog-background {
-      opacity: 0.4;
+      opacity: 0.6;
     }
   }
 }

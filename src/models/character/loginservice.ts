@@ -12,7 +12,7 @@ export default class LoginService {
     }
     try {
       const result = await api.Api.loginWithIdAndPassword(id, password);
-      this.setAccessToken(result.accessToken);
+      this.setAccessToken(result);
       return LoginResult.succeed;
     } catch (ex) {
       switch (ex.data.code) {
@@ -31,7 +31,7 @@ export default class LoginService {
     }
   }
 
-  public static setAccessToken(token: string) {
+  public static setAccessToken(token: api.AuthenticationData) {
     current.setAuthorizationToken(token);
   }
 

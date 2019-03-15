@@ -55,7 +55,18 @@
         </div>
       </div>
       <div class="row">
-        <div class="top-login-form col-sm-6 offset-sm-3">
+        <div v-if="isLoadingCurrentCharacter || currentCharacter.id" class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
+          <div v-if="currentCharacter.id" style="text-align:center">
+            <div class="login-form">
+              <CharacterIcon :icon="currentCharacter.mainIcon"/>
+              <div><span class="name">{{ currentCharacter.name }}</span> でログイン中</div>
+              <button type="button" class="btn btn-primary" @click="goStatus">GO</button>
+            </div>
+            <button type="button" class="btn btn-light btn-sm" @click="entry">新規登録画面を確認</button>
+          </div>
+          <div class="loading" v-if="isLoadingCurrentCharacter"><div class="loading-icon"></div></div>
+        </div>
+        <div v-else class="top-login-form col-sm-6 offset-sm-3">
           <button type="button" class="btn btn-light" @click="login">ログイン</button>
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
@@ -107,6 +118,7 @@ import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
+import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import EntryPage from '@/components/pages/EntryPage.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
 import ArrayUtil from '../../models/common/arrayutil';
@@ -114,6 +126,7 @@ import Streaming from './../../api/streaming';
 import ApiStreaming from './../../api/apistreaming';
 import * as api from './../../api/api';
 import * as def from '@/common/definitions';
+import * as current from '@/common/current';
 import OnlineModel from '@/models/status/onlinemodel';
 
 @Component({
@@ -122,6 +135,7 @@ import OnlineModel from '@/models/status/onlinemodel';
     MapLogLine,
     RealDateTime,
     MiniCharacterList,
+    CharacterIcon,
     EntryPage,
     Footer,
   },
@@ -138,11 +152,18 @@ export default class TopPage extends Vue {
   private isLoadingSystem = true;
   private onlines = new OnlineModel();
 
+  private isLoadingCurrentCharacter = true;
+  private currentCharacter = new api.Character();
+
   private nextMonthSecondsTimer = 0;
   private isEntry = false;
 
   public login() {
     this.$emit('login-start');
+  }
+
+  public goStatus() {
+    this.$emit('skip-login');
   }
 
   public entry() {
@@ -155,6 +176,21 @@ export default class TopPage extends Vue {
       clearInterval(this.nextMonthSecondsTimer);
     }
     this.nextMonthSecondsTimer = setInterval(() => this.nextMonthSeconds--, 1000);
+
+    // ログイン中の武将をロード
+    const tokenLimit = new Date();
+    tokenLimit.setHours(tokenLimit.getHours() + 24);
+    if (current.tokenExpirationTime > tokenLimit) {
+      api.Api.getMyCharacter()
+        .then((c) => {
+          this.currentCharacter = c;
+        })
+        .finally(() => {
+          this.isLoadingCurrentCharacter = false;
+        });
+    } else {
+      this.isLoadingCurrentCharacter = false;
+    }
 
     // ストリーミングを開始
     ApiStreaming.top.clearEvents();
@@ -233,6 +269,18 @@ h1 { color: #420; }
 
   .online-list {
     margin: 4px 8px;
+  }
+}
+
+.top-auto-login-form {
+  min-height: 48px;
+  .login-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    button {
+      margin-left: 12px;
+    }
   }
 }
 </style>

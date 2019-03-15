@@ -5,6 +5,8 @@
         @login-start="startLogin"
         @login-abort="abortLogin"
         @login-succeed="enterStatusPage"
+        @skip-login="enterStatusPage"
+        @logout="abortEntry"
         @entry-start="startEntry"
         @entry-abort="abortEntry"
         @entry-succeed="enterStatusPage"
