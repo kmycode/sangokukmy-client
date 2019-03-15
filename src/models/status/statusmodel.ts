@@ -178,6 +178,21 @@ export default class StatusModel {
     return def.TOWN_WAR_STATUSES[0];
   }
 
+  public get characterCountryWarWorstStatus(): def.CountryWarStatus {
+    const war = Enumerable
+      .from(this.characterCountry.wars)
+      .where((w) => w.status === api.CountryWar.statusAvailable ||
+                    w.status === api.CountryWar.statusInReady ||
+                    w.status === api.CountryWar.statusStopRequesting)
+      .orderBy((w) => w.status)
+      .firstOrDefault();
+    if (war) {
+      return Enumerable.from(def.COUNTRY_WAR_STATUSES).first((s) => s.id === war.status);
+    } else {
+      return def.COUNTRY_WAR_STATUSES[0];
+    }
+  }
+
   public get countryAlliance(): api.CountryAlliance | undefined {
     // 現在選択中の国と自分の国の同盟
     return Enumerable
