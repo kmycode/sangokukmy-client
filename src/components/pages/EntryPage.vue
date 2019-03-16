@@ -440,7 +440,17 @@ export default class EntryPage extends Vue {
       this.updateExtraData();
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
-      this.updateExtraData();
+      if (log.eventType === 12 ||
+          log.eventType === 15 ||
+          log.eventType === 16 ||
+          log.eventType === 17 ||
+          log.eventType === 18 ||
+          log.eventType === 19 ||
+          log.eventType === 20 ||
+          log.eventType === 21 ||
+          log.eventType === 22) {
+        this.updateExtraData();
+      }
     });
 
     this.updateExtraData();
