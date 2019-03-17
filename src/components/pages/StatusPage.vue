@@ -1221,7 +1221,8 @@ ul.nav {
 // 現在年月
 #current-display-wrapper {
   display: flex;
-  height: 40px;
+  flex-wrap: wrap;
+  min-height: 40px;
 
   @include media-query-lower(md) {
     flex-direction: column;
