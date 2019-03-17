@@ -152,7 +152,8 @@ export default class StatusModel {
     return Enumerable
       .from(this.countryCharacters)
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
-                    c.aiType === api.Character.aiSecretaryUnitGather)
+                    c.aiType === api.Character.aiSecretaryUnitGather ||
+                    c.aiType === api.Character.aiSecretaryPioneer)
       .toArray();
   }
 
