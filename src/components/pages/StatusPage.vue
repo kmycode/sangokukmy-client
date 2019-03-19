@@ -1309,6 +1309,7 @@ ul.nav {
   height: calc(65vh - #{$left-side-fixed-height});
   min-height: 320px;
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   @include country-color-deep('border-color');
   @include country-color-light('background-color');
   .commands {
