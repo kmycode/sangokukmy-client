@@ -296,7 +296,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (39:1)';
     }
   }),
-  new CommandNameResolver(40, '政務官 %読込中% を 部隊 へ配属'),
+  new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
   new CommandNameResolver(41, '政務官 %読込中% を解任'),
   new CommandNameResolver(42, '技術破壊'),
   new CommandNameResolver(43, '城壁破壊'),

@@ -1224,6 +1224,15 @@ export class Api {
     }
   }
 
+  public static async getUnit(id: number): Promise<Unit> {
+    try {
+      const result = await axios.get<Unit>(def.API_HOST + 'units/' + id, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async createUnit(unit: Unit): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'unit', {
