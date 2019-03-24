@@ -336,10 +336,15 @@ export default class CommandInputer {
         if (targetUnitId && targetUnitId.numberValue) {
           const unit = Enumerable.from(this.store.units).firstOrDefault((u) => u.id === targetUnitId.numberValue);
           if (unit) {
-            command.name = command.name.replace('部隊', unit.name);
+            command.name = command.name.replace('%部隊%', unit.name);
           } else {
-            command.name = 'エラー (' + command.type + ':AB)';
-            return;
+            api.Api.getUnit(targetUnitId.numberValue)
+              .then((u) => {
+                command.name = command.name.replace('%部隊%', u.name);
+              })
+              .catch(() => {
+                command.name = 'エラー (' + command.type + ':AB)';
+              });
           }
         } else {
           command.name = 'エラー (' + command.type + ':AA)';

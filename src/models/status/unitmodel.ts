@@ -22,7 +22,7 @@ export default class UnitModel {
 
   public constructor(private store: StatusStore) {}
 
-  public updateUnits() {
+  public updateUnits(cb?: () => void) {
     this.isUpdating = true;
     api.Api.getUnits()
       .then((units) => {
@@ -55,6 +55,11 @@ export default class UnitModel {
             this.leaderUnit = currentUnit;
           }
           Vue.set(currentUnit, 'isSelected', true);
+        }
+
+        // コールバック
+        if (cb) {
+          cb();
         }
       })
       .catch(() => {

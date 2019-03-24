@@ -3,12 +3,14 @@ import Enumerable from 'linq';
 import ArrayUtil from '@/models/common/arrayutil';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
+import StatusStore from './statusstore';
 
 export interface IChatMessageContainer {
   messages: api.ChatMessage[];
   isPosting: boolean;
   isLoading: boolean;
   isUnread: boolean;
+  count: number;
   sendTo?: any;
 
   canSend: boolean;
@@ -27,6 +29,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public isPosting: boolean = false;
   public isLoading: boolean = false;
   public isUnread: boolean = false;
+  public count: number = 0;
   public sendTo: T = {} as T;
   private hasLoadAll: boolean = false;
   private isOpenPrivate: boolean = false;
@@ -50,7 +53,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
     this.isOpenPrivate = value;
   }
 
-  public constructor(private post: (message: string, icon?: api.CharacterIcon, sendTo?: number) => Promise<any>,
+  public constructor(private store: StatusStore,
+                     private post: (message: string, icon?: api.CharacterIcon, sendTo?: number) => Promise<any>,
                      private load: (sinceId: number) => Promise<api.ChatMessage[]>,
                      private isNeedSendTo: boolean = false) {}
 
@@ -61,6 +65,17 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       old.message = message.message;
     } else {
       this.messages.unshift(message);
+
+      // 登用以外は無条件で加算する
+      if (message.type === api.ChatMessage.typePromotion ||
+          message.type === api.ChatMessage.typePromotionAccepted ||
+          message.type === api.ChatMessage.typePromotionRefused) {
+        if (message.type === api.ChatMessage.typePromotion && message.typeData !== this.store.character.id) {
+          this.count++;
+        }
+      } else {
+        this.count++;
+      }
     }
 
     if (!this.isOpen) {
@@ -113,6 +128,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
         NotificationService.promotionAccepted.notifyWithParameter(message.character.name);
       } else if (status === api.ChatMessage.typePromotionRefused && message.character) {
         NotificationService.promotionRefused.notifyWithParameter(message.character.name);
+        this.count--;
       }
     } catch (ex) {
       if (ex.data) {

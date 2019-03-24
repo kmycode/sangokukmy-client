@@ -30,6 +30,7 @@ import ValueUtil from '../common/ValueUtil';
 import SoldierTypeModel from './soldiertypemodel';
 
 export default class StatusModel {
+  public systemData: api.SystemData = new api.SystemData();
   public gameDate: api.GameDateTime = new api.GameDateTime();
   public countryParameters: StatusParameter[] = [];
   public scoutedTowns: api.ScoutedTown[] = [];
@@ -318,6 +319,9 @@ export default class StatusModel {
     this.onlines.beginWatch();
 
     ApiStreaming.status.clearEvents();
+    ApiStreaming.status.on<api.SystemData>(
+      api.SystemData.typeId,
+      (obj) => this.updateSystemData(obj));
     ApiStreaming.status.on<api.GameDateTime>(
       api.GameDateTime.typeId,
       (obj) => this.updateGameDate(obj));
@@ -454,6 +458,11 @@ export default class StatusModel {
     } else {
       this.gameDate = date;
     }
+  }
+
+  private updateSystemData(data: api.SystemData) {
+    this.systemData = data;
+    this.updateGameDate(data.gameDateTime);
   }
 
   // #endregion
@@ -1520,6 +1529,7 @@ export default class StatusModel {
 
   public countryChat: ChatMessageContainer<api.Country>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
@@ -1533,11 +1543,13 @@ export default class StatusModel {
 
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon),
       (id) => api.Api.getGlobalChatMessage(id, 50));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
@@ -1551,6 +1563,7 @@ export default class StatusModel {
 
   public promotions: ChatMessageContainer<any>
     = new ChatMessageContainer(
+      this.store,
       () => { throw new Error(); },
       async () => [], true);
 

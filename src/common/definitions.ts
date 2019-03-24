@@ -291,12 +291,14 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type || !type.numberValue) {
         return 'エラー (39:2)';
       }
-      return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' : '集合官');
+      return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' :
+                                   type.numberValue === api.Character.aiSecretaryUnitGather ? '集合官' :
+                                   type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' : '不明');
     } else {
       return 'エラー (39:1)';
     }
   }),
-  new CommandNameResolver(40, '政務官 %読込中% を 部隊 へ配属'),
+  new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
   new CommandNameResolver(41, '政務官 %読込中% を解任'),
   new CommandNameResolver(42, '技術破壊'),
   new CommandNameResolver(43, '城壁破壊'),
