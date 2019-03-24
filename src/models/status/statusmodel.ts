@@ -1529,6 +1529,7 @@ export default class StatusModel {
 
   public countryChat: ChatMessageContainer<api.Country>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
@@ -1542,11 +1543,13 @@ export default class StatusModel {
 
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon),
       (id) => api.Api.getGlobalChatMessage(id, 50));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
+      this.store,
       (mes, icon, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
@@ -1560,6 +1563,7 @@ export default class StatusModel {
 
   public promotions: ChatMessageContainer<any>
     = new ChatMessageContainer(
+      this.store,
       () => { throw new Error(); },
       async () => [], true);
 
