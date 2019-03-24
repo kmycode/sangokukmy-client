@@ -30,6 +30,7 @@ import ValueUtil from '../common/ValueUtil';
 import SoldierTypeModel from './soldiertypemodel';
 
 export default class StatusModel {
+  public systemData: api.SystemData = new api.SystemData();
   public gameDate: api.GameDateTime = new api.GameDateTime();
   public countryParameters: StatusParameter[] = [];
   public scoutedTowns: api.ScoutedTown[] = [];
@@ -318,6 +319,9 @@ export default class StatusModel {
     this.onlines.beginWatch();
 
     ApiStreaming.status.clearEvents();
+    ApiStreaming.status.on<api.SystemData>(
+      api.SystemData.typeId,
+      (obj) => this.updateSystemData(obj));
     ApiStreaming.status.on<api.GameDateTime>(
       api.GameDateTime.typeId,
       (obj) => this.updateGameDate(obj));
@@ -454,6 +458,11 @@ export default class StatusModel {
     } else {
       this.gameDate = date;
     }
+  }
+
+  private updateSystemData(data: api.SystemData) {
+    this.systemData = data;
+    this.updateGameDate(data.gameDateTime);
   }
 
   // #endregion

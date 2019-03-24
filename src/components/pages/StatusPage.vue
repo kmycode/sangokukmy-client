@@ -23,6 +23,7 @@
           </div>
           <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 1 || model.characterCountryWarWorstStatus.id === 2">戦争中</div>
           <div id="current-war-status" class="in-ready" v-if="model.characterCountryWarWorstStatus.id === 4">戦争準備中</div>
+          <div id="current-war-status" class="in-reset" v-if="model.systemData.isWaitingReset">{{ model.systemData.resetGameDateTime.year }}年終了</div>
         </div>
         <div id="directive" :class="'country-color-' + model.characterCountryColor" @click="isOpenCommandersDialog = true">
           指令: <KmyChatTagText :text="model.countryCommandersMessage.message" :isNewLine="false"/>
@@ -1259,6 +1260,10 @@ ul.nav {
     &.in-ready {
       color: #e00;
       border-style: dashed;
+    }
+    &.in-reset {
+      background-color: #03c;
+      border-color: #03c;
     }
   }
 }
