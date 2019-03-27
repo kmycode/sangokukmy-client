@@ -56,8 +56,8 @@ export default class CommandList {
   public get isFewRemaining(): boolean {
     // コマンドの残りが少ない
     return Enumerable.from(this.inputer.commands)
-      .where((c) => c.commandNumber <= 50)
-      .any((c) => c.type === 0);
+      .where((c) => c.commandNumber <= 50 && c.type !== 0)
+      .count() < 50;
   }
 
   public constructor(private store: StatusStore) {
