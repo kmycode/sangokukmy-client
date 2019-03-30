@@ -16,8 +16,9 @@ export default class ValueUtil {
     if (num < 1000) {
       return num.toString();
     } else {
-      const val = Number(num / 1000).toPrecision(3);
-      const unit = num < 1000000 ? 'k' : num < 1000000000 ? 'M' : 'G';
+      const val = Number(num / (num < 1_000_000 ? 1_000 : num < 1_000_000_000 ? 1_000_000 : 1_000_000_000))
+        .toPrecision(3);
+      const unit = num < 1_000_000 ? 'k' : num < 1_000_000_000 ? 'M' : 'G';
       return val + unit;
     }
   }
