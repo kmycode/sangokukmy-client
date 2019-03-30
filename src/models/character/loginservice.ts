@@ -25,6 +25,8 @@ export default class LoginService {
           return LoginResult.wrongIdOrPassword;
         case api.ErrorCode.loginParameterIncorrect:
           return LoginResult.wrongIdOrPassword;
+        case api.ErrorCode.invalidSecretKeyError:
+          return LoginResult.invalidSecretKey;
         default:
           return LoginResult.unknown;
       }
@@ -44,5 +46,6 @@ export const enum LoginResult {
   wrongIdOrPassword,
   emptyId,
   emptyPassword,
+  invalidSecretKey,
   unknown,
 }

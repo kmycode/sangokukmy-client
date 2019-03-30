@@ -4,6 +4,8 @@ import * as local from './localsettings';
 
 export const HOST_ROOT = local.HOST_ROOT_LOCAL;
 
+export const SERVER_SECRET_KEY = local.SERVER_SECRET_KEY;
+
 /**
  * APIサーバのホスト
  */

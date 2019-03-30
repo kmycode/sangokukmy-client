@@ -212,7 +212,7 @@
           data-size="invisible"></div>
       <button v-show="false" type="button" id="callback" @click="$emit('entry-abort')"></button>
       <button v-show="false" type="button" class="btn btn-primary" onclick="grecaptcha.execute()">送信</button>
-      <button v-show="canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
+      <button v-show="!canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
       <span v-show="!canEntry" style="color:red">上の記述項目の赤いところをすべて入力するか、修正してください</span>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>
@@ -504,6 +504,8 @@ export default class EntryPage extends Vue {
             NotificationService.entryFailedBecauseSameIpAddress.notify();
           } else if (ex.data.code === api.ErrorCode.invitationCodeRequestedError) {
             NotificationService.entryFailedBecauseInvitationCode.notify();
+          } else if (ex.data.code === api.ErrorCode.invalidSecretKeyError) {
+            NotificationService.entryFailedBecauseInvalidSecretKey.notify();
           } else {
             NotificationService.entryFailed.notify();
           }

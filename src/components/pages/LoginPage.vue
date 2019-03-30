@@ -72,6 +72,9 @@ export default class LoginPage extends Vue {
             this.warningMessage = 'パスワードが入力されていません';
             this.isWarning = true;
             break;
+          case LoginResult.invalidSecretKey:
+            this.errorMessage = 'サーバのシークレットキーが不正です。管理者にお問い合わせください';
+            break;
           case LoginResult.succeed:
             this.errorMessage = '';
             break;

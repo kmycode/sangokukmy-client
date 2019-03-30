@@ -50,6 +50,7 @@ export enum ErrorCode {
   invalidIpAddressError = 39,
   duplicateEntryError = 40,
   invitationCodeRequestedError = 41,
+  invalidSecretKeyError = 43,
 }
 
 /**
@@ -901,7 +902,7 @@ export class Api {
       const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'authenticate', {
         id,
         password,
-      });
+      }, this.secretKeyHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1366,7 +1367,7 @@ export class Api {
           colorId: country.colorId,
         },
         invitationCode,
-      });
+      }, this.secretKeyHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1495,6 +1496,14 @@ export class Api {
     return {
       headers: {
         Authorization: 'Bearer ' + current.authorizationToken,
+      },
+    };
+  }
+
+  private static get secretKeyHeader(): AxiosRequestConfig {
+    return {
+      headers: {
+        SecretKey: def.SERVER_SECRET_KEY,
       },
     };
   }

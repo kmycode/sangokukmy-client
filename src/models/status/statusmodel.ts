@@ -743,7 +743,6 @@ export default class StatusModel {
   private getCountryParameters(country: api.Country): StatusParameter[] {
     const ps: StatusParameter[] = [];
     const capital = this.getTown(country.capitalTownId);
-    ps.push(new TextStatusParameter('国名', country.name));
     ps.push(new TextStatusParameter('首都', capital.name));
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
