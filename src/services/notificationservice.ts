@@ -384,6 +384,10 @@ export default class NotificationService {
     '登録失敗',
     '招待コードが指定されていないか、間違っています',
     NotificationServiceItemDefaultType.error);
+  public static readonly entryFailedBecauseInvalidSecretKey = new NotificationServiceItem(
+    '登録失敗',
+    'シークレットキーが不正です。ページをリロードして再試行してください。それでもだめなら管理者にお問い合わせください',
+    NotificationServiceItemDefaultType.error);
   public static readonly getAllCharactersFailed = new NotificationServiceItem(
     '武将取得失敗',
     '武将取得に失敗しました',
