@@ -24,7 +24,7 @@
             <span class="damage">(-{{ line.attackerDamage }})</span>
           </div>
         </div>
-        <div class="turn">{{ line.turn }}</div>
+        <div :class="{'turn': true, 'turn-rush': line.attackerDamage === 0 || line.defenderDamage === 0}">{{ line.turn }}</div>
         <div class="chara defender">
           <div class="number">
             <span class="current">{{ line.defenderNumber }}</span>
@@ -151,6 +151,9 @@ export default class BattleLogView extends Vue {
       text-align: center;
       font-weight: bold;
       font-size: 1.2rem;
+    }
+    .turn-rush {
+      background-color: #f99;
     }
   }
 }
