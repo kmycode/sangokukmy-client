@@ -354,6 +354,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(28, '雇用', '#800'),
   new EventType(29, '解任', '#800'),
   new EventType(30, '削除', 'black'),
+  new EventType(31, '削除', 'black'),
 ];
 
 /**

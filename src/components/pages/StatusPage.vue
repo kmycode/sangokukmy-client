@@ -138,11 +138,12 @@
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span class="tab-text">
-                  <span v-show="selectedActionTabSubPanel === 0">登用<span v-if="!model.character.countryId"> ({{ model.promotions.count }})</span></span>
-                  <span v-show="selectedActionTabSubPanel === 1">国設定</span>
-                  <span v-show="selectedActionTabSubPanel === 2">全会</span>
-                  <span v-show="selectedActionTabSubPanel === 4">兵種</span>
-                  <span v-show="selectedActionTabSubPanel === 5">個設定</span>
+                  <span v-show="selectedActionTab !== 3">メニュー</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0">登用<span v-if="!model.character.countryId"> ({{ model.promotions.count }})</span></span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 1">国設定</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2">全会</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
