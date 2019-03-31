@@ -4,7 +4,7 @@
     <div class="edit-list">
       <div class="data-row">
         <div class="label">試行回数</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="battleCount"></div>
+        <div class="value"><input type="number" min="0" v-model.number="battleCount"></div>
       </div>
     </div>
     <h2>攻撃側</h2>
@@ -12,46 +12,46 @@
     <div class="edit-list">
       <div class="data-row">
         <div class="label">武力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.strong"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.strong"></div>
       </div>
       <div class="data-row">
         <div class="label">知力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.intellect"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.intellect"></div>
       </div>
       <div class="data-row">
         <div class="label">兵士小隊数</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.soldierNumber"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.soldierNumber"></div>
       </div>
       <div class="data-row">
         <div class="label">訓練</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.proficiency"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.proficiency"></div>
       </div>
     </div>
     <h3>兵種</h3>
     <div class="edit-list">
       <div class="data-row">
         <div class="label">基本攻撃力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.baseAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.baseAttack"></div>
       </div>
       <div class="data-row">
         <div class="label">基本防御力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.baseDefend"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.baseDefend"></div>
       </div>
       <div class="data-row">
         <div class="label">知力攻撃力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.intellectAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.intellectAttack"></div>
       </div>
       <div class="data-row">
         <div class="label">知力防御力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.intellectDefend"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.intellectDefend"></div>
       </div>
       <div class="data-row">
         <div class="label">突撃確率 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.rushProbability"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.rushProbability"></div>
       </div>
       <div class="data-row">
         <div class="label">突撃加算値</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="my.rushAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="my.rushAttack"></div>
       </div>
     </div>
     <h2>防御側</h2>
@@ -59,46 +59,46 @@
     <div class="edit-list">
       <div class="data-row">
         <div class="label">武力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.strong"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.strong"></div>
       </div>
       <div class="data-row">
         <div class="label">知力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.intellect"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.intellect"></div>
       </div>
       <div class="data-row">
         <div class="label">兵士小隊数</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.soldierNumber"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.soldierNumber"></div>
       </div>
       <div class="data-row">
         <div class="label">訓練</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.proficiency"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.proficiency"></div>
       </div>
     </div>
     <h3>兵種</h3>
     <div class="edit-list">
       <div class="data-row">
         <div class="label">基本攻撃力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.baseAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.baseAttack"></div>
       </div>
       <div class="data-row">
         <div class="label">基本防御力</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.baseDefend"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.baseDefend"></div>
       </div>
       <div class="data-row">
         <div class="label">知力攻撃力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.intellectAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.intellectAttack"></div>
       </div>
       <div class="data-row">
         <div class="label">知力防御力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.intellectDefend"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.intellectDefend"></div>
       </div>
       <div class="data-row">
         <div class="label">突撃確率 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.rushProbability"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.rushProbability"></div>
       </div>
       <div class="data-row">
         <div class="label">突撃加算値</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="enemy.rushAttack"></div>
+        <div class="value"><input type="number" min="0" v-model.number="enemy.rushAttack"></div>
       </div>
     </div>
     <h2>結果</h2>
