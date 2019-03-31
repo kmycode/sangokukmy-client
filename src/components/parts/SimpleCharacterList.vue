@@ -141,6 +141,9 @@ export default class SimpleCharacterList extends Vue {
   }
 
   private getSoldierTypeName(chara: api.Character): string {
+    if (chara.characterSoldierType && chara.soldierType === 15) {
+      return chara.characterSoldierType.name || 'カスタム';
+    }
     const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === chara.soldierType);
     if (soldierType) {
       return soldierType.name;
