@@ -200,8 +200,8 @@ class BattleCharacter {
       let enemySoldierNumber = enemy.soldierNumber;
 
       for (let t = 0; t < 50; t++) {
-        let myDamage = Math.min(Math.max(Math.random() * enemy.attack, 1), mySoldierNumber);
-        let enemyDamage = Math.min(Math.max(Math.random() * this.attack, 1), enemySoldierNumber);
+        let myDamage = Math.max(Math.random() * enemy.attack, 1);
+        let enemyDamage = Math.max(Math.random() * this.attack, 1);
 
         if (this.isRush()) {
           enemyDamage += this.rushAttack;
@@ -217,8 +217,8 @@ class BattleCharacter {
         }
       }
 
-      myRestNumberSum += mySoldierNumber;
-      enemyRestNumberSum += enemySoldierNumber;
+      myRestNumberSum += Math.max(mySoldierNumber, 0);
+      enemyRestNumberSum += Math.max(enemySoldierNumber, 0);
 
       if (mySoldierNumber <= 0 && enemySoldierNumber <= 0) {
         drawLoseCount++;
