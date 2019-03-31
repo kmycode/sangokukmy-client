@@ -144,6 +144,7 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2">全会</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
@@ -155,6 +156,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
@@ -310,6 +313,10 @@
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4" class="right-side-content content-soldier">
           <CustomSoldierTypeView :model="model.soldierTypes"
                                  :buildingSize="model.soldierLaboratorySize"/>
+        </div>
+        <!-- 戦闘シミュレータ -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
+          <BattleSimulatorView/>
         </div>
       </div>
     </div>
@@ -869,6 +876,7 @@ import WarView from '@/components/parts/status/WarView.vue';
 import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
+import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -899,6 +907,7 @@ import EventObject from '@/models/common/EventObject';
     UnitListView,
     KmyChatTagText,
     CustomSoldierTypeView,
+    BattleSimulatorView,
   },
 })
 export default class StatusPage extends Vue {
