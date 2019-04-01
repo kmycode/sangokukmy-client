@@ -112,6 +112,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
+            <button type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
@@ -170,6 +171,7 @@
                            :characterDeleteTurn="model.character.deleteTurn"
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
+                           :canScouter="model.canScouter"
                            @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->
@@ -547,6 +549,27 @@
           </div>
         </div>
       </div>
+      <!-- 政策 -->
+      <div v-show="isOpenPoliciesDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
+          <CountryPolicyList :country="model.country"
+                             :policyTypes="model.countryPolicyTypes"
+                             :canEdit="model.country.id === model.character.countryId && model.canPolicy"
+                             v-model="selectedCountryPolicyType"
+                             style="flex:1"/>
+          <div class="loading" v-show="model.isUpdatingPolicies"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" v-show="model.country.id === model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-light" v-show="model.country.id !== model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
+            <button class="btn btn-primary" v-show="model.country.id === model.character.countryId && model.canPolicy && selectedCountryPolicyType.id > 0 && selectedCountryPolicyType.point <= model.country.policyPoint" @click="model.addPolicy(selectedCountryPolicyType.id)">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 同盟 -->
       <div v-show="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
@@ -875,6 +898,7 @@ import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
 import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
+import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
@@ -908,6 +932,7 @@ import EventObject from '@/models/common/EventObject';
     KmyChatTagText,
     CustomSoldierTypeView,
     BattleSimulatorView,
+    CountryPolicyList,
   },
 })
 export default class StatusPage extends Vue {
@@ -943,6 +968,7 @@ export default class StatusPage extends Vue {
   public isOpenAddSecretaryDialog: boolean = false;
   public isOpenRemoveSecretaryDialog: boolean = false;
   public isOpenCharacterIconPickerDialog: boolean = false;
+  public isOpenPoliciesDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -962,6 +988,7 @@ export default class StatusPage extends Vue {
   public selectedIconAtPrivateConfig: api.CharacterIcon = new api.CharacterIcon(-1);
   public newIcon: api.CharacterIcon = new api.CharacterIcon(-1, 0, false, 1, '0.gif');
   public isShowIconOperations = false;
+  public selectedCountryPolicyType: def.CountryPolicyType = new def.CountryPolicyType(-1);
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -974,7 +1001,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
-      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog;
+      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1031,7 +1058,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
-      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = false;
+      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

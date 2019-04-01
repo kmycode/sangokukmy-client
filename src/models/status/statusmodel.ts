@@ -59,7 +59,7 @@ export default class StatusModel {
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
       || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
-      || this.isUpdatingCountrySettings;
+      || this.isUpdatingCountrySettings || this.isUpdatingPolicies;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
@@ -68,6 +68,7 @@ export default class StatusModel {
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
   public isUpdatingCharacterIcons: boolean = false;
+  public isUpdatingPolicies: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -132,6 +133,22 @@ export default class StatusModel {
   public get townCountryColor(): number {
     // 選択中の都市の国色
     return this.getCountry(this.town.countryId).colorId;
+  }
+
+  public get countryPolicyTypes(): def.CountryPolicyType[] {
+    // 選択中の国の政策
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.country.id)
+      .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
+      .toArray();
+  }
+
+  public get characterCountryPolicyTypes(): def.CountryPolicyType[] {
+    // 選択中の国の政策
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
+      .toArray();
   }
 
   public get characterTownCountryColor(): number {
@@ -285,30 +302,12 @@ export default class StatusModel {
 
   public get safeMaxValue(): number {
     // 自国の金庫の最大容量
-    const items = Enumerable.from(this.towns)
-      .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSafe);
-    const val = this.calcCountryBuildingPower(items) * def.COUNTRY_BUILDING_MAX * def.SAFE_PER_ENDURANCE;
-    return Math.floor(val);
+    return 100_0000;
   }
 
   public get soldierLaboratorySize(): number {
     // 兵種研究所の強さ
-    const items = Enumerable.from(this.towns)
-    .where((t) => t.countryId === this.character.countryId && t.countryBuilding === api.Town.countryBuildingSoldier);
-    const val = this.calcCountryBuildingPower(items);
-    return val;
-  }
-
-  private calcCountryBuildingPower(towns: Enumerable.IEnumerable<api.TownBase>) {
-    let power = 0;
-    let addSize = 1;
-    towns
-      .orderByDescending((t) => t.countryBuildingValue)
-      .forEach((t) => {
-        power += (t.countryBuildingValue / def.COUNTRY_BUILDING_MAX) * addSize;
-        addSize *= 2.0 / 3;
-      });
-    return power;
+    return 1;
   }
 
   // #endregion
@@ -379,6 +378,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterSoldierType>(
       api.CharacterSoldierType.typeId,
       (obj) => this.soldierTypes.onItemReceived(obj));
+    ApiStreaming.status.on<api.CountryPolicy>(
+      api.CountryPolicy.typeId,
+      (obj) => this.onCountryPolicyReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
@@ -554,34 +556,12 @@ export default class StatusModel {
     const townBuilding = Enumerable
       .from(def.TOWN_BUILDINGS)
       .firstOrDefault((b) => b.id === town.townBuilding);
-    const countryBuilding = Enumerable
-      .from(def.COUNTRY_BUILDINGS)
-      .firstOrDefault((b) => b.id === town.countryBuilding);
-    const countryLaboratory = Enumerable
-      .from(def.COUNTRY_LABORATORIES)
-      .firstOrDefault((b) => b.id === town.countryLaboratory);
     if (townBuilding && townBuilding.id) {
       if (town.ricePrice !== undefined) {
         ps.push(new TwinTextAndRangedStatusParameter(
           '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
       } else {
         ps.push(new TextStatusParameter('都市施設', townBuilding.name));
-      }
-    }
-    if (countryBuilding && countryBuilding.id) {
-      if (town.ricePrice !== undefined) {
-        ps.push(new TwinTextAndRangedStatusParameter(
-          '国家施設', countryBuilding.name, '耐久', town.countryBuildingValue, 2000));
-      } else {
-        ps.push(new TextStatusParameter('国家施設', countryBuilding.name));
-      }
-    }
-    if (countryLaboratory && countryLaboratory.id) {
-      if (town.ricePrice !== undefined) {
-        ps.push(new TwinTextAndRangedStatusParameter(
-          '国家研究', countryLaboratory.name, '耐久', town.countryLaboratoryValue, 2000));
-      } else {
-        ps.push(new TextStatusParameter('国家研究', countryLaboratory.name));
       }
     }
 
@@ -688,6 +668,7 @@ export default class StatusModel {
         country.lastMoneyIncomes = old.lastMoneyIncomes;
         country.lastRiceIncomes = old.lastRiceIncomes;
         country.safeMoney = old.safeMoney;
+        country.policyPoint = old.policyPoint;
       }
 
       // 同盟データがｒｙ
@@ -748,6 +729,7 @@ export default class StatusModel {
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
         country.safeMoney !== undefined) {
+      ps.push(new NoRangeStatusParameter('政策ポイント', country.policyPoint));
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
@@ -969,8 +951,20 @@ export default class StatusModel {
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
+  public get canScouter(): boolean {
+    // 自分が諜報府権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canPolicy(): boolean {
+    // 自分が政策権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
@@ -1281,6 +1275,47 @@ export default class StatusModel {
           this.isUpdatingReinforcement = false;
         });
     }
+  }
+
+  // #endregion
+
+  // #region CountryPolicies
+
+  private onCountryPolicyReceived(policy: api.CountryPolicy) {
+    ArrayUtil.addItem(this.store.policies, policy);
+
+    if (this.store.hasInitialized && policy.countryId === this.character.countryId) {
+      const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy.type);
+      if (info) {
+        NotificationService.policyAdded.notifyWithParameter(info.name);
+      }
+    }
+  }
+
+  public addPolicy(policy: number) {
+    const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy);
+    if (!info) {
+      NotificationService.addPolicyFailed.notifyWithParameter('(名称不明)');
+      return;
+    }
+
+    this.isUpdatingPolicies = true;
+    api.Api.addCountryPolicy(policy)
+      .then(() => {
+        NotificationService.addPolicy.notifyWithParameter(info.name);
+      })
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.meaninglessOperationError) {
+          NotificationService.addPolicyFailedBecauseOfDuplicate.notifyWithParameter(info.name);
+        } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.addPolicyFailedBecauseOfLackOfPoints.notifyWithParameter(info.name);
+        } else {
+          NotificationService.addPolicyFailed.notifyWithParameter(info.name);
+        }
+      })
+      .finally(() => {
+        this.isUpdatingPolicies = false;
+      });
   }
 
   // #endregion

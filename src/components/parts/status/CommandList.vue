@@ -3,7 +3,7 @@
     <!-- コマンド選択のタブ -->
     <ul class="nav nav-pills nav-fill">
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
-      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">施設</a></li>
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">政策</a></li>
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
       <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li> -->
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
@@ -22,13 +22,12 @@
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(32)">国家施設<span class="redundant-text">強化</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(44)">政策開発</button>
         <button v-if="list.canUseCountrySafe" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
         <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')">国庫搬出</button>
-        <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(42)">技術破壊</button>
-        <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(43)">城壁破壊</button>
-        <button v-if="list.canUseCountrySpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(37)">扇動</button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
+        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(0)">斥候派遣</button>
+        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(0)">斥候解任</button>
         <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政<span class="redundant-text">務官</span>募集</button>
         <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政<span class="redundant-text">務官</span>配属</button>
         <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政<span class="redundant-text">務官</span>解任</button>
@@ -115,6 +114,7 @@ export default class CommandListView extends Vue {
   @Prop() private characterDeleteTurn!: number;
   @Prop() private canSafeOut!: boolean;
   @Prop() private canSecretary!: boolean;
+  @Prop() private canScouter!: boolean;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;

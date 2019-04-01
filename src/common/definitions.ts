@@ -61,13 +61,6 @@ export const RICE_BUY_MAX = 10000;
 export const PAY_SAFE_MAX = 100000;
 
 /**
- * 耐久ごとの、利用できる国庫の金の量
- */
-export const SAFE_PER_ENDURANCE = 2000;
-
-export const COUNTRY_BUILDING_MAX = 2000;
-
-/**
  * 兵種
  */
 export class SoldierType {
@@ -260,8 +253,6 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(23, '仕官'),
   new CommandNameResolver(30, '緊急米施し'),
   new CommandNameResolver(31, '都市施設強化'),
-  new CommandNameResolver(32, '国家施設強化'),
-  new CommandNameResolver(33, '研究所強化'),
   new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -286,8 +277,6 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (35:1)';
     }
   }),
-  new CommandNameResolver(36, '焼討'),
-  new CommandNameResolver(37, '扇動'),
   new CommandNameResolver(38, '兵種 %0% を研究'),
   new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
     if (params) {
@@ -305,8 +294,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
   new CommandNameResolver(41, '政務官 %読込中% を解任'),
-  new CommandNameResolver(42, '技術破壊'),
-  new CommandNameResolver(43, '城壁破壊'),
+  new CommandNameResolver(44, '政策開発'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -355,6 +343,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(29, '解任', '#800'),
   new EventType(30, '削除', 'black'),
   new EventType(31, '削除', 'black'),
+  new EventType(32, '政策', '#2a4'),
 ];
 
 /**
@@ -471,4 +460,20 @@ export const COUNTRY_BUILDINGS: BuildingType[] = [
  */
 export const COUNTRY_LABORATORIES: BuildingType[] = [
   new BuildingType(0, '研究所なし'),
+];
+
+/**
+ * 政策
+ */
+export class CountryPolicyType {
+  public constructor(public id: number = 0,
+                     public point: number = 0,
+                     public name: string = '',
+                     public description: string = '') {}
+}
+export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
+  new CountryPolicyType(1, 2000, '貯蔵', '国庫が利用可能になる'),
+  new CountryPolicyType(2, 2000, '密偵', '諜報府が利用可能になる'),
+  new CountryPolicyType(3, 2000, '兵種開発', '兵種研究所が利用可能になる'),
+  new CountryPolicyType(4, 2000, '人材開発', '政務庁が利用可能になる'),
 ];

@@ -131,6 +131,12 @@
     <div class="buttons">
       <button type="button" class="btn btn-primary" @click="run()">実行</button>
     </div>
+    <div class="alert alert-warning">
+      相討ちは基本的にはKMYだけの概念なので、他の三国志NETで適用する場合は、相討ちと勝利の合計を勝利と読み替えてください。<br>
+      突撃はKMYだけの概念なので、他の三国志NETで適用する場合は、突撃関係のパラメータを0にしてください。<br>
+      「基準値: 100」と書いてあるものは、「％」のような感じです。知力攻撃力を100とした場合、知力の100%が攻撃力に加算されます。<br>
+      本シミュレータはブラウザ上で動作しますが、実際の戦闘処理はdotnet（.NET Core基盤）（他の三国志NETではPerl）でされます。それぞれで疑似乱数のアルゴリズムが異なる場合、厳密に正確な結果になりません。あらかじめご了承ください。<br>
+    </div>
     <div class="loading" v-show="isCalcing"><div class="loading-icon"></div></div>
   </div>
 </template>

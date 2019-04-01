@@ -427,6 +427,19 @@ export class CountryPost {
                      public character: Character) {}
 }
 
+export class CountryPolicy {
+  public static readonly typeId = 32;
+
+  public static readonly typeStorage = 1;
+  public static readonly typeScouter = 2;
+  public static readonly typeSoldierDevelopment = 3;
+  public static readonly typeHumanDevelopment = 4;
+
+  public constructor(public id: number = 0,
+                     public countryId: number = 0,
+                     public type: number = 0) {}
+}
+
 export class CountryMessage {
   public static readonly typeId = 29;
 
@@ -460,6 +473,7 @@ export class Country {
                      public townWars: TownWar[] = [],
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
+                     public policyPoint: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public safeMoney?: number) {}
@@ -573,11 +587,7 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public security: number = 0,
                      public ricePrice: number = 0,
                      public townBuilding: number = 0,
-                     public townBuildingValue: number = 0,
-                     public countryBuilding: number = 0,
-                     public countryBuildingValue: number = 0,
-                     public countryLaboratory: number = 0,
-                     public countryLaboratoryValue: number = 0) {}
+                     public townBuildingValue: number = 0) {}
 }
 
 /**
@@ -592,12 +602,6 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly typeCommercial = 2;
   public static readonly typeFortress = 3;
   public static readonly typeLarge = 4;
-
-  public static readonly countryBuildingSafe = 1;
-  public static readonly countryBuildingSpy = 2;
-  public static readonly countryBuildingWork = 3;
-  public static readonly countryBuildingSoldier = 4;
-  public static readonly countryBuildingSecretary = 5;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;
@@ -1086,6 +1090,17 @@ export class Api {
         message,
         type,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addCountryPolicy(policy: number): Promise<any> {
+    try {
+      await axios.post
+        (def.API_HOST + 'country/policies', {
+          type: policy,
+        }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

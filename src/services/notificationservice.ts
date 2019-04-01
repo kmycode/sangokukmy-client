@@ -584,6 +584,26 @@ export default class NotificationService {
     'メインアイコン設定失敗',
     'メインアイコン設定に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly addPolicy = new NotificationServiceItem(
+    '政策追加',
+    '政策 {0} を追加しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly addPolicyFailed = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly addPolicyFailedBecauseOfDuplicate = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました。他の人がすでに同じ政策を追加した可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly addPolicyFailedBecauseOfLackOfPoints = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました。政策ポイントが足りません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly policyAdded = new NotificationServiceItem(
+    '政策追加',
+    '所属国に政策 {0} が追加されました',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
