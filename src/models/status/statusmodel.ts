@@ -1339,12 +1339,16 @@ export default class StatusModel {
 
     if (!scouter.isRemoved) {
       ArrayUtil.addItem(this.store.scouters, scouter);
-      NotificationService.scouterAdded.notifyWithParameter(town.name);
+      if (this.store.hasInitialized) {
+        NotificationService.scouterAdded.notifyWithParameter(town.name);
+      }
     } else {
       this.store.scouters = Enumerable.from(this.store.scouters)
         .where((s) => s.id !== scouter.id)
         .toArray();
-      NotificationService.scouterRemoved.notifyWithParameter(town.name);
+      if (this.store.hasInitialized) {
+        NotificationService.scouterRemoved.notifyWithParameter(town.name);
+      }
     }
   }
 

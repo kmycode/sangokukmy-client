@@ -474,8 +474,10 @@ export class CountryPolicyType {
                      public description: string = '') {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
-  new CountryPolicyType(1, 2000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
-  new CountryPolicyType(2, 2000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
-  new CountryPolicyType(3, 2000, '兵種開発', '兵種研究所が利用可能になる'),
-  new CountryPolicyType(4, 2000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
+  new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
+  new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
+  new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる'),
+  new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
+  new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
 ];
