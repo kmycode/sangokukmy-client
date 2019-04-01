@@ -604,6 +604,14 @@ export default class NotificationService {
     '政策追加',
     '所属国に政策 {0} が追加されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly scouterAdded = new NotificationServiceItem(
+    '斥候派遣',
+    '{0} に斥候が派遣されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly scouterRemoved = new NotificationServiceItem(
+    '斥候解雇',
+    '{0} の斥候が解雇されました',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

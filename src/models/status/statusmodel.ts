@@ -300,6 +300,11 @@ export default class StatusModel {
     return api.Town.getMoneyToRicePrice(this.characterTown, assets);
   }
 
+  public get characterTownHasScouter(): boolean {
+    return Enumerable.from(this.store.scouters)
+      .any((s) => s.townId === this.town.id);
+  }
+
   public get safeMaxValue(): number {
     // 自国の金庫の最大容量
     return 100_0000;
@@ -381,6 +386,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
+    ApiStreaming.status.on<api.CountryScouter>(
+      api.CountryScouter.typeId,
+      (obj) => this.onCountryScouterReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
@@ -801,6 +809,10 @@ export default class StatusModel {
 
   private onCountryChanged() {
     this.countryChat.clear();
+    this.store.scouters = Enumerable
+      .from(this.store.scouters)
+      .where((s) => s.countryId === this.character.countryId)
+      .toArray();
     api.Api.getCountryChatMessage()
       .then((messages) => {
         messages.forEach((message) => {
@@ -1316,6 +1328,24 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingPolicies = false;
       });
+  }
+
+  // #endregion
+
+  // #region CountryScouters
+
+  private onCountryScouterReceived(scouter: api.CountryScouter) {
+    const town = this.getTown(scouter.townId);
+
+    if (!scouter.isRemoved) {
+      ArrayUtil.addItem(this.store.scouters, scouter);
+      NotificationService.scouterAdded.notifyWithParameter(town.name);
+    } else {
+      this.store.scouters = Enumerable.from(this.store.scouters)
+        .where((s) => s.id !== scouter.id)
+        .toArray();
+      NotificationService.scouterRemoved.notifyWithParameter(town.name);
+    }
   }
 
   // #endregion

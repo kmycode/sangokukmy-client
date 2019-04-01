@@ -440,6 +440,15 @@ export class CountryPolicy {
                      public type: number = 0) {}
 }
 
+export class CountryScouter {
+  public static readonly typeId = 33;
+
+  public constructor(public id: number = 0,
+                     public countryId: number = 0,
+                     public townId: number = 0,
+                     public isRemoved: boolean = false) {}
+}
+
 export class CountryMessage {
   public static readonly typeId = 29;
 

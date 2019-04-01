@@ -89,6 +89,7 @@
             {{ model.town.name }}
             <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
             <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
+            <span v-if="model.characterTownHasScouter">【斥候】</span>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>

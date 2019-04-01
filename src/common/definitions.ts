@@ -295,6 +295,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
   new CommandNameResolver(41, '政務官 %読込中% を解任'),
   new CommandNameResolver(44, '政策開発'),
+  new CommandNameResolver(45, '%0% へ斥候派遣'),
+  new CommandNameResolver(46, '%0% の斥候を解雇'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -472,8 +474,8 @@ export class CountryPolicyType {
                      public description: string = '') {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
-  new CountryPolicyType(1, 2000, '貯蔵', '国庫が利用可能になる'),
-  new CountryPolicyType(2, 2000, '密偵', '諜報府が利用可能になる'),
+  new CountryPolicyType(1, 2000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
+  new CountryPolicyType(2, 2000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
   new CountryPolicyType(3, 2000, '兵種開発', '兵種研究所が利用可能になる'),
-  new CountryPolicyType(4, 2000, '人材開発', '政務庁が利用可能になる'),
+  new CountryPolicyType(4, 2000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
 ];

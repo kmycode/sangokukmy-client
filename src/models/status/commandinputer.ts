@@ -285,7 +285,7 @@ export default class CommandInputer {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13) {
+    if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46) {
       // 移動、戦争
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetTownId && targetTownId.numberValue) {
