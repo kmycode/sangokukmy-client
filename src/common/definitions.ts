@@ -480,4 +480,5 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
   new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
   new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
+  new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
 ];
