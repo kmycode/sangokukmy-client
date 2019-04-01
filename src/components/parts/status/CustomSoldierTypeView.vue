@@ -89,51 +89,51 @@
       </div>
       <div class="data-row">
         <div class="label">雑兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.commonSoldier"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.commonSoldier"></div>
       </div>
       <div class="data-row">
         <div class="label">軽歩兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.lightInfantory"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.lightInfantory"></div>
       </div>
       <div class="data-row">
         <div class="label">弓兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.archer"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.archer"></div>
       </div>
       <div class="data-row">
         <div class="label">軽騎兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.lightCavalry"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.lightCavalry"></div>
       </div>
       <div class="data-row">
         <div class="label">強弩兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.strongCrossbow"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.strongCrossbow"></div>
       </div>
       <div class="data-row">
         <div class="label">神鬼兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.lightIntellect"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.lightIntellect"></div>
       </div>
       <div class="data-row">
         <div class="label">重歩兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.heavyInfantory"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.heavyInfantory"></div>
       </div>
       <div class="data-row">
         <div class="label">重騎兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.heavyCavalry"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.heavyCavalry"></div>
       </div>
       <div class="data-row">
         <div class="label">智攻兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.intellect"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.intellect"></div>
       </div>
       <div class="data-row">
         <div class="label">連弩兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.repeatingCrossbow"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.repeatingCrossbow"></div>
       </div>
       <div class="data-row">
         <div class="label">壁守兵</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.strongGuards"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.strongGuards"></div>
       </div>
       <div class="data-row">
         <div class="label">井闌</div>
-        <div class="value"><input type="number" min="0" max="10" v-model.number="selectedType.seiran"></div>
+        <div class="value"><input type="number" min="0" v-model.number="selectedType.seiran"></div>
       </div>
       <div class="data-row">
         <div class="label">兵1あたり金</div>
@@ -151,12 +151,12 @@
         <div class="label">研究コスト（概算）</div>
         <div class="result">{{ researchCost }}</div>
       </div>
-      <div class="alert alert-warning">
-        合計が 10 - 15 になるようにしてください。国家研究で合計が増えている場合は、それにあわせてください（ごめんまだ画面側のチェック処理が追いつかないｗ）
+      <div :class="{'alert': true, 'alert-warning': size < 10 || size > 12, 'alert-info': size >= 10 && size <= 12}">
+        合計が 10 - 12 になるようにしてください
       </div>
       <div class="buttons">
         <button type="button" class="btn btn-light" @click="cancel()">キャンセル</button>
-        <button type="button" class="btn btn-primary" @click="save()">保存</button>
+        <button v-show="size >= 10 && size <= 12" type="button" class="btn btn-primary" @click="save()">保存</button>
       </div>
     </div>
     <div class="loading" v-show="model.isUpdating"><div class="loading-icon"></div></div>
@@ -197,6 +197,10 @@ export default class CustomSoldierTypeView extends Vue {
 
   private get researchCost(): number {
     return api.CharacterSoldierType.getResearchCost(this.selectedType, this.buildingSize);
+  }
+
+  private get size(): number {
+    return api.CharacterSoldierType.getSize(this.selectedType);
   }
 
   public constructor() {

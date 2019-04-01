@@ -270,6 +270,12 @@ export class CharacterSoldierType {
       type.repeatingCrossbow >= 0 && type.strongGuards >= 0 && type.seiran >= 0;
   }
 
+  public static getSize(type: CharacterSoldierType): number {
+    return type.commonSoldier + type.lightInfantory + type.archer + type.lightCavalry +
+      type.strongCrossbow + type.lightIntellect + type.heavyInfantory + type.heavyCavalry +
+      type.intellect + type.repeatingCrossbow + type.strongGuards + type.seiran;
+  }
+
   public static getParts(type: CharacterSoldierType): def.SoldierType[] {
     const types = Enumerable.from(def.SOLDIER_TYPES);
     return Enumerable.repeat(types.first((t) => t.id === 1), type.commonSoldier)
