@@ -56,7 +56,7 @@
               <span class="parameter-value">{{ chara.soldierNumber }}</span>
             </span>
           </div>
-          <div v-if="chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
+          <div v-if="isShowCustomSoldierTypeDetail && chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
             {{ getSoldierTypeDescription(chara) }}
           </div>
         </div>
@@ -96,6 +96,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: -1,
   }) public myCountryId!: number;
+  @Prop({
+    default: false,
+  }) public isShowCustomSoldierTypeDetail!: boolean;
   @Prop({
     default: false,
   }) public canEdit!: boolean;
