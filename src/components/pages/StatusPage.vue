@@ -697,10 +697,10 @@
                 <div class="label">現在の相場</div><div class="value">{{ model.characterTownRiceTrend }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">金10000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
+                <div class="label">金20000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">米10000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
+                <div class="label">米20000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
               </div>
             </div>
             <div class="commands">
@@ -722,7 +722,7 @@
             <button class="btn btn-light" @click="isOpenRiceDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 10000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
+            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 20000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
           </div>
         </div>
       </div>

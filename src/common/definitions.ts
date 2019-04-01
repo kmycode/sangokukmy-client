@@ -56,7 +56,7 @@ export const COUNTRY_COLOR_NUM = 11;
  */
 export const DEFAULT_ICON_NUM = 98;
 
-export const RICE_BUY_MAX = 10000;
+export const RICE_BUY_MAX = 20000;
 
 export const PAY_SAFE_MAX = 100000;
 
