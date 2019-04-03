@@ -2,7 +2,7 @@
   <div id="all-characters-page" class="loading-container">
     <div class="col-xg-6 offset-xg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
       <div class="cancel">
-        <button type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button type="button" class="btn btn-light" @click="$emit('entry-abort')">TOPに戻る</button>
       </div>
       <div v-for="country in countries"
            :key="country.id"
@@ -44,7 +44,7 @@
         登録武将数: <span class="number">{{ count }}</span> 名
       </div>
       <div class="cancel">
-        <button type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button type="button" class="btn btn-light" @click="$emit('entry-abort')">TOPに戻る</button>
       </div>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>

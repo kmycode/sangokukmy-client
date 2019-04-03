@@ -84,7 +84,7 @@
             <li class="nav-item"><a class="nav-link active" href="#" @click.prevent.stop="">トップページ</a></li>
             <li class="nav-item"><a class="nav-link" href="https://github.com/kmycode/sangokukmy/wiki" target="_blank">説明書</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">勢力図</a></li> -->
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$emit('show-all-characters')">武将一覧</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li> -->
           </ul>
         </div>
@@ -159,11 +159,11 @@ export default class TopPage extends Vue {
   private isEntry = false;
 
   public login() {
-    this.$router.push('login');
+    this.$emit('login-start');
   }
 
   public goStatus() {
-    this.$router.push('status');
+    this.$emit('skip-login');
   }
 
   public entry() {

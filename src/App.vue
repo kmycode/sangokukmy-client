@@ -1,7 +1,16 @@
 <template>
   <div id="app">
-    <transition name="component-fade">
-      <router-view></router-view>
+    <transition name="component-fade" mode="out-in">
+      <component :is="currentPage"
+        @login-start="startLogin"
+        @login-abort="abortLogin"
+        @login-succeed="enterStatusPage"
+        @skip-login="enterStatusPage"
+        @logout="abortEntry"
+        @entry-start="startEntry"
+        @entry-abort="abortEntry"
+        @entry-succeed="enterStatusPage"
+        @show-all-characters="showAllCharacters"/>
     </transition>
     <Notification/>
   </div>
@@ -9,6 +18,11 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
+import TopPage from './components/pages/TopPage.vue';
+import LoginPage from './components/pages/LoginPage.vue';
+import StatusPage from './components/pages/StatusPage.vue';
+import EntryPage from './components/pages/EntryPage.vue';
+import AllCharactersPage from './components/pages/AllCharactersPage.vue';
 import Notification from './components/services/Notification.vue';
 import * as api from '@/api/api';
 
@@ -34,10 +48,40 @@ Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
 
 @Component({
   components: {
+    TopPage,
+    LoginPage,
+    StatusPage,
+    EntryPage,
+    AllCharactersPage,
     Notification,
   },
 })
 export default class App extends Vue {
+  private currentPage = 'TopPage';
+
+  public startLogin() {
+    this.currentPage = 'LoginPage';
+  }
+
+  public abortLogin() {
+    this.currentPage = 'TopPage';
+  }
+
+  public enterStatusPage() {
+    this.currentPage = 'StatusPage';
+  }
+
+  public startEntry() {
+    this.currentPage = 'EntryPage';
+  }
+
+  public abortEntry() {
+    this.currentPage = 'TopPage';
+  }
+
+  public showAllCharacters() {
+    this.currentPage = 'AllCharactersPage';
+  }
 }
 </script>
 
@@ -49,21 +93,12 @@ body {
   background: #ca8 url('./assets/images/sangoku-originals/o.gif');
 }
 
-#app {
-  overflow: hidden;
-}
-
 * {
   box-sizing: border-box;
 }
 
 .component-fade-enter-active, .component-fade-leave-active {
   transition: opacity .1s ease, transform .1s ease;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
 }
 .component-fade-enter {
   opacity: 0;
