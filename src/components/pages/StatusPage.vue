@@ -145,6 +145,7 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
@@ -158,6 +159,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
@@ -317,6 +319,10 @@
         <!-- 戦闘シミュレータ -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
           <BattleSimulatorView/>
+        </div>
+        <!-- 米施しシミュレータ -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
+          <RiceSimulatorView/>
         </div>
       </div>
     </div>
@@ -877,6 +883,7 @@ import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
+import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -908,6 +915,7 @@ import EventObject from '@/models/common/EventObject';
     KmyChatTagText,
     CustomSoldierTypeView,
     BattleSimulatorView,
+    RiceSimulatorView,
   },
 })
 export default class StatusPage extends Vue {
