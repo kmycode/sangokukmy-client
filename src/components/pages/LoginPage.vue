@@ -48,7 +48,7 @@ export default class LoginPage extends Vue {
   private loginPassword = '';
 
   public abortLogin() {
-    this.$emit('login-abort');
+    this.$router.push('home');
   }
 
   public login() {
@@ -83,7 +83,7 @@ export default class LoginPage extends Vue {
             break;
         }
         if (result === LoginResult.succeed) {
-          this.$emit('login-succeed');
+          this.$router.push('status');
         } else {
           if (!this.isWarning) {
             this.isError = true;
