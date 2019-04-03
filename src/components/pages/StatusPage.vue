@@ -135,7 +135,7 @@
       <div class="col-lg-5 col-md-6">
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text">コマンド<span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
@@ -147,6 +147,7 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
                   <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
                 </span>
               </a>
@@ -160,6 +161,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
@@ -320,6 +322,10 @@
         <!-- 戦闘シミュレータ -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
           <BattleSimulatorView/>
+        </div>
+        <!-- 米施しシミュレータ -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
+          <RiceSimulatorView/>
         </div>
       </div>
     </div>
@@ -902,6 +908,7 @@ import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
+import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -934,6 +941,7 @@ import EventObject from '@/models/common/EventObject';
     CustomSoldierTypeView,
     BattleSimulatorView,
     CountryPolicyList,
+    RiceSimulatorView,
   },
 })
 export default class StatusPage extends Vue {

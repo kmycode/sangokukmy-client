@@ -40,9 +40,22 @@ export default class CommandList {
 
   public get isFewRemaining(): boolean {
     // コマンドの残りが少ない
-    return Enumerable.from(this.inputer.commands)
-      .where((c) => c.commandNumber <= 50 && c.type !== 0)
-      .count() < 50;
+    return this.restTurns < 50;
+  }
+
+  public get restTurns(): number {
+    // 残りターン数
+    let turns = 0;
+    const cmds = Enumerable.from(this.inputer.commands)
+      .where((c) => c.type !== undefined && c.type !== 0)
+      .orderBy((c) => c.commandNumber)
+      .toArray();
+    for (turns = 0; turns < cmds.length; turns++) {
+      if (cmds[turns].commandNumber !== turns + 1) {
+        return turns;
+      }
+    }
+    return turns;
   }
 
   public constructor(private store: StatusStore) {
