@@ -133,7 +133,7 @@
       <div class="col-lg-5 col-md-6">
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text">コマンド<span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
