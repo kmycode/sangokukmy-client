@@ -161,7 +161,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $emit('logout')">ログアウト</a>
               </div>
             </li>
           </ul>
