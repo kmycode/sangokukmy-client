@@ -18,19 +18,19 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(5)">守兵<span class="redundant-text">増強</span></button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(30)">緊急米施し</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
       </div>
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(44)">政策開発</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(44)">政策<span class="redundant-text">開発</span></button>
         <button v-if="list.canUseCountrySafe" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
-        <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')">国庫搬出</button>
+        <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')"><span class="redundant-text">国庫搬</span>出</button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
         <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(45)">斥候派遣</button>
-        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(46)">斥候解任</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政<span class="redundant-text">務官</span>募集</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')">政<span class="redundant-text">務官</span>配属</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')">政<span class="redundant-text">務官</span>解任</button>
+        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(46)"><span class="redundant-text">斥候</span>解<span class="redundant-text">任</span></button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政務官募集</button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')"><span class="redundant-text">政務官</span>配<span class="redundant-text">属</span></button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')"><span class="redundant-text">政務官</span>解<span class="redundant-text">任</span></button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
