@@ -103,7 +103,7 @@ class Patroller {
   }
 
   public get normalUp(): number {
-    return Math.floor(this.popularity / 20 + (Math.floor(this.popularity / 40) - 1) / 2);
+    return Math.floor(this.popularity / 20 + Math.floor(this.popularity / 40) / 2);
   }
 
   public constructor(public popularity: number) {
