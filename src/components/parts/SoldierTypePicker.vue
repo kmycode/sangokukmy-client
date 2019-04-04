@@ -8,7 +8,7 @@
         <div class="standard">
           <div class="name">{{ soldier.name }}</div>
           <div class="detail">
-            <span class="value-name">金</span><span class="value">{{ soldier.money }}</span>
+            <span class="value-name">金</span><span class="value">{{ soldier.money }}<span v-if="!soldier.isCustom">0</span></span>
             <span v-if="!soldier.isCustom" class="value-name">攻撃力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.attackPower }}</span>
             <span v-if="!soldier.isCustom" class="value-name">防御力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.defencePower }}</span>
           </div>
