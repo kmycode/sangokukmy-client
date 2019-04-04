@@ -28,6 +28,7 @@ import StatusStore from './statusstore';
 import UnitModel from './unitmodel';
 import ValueUtil from '../common/ValueUtil';
 import SoldierTypeModel from './soldiertypemodel';
+import VueRouter from 'vue-router';
 
 export default class StatusModel {
   public systemData: api.SystemData = new api.SystemData();
@@ -374,8 +375,12 @@ export default class StatusModel {
 
   // #region Streaming
 
-  public onCreate() {
+  public onCreate($router: any) {
     this.onlines.beginWatch();
+
+    ApiStreaming.status.onAuthenticationFailed = () => {
+      $router.push('home');
+    };
 
     ApiStreaming.status.clearEvents();
     ApiStreaming.status.on<api.SystemData>(
@@ -493,7 +498,7 @@ export default class StatusModel {
       NotificationService.belongsUnitGathered.notify();
     } else if (signal.type === 7) {
       // リセットされた
-      location.reload();
+      location.href = './home';
     } else if (signal.type === 8) {
       // 守備中に戦闘があった
       const notify = signal.data.isWin ? NotificationService.defenderWon : NotificationService.defenderLose;

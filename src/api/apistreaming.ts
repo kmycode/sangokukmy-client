@@ -26,6 +26,8 @@ export default class ApiStreaming {
    */
   public onBeforeReconnect?: () => void;
 
+  public onAuthenticationFailed?: () => void;
+
   /**
    * 前回接続でエラーが発生していたか
    */
@@ -156,6 +158,13 @@ export default class ApiStreaming {
   private onError(code: number, error: api.ApiError | null) {
     switch (code) {
       case 401:
+      case 500:   // 臨時
+        NotificationService.authenticationFailed.notify();
+        this.isStreaming = false;
+        if (this.onAuthenticationFailed) {
+          this.onAuthenticationFailed();
+        }
+        break;
       case 403:
         NotificationService.authenticationFailed.notify();
         break;

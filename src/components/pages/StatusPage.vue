@@ -1093,7 +1093,7 @@ export default class StatusPage extends Vue {
   }
 
   public mounted() {
-    this.model.onCreate();
+    this.model.onCreate(this.$router);
   }
 
   public destroyed() {
@@ -1103,7 +1103,7 @@ export default class StatusPage extends Vue {
   private onResetRequested() {
     this.model.onDestroy();
     this.model = new StatusModel();
-    this.model.onCreate();
+    this.model.onCreate(this.$router);
   }
 
   private readyPrivateChat(chara: api.Character) {
