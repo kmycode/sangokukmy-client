@@ -333,52 +333,27 @@
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
         <div class="dialog-content dialog-content-soldier">
-          <div class="row">
-            <div class="content-row col-md-6">
-              <div class="label">統率</div><div class="value">{{ model.character.leadership }}</div>
+          <div class="dialog-content-soldier-main">
+            <div class="row">
+              <div class="content-row col-md-6">
+                <div class="label">統率</div><div class="value">{{ model.character.leadership }}</div>
+              </div>
+              <div class="content-row col-md-6">
+                <div class="label">現在の兵数</div><div class="value">{{ model.character.soldierNumber }}</div>
+              </div>
             </div>
-            <div class="content-row col-md-6">
-              <div class="label">現在の兵数</div><div class="value">{{ model.character.soldierNumber }}</div>
+            <div class="character-list">
+              <SoldierTypePicker
+                :soldierTypes="model.selectableSoldierTypes"
+                v-model="selectedSoldierType"/>
             </div>
-          </div>
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
-            <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
-              <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 1">雑兵・禁兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 100" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 3">軽歩兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 200" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 4">弓兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 300" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 5">軽騎兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 400" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 6">強弩兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 500" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 7">神鬼兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 600" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 8">重歩兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 700" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 9">重騎兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 800" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 10">智攻兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 900" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 11">連弩兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 999" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 12">壁守兵</a>
-              <a v-show="model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= 500" class="dropdown-item" href="#" @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = false; selectedSoliderType = 14">井闌</a>
-              <a v-for="type in model.soldierTypes.types"
-                 :key="type.id"
-                 v-show="type.status === 2 && model.characterTown.countryId === model.character.countryId && model.characterTown.technology >= getCustomSoldierTypeTechnology(type)"
-                 class="dropdown-item"
-                 href="#"
-                 @click.prevent.stop="isOpenSoliderDropdown = false; isCustomSoldierTypeSelected = true; selectedCustomSoliderType = type">{{ type.name }}
-              </a>
-            </div>
-          </div>
-          <div class="soltype-detail">
-            <div class="title">{{ soliderDetail.name }} を <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber">人</div>
-            <div class="status">
-              <span class="item-head">金</span>
-              <span v-if="!isCustomSoldierTypeSelected" class="item-value">{{ soliderDetail.money }}0</span>
-              <span v-else class="item-value">{{ customSoldierTypeMoney }}</span>
-              <span v-if="!isCustomSoldierTypeSelected">
-                <span class="item-head">攻撃力</span><span class="item-value">{{ soliderDetail.attackPower }}</span>
-                <span class="item-head">防御力</span><span class="item-value">{{ soliderDetail.defencePower }}</span>
-              </span>
-            </div>
-            <div class="text">
-              <span v-if="!isCustomSoldierTypeSelected">{{ soliderDetail.description }}</span>
-              <span v-else>{{ customSoldierTypeDescription }}</span>
+            <div class="soldier-input">
+              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 0, 'btn-secondary': selectedSoldierNumberType === 0}" @click="setSelectedSoldierNumberType(0)">ALL</button>
+              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 1, 'btn-secondary': selectedSoldierNumberType === 1}" @click="setSelectedSoldierNumberType(1)">1人</button>
+              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 2, 'btn-secondary': selectedSoldierNumberType === 2}" @click="setSelectedSoldierNumberType(2)">9人</button>
+              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 3, 'btn-secondary': selectedSoldierNumberType === 3}" @click="setSelectedSoldierNumberType(3)">末尾9</button>
+              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 4, 'btn-secondary': selectedSoldierNumberType === 4}" @click="setSelectedSoldierNumberType(4)">任意</button>
+              <input :disabled="selectedSoldierNumberType !== 4" type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber">人徴兵
             </div>
           </div>
         </div>
@@ -387,7 +362,7 @@
             <button class="btn btn-light" @click="isOpenSoldierDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, (isCustomSoldierTypeSelected ? selectedCustomSoliderType.id : selectedSoliderType), soldierNumber, isCustomSoldierTypeSelected)">実行</button>
+            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, (selectedSoldierType.isCustom ? selectedSoldierType.customId : selectedSoldierType.id), soldierNumber, selectedSoldierType.isCustom)">承認</button>
           </div>
         </div>
       </div>
@@ -872,6 +847,7 @@ import MapLogList from '@/components/parts/MapLogList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
+import SoldierTypePicker from '@/components/parts/SoldierTypePicker.vue';
 import UnitPicker from '@/components/parts/UnitPicker.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
@@ -905,6 +881,7 @@ import EventObject from '@/models/common/EventObject';
     GameDateTimePicker,
     UnitPicker,
     CharacterIconPicker,
+    SoldierTypePicker,
     BattleLogView,
     ThreadBbs,
     CommandListView,
@@ -926,7 +903,8 @@ export default class StatusPage extends Vue {
   public selectedActionTab: number = 0;
   public selectedActionTabSubPanel: number = 0;
   public selectedChatCategory: number = 0;
-  public selectedSoliderType: number = 1;
+  public selectedSoldierType: def.SoldierType = Enumerable.from(def.SOLDIER_TYPES).first((t) => t.id === 500);
+  public selectedSoldierNumberType: number = 0;
   public selectedCustomSoliderType: api.CharacterSoldierType = new api.CharacterSoldierType();
   public isCustomSoldierTypeSelected: boolean = false;
   public isOpenSoldierDialog: boolean = false;
@@ -993,7 +971,7 @@ export default class StatusPage extends Vue {
           this.selectedCustomSoliderType.status !== api.CharacterSoldierType.statusAvailable) {
         this.isCustomSoldierTypeSelected = false;
       }
-      this.soldierNumber = this.model.character.leadership;
+      this.setSelectedSoldierNumberType(this.selectedSoldierNumberType);
       this.isOpenSoldierDialog = true;
     } else if (event === 'promotion') {
       this.model.updateOppositionCharacters();
@@ -1043,11 +1021,11 @@ export default class StatusPage extends Vue {
   }
 
   public get soliderDetail(): def.SoldierType {
-    if (!this.isCustomSoldierTypeSelected) {
-      if (this.selectedSoliderType === 1) {
+    if (!this.isCustomSoldierTypeSelected && !this.selectedSoldierType.isCustom) {
+      if (this.selectedSoldierType.id === 1) {
         return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 500);
       } else {
-        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === this.selectedSoliderType);
+        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === this.selectedSoldierType.id);
       }
     } else {
       const parts = api.CharacterSoldierType.getParts(this.selectedCustomSoliderType);
@@ -1196,6 +1174,23 @@ export default class StatusPage extends Vue {
 
   private resetNewIcon() {
     this.newIcon = new api.CharacterIcon(0, 0, false, 1, '0.gif');
+  }
+
+  private setSelectedSoldierNumberType(num: number) {
+    this.selectedSoldierNumberType = num;
+    if (num === 0) {
+      this.soldierNumber = this.model.character.leadership;
+    } else if (num === 1) {
+      this.soldierNumber = 1;
+    } else if (num === 2) {
+      this.soldierNumber = 9;
+    } else if (num === 3) {
+      if (this.model.character.leadership % 10 === 9) {
+        this.soldierNumber = this.model.character.leadership;
+      } else {
+        this.soldierNumber = Math.floor(this.model.character.leadership / 10) * 10 - 10 + 9;
+      }
+    }
   }
 }
 </script>
@@ -1620,51 +1615,47 @@ ul.nav {
         margin-top: 24px;
       }
 
-      &.dialog-content-soldier {
-        .row {
-          margin-right: 0;
-        }
-        .content-row {
-          background-color: #dedede;
-          padding: 8px 16px;
-          text-align: center;
-          &:first-child {
-            background: none;
-          }
-          .label {
-            color: #666;
-          }
-          .value {
-            font-weight: bold;
-          }
-        }
-        .soltype-detail {
-          margin-top: 12px;
-
-          .title {
-            font-size: 1.8rem;
-          }
-          .status {
-            font-size: 1.1rem;
-
-            .item-head {
-              color: #969;
-            }
-            .item-value {
-              padding: 0 12px 0 4px;
-              font-weight: bold;
-            }
-          }
-          .text {
-            font-size: 1rem;
-          }
-        }
-      }
-
       &.dialog-content-training {
         button {
           margin: 0 16px 0 0;
           width: 80px;
+        }
+      }
+
+      &.dialog-content-soldier {
+        .dialog-content-soldier-main {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+
+          .row {
+            margin-right: 0;
+          }
+          .content-row {
+            background-color: #dedede;
+            padding: 8px 16px;
+            text-align: center;
+            &:first-child {
+              background: none;
+            }
+            .label {
+              color: #666;
+            }
+            .value {
+              font-weight: bold;
+            }
+          }
+
+          .character-list {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .soldier-input {
+            margin-top: 12px;
+            background: #dedede;
+          }
         }
       }
 

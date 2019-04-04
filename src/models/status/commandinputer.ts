@@ -35,7 +35,7 @@ export default class CommandInputer {
 
   public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number, isCustom: boolean) {
     this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, soldierType),
+      c.parameters.push(new api.CharacterCommandParameter(1, soldierType === 500 ? 1 : soldierType),
                         new api.CharacterCommandParameter(2, soldierNumber),
                         new api.CharacterCommandParameter(3, isCustom ? 1 : 0));
     });

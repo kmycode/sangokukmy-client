@@ -311,6 +311,65 @@ export default class StatusModel {
     return power;
   }
 
+  public get selectableSoldierTypes(): def.SoldierType[] {
+    const types: def.SoldierType[] = [];
+    Enumerable.from(def.SOLDIER_TYPES).orderBy((t) => t.technology).forEach((t) => {
+      if (t.id !== 1 && t.id !== 2 && t.id !== 15) {
+        if (this.characterTown.countryId === this.character.countryId) {
+          if (t.technology <= this.characterTown.technology) {
+            types.push(t);
+          }
+        } else {
+          if (t.technology === 0) {
+            types.push(t);
+          }
+        }
+      }
+    });
+    Enumerable
+      .from(this.store.soldierTypes)
+      .where((t) => t.status === api.CharacterSoldierType.statusAvailable)
+      .orderBy((t) => api.CharacterSoldierType.getTechnology(t))
+      .forEach((t) => {
+        if (this.characterTown.countryId === this.character.countryId) {
+          const technology = api.CharacterSoldierType.getTechnology(t);
+          if (technology <= this.characterTown.technology) {
+            const type = new def.SoldierType(
+              10000 + t.id,
+              t.name,
+              api.CharacterSoldierType.getMoney(t),
+              technology);
+            type.description = api.CharacterSoldierType.getDescription(t);
+            type.isCustom = true;
+            type.customId = t.id;
+            types.push(type);
+          }
+        }
+      });
+    return types;
+  }
+
+  public get selectableResearchSoldierTypes(): def.SoldierType[] {
+    const types: def.SoldierType[] = [];
+    Enumerable
+      .from(this.store.soldierTypes)
+      .where((t) => t.status === api.CharacterSoldierType.statusInDraft ||
+                    t.status === api.CharacterSoldierType.statusResearching)
+      .orderBy((t) => api.CharacterSoldierType.getTechnology(t))
+      .forEach((t) => {
+        const type = new def.SoldierType(
+          10000 + t.id,
+          t.name,
+          api.CharacterSoldierType.getMoney(t),
+          api.CharacterSoldierType.getTechnology(t));
+        type.description = api.CharacterSoldierType.getDescription(t);
+        type.isCustom = true;
+        type.customId = t.id;
+        types.push(type);
+      });
+    return types;
+  }
+
   // #endregion
 
   // #region Streaming
