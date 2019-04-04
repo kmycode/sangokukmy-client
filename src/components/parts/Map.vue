@@ -3,12 +3,13 @@
     <div
         v-for="t in towns"
         :key="t.id"
-        :class="'map-cell country-color-' + getTownColor(t) + (town.id === t.id ? ' selected' : '') + (currentTown.id === t.id ? ' current-town' : '')"
+        :class="'map-cell country-color-' + getTownColor(t) + (currentTown.id === t.id ? ' current-town' : '')"
         :style="{ top: t.y + '0%', left: t.x + '0%', }"
         @click="$emit('selected', t.id)">
       <div :class="'town-type town-type-' + t.type"></div>
       <span class="town-name">{{ t.name }}</span>
     </div>
+    <div v-if="town.id > 0" class="selected" :style="{ top: town.y + '0%', left: town.x + '0%', }"></div>
   </div>
 </template>
 
@@ -57,6 +58,19 @@ export default class Map extends Vue {
   position: relative;
   background: #080 url('../../assets/images/sangoku-originals/mapbg.gif');
   user-select: none;
+
+  .selected {
+    outline: 3px solid #f4d;
+    z-index: 1;
+    width: 10%;
+    height: 10%;
+    padding: 2px;
+    margin: 1px;
+    position: absolute;
+
+    transition: top ease-in-out .1s, left ease-in-out .1s;
+  }
+
   .map-cell {
     width: 10%;
     height: 10%;
@@ -75,11 +89,6 @@ export default class Map extends Vue {
 
     @include country-color-deep('background-color');
     @include country-color-light('color');
-
-    &.selected {
-      outline: 3px solid #f4d;
-      z-index: 1;
-    }
 
     &.current-town {
       @for $i from 0 through length($country-colors-light) - 1 {
