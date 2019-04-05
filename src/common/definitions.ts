@@ -300,6 +300,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(44, '政策開発'),
   new CommandNameResolver(45, '%0% へ斥候派遣'),
   new CommandNameResolver(46, '%0% の斥候を解雇'),
+  new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)

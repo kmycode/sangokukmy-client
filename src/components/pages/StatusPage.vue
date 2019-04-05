@@ -786,7 +786,7 @@
       </div>
       <!-- 政務官 -->
       <div v-show="isOpenSecretaryDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属／転属</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（部隊）</h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list">
@@ -810,6 +810,30 @@
           </div>
           <div class="right-side">
             <button class="btn btn-primary" v-show="targetSecretary.id > 0 && targetUnit.id > 0" @click="model.commands.inputer.inputSecretaryCommand(40, targetSecretary.id, targetUnit.id); isOpenSecretaryDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 政務官 -->
+      <div v-show="isOpenSecretaryTownDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（都市）</h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countrySecretaries"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSecretaryTownDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryMoveCommand(47, targetSecretary.id); isOpenSecretaryTownDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -952,6 +976,7 @@ export default class StatusPage extends Vue {
   public isOpenTownWarDialog: boolean = false;
   public isOpenOppositionCharactersDialog: boolean = false;
   public isOpenSecretaryDialog: boolean = false;
+  public isOpenSecretaryTownDialog: boolean = false;
   public isOpenAddSecretaryDialog: boolean = false;
   public isOpenRemoveSecretaryDialog: boolean = false;
   public isOpenCharacterIconPickerDialog: boolean = false;
@@ -988,7 +1013,8 @@ export default class StatusPage extends Vue {
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
-      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog;
+      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
+      || this.isOpenSecretaryTownDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1034,6 +1060,10 @@ export default class StatusPage extends Vue {
       this.model.unitModel.updateUnits();
       this.model.updateCharacterCountryCharacters();
       this.isOpenRemoveSecretaryDialog = true;
+    } else if (event === 'secretary-town') {
+      this.targetSecretary.id = -1;
+      this.model.updateCharacterCountryCharacters();
+      this.isOpenSecretaryTownDialog = true;
     }
   }
 
@@ -1045,7 +1075,8 @@ export default class StatusPage extends Vue {
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
-      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog = false;
+      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog =
+      this.isOpenSecretaryTownDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

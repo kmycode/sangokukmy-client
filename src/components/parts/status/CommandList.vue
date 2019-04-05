@@ -26,22 +26,23 @@
         <button v-if="list.canUseCountrySafe && !canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
         <button v-if="list.canUseCountrySafe && canSafeOut" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSafePopup = !isOpenSafePopup">国庫
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSafePopup && list.inputer.canInput ? 'block' : 'none' }">
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe')">国庫納入</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe-out')">国庫搬出</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe')">納入</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe-out')">搬出</a>
           </div>
         </button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
         <button v-if="list.canUseCountryScouter && canScouter" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenScouterPopup = !isOpenScouterPopup">斥候
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenScouterPopup && list.inputer.canInput ? 'block' : 'none' }">
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(45)">斥候派遣</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(46)">斥候解任</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(45)">派遣</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(46)">解任</a>
           </div>
         </button>
         <button v-if="list.canUseCountrySecretary && canSecretary" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSecretaryPopup = !isOpenSecretaryPopup">政務官
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSecretaryPopup && list.inputer.canInput ? 'block' : 'none' }">
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-add')">政務官派遣</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary')">政務官配属</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-remove')">政務官解任</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-add')">雇用</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary')">配属（部隊）</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-town')">配属（都市）</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-remove')">解任</a>
           </div>
         </button>
       </div>

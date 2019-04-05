@@ -102,6 +102,13 @@ export default class CommandInputer {
     });
   }
 
+  public inputSecretaryMoveCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, this.store.town.id));
+    });
+  }
+
   public inputSecretaryRemoveCommand(commandType: number, id: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
@@ -285,16 +292,19 @@ export default class CommandInputer {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46) {
+    if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46 ||
+        command.type === 47) {
       // 移動、戦争
-      const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+      const paramTypeId = command.type === 47 ? 2 : 1;
+      const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
         command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
-    } else if (command.type === 10 || command.type === 38) {
+    }
+    if (command.type === 10 || command.type === 38) {
       // 徴兵、兵種研究
       const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
       if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
@@ -326,7 +336,9 @@ export default class CommandInputer {
           command.name = 'エラー (' + command.type + ':A)';
         }
       }
-    } else if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41) {
+    }
+    if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
+               command.type === 47) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 
