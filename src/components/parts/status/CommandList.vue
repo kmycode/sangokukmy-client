@@ -23,14 +23,27 @@
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(44)">政策<span class="redundant-text">開発</span></button>
-        <button v-if="list.canUseCountrySafe" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
-        <button v-if="list.canUseCountrySafe && canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe-out')"><span class="redundant-text">国庫搬</span>出</button>
+        <button v-if="list.canUseCountrySafe && !canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
+        <button v-if="list.canUseCountrySafe && canSafeOut" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSafePopup = !isOpenSafePopup">国庫
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSafePopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe')">国庫納入</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe-out')">国庫搬出</a>
+          </div>
+        </button>
         <button v-if="list.canUseCountrySoldier" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-research')">兵種研究</button>
-        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(45)">斥候派遣</button>
-        <button v-if="list.canUseCountryScouter && canScouter" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(46)"><span class="redundant-text">斥候</span>解<span class="redundant-text">任</span></button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-add')">政務官募集</button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary')"><span class="redundant-text">政務官</span>配<span class="redundant-text">属</span></button>
-        <button v-if="list.canUseCountrySecretary && canSecretary" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'secretary-remove')"><span class="redundant-text">政務官</span>解<span class="redundant-text">任</span></button>
+        <button v-if="list.canUseCountryScouter && canScouter" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenScouterPopup = !isOpenScouterPopup">斥候
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenScouterPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(45)">斥候派遣</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; list.inputer.inputMoveCommand(46)">斥候解任</a>
+          </div>
+        </button>
+        <button v-if="list.canUseCountrySecretary && canSecretary" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSecretaryPopup = !isOpenSecretaryPopup">政務官
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSecretaryPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-add')">政務官派遣</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary')">政務官配属</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-remove')">政務官解任</a>
+          </div>
+        </button>
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
@@ -53,7 +66,7 @@
         <!-- <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
-        <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
         <!-- <button type="button" class="btn btn-light">下野</button> -->
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
@@ -119,6 +132,9 @@ export default class CommandListView extends Vue {
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;
   private isRanged: boolean = false;
+  private isOpenSafePopup: boolean = false;
+  private isOpenScouterPopup: boolean = false;
+  private isOpenSecretaryPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -192,6 +208,13 @@ $color-navigation-commands: #e0e0e0;
           background-color: #bbb;
         }
       }
+    }
+    .dropdown-toggle-custom {
+      position: relative;
+    }
+    .droptown-menu-custom {
+      position: absolute;
+      top: 100%;
     }
   }
   .command-input-options {
