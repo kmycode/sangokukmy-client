@@ -1374,6 +1374,7 @@ ul.nav {
   border-style: solid;
   @include country-color-deep('border-color');
   @include country-color-light('background-color');
+  transition: border-color .1s, background-color .1s;
   h4 {
     margin: 0;
     font-size: 1.4rem;
@@ -1383,6 +1384,7 @@ ul.nav {
     font-weight: bold;
     @include country-color-deep('background-color');
     @include country-color-light('color');
+    transition: color .1s, background-color .1s;
   }
   .content-main {
     height: calc(100% - 2rem - 44px);

@@ -68,7 +68,7 @@ export default class Map extends Vue {
     margin: 1px;
     position: absolute;
 
-    transition: top ease-in-out .1s, left ease-in-out .1s;
+    transition: top .1s, left .1s;
   }
 
   .map-cell {
