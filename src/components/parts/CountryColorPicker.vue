@@ -2,7 +2,7 @@
   <div class="country-color-picker">
     <button v-for="v in values"
             :key="v.num"
-            :class="'btn btn-country country-color-' + v.num + (v.isSelected ? ' selected' : '')"
+            :class="'btn btn-country country-color-' + v.num + (v.isSelected ? ' selected' : '') + (isAlready(v.num) ? ' already' : '')"
             @click="$emit('input', v.num)">国色 {{ v.num }}</button>
   </div>
 </template>
@@ -11,6 +11,7 @@
 import { Component, Prop, Vue, Emit, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
+import Enumerable from 'linq';
 
 class ColorValue {
   public constructor(public num: number,
@@ -23,6 +24,9 @@ class ColorValue {
 })
 export default class CharacterIconPicker extends Vue {
   @Prop() public value!: number;
+  @Prop({
+    default: () => [],
+  }) public countries!: api.Country[];
 
   public get values(): ColorValue[] {
     const vs: ColorValue[] = [];
@@ -34,6 +38,12 @@ export default class CharacterIconPicker extends Vue {
 
   private get defaultIconMax(): number {
     return def.DEFAULT_ICON_NUM;
+  }
+
+  private isAlready(color: number): boolean {
+    return Enumerable
+      .from(this.countries)
+      .any((c) => color === c.colorId);
   }
 }
 </script>
@@ -48,6 +58,13 @@ export default class CharacterIconPicker extends Vue {
   &.selected {
     @include country-color-deep('background-color');
     @include country-color-light('color')
+  }
+
+  &.already {
+    @include country-color-deep('border-color');
+    background: none;
+    opacity: 0.24;
+    pointer-events: none;
   }
 }
 </style>

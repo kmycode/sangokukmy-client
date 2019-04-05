@@ -181,13 +181,13 @@
             <input type="text" v-model="country.name">
           </div>
           <div class="detail">
-            1 - 8 文字になるようにしてください
+            1 - 8 文字になるようにしてください。他の国と同じ名前にはできません
           </div>
         </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryColor, }">
           <div class="label">国色</div>
           <div class="field">
-            <CountryColorPicker v-model="country.colorId"/>
+            <CountryColorPicker v-model="country.colorId" :countries="countries"/>
           </div>
           <div class="detail">
             国の色を決めてください。他の国と同じ色にはできません
@@ -308,12 +308,14 @@ export default class EntryPage extends Vue {
 
   private get isOkCountryName(): boolean {
     return !this.isPublish ||
-      (this.country.name !== '' && this.country.name.length >= 1 && this.country.name.length <= 8);
+      (this.country.name !== '' && this.country.name.length >= 1 && this.country.name.length <= 8 &&
+       !Enumerable.from(this.countries).any((c) => c.name === this.country.name));
   }
 
   private get isOkCountryColor(): boolean {
     return !this.isPublish ||
-      (this.country.colorId >= 1 && this.country.colorId <= def.COUNTRY_COLOR_NUM);
+      (this.country.colorId >= 1 && this.country.colorId <= def.COUNTRY_COLOR_NUM &&
+       !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
   private get isOkStrong(): boolean {
