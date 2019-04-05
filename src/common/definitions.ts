@@ -347,7 +347,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(27, '扇動', '#2a4'),
   new EventType(28, '雇用', '#800'),
   new EventType(29, '解任', '#800'),
-  new EventType(30, '削除', 'black'),
+  new EventType(30, '解雇', '#800'),
   new EventType(31, '削除', 'black'),
   new EventType(32, '政策', '#2a4'),
 ];
