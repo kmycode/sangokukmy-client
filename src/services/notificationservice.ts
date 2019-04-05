@@ -136,6 +136,10 @@ export default class NotificationService {
     '徴兵コマンド入力失敗',
     'コマンド入力に失敗しました。指定された兵種は、この都市で徴兵コマンドを入力することができません。',
     NotificationServiceItemDefaultType.error);
+  public static readonly inputCommandsFailedBecauseTooLong = new NotificationServiceItem(
+    'コマンド入力失敗',
+    'コマンド入力に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly inputCommandsSucceed = new NotificationServiceItem(
     'コマンド入力完了',
     '{0} の入力が完了しました。',
@@ -167,6 +171,10 @@ export default class NotificationService {
   public static readonly postChatFailedBecauseTargetNotFound = new NotificationServiceItem(
     '手紙送信失敗',
     '手紙の送信に失敗しました。送信先が見つかりません。手紙を書いている途中に削除されたか滅亡した可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly postChatFailedBecauseTooLong = new NotificationServiceItem(
+    '手紙送信失敗',
+    '手紙の送信に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
   public static readonly attributeUp = new NotificationServiceItem(
     '能力上昇',
@@ -304,6 +312,14 @@ export default class NotificationService {
     '部隊作成失敗',
     '部隊を作成できませんでした。名前が必要です',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitCreateFailedBecauseNameTooLong = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊 {0} を作成できませんでした。名前が長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitCreateFailedBecauseMessageTooLong = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊 {0} を作成できませんでした。メッセージが長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitUpdated = new NotificationServiceItem(
     '部隊更新',
     '部隊 {0} の情報を更新しました',
@@ -311,6 +327,14 @@ export default class NotificationService {
   public static readonly unitUpdateFailed = new NotificationServiceItem(
     '部隊更新失敗',
     '部隊 {0} の情報を更新できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitUpdateFailedBecauseMessageTooLong = new NotificationServiceItem(
+    '部隊更新失敗',
+    '部隊 {0} の情報を更新できませんでした。メッセージが長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitUpdateFailedBecauseNameTooLong = new NotificationServiceItem(
+    '部隊更新失敗',
+    '部隊 {0} の情報を更新できませんでした。名前が長すぎます (現在: {1}, 最大: {2})',
     NotificationServiceItemDefaultType.error);
   public static readonly unitRemoved = new NotificationServiceItem(
     '部隊削除',
@@ -519,6 +543,10 @@ export default class NotificationService {
   public static readonly countrySolicitationMessageSetFailed = new NotificationServiceItem(
     '勧誘文更新失敗',
     '新規登録者勧誘文更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly countrySolicitationMessageSetFailedBecauseTooLong = new NotificationServiceItem(
+    '勧誘文更新失敗',
+    '新規登録者勧誘文更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
   public static readonly townWarSent = new NotificationServiceItem(
     '攻略布告',

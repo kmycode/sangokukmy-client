@@ -945,8 +945,13 @@ export default class StatusModel {
       .then(() => {
         NotificationService.countrySolicitationMessageSet.notify();
       })
-      .catch(() => {
-        NotificationService.countrySolicitationMessageSetFailed.notify();
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.numberRangeError) {
+          NotificationService.countrySolicitationMessageSetFailedBecauseTooLong
+            .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+        } else {
+          NotificationService.countrySolicitationMessageSetFailed.notify();
+        }
       })
       .finally(() => {
         this.isUpdatingCountrySettings = false;

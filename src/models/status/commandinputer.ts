@@ -157,6 +157,9 @@ export default class CommandInputer {
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
             NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
+          } else if (ex.data.code === api.ErrorCode.numberRangeError) {
+            NotificationService.inputCommandsFailedBecauseTooLong
+              .notifyWithParameter(ex.data.data.current, ex.data.data.max);
           } else {
             NotificationService.inputCommandsFailed.notify();
           }
