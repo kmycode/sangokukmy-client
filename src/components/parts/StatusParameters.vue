@@ -17,7 +17,7 @@
           <span class="current">{{ param.value }}</span>
         </div>
       </div>
-      <div v-if="param.type === 3" class="item-container">
+      <div v-if="param.type === 3" :class="'item-container' + (param.alertType ? ' card-alert-' + param.alertType : '')">
         <div class="name">{{ param.name }}</div>
         <div class="value value-text">
           <span class="current">{{ param.value }}</span>
@@ -187,6 +187,46 @@ export default class StatusParametersPanel extends Vue {
               font-size: 1.2rem;
             }
           }
+        }
+      }
+
+      &.card-alert-primary {
+        color: #004085;
+        background-color: #cce5ff;
+        .name {
+          color: #004085;
+        }
+      }
+
+      &.card-alert-information {
+        color: #0c5460;
+        background-color: #d1ecf1;
+        .name {
+          color: #0c5460;
+        }
+      }
+
+      &.card-alert-danger {
+        color: #721c24;
+        background-color: #f8d7da;
+        .name {
+          color: #721c24;
+        }
+      }
+
+      &.card-alert-warning {
+        color: #856404;
+        background-color: #fff3cd;
+        .name {
+          color: #856404;
+        }
+      }
+
+      &.card-alert-succeed {
+        color: #155724;
+        background-color: #d4edda;
+        .name {
+          color: #155724;
         }
       }
     }

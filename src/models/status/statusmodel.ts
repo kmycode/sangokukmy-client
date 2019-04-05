@@ -818,7 +818,12 @@ export default class StatusModel {
         const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
         if (status) {
           const targetCountry = ca.requestedCountryId === country.id ? ca.insistedCountry : ca.requestedCountry;
-          ps.push(new TextStatusParameter(status.name, targetCountry.name));
+          const type = ca.status === api.CountryAlliance.statusAvailable ? 'succeed' :
+                       ca.status === api.CountryAlliance.statusInBreaking ? 'warning' :
+                       ca.status === api.CountryAlliance.statusBroken ? 'warning' :
+                       ca.status === api.CountryAlliance.statusRequesting ? 'primary' :
+                       'information';
+          ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
         }
       });
     }
@@ -827,7 +832,11 @@ export default class StatusModel {
         const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
         if (status) {
           const targetCountry = cw.requestedCountryId === country.id ? cw.insistedCountry : cw.requestedCountry;
-          ps.push(new TextStatusParameter(status.name, targetCountry.name));
+          const type = cw.status === api.CountryWar.statusAvailable ? 'danger' :
+                       cw.status === api.CountryWar.statusInReady ? 'warning' :
+                       cw.status === api.CountryWar.statusStopRequesting ? 'primary' :
+                       'information';
+          ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
         }
       });
     }
