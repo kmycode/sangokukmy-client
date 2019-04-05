@@ -630,7 +630,6 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
-      ps.push(new RangedStatusParameter('守兵', town.wallguard, town.wallguardMax));
     }
 
     const townBuilding = Enumerable
