@@ -612,6 +612,10 @@ export default class NotificationService {
     '斥候解雇',
     '{0} の斥候が解雇されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly reseted = new NotificationServiceItem(
+    'リセット',
+    'ゲームはリセットされました。新しいドラマが始まります',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

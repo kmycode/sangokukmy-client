@@ -80,6 +80,8 @@ export default class StatusModel {
   public isLoadingMoreCharacterLogs: boolean = false;
   public hasLoadAllCharacterLogs: boolean = false;
 
+  private $router?: any;
+
   // #region Store and Compat Properties
 
   private store: StatusStore = new StatusStore();
@@ -381,9 +383,10 @@ export default class StatusModel {
 
   public onCreate($router: any) {
     this.onlines.beginWatch();
+    this.$router = $router;
 
     ApiStreaming.status.onAuthenticationFailed = () => {
-      $router.push('home');
+      this.$router.push('home');
     };
 
     ApiStreaming.status.clearEvents();
@@ -508,7 +511,12 @@ export default class StatusModel {
       NotificationService.belongsUnitGathered.notify();
     } else if (signal.type === 7) {
       // リセットされた
-      location.href = './home';
+      if (this.$router) {
+        this.$router.push('home');
+        NotificationService.reseted.notify();
+      } else {
+        location.href = './home';
+      }
     } else if (signal.type === 8) {
       // 守備中に戦闘があった
       const notify = signal.data.isWin ? NotificationService.defenderWon : NotificationService.defenderLose;
