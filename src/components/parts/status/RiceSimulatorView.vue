@@ -12,7 +12,7 @@
       </div>
       <div class="data-row">
         <div class="label">兵1あたり農民</div>
-        <div class="value"><input type="number" min="0" v-model.number="peoplePerSoldier"></div>
+        <div class="value"><input type="number" min="0" step="0.1" v-model.number="peoplePerSoldier"></div>
       </div>
       <div class="data-row">
         <div class="label">最大戦争ターン数</div>
@@ -23,8 +23,10 @@
     <h3>徴兵者</h3>
     <div class="edit-list">
       <div class="data-row-rice" v-for="chara in battlers" :key="chara.id">
+        <div class="value"><input type="number" min="0" v-model.number="chara.loop"></div>
+        <div class="label">人が</div>
         <div class="value"><input type="number" min="0" v-model.number="chara.soldierPer"></div>
-        <div class="label">ヶ月ごとに</div>
+        <div class="label">ヶ月毎に</div>
         <div class="value"><input type="number" min="0" v-model.number="chara.soldierNumber"></div>
         <div class="buttons"><button type="button" class="btn btn-outline-danger" @click="removeBattler(chara)">削除</button></div>
       </div>
@@ -35,6 +37,7 @@
     <h3>仁官</h3>
     <div class="edit-list">
       <div class="data-row-rice" v-for="chara in patrollers" :key="chara.id">
+        <div class="label"><button type="button" :class="{'btn btn-toggle': true, 'selected': chara.isHarry}" @click="chara.isHarry = !chara.isHarry">緊急</button></div>
         <div class="label">人望</div>
         <div class="value"><input type="number" min="0" v-model.number="chara.popularity"></div>
         <div class="buttons"><button type="button" class="btn btn-outline-danger" @click="removePatroller(chara)">削除</button></div>
@@ -89,7 +92,8 @@ class Battler {
   }
 
   public constructor(public soldierNumber: number,
-                     public soldierPer: number) {
+                     public soldierPer: number,
+                     public loop: number) {
     this.id = Battler.idNum++;
   }
 }
@@ -98,15 +102,20 @@ class Patroller {
   private static idNum: number = 1;
   public readonly id: number;
 
+  public get actPopularity(): number {
+    return this.isHarry ? this.popularity * 2 : this.popularity;
+  }
+
   public get worstUp(): number {
-    return Math.floor(this.popularity / 20);
+    return Math.max(1, Math.floor(this.actPopularity / 20));
   }
 
   public get normalUp(): number {
-    return Math.floor(this.popularity / 20 + Math.floor(this.popularity / 40) / 2);
+    return Math.max(1, Math.floor(this.actPopularity / 20 + this.actPopularity / 40 / 2));
   }
 
-  public constructor(public popularity: number) {
+  public constructor(public popularity: number,
+                     public isHarry: boolean) {
     this.id = Patroller.idNum++;
   }
 }
@@ -130,11 +139,11 @@ export default class RiceSimulatorView extends Vue {
   private peopleTurns: number = -1;
 
   private addBattler() {
-    this.battlers.push(new Battler(0, 1));
+    this.battlers.push(new Battler(0, 2, 1));
   }
 
   private addPatroller() {
-    this.patrollers.push(new Patroller(0));
+    this.patrollers.push(new Patroller(0, false));
   }
 
   private removeBattler(chara: Battler) {
@@ -165,10 +174,12 @@ export default class RiceSimulatorView extends Vue {
       // 徴兵
       this.battlers.forEach((b) => {
         if (b.soldierPer > 0 && i % b.soldierPer === 0) {
-          worstSecurity -= b.useSecurity;
-          security -= b.useSecurity;
-          worstPeople -= b.soldierNumber * this.peoplePerSoldier;
-          people -= b.soldierNumber * this.peoplePerSoldier;
+          worstSecurity -= b.useSecurity * b.loop;
+          security -= b.useSecurity * b.loop;
+
+          const peoplePerSoldier = Math.floor(b.soldierNumber * b.loop * this.peoplePerSoldier);
+          worstPeople -= peoplePerSoldier;
+          people -= peoplePerSoldier;
         }
       });
 
