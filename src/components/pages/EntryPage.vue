@@ -88,7 +88,7 @@
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkIntellect, }">
-          <div class="label">知力（内政／少し弱めの兵種で戦争参加可）</div>
+          <div class="label">知力（内政／弱めの兵種で戦争参加可／初心者だけど活躍したい人向け）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.intellect">
           </div>
@@ -106,7 +106,7 @@
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkPopularity, }">
-          <div class="label">人望（時間ほとんどない方／初めてで雰囲気だけでも知りたい方向け）</div>
+          <div class="label">人望（時間ほとんどない方／初心者で雰囲気だけでも知りたい方向け）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.popularity">
           </div>
