@@ -6,6 +6,16 @@
         本ゲームは、以下のブラウザでは<strong>正常に操作できない場合がございます</strong>。なるべくご利用くださらないよう、お願い申し上げます。<br>
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
       </div>
+      <div class="alert alert-warning">
+        <h3>初心者向けの注意点</h3>
+        本ゲームは、一般的なスマホゲームなどと、以下の点において異なります。あらかじめご留意ください。
+        <ul>
+          <li>5日以上ログインしていないとアカウントが削除されるようになっています。毎日3〜5分程度（慣れれば1分程度）のプレイが推奨されます。</li>
+          <li>どこかの国が統一するとすべてのゲームデータが初期化され、また最初から登録し直しになります。</li>
+          <li>国家間の戦力差を抑える、均衡にする、弱そうな国に仕官するのは、プレイヤーのみなさんがこのゲームを楽しく長く遊べるようにするために意識している不文律です。三国志NETはプレイヤーのみなさんの良心によって構成されるオンラインゲームであり、<strong>単に統一することは、このゲームにおける勝利を意味しません。ゲームを楽しんだ人の勝ちです。</strong>強そうな国にとびつかず、みなさんが楽しめる思い出作りをしていきましょう。<br>
+          <li>武将能力は、はじめはあまり深く考えなくても大丈夫です。能力について詳しく知りたければ、とにかく登録しましょう。</li>
+        </ul>
+      </div>
       <div class="section">
         <h3>基本情報</h3>
         <div v-if="system.invitationCodeRequestedAtEntry" :class="{ 'form-row': true, 'error': !isOkInvitationCode, }">
@@ -65,8 +75,11 @@
       </div>
       <div class="section">
         <h3>能力</h3>
+        <div style="margin:8px 0">
+          自分に向いた能力を高めに設定しましょう。戦争参加する場合、統率は最低でも50は確保します
+        </div>
         <div :class="{ 'form-row': true, 'error': !isOkStrong, }">
-          <div class="label">武力</div>
+          <div class="label">武力（戦争参加／時間のある方／深夜遊べる方向け）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.strong">
           </div>
@@ -75,7 +88,7 @@
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkIntellect, }">
-          <div class="label">知力</div>
+          <div class="label">知力（内政／少し弱めの兵種で戦争参加可）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.intellect">
           </div>
@@ -84,7 +97,7 @@
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkLeadership, }">
-          <div class="label">統率</div>
+          <div class="label">統率（徴兵可能な兵士数。戦争参加に必要）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.leadership">
           </div>
@@ -93,7 +106,7 @@
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkPopularity, }">
-          <div class="label">人望</div>
+          <div class="label">人望（時間ほとんどない方／初めてで雰囲気だけでも知りたい方向け）</div>
           <div class="field">
             <input type="number" :max="extraData.attributeMax" min="5" v-model="character.popularity">
           </div>
