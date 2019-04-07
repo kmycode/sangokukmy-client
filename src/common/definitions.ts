@@ -350,6 +350,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(30, '解雇', '#800'),
   new EventType(31, '削除', 'black'),
   new EventType(32, '政策', '#2a4'),
+  new EventType(33, '蛮族', '#088'),
 ];
 
 /**
