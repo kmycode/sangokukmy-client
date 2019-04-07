@@ -144,7 +144,6 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0">登用<span v-if="!model.character.countryId"> ({{ model.promotions.count }})</span></span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 1">国設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2">全会</span>
-                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
@@ -156,7 +155,6 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
                 <a v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
                 <div class="dropdown-divider"></div>
