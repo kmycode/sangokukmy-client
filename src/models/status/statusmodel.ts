@@ -310,7 +310,8 @@ export default class StatusModel {
 
   public get safeMaxValue(): number {
     // 自国の金庫の最大容量
-    return 100_0000;
+    return Enumerable.from(this.store.policies)
+      .any((p) => p.countryId === this.character.countryId && p.id === 10) ? 200_0000 : 100_0000;
   }
 
   public get soldierLaboratorySize(): number {
