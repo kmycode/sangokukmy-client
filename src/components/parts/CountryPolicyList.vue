@@ -62,6 +62,7 @@ export default class CountryPolicyList extends Vue {
     this.newPolicyTypes = Enumerable.from(def.COUNTRY_POLICY_TYPES)
       .where((p) => !Enumerable.from(this.policyTypes).any((pp) => pp.id === p.id))
       .where((p) => p.canGet)
+      .where((p) => p.subjectAppear === undefined || p.subjectAppear(this.policyTypes))
       .toArray();
   }
 }
