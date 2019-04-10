@@ -1088,6 +1088,7 @@ export default class StatusPage extends Vue {
       const parts = api.CharacterSoldierType.getParts(this.selectedCustomSoliderType);
       return new def.SoldierType(
         this.selectedCustomSoliderType.id,
+        0,
         this.selectedCustomSoliderType.name,
         api.CharacterSoldierType.getMoney(this.selectedCustomSoliderType),
         api.CharacterSoldierType.getTechnology(this.selectedCustomSoliderType),

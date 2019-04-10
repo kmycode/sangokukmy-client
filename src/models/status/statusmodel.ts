@@ -344,6 +344,7 @@ export default class StatusModel {
           if (technology <= this.characterTown.technology) {
             const type = new def.SoldierType(
               10000 + t.id,
+              0,
               t.name,
               api.CharacterSoldierType.getMoney(t),
               technology);
@@ -367,6 +368,7 @@ export default class StatusModel {
       .forEach((t) => {
         const type = new def.SoldierType(
           10000 + t.id,
+          0,
           t.name,
           api.CharacterSoldierType.getMoney(t),
           api.CharacterSoldierType.getTechnology(t));
