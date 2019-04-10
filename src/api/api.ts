@@ -373,7 +373,6 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryPatroller = 8;
   public static readonly aiSecretaryUnitGather = 9;
   public static readonly aiSecretaryPioneer = 11;
-  public static readonly aiSecretaryDefender = 14;
 
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
@@ -1485,17 +1484,6 @@ export class Api {
   public static async deleteCharacterIcon(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'icons/' + id, this.authHeader);
-    } catch (ex) {
-      throw Api.pickException(ex);
-    }
-  }
-
-  public static async updateDefenderSecretary(id: number, type: string, unitId: number): Promise<any> {
-    try {
-      await axios.put(def.API_HOST + 'secretary/' + id, {
-        type,
-        unitId,
-      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

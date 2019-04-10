@@ -69,7 +69,6 @@ export default class StatusModel {
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
   public isUpdatingCharacterIcons: boolean = false;
-  public isUpdatingSecretaries: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -157,13 +156,6 @@ export default class StatusModel {
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
                     c.aiType === api.Character.aiSecretaryUnitGather ||
                     c.aiType === api.Character.aiSecretaryPioneer)
-      .toArray();
-  }
-
-  public get countrySecretaries2(): api.Character[] {
-    return Enumerable
-      .from(this.countryCharacters)
-      .where((c) => c.aiType === api.Character.aiSecretaryDefender)
       .toArray();
   }
 
@@ -957,20 +949,6 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isUpdatingCountrySettings = false;
-      });
-  }
-
-  public updateSecretaryDefender(id: number, type: string, unitId: number) {
-    this.isUpdatingSecretaries = true;
-    api.Api.updateDefenderSecretary(id, type, unitId)
-      .then(() => {
-        NotificationService.secretaryDefenderUpdated.notify();
-      })
-      .catch(() => {
-        NotificationService.secretaryDefenderUpdateFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingSecretaries = false;
       });
   }
 

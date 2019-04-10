@@ -116,7 +116,6 @@
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
             <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
-            <button v-show="model.country.id === model.character.countryId && model.canSecretary" type="button" class="btn btn-secondary" @click="model.updateCountryCharacters(); model.unitModel.updateUnits(); isOpenSecretary2Dialog = true">傭兵</button>
           </div>
         </div>
         <!-- 報告 -->
@@ -790,41 +789,6 @@
           </div>
         </div>
       </div>
-      <!-- 政務官（特別対応） -->
-      <div v-show="isOpenSecretary2Dialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">傭兵設定</h2>
-        <div class="dialog-content dialog-content-secretary loading-container">
-          <div class="dialog-content-secretary-main">
-            <div class="character-list">
-              <SimpleCharacterList
-                :countries="model.countries"
-                :characters="model.countrySecretaries2"
-                canSelect="true"
-                v-model="targetSecretary2"/>
-            </div>
-            <div class="unit-list">
-              <UnitPicker :units="model.unitModel.units"
-                          :countries="model.countries"
-                          v-model="targetUnit"/>
-            </div>
-            <div>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': targetSecretary2.aliasId !== '1', 'btn-secondary': targetSecretary2.aliasId === '1'}" @click="targetSecretary2.aliasId = '1'">ALL</button>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': targetSecretary2.aliasId !== '2', 'btn-secondary': targetSecretary2.aliasId === '2'}" @click="targetSecretary2.aliasId = '2'">末尾9</button>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': targetSecretary2.aliasId !== '3', 'btn-secondary': targetSecretary2.aliasId === '3'}" @click="targetSecretary2.aliasId = '3'">9人</button>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': targetSecretary2.aliasId !== '4', 'btn-secondary': targetSecretary2.aliasId === '4'}" @click="targetSecretary2.aliasId = '4'">1人</button>
-            </div>
-          </div>
-          <div class="loading" v-show="model.isUpdatingCountryCharacters || this.model.unitModel.isUpdating || model.isUpdatingSecretaries"><div class="loading-icon"></div></div>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenSecretary2Dialog = false">キャンセル</button>
-          </div>
-          <div class="right-side">
-            <button class="btn btn-primary" v-show="targetSecretary2.id > 0" @click="model.updateSecretaryDefender(targetSecretary2.id, targetSecretary2.aliasId, (targetUnit.id > 0 ? targetUnit.id : 0)); isOpenSecretary2Dialog = false">承認</button>
-          </div>
-        </div>
-      </div>
       <!-- 政務官解任 -->
       <div v-show="isOpenRemoveSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官解任</h2>
@@ -962,7 +926,6 @@ export default class StatusPage extends Vue {
   public isOpenTownWarDialog: boolean = false;
   public isOpenOppositionCharactersDialog: boolean = false;
   public isOpenSecretaryDialog: boolean = false;
-  public isOpenSecretary2Dialog: boolean = false;
   public isOpenAddSecretaryDialog: boolean = false;
   public isOpenRemoveSecretaryDialog: boolean = false;
   public isOpenCharacterIconPickerDialog: boolean = false;
@@ -975,7 +938,6 @@ export default class StatusPage extends Vue {
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
   public targetSecretary: api.Character = new api.Character(-1);
-  public targetSecretary2: api.Character = new api.Character(-1, '1');
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
@@ -998,8 +960,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
-      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog
-      || this.isOpenSecretary2Dialog;
+      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1056,8 +1017,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
-      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog =
-      this.isOpenSecretary2Dialog = false;
+      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

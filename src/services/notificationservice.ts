@@ -584,14 +584,6 @@ export default class NotificationService {
     'メインアイコン設定失敗',
     'メインアイコン設定に失敗しました',
     NotificationServiceItemDefaultType.error);
-  public static readonly secretaryDefenderUpdated = new NotificationServiceItem(
-    '傭兵更新',
-    '傭兵情報を更新しました',
-    NotificationServiceItemDefaultType.succeed);
-  public static readonly secretaryDefenderUpdateFailed = new NotificationServiceItem(
-    '傭兵更新失敗',
-    '傭兵情報の更新に失敗しました',
-    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
