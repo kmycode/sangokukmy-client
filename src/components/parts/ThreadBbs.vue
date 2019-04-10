@@ -4,7 +4,7 @@
       <div class="label">タイトル</div>
       <div class="title"><input type="text" v-model="newThread.title"></div>
       <div class="label">本文</div>
-      <div class="text"><textarea class="text" v-model="newThread.text"></textarea></div>
+      <div class="text"><textarea class="text" v-model="newThread.text" @keyup.ctrl.enter.prevent.stop="write(newThread)"></textarea></div>
       <div class="buttons"><button type="button" class="btn btn-primary" @click="write(newThread)">新規スレッド</button></div>
     </div>
     <div v-for="thread in threads"
@@ -26,7 +26,7 @@
           <span class="item-date">{{ thread.written | realdate }}</span>
         </div>
         <div v-show="canWrite" class="item-post-form reply">
-          <div class="text"><textarea class="text" v-model="getThreadReply(thread).data.text"></textarea></div>
+          <div class="text"><textarea class="text" v-model="getThreadReply(thread).data.text" @keyup.ctrl.enter.prevent.stop="write(getThreadReply(thread).data)"></textarea></div>
           <div class="buttons">
             <button type="button" class="btn btn-primary" @click="write(getThreadReply(thread).data)">リプライ</button>
             <button v-show="bbsType === 1 && canRemove && (canRemoveAll || characterId === thread.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">その他の操作</button>

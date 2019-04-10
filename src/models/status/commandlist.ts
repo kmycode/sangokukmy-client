@@ -20,37 +20,22 @@ export default class CommandList {
 
   public get canUseCountrySafe(): boolean {
     // 国庫を使えるか
-    return Enumerable.from(this.store.towns)
-      .any((t) => t.countryId === this.store.character.countryId &&
-                  t.countryBuilding === api.Town.countryBuildingSafe);
+    return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
   }
 
-  public get canUseCountrySpy(): boolean {
+  public get canUseCountryScouter(): boolean {
     // 諜報府を使えるか
-    return Enumerable.from(this.store.towns)
-      .any((t) => t.countryId === this.store.character.countryId &&
-                  t.countryBuilding === api.Town.countryBuildingSpy);
-  }
-
-  public get canUseCountryWork(): boolean {
-    // 職業斡旋を使えるか
-    return Enumerable.from(this.store.towns)
-      .any((t) => t.countryId === this.store.character.countryId &&
-                  t.countryBuilding === api.Town.countryBuildingWork);
+    return this.isPolicyEnabled(api.CountryPolicy.typeScouter);
   }
 
   public get canUseCountrySoldier(): boolean {
     // 兵種研究を使えるか
-    return Enumerable.from(this.store.towns)
-      .any((t) => t.countryId === this.store.character.countryId &&
-                  t.countryBuilding === api.Town.countryBuildingSoldier);
+    return this.isPolicyEnabled(api.CountryPolicy.typeSoldierDevelopment);
   }
 
   public get canUseCountrySecretary(): boolean {
     // 政務官を使えるか
-    return Enumerable.from(this.store.towns)
-      .any((t) => t.countryId === this.store.character.countryId &&
-                  t.countryBuilding === api.Town.countryBuildingSecretary);
+    return this.isPolicyEnabled(api.CountryPolicy.typeHumanDevelopment);
   }
 
   public get isFewRemaining(): boolean {
@@ -228,5 +213,11 @@ export default class CommandList {
       cmd.commandNumber = index + 1;
       Vue.set(cmd, 'date', api.DateTime.fromDate(commandDate));
     });
+  }
+
+  private isPolicyEnabled(id: number): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.store.character.countryId)
+      .any((p) => p.type === id);
   }
 }

@@ -95,7 +95,7 @@ export class TextStatusParameter extends StatusParameter {
     return StatusParameterType.text;
   }
 
-  public constructor(name: string, public value: string) {
+  public constructor(name: string, public value: string, public alertType: string = '') {
     super(name);
   }
 }

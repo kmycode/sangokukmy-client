@@ -16,7 +16,7 @@
             <div class="commands">
               <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
               <button v-if="canReinforcement && chara.countryId !== myCountryId && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
-              <button v-if="canPrivateChat && chara.id !== myCharacterId" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+              <button v-if="canPrivateChat && chara.id !== myCharacterId && !chara.aiType" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
             <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
@@ -56,7 +56,7 @@
               <span class="parameter-value">{{ chara.soldierNumber }}</span>
             </span>
           </div>
-          <div v-if="chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
+          <div v-if="isShowCustomSoldierTypeDetail && chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
             {{ getSoldierTypeDescription(chara) }}
           </div>
         </div>
@@ -96,6 +96,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: -1,
   }) public myCountryId!: number;
+  @Prop({
+    default: false,
+  }) public isShowCustomSoldierTypeDetail!: boolean;
   @Prop({
     default: false,
   }) public canEdit!: boolean;

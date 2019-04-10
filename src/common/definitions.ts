@@ -44,7 +44,7 @@ export const CHARACTER_DELETE_TURN = 500;
 /**
  * 次の階級に上がるまでに必要な階級値
  */
-export const NEXT_LANK = 800;
+export const NEXT_LANK = 1200;
 
 /**
  * 国色の数
@@ -56,16 +56,9 @@ export const COUNTRY_COLOR_NUM = 11;
  */
 export const DEFAULT_ICON_NUM = 98;
 
-export const RICE_BUY_MAX = 10000;
+export const RICE_BUY_MAX = 20000;
 
 export const PAY_SAFE_MAX = 100000;
-
-/**
- * 耐久ごとの、利用できる国庫の金の量
- */
-export const SAFE_PER_ENDURANCE = 2000;
-
-export const COUNTRY_BUILDING_MAX = 2000;
 
 /**
  * 兵種
@@ -75,6 +68,7 @@ export class SoldierType {
   public customId: number = -1;
 
   public constructor(public id: number = 0,
+                     public kind: number = 0,
                      public name: string = '',
                      public money: number = 0,
                      public technology: number = 0,
@@ -83,28 +77,33 @@ export class SoldierType {
                      public description?: string) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
-  new SoldierType(1, '雑兵', 1, 0, '0', '0'),
-  new SoldierType(2, '禁兵', 1, 0, '15', '15'),
-  new SoldierType(500, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
-  new SoldierType(3, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
-  new SoldierType(4, '弓兵',    3, 200,  '0', '15', '弓を持った兵士'),
-  new SoldierType(5, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),
-  new SoldierType(6, '強弩兵',  7, 400, '10', '35', '弩を持った兵士'),
-  new SoldierType(7, '神鬼兵',  10, 500, '知力', '0', '攻撃力に知力が補正として加算される'),
-  new SoldierType(8, '重歩兵',  12, 600, '50', '30', '重装備の歩兵'),
-  new SoldierType(9, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
-  new SoldierType(10, '智攻兵', 17, 800, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
-  new SoldierType(11, '連弩兵', 20, 900, '90', '30', '連弩を持った兵士'),
-  new SoldierType(12, '壁守兵', 22, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
-  new SoldierType(14, '井闌', 30, 500, '0', '0', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200のボーナスを得る'),
-  new SoldierType(15, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
-  new SoldierType(17, '異民族兵A', 32767, 32767, '0', '0', ''),
-  new SoldierType(18, '異民族兵B', 32767, 32767, '0', '0', ''),
-  new SoldierType(19, '異民族兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(100, '守兵A', 32767, 32767, '0', '0', ''),
-  new SoldierType(101, '守兵B', 32767, 32767, '0', '0', ''),
-  new SoldierType(102, '守兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(103, '守兵D', 32767, 32767, '0', '0', ''),
+  new SoldierType(1, 0, '雑兵', 1, 0, '0', '0'),
+  new SoldierType(2, 0, '禁兵', 1, 0, '15', '15'),
+  new SoldierType(500, 0, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
+  new SoldierType(3, 0, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
+  new SoldierType(4, 0, '弓兵',    3, 200,  '0', '15', '弓を持った兵士'),
+  new SoldierType(5, 0, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),
+  new SoldierType(6, 0, '強弩兵',  7, 400, '10', '35', '弩を持った兵士'),
+  new SoldierType(7, 1, '神鬼兵',  10, 500, '武力', '0', '基礎能力として武力の代わりに知力を用いた兵種。武力が攻撃力に補正として加算される'),
+  new SoldierType(8, 0, '重歩兵',  12, 600, '50', '30', '重装備の歩兵'),
+  new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
+  new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
+  new SoldierType(11, 0, '連弩兵', 20, 900, '90', '30', '連弩を持った兵士'),
+  new SoldierType(12, 0, '壁守兵', 22, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
+  new SoldierType(14, 2, '井闌', 30, 500, '0', '0', '対城壁・守兵・壁守兵の場合に限り、攻撃力に200、防御力に40のボーナスを得る'),
+  new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
+  new SoldierType(17, 0, '異民族兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(18, 0, '異民族兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(19, 0, '異民族兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(20, 0, '賊兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(21, 0, '賊兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(22, 0, '賊兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(23, 1, '文官雑兵', 2, 32767, '0', '0', '武力の代わりに知力が使用される雑兵'),
+  new SoldierType(24, 1, '文官重騎兵', 18, 900, '60', '40', '基礎能力として武力の代わりに知力を用いた兵種。武官の重騎兵と同等の補正を持つ'),
+  new SoldierType(100, 0, '守兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(101, 0, '守兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(102, 0, '守兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(103, 0, '守兵D', 32767, 32767, '0', '0', ''),
 ];
 
 /**
@@ -263,8 +262,6 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(23, '仕官'),
   new CommandNameResolver(30, '緊急米施し'),
   new CommandNameResolver(31, '都市施設強化'),
-  new CommandNameResolver(32, '国家施設強化'),
-  new CommandNameResolver(33, '研究所強化'),
   new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -289,8 +286,6 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (35:1)';
     }
   }),
-  new CommandNameResolver(36, '焼討'),
-  new CommandNameResolver(37, '扇動'),
   new CommandNameResolver(38, '兵種 %0% を研究'),
   new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
     if (params) {
@@ -308,8 +303,10 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
   new CommandNameResolver(41, '政務官 %読込中% を解任'),
-  new CommandNameResolver(42, '技術破壊'),
-  new CommandNameResolver(43, '城壁破壊'),
+  new CommandNameResolver(44, '政策開発'),
+  new CommandNameResolver(45, '%0% へ斥候派遣'),
+  new CommandNameResolver(46, '%0% の斥候を解雇'),
+  new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -356,8 +353,10 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(27, '扇動', '#2a4'),
   new EventType(28, '雇用', '#800'),
   new EventType(29, '解任', '#800'),
-  new EventType(30, '削除', 'black'),
+  new EventType(30, '解雇', '#800'),
   new EventType(31, '削除', 'black'),
+  new EventType(32, '政策', '#2a4'),
+  new EventType(33, '蛮族', '#088'),
 ];
 
 /**
@@ -474,4 +473,28 @@ export const COUNTRY_BUILDINGS: BuildingType[] = [
  */
 export const COUNTRY_LABORATORIES: BuildingType[] = [
   new BuildingType(0, '研究所なし'),
+];
+
+/**
+ * 政策
+ */
+export class CountryPolicyType {
+  public constructor(public id: number = 0,
+                     public point: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public subjectAppear?: (exists: CountryPolicyType[]) => boolean,
+                     public canGet: boolean = true) {}
+}
+export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
+  new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
+  new CountryPolicyType(10, 4000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 1)),
+  new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
+  new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる'),
+  new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
+  new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
+  new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
+  new CountryPolicyType(8, 5000000, '連戦戦術', '連戦の戦術が利用可能になる', undefined, false),
+  new CountryPolicyType(9, 5000000, '突撃戦術', '突撃の戦術が利用可能になる', undefined, false),
 ];

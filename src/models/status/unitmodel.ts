@@ -138,6 +138,14 @@ export default class UnitModel {
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.lackOfNameParameterError) {
             NotificationService.unitCreateFailedBecauseLackOfParameters.notify();
+          } else if (ex.data.code === api.ErrorCode.numberRangeError) {
+            if (ex.data.data.name === 'name') {
+              NotificationService.unitCreateFailedBecauseNameTooLong
+                .notifyWithParameter(this.leaderUnit.name, ex.data.data.current, ex.data.data.max);
+            } else {
+              NotificationService.unitCreateFailedBecauseMessageTooLong
+                .notifyWithParameter(this.leaderUnit.name, ex.data.data.current, ex.data.data.max);
+            }
           } else {
             NotificationService.unitCreateFailed.notifyWithParameter(this.leaderUnit.name);
           }
@@ -160,8 +168,18 @@ export default class UnitModel {
           NotificationService.unitUpdated.notifyWithParameter(this.leaderUnit.name);
           isSucceed = true;
         })
-        .catch(() => {
-          NotificationService.unitUpdateFailed.notifyWithParameter(this.leaderUnit.name);
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.numberRangeError) {
+            if (ex.data.data.name === 'name') {
+              NotificationService.unitUpdateFailedBecauseNameTooLong
+                .notifyWithParameter(this.leaderUnit.name, ex.data.data.current, ex.data.data.max);
+            } else {
+              NotificationService.unitUpdateFailedBecauseMessageTooLong
+                .notifyWithParameter(this.leaderUnit.name, ex.data.data.current, ex.data.data.max);
+            }
+          } else {
+            NotificationService.unitUpdateFailed.notifyWithParameter(this.leaderUnit.name);
+          }
         })
         .finally(() => {
           this.isUpdating = false;

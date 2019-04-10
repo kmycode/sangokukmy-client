@@ -89,6 +89,7 @@
             {{ model.town.name }}
             <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
             <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
+            <span v-if="model.characterTownHasScouter">【斥候】</span>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
@@ -112,6 +113,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
+            <button type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
@@ -142,7 +144,6 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0">登用<span v-if="!model.character.countryId"> ({{ model.promotions.count }})</span></span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 1">国設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2">全会</span>
-                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4">兵種</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
@@ -154,7 +155,6 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
                 <a v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 4; isOpenRightSidePopupMenu = false">兵種</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
                 <div class="dropdown-divider"></div>
@@ -172,6 +172,7 @@
                            :characterDeleteTurn="model.character.deleteTurn"
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
+                           :canScouter="model.canScouter"
                            @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->
@@ -528,6 +529,27 @@
           </div>
         </div>
       </div>
+      <!-- 政策 -->
+      <div v-show="isOpenPoliciesDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
+          <CountryPolicyList :country="model.country"
+                             :policyTypes="model.countryPolicyTypes"
+                             :canEdit="model.country.id === model.character.countryId && model.canPolicy"
+                             v-model="selectedCountryPolicyType"
+                             style="flex:1"/>
+          <div class="loading" v-show="model.isUpdatingPolicies"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" v-show="model.country.id === model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-light" v-show="model.country.id !== model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
+            <button class="btn btn-primary" v-show="model.country.id === model.character.countryId && model.canPolicy && selectedCountryPolicyType.id > 0 && selectedCountryPolicyType.point <= model.country.policyPoint" @click="model.addPolicy(selectedCountryPolicyType.id)">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 同盟 -->
       <div v-show="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
@@ -654,10 +676,10 @@
                 <div class="label">現在の相場</div><div class="value">{{ model.characterTownRiceTrend }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">金10000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
+                <div class="label">金20000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">米10000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
+                <div class="label">米20000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
               </div>
             </div>
             <div class="commands">
@@ -679,7 +701,7 @@
             <button class="btn btn-light" @click="isOpenRiceDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 10000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
+            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 20000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -752,7 +774,7 @@
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官</button>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官</button>
-          <div class="alert alert-warning">１国で雇える政務官は３人までです（国家研究により変動の場合があります）<br>毎年1、7月に、国庫、なければ収入から代金を持っていきますので注意してください。代金は2000を基準に、政務庁の耐久によって決まります</div>
+          <div class="alert alert-warning">１国で雇える政務官は１人までです<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
@@ -762,7 +784,7 @@
       </div>
       <!-- 政務官 -->
       <div v-show="isOpenSecretaryDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属／転属</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（部隊）</h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list">
@@ -786,6 +808,30 @@
           </div>
           <div class="right-side">
             <button class="btn btn-primary" v-show="targetSecretary.id > 0 && targetUnit.id > 0" @click="model.commands.inputer.inputSecretaryCommand(40, targetSecretary.id, targetUnit.id); isOpenSecretaryDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 政務官 -->
+      <div v-show="isOpenSecretaryTownDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（都市）</h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countrySecretaries"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSecretaryTownDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryMoveCommand(47, targetSecretary.id); isOpenSecretaryTownDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -857,6 +903,7 @@ import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
 import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
+import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
 import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
@@ -892,6 +939,7 @@ import EventObject from '@/models/common/EventObject';
     KmyChatTagText,
     CustomSoldierTypeView,
     BattleSimulatorView,
+    CountryPolicyList,
     RiceSimulatorView,
   },
 })
@@ -926,9 +974,11 @@ export default class StatusPage extends Vue {
   public isOpenTownWarDialog: boolean = false;
   public isOpenOppositionCharactersDialog: boolean = false;
   public isOpenSecretaryDialog: boolean = false;
+  public isOpenSecretaryTownDialog: boolean = false;
   public isOpenAddSecretaryDialog: boolean = false;
   public isOpenRemoveSecretaryDialog: boolean = false;
   public isOpenCharacterIconPickerDialog: boolean = false;
+  public isOpenPoliciesDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -948,6 +998,7 @@ export default class StatusPage extends Vue {
   public selectedIconAtPrivateConfig: api.CharacterIcon = new api.CharacterIcon(-1);
   public newIcon: api.CharacterIcon = new api.CharacterIcon(-1, 0, false, 1, '0.gif');
   public isShowIconOperations = false;
+  public selectedCountryPolicyType: def.CountryPolicyType = new def.CountryPolicyType(-1);
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -960,7 +1011,8 @@ export default class StatusPage extends Vue {
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
-      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog;
+      || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
+      || this.isOpenSecretaryTownDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1006,6 +1058,10 @@ export default class StatusPage extends Vue {
       this.model.unitModel.updateUnits();
       this.model.updateCharacterCountryCharacters();
       this.isOpenRemoveSecretaryDialog = true;
+    } else if (event === 'secretary-town') {
+      this.targetSecretary.id = -1;
+      this.model.updateCharacterCountryCharacters();
+      this.isOpenSecretaryTownDialog = true;
     }
   }
 
@@ -1017,7 +1073,8 @@ export default class StatusPage extends Vue {
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
-      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = false;
+      this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog =
+      this.isOpenSecretaryTownDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1031,6 +1088,7 @@ export default class StatusPage extends Vue {
       const parts = api.CharacterSoldierType.getParts(this.selectedCustomSoliderType);
       return new def.SoldierType(
         this.selectedCustomSoliderType.id,
+        0,
         this.selectedCustomSoliderType.name,
         api.CharacterSoldierType.getMoney(this.selectedCustomSoliderType),
         api.CharacterSoldierType.getTechnology(this.selectedCustomSoliderType),
