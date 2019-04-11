@@ -312,7 +312,7 @@ export default class StatusModel {
     // 自国の金庫の最大容量
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
-      .count((p) => p.id === 1 || p.id === 10 || p.id === 11 || p.id === 12) * 100_0000;
+      .count((p) => p.type === 1 || p.type === 10 || p.type === 11 || p.type === 12) * 100_0000;
   }
 
   public get soldierLaboratorySize(): number {
