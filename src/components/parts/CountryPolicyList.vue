@@ -1,6 +1,6 @@
 <template>
   <div class="policy-list">
-    <h2 v-show="canEdit && policyTypes.length > 0">現在の政策</h2>
+    <h2 v-show="(canEdit || isMyCountry) && policyTypes.length > 0">現在の政策</h2>
     <div
       :class="{'item': true}"
       v-for="policy in policyTypes"
@@ -13,11 +13,11 @@
         </div>
       </div>
     </div>
-    <div v-show="canEdit && newPolicyTypes.length > 0" style="margin-top:48px">
+    <div v-show="(canEdit || isMyCountry) && newPolicyTypes.length > 0" style="margin-top:48px">
       <h2>追加可能な政策</h2>
       <h3>残りポイント: {{ country.policyPoint }}</h3>
       <div
-        :class="{'item': true, 'selected': value.id === policy.id, 'selectable': true}"
+        :class="{'item': true, 'selected': value.id === policy.id, 'selectable': canEdit}"
         v-for="policy in newPolicyTypes"
         :key="policy.id">
         <div class="policy-info">
@@ -56,6 +56,9 @@ export default class CountryPolicyList extends Vue {
   @Prop({
     default: () => new def.CountryPolicyType(-1),
   }) public value!: def.CountryPolicyType;
+  @Prop({
+    default: false,
+  }) public isMyCountry!: boolean;
 
   @Watch('policyTypes')
   public onTypesChanged() {

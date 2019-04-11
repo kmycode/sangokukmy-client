@@ -536,6 +536,7 @@
           <CountryPolicyList :country="model.country"
                              :policyTypes="model.countryPolicyTypes"
                              :canEdit="model.country.id === model.character.countryId && model.canPolicy"
+                             :isMyCountry="model.country.id === model.character.countryId"
                              v-model="selectedCountryPolicyType"
                              style="flex:1"/>
           <div class="loading" v-show="model.isUpdatingPolicies"><div class="loading-icon"></div></div>
@@ -545,7 +546,7 @@
             <button class="btn btn-light" v-show="model.country.id === model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-light" v-show="model.country.id !== model.character.countryId && model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
+            <button class="btn btn-light" v-show="model.country.id !== model.character.countryId" @click="isOpenPoliciesDialog = false">閉じる</button>
             <button class="btn btn-primary" v-show="model.country.id === model.character.countryId && model.canPolicy && selectedCountryPolicyType.id > 0 && selectedCountryPolicyType.point <= model.country.policyPoint" @click="model.addPolicy(selectedCountryPolicyType.id)">承認</button>
           </div>
         </div>
