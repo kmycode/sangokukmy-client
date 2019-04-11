@@ -6,7 +6,7 @@
       :key="soldier.id">
       <div class="soldier-info">
         <div class="standard">
-          <div class="name">{{ soldier.name }}</div>
+          <div class="name"><span class="kind kind-strong" v-if="soldier.kind === 0 || soldier.kind === 2">武</span><span class="kind kind-intellect" v-if="soldier.kind === 1">知</span><span class="kind kind-wall" v-if="soldier.kind === 2">壁</span>{{ soldier.name }}</div>
           <div class="detail">
             <span class="value-name">金</span><span class="value">{{ soldier.money }}<span v-if="!soldier.isCustom">0</span></span>
             <span v-if="!soldier.isCustom" class="value-name">攻撃力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.attackPower }}</span>
@@ -80,6 +80,31 @@ export default class SoldierTypePicker extends Vue {
       .name {
         font-size: 1.6rem;
         flex: 1;
+
+        .kind {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          color: white;
+          border-radius: 50%;
+          font-size: 14px;
+          font-weight: bold;
+          text-align: center;
+          margin-right: 8px;
+        }
+
+        .kind-strong {
+          background: #c00;
+        }
+
+        .kind-wall {
+          background: #ca0;
+        }
+
+        .kind-intellect {
+          background: #00c;
+        }
       }
 
       .description {

@@ -270,6 +270,12 @@ export class CharacterSoldierType {
       type.repeatingCrossbow >= 0 && type.strongGuards >= 0 && type.seiran >= 0;
   }
 
+  public static getSize(type: CharacterSoldierType): number {
+    return type.commonSoldier + type.lightInfantory + type.archer + type.lightCavalry +
+      type.strongCrossbow + type.lightIntellect + type.heavyInfantory + type.heavyCavalry +
+      type.intellect + type.repeatingCrossbow + type.strongGuards + type.seiran;
+  }
+
   public static getParts(type: CharacterSoldierType): def.SoldierType[] {
     const types = Enumerable.from(def.SOLDIER_TYPES);
     return Enumerable.repeat(types.first((t) => t.id === 1), type.commonSoldier)
@@ -373,7 +379,6 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryPatroller = 8;
   public static readonly aiSecretaryUnitGather = 9;
   public static readonly aiSecretaryPioneer = 11;
-  public static readonly aiSecretaryDefender = 14;
 
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
@@ -428,6 +433,28 @@ export class CountryPost {
                      public character: Character) {}
 }
 
+export class CountryPolicy {
+  public static readonly typeId = 32;
+
+  public static readonly typeStorage = 1;
+  public static readonly typeScouter = 2;
+  public static readonly typeSoldierDevelopment = 3;
+  public static readonly typeHumanDevelopment = 4;
+
+  public constructor(public id: number = 0,
+                     public countryId: number = 0,
+                     public type: number = 0) {}
+}
+
+export class CountryScouter {
+  public static readonly typeId = 33;
+
+  public constructor(public id: number = 0,
+                     public countryId: number = 0,
+                     public townId: number = 0,
+                     public isRemoved: boolean = false) {}
+}
+
 export class CountryMessage {
   public static readonly typeId = 29;
 
@@ -461,6 +488,7 @@ export class Country {
                      public townWars: TownWar[] = [],
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
+                     public policyPoint: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public safeMoney?: number) {}
@@ -569,16 +597,10 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public technologyMax: number = 0,
                      public wall: number = 0,
                      public wallMax: number = 0,
-                     public wallguard: number = 0,
-                     public wallguardMax: number = 0,
                      public security: number = 0,
                      public ricePrice: number = 0,
                      public townBuilding: number = 0,
-                     public townBuildingValue: number = 0,
-                     public countryBuilding: number = 0,
-                     public countryBuildingValue: number = 0,
-                     public countryLaboratory: number = 0,
-                     public countryLaboratoryValue: number = 0) {}
+                     public townBuildingValue: number = 0) {}
 }
 
 /**
@@ -593,12 +615,6 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly typeCommercial = 2;
   public static readonly typeFortress = 3;
   public static readonly typeLarge = 4;
-
-  public static readonly countryBuildingSafe = 1;
-  public static readonly countryBuildingSpy = 2;
-  public static readonly countryBuildingWork = 3;
-  public static readonly countryBuildingSoldier = 4;
-  public static readonly countryBuildingSecretary = 5;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;
@@ -1092,6 +1108,17 @@ export class Api {
     }
   }
 
+  public static async addCountryPolicy(policy: number): Promise<any> {
+    try {
+      await axios.post
+        (def.API_HOST + 'country/policies', {
+          type: policy,
+        }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 同盟情報を送信
    * @param alliance 設定する同盟情報
@@ -1485,17 +1512,6 @@ export class Api {
   public static async deleteCharacterIcon(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'icons/' + id, this.authHeader);
-    } catch (ex) {
-      throw Api.pickException(ex);
-    }
-  }
-
-  public static async updateDefenderSecretary(id: number, type: string, unitId: number): Promise<any> {
-    try {
-      await axios.put(def.API_HOST + 'secretary/' + id, {
-        type,
-        unitId,
-      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

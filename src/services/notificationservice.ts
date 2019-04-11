@@ -136,6 +136,10 @@ export default class NotificationService {
     '徴兵コマンド入力失敗',
     'コマンド入力に失敗しました。指定された兵種は、この都市で徴兵コマンドを入力することができません。',
     NotificationServiceItemDefaultType.error);
+  public static readonly inputCommandsFailedBecauseTooLong = new NotificationServiceItem(
+    'コマンド入力失敗',
+    'コマンド入力に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly inputCommandsSucceed = new NotificationServiceItem(
     'コマンド入力完了',
     '{0} の入力が完了しました。',
@@ -167,6 +171,10 @@ export default class NotificationService {
   public static readonly postChatFailedBecauseTargetNotFound = new NotificationServiceItem(
     '手紙送信失敗',
     '手紙の送信に失敗しました。送信先が見つかりません。手紙を書いている途中に削除されたか滅亡した可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly postChatFailedBecauseTooLong = new NotificationServiceItem(
+    '手紙送信失敗',
+    '手紙の送信に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
   public static readonly attributeUp = new NotificationServiceItem(
     '能力上昇',
@@ -304,6 +312,14 @@ export default class NotificationService {
     '部隊作成失敗',
     '部隊を作成できませんでした。名前が必要です',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitCreateFailedBecauseNameTooLong = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊 {0} を作成できませんでした。名前が長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitCreateFailedBecauseMessageTooLong = new NotificationServiceItem(
+    '部隊作成失敗',
+    '部隊 {0} を作成できませんでした。メッセージが長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitUpdated = new NotificationServiceItem(
     '部隊更新',
     '部隊 {0} の情報を更新しました',
@@ -311,6 +327,14 @@ export default class NotificationService {
   public static readonly unitUpdateFailed = new NotificationServiceItem(
     '部隊更新失敗',
     '部隊 {0} の情報を更新できませんでした',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitUpdateFailedBecauseMessageTooLong = new NotificationServiceItem(
+    '部隊更新失敗',
+    '部隊 {0} の情報を更新できませんでした。メッセージが長すぎます (現在: {1}, 最大: {2})',
+    NotificationServiceItemDefaultType.error);
+  public static readonly unitUpdateFailedBecauseNameTooLong = new NotificationServiceItem(
+    '部隊更新失敗',
+    '部隊 {0} の情報を更新できませんでした。名前が長すぎます (現在: {1}, 最大: {2})',
     NotificationServiceItemDefaultType.error);
   public static readonly unitRemoved = new NotificationServiceItem(
     '部隊削除',
@@ -520,6 +544,10 @@ export default class NotificationService {
     '勧誘文更新失敗',
     '新規登録者勧誘文更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly countrySolicitationMessageSetFailedBecauseTooLong = new NotificationServiceItem(
+    '勧誘文更新失敗',
+    '新規登録者勧誘文更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly townWarSent = new NotificationServiceItem(
     '攻略布告',
     '{0}、 {1} への攻略を布告しました',
@@ -584,14 +612,38 @@ export default class NotificationService {
     'メインアイコン設定失敗',
     'メインアイコン設定に失敗しました',
     NotificationServiceItemDefaultType.error);
-  public static readonly secretaryDefenderUpdated = new NotificationServiceItem(
-    '傭兵更新',
-    '傭兵情報を更新しました',
+  public static readonly addPolicy = new NotificationServiceItem(
+    '政策追加',
+    '政策 {0} を追加しました',
     NotificationServiceItemDefaultType.succeed);
-  public static readonly secretaryDefenderUpdateFailed = new NotificationServiceItem(
-    '傭兵更新失敗',
-    '傭兵情報の更新に失敗しました',
+  public static readonly addPolicyFailed = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly addPolicyFailedBecauseOfDuplicate = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました。他の人がすでに同じ政策を追加した可能性があります',
+    NotificationServiceItemDefaultType.error);
+  public static readonly addPolicyFailedBecauseOfLackOfPoints = new NotificationServiceItem(
+    '政策追加失敗',
+    '政策 {0} の追加に失敗しました。政策ポイントが足りません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly policyAdded = new NotificationServiceItem(
+    '政策追加',
+    '所属国に政策 {0} が追加されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly scouterAdded = new NotificationServiceItem(
+    '斥候派遣',
+    '{0} に斥候が派遣されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly scouterRemoved = new NotificationServiceItem(
+    '斥候解雇',
+    '{0} の斥候が解雇されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly reseted = new NotificationServiceItem(
+    'リセット',
+    'ゲームはリセットされました。新しいドラマが始まります',
+    NotificationServiceItemDefaultType.information);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
