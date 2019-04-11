@@ -492,7 +492,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(11, 4000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 10)),
   new CountryPolicyType(12, 4000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 11)),
   new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
-  new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる'),
+  new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる', undefined, false),
   new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
   new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
   new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
