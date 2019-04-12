@@ -17,6 +17,7 @@
 import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
 import Enumerable from 'linq';
 import * as api from '@/api/api';
+import StatusStore from '@/models/status/statusstore';
 
 @Component({
   components: {
@@ -31,6 +32,12 @@ export default class Map extends Vue {
   @Prop({
     default: () => new api.Town(-1),
   }) public currentTown!: api.Town;
+  @Prop({
+    default: undefined,
+  }) public store!: StatusStore;
+  @Prop({
+    default: 0,
+  }) public mode!: number;
 
   private isSelected(current: api.Town): boolean {
     return this.town.id === current.id;

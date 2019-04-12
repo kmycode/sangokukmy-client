@@ -407,6 +407,7 @@ export class Character implements IIdentitiedEntity {
                      public contribution: number = 0,
                      public classValue: number = 0,
                      public deleteTurn: number = 0,
+                     public hasRemoved: boolean = false,
                      public townId: number = 0,
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
@@ -483,9 +484,6 @@ export class Country {
                      public established: GameDateTime = new GameDateTime(),
                      public capitalTownId: number = 0,
                      public posts: CountryPost[] = [],
-                     public alliances: CountryAlliance[] = [],
-                     public wars: CountryWar[] = [],
-                     public townWars: TownWar[] = [],
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public policyPoint: number = 0,
@@ -620,6 +618,21 @@ export class Town extends TownBase implements IIdentitiedEntity {
     const scoutMethod = (town as ScoutedTown).scoutMethod;
     return scoutMethod !== undefined && scoutMethod !== 0;
   }
+}
+
+/**
+ * 守備
+ */
+export class TownDefender {
+  public static readonly typeId = 34;
+
+  public static readonly statusAvailable = 0;
+  public static readonly statusLosed = 1;
+
+  public constructor(public id: number = 0,
+                     public status: number = 0,
+                     public townId: number = 0,
+                     public characterId: number = 0) {}
 }
 
 /**

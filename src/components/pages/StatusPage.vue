@@ -35,6 +35,8 @@
             :countries="model.countries"
             :town="model.town"
             :currentTown="model.characterTown"
+            :mode="0"
+            :store="model.store"
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
             <div class="online-list-item">
@@ -93,6 +95,9 @@
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
+            <MiniCharacterList
+              :countries="model.countries"
+              :characters="model.townCharacters"/>
           </div>
           <div class="commands">
             <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">武将</button>

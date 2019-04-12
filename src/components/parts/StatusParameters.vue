@@ -100,7 +100,6 @@ export default class StatusParametersPanel extends Vue {
   align-content: flex-start;
   align-items: flex-end;
   padding: 4px;
-  height: 100%;
 
   .item {
     width: 100px;

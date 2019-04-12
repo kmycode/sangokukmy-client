@@ -51,9 +51,6 @@ export default class StatusModel {
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
 
-  private townCharacterLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
-  private townDefenderLoadTask: CancellableAsyncStack<any> = new CancellableAsyncStack<any>();
-
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
@@ -84,7 +81,7 @@ export default class StatusModel {
 
   // #region Store and Compat Properties
 
-  private store: StatusStore = new StatusStore();
+  public store: StatusStore = new StatusStore();
 
   public get character(): api.Character {
     return this.store.character;
@@ -180,14 +177,14 @@ export default class StatusModel {
 
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
-    return Enumerable.from(this.getCountry(this.character.countryId).townWars)
+    return Enumerable.from(this.store.townWars)
       .where((tw) => tw.requestedCountryId === this.character.countryId)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
       .firstOrDefault();
   }
 
   public get characterCountryTownWarStatus(): def.TownWarStatus {
-    const last = Enumerable.from(this.getCountry(this.character.countryId).townWars)
+    const last = Enumerable.from(this.store.townWars)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
       .firstOrDefault();
     if (last) {
@@ -202,7 +199,9 @@ export default class StatusModel {
 
   public get characterCountryWarWorstStatus(): def.CountryWarStatus {
     const war = Enumerable
-      .from(this.characterCountry.wars)
+      .from(this.store.wars)
+      .where((w) => w.requestedCountryId === this.character.countryId ||
+                    w.insistedCountryId === this.character.countryId)
       .where((w) => w.status === api.CountryWar.statusAvailable ||
                     w.status === api.CountryWar.statusInReady ||
                     w.status === api.CountryWar.statusStopRequesting)
@@ -218,14 +217,14 @@ export default class StatusModel {
   public get countryAlliance(): api.CountryAlliance | undefined {
     // 現在選択中の国と自分の国の同盟
     return Enumerable
-      .from(this.country.alliances)
+      .from(this.store.alliances)
       .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
   }
 
   public get countryWar(): api.CountryWar | undefined {
     // 現在選択中の国と自分の国の戦争
     return Enumerable
-      .from(this.country.wars)
+      .from(this.store.wars)
       .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
   }
 
@@ -235,9 +234,9 @@ export default class StatusModel {
     const myCountry = this.getCountry(this.character.countryId);
     if (myCountry.id === this.country.id) {
       status = -1;
-    } else if (this.country.alliances) {
+    } else {
       const alliance = Enumerable
-        .from(this.country.alliances)
+        .from(this.store.alliances)
         .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
       if (alliance) {
         if (alliance.status === api.CountryAlliance.statusRequesting) {
@@ -266,9 +265,9 @@ export default class StatusModel {
     const myCountry = this.getCountry(this.character.countryId);
     if (myCountry.id === this.country.id) {
       status = -1;
-    } else if (this.country.wars) {
+    } else {
       const war = Enumerable
-        .from(this.country.wars)
+        .from(this.store.wars)
         .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
       if (war) {
         status = war.status;
@@ -403,6 +402,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Town>(
       api.Town.typeId,
       (obj) => this.updateTown(obj));
+    ApiStreaming.status.on<api.TownDefender>(
+      api.TownDefender.typeId,
+      (obj) => this.onTownDefenderReceived(obj));
     ApiStreaming.status.on<api.ScoutedTown>(
       api.ScoutedTown.typeId,
       (obj) => this.updateScoutedTown(obj));
@@ -583,6 +585,16 @@ export default class StatusModel {
     }
   }
 
+  private onTownDefenderReceived(defender: api.TownDefender) {
+    this.store.defenders = Enumerable.from(this.store.defenders)
+      .where((d) => d.characterId !== defender.characterId)
+      .toArray();
+    if (defender.status === api.TownDefender.statusAvailable) {
+      ArrayUtil.addItem(this.store.defenders, defender);
+    }
+    this.setTown(this.store.town);
+  }
+
   public selectTown(townId: number) {
     const town = ArrayUtil.find(this.towns, townId);
     if (town) {
@@ -616,8 +628,25 @@ export default class StatusModel {
 
   private setTown(town: api.Town) {
     this.store.town = town;
+    if (!api.Town.isScouted(town)) {
+      this.updateTownCharacterAndDefenders();
+    }
     this.townParameters = this.getTownParameters(town);
     Vue.set(this.town, 'scoutedGameDateTime', (this.town as any).scoutedGameDateTime);
+  }
+
+  private updateTownCharacterAndDefenders() {
+    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
+      this.townCharacters = this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
+      this.townDefenders = Enumerable
+        .from(this.store.defenders.filter((c) => c.townId === this.town.id))
+        .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
+        .where((c) => c !== undefined && c !== null)
+        .toArray();
+    } else {
+      this.townCharacters = [];
+      this.townDefenders = [];
+    }
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
@@ -648,27 +677,9 @@ export default class StatusModel {
       }
     }
 
-    if (town.id === this.character.townId || town.countryId === this.character.countryId) {
-      const countParam = new NoRangeDelayStatusParameter('滞在');
-      const defParam = new NoRangeDelayStatusParameter('守備');
-      ps.push(countParam);
-      ps.push(defParam);
-
-      this.townCharacterLoadTask.then = (charas) => {
-        countParam.value = charas.length;
-        countParam.isLoading = false;
-      };
-      this.townCharacterLoadTask.push(async () => {
-        return api.Api.getAllCharactersAtTown(town.id);
-      });
-      this.townDefenderLoadTask.then = (defenders) => {
-        defParam.value = defenders.length;
-        defParam.isLoading = false;
-      };
-      this.townDefenderLoadTask.push(async () => {
-        return api.Api.getAllDefendersAtTown(town.id);
-      });
-    } else if (isScouted) {
+    if (town.countryId === this.character.countryId ||
+        town.id === this.character.townId ||
+        isScouted) {
       ps.push(new NoRangeStatusParameter('滞在', this.townCharacters.length));
       ps.push(new NoRangeStatusParameter('守備', this.townDefenders.length));
     }
@@ -753,28 +764,11 @@ export default class StatusModel {
         country.safeMoney = old.safeMoney;
         country.policyPoint = old.policyPoint;
       }
-
-      // 同盟データがｒｙ
-      if (!country.alliances || country.alliances.length === 0) {
-        country.alliances = old.alliances;
-      }
-      if (!country.wars || country.wars.length === 0) {
-        country.wars = old.wars;
-      }
-      if (!country.townWars || country.townWars.length === 0) {
-        country.townWars = old.townWars;
-      }
     }
 
     // APIから入ってこない可能性のあるデータを、空の配列で埋める
     if (country.posts === undefined) {
       country.posts = [];
-    }
-    if (country.alliances === undefined) {
-      country.alliances = [];
-    }
-    if (country.wars === undefined) {
-      country.wars = [];
     }
 
     // 配列のデータを更新
@@ -817,33 +811,41 @@ export default class StatusModel {
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
-    if (country.alliances) {
-      country.alliances.forEach((ca) => {
+    Enumerable
+      .from(this.store.alliances)
+      .where((ca) => ca.insistedCountryId === country.id || ca.requestedCountryId === country.id)
+      .forEach((ca) => {
         const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
         if (status) {
-          const targetCountry = ca.requestedCountryId === country.id ? ca.insistedCountry : ca.requestedCountry;
-          const type = ca.status === api.CountryAlliance.statusAvailable ? 'succeed' :
-                       ca.status === api.CountryAlliance.statusInBreaking ? 'warning' :
-                       ca.status === api.CountryAlliance.statusBroken ? 'warning' :
-                       ca.status === api.CountryAlliance.statusRequesting ? 'primary' :
-                       'information';
-          ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+          const targetCountryId = ca.requestedCountryId === country.id ? ca.insistedCountryId : ca.requestedCountryId;
+          const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
+          if (targetCountry) {
+            const type = ca.status === api.CountryAlliance.statusAvailable ? 'succeed' :
+              ca.status === api.CountryAlliance.statusInBreaking ? 'warning' :
+              ca.status === api.CountryAlliance.statusBroken ? 'warning' :
+              ca.status === api.CountryAlliance.statusRequesting ? 'primary' :
+              'information';
+            ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+          }
         }
       });
-    }
-    if (country.wars) {
-      country.wars.forEach((cw) => {
+    Enumerable
+      .from(this.store.wars)
+      .where((cw) => cw.insistedCountryId === country.id || cw.requestedCountryId === country.id)
+      .forEach((cw) => {
         const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
         if (status) {
-          const targetCountry = cw.requestedCountryId === country.id ? cw.insistedCountry : cw.requestedCountry;
-          const type = cw.status === api.CountryWar.statusAvailable ? 'danger' :
-                       cw.status === api.CountryWar.statusInReady ? 'warning' :
-                       cw.status === api.CountryWar.statusStopRequesting ? 'primary' :
-                       'information';
-          ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+          const targetCountryId = cw.requestedCountryId === country.id ? cw.insistedCountryId : cw.requestedCountryId;
+          const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
+          if (targetCountry) {
+            const type = cw.status === api.CountryWar.statusAvailable ? 'danger' :
+                        cw.status === api.CountryWar.statusInReady ? 'warning' :
+                        cw.status === api.CountryWar.statusStopRequesting ? 'primary' :
+                        'information';
+            ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+          }
         }
       });
-    }
 
     // 役職
     if (country.id > 0 && country.posts) {
@@ -1093,7 +1095,7 @@ export default class StatusModel {
   // #region CountryDiplomacies
 
   private updateCountryAlliance(alliance: api.CountryAlliance) {
-    this.updateCountryDiplomacies(alliance, (c) => c.alliances, (c, val) => c.alliances = val);
+    this.updateCountryDiplomacies(alliance, this.store.alliances, (val) => this.store.alliances = val);
 
     // 自国に関係することなら通知する
     if (this.store.hasInitialized &&
@@ -1114,7 +1116,7 @@ export default class StatusModel {
   }
 
   private updateCountryWar(war: api.CountryWar) {
-    this.updateCountryDiplomacies(war, (c) => c.wars, (c, val) => c.wars = val);
+    this.updateCountryDiplomacies(war, this.store.wars, (val) => this.store.wars = val);
 
     // 自国に関係することなら通知する
     if (this.store.hasInitialized &&
@@ -1134,7 +1136,7 @@ export default class StatusModel {
 
   private updateTownWar(war: api.TownWar) {
     war.town = this.getTown(war.townId);
-    this.updateCountryDiplomacies(war, (c) => c.townWars, (c, val) => c.townWars = val);
+    this.updateCountryDiplomacies(war, this.store.townWars, (val) => this.store.townWars = val);
 
     // 自国に関係することなら通知する
     if (this.store.hasInitialized &&
@@ -1155,28 +1157,14 @@ export default class StatusModel {
 
   private updateCountryDiplomacies<T extends api.CountryDipromacy>(
        diplomacy: T,
-       itemsProperty: (country: api.Country) => T[],
-       itemsSetter: (country: api.Country, newItems: T[]) => void) {
-    const countries = [this.getCountry(diplomacy.requestedCountryId), this.getCountry(diplomacy.insistedCountryId)];
-    diplomacy.requestedCountry = countries[0];
-    diplomacy.insistedCountry = countries[1];
+       items: T[],
+       itemsSetter: (newItems: T[]) => void) {
 
-    Enumerable.from(countries).where((c) => c.id > 0).forEach((country) => {
-      const items = itemsProperty(country);
-
-      // 古いのを消す
-      const newItems = Enumerable
-        .from(items)
-        .where((ca) => !api.CountryDipromacy
-                          .isEqualCountry(ca, diplomacy.requestedCountryId, diplomacy.insistedCountryId))
-        .toArray();
-
-      // 新しいのを追加する
-      newItems.push(diplomacy);
-
-      // 保存
-      itemsSetter(country, newItems);
-    });
+    const newArray = items
+        .filter((d) => !api.CountryDipromacy
+                           .isEqualCountry(d, diplomacy.insistedCountryId, diplomacy.requestedCountryId));
+    newArray.push(diplomacy);
+    itemsSetter(newArray);
   }
 
   public setAlliance() {
@@ -1185,7 +1173,7 @@ export default class StatusModel {
     const status = this.newAllianceData.status;
 
     const old = Enumerable
-      .from(this.characterCountry.alliances)
+      .from(this.store.alliances)
       .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, countryA, countryB));
     if (old && old.status === status) {
       NotificationService.allianceFailedBecauseSameStatus.notifyWithParameter(this.country.name);
@@ -1226,7 +1214,7 @@ export default class StatusModel {
     const status = this.newWarData.status;
 
     const old = Enumerable
-      .from(this.characterCountry.wars)
+      .from(this.store.wars)
       .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, countryA, countryB));
     if (old && old.status === status) {
       NotificationService.warFailedBecauseSameStatus.notifyWithParameter(this.country.name);
@@ -1452,6 +1440,11 @@ export default class StatusModel {
     api.Api.getAllIcons()
       .then((icons) => {
         ArrayUtil.replace(this.characterIcons, icons);
+
+        const storeCharacter = ArrayUtil.find(this.store.characters, character.id);
+        if (storeCharacter) {
+          storeCharacter.mainIcon = api.CharacterIcon.getMainOrFirst(icons);
+        }
       })
       .catch(() => {
         NotificationService.getIconsFailed.notify();
@@ -1462,8 +1455,23 @@ export default class StatusModel {
   }
 
   private updateCharacter(character: api.Character) {
-    if (this.character.id !== character.id) {
+    if (character.id <= 0) {
+      return;
+    }
+
+    if (!character.hasRemoved) {
+      ArrayUtil.addItem(this.store.characters, character);
+    } else {
+      this.store.characters = this.store.characters.filter((c) => c.id !== character.id);
+      this.store.defenders = this.store.defenders.filter((c) => c.characterId !== character.id);
+    }
+    this.store.characters = this.store.characters.filter((c) => c.id >= 0);
+
+    if (this.character.id <= 0) {
       this.initializeCharacter(character);
+    } else if (character.id !== this.character.id) {
+      this.setTown(this.store.town);
+      return;
     } else {
       if (this.character.countryId !== character.countryId) {
         this.store.character = character;
@@ -1472,6 +1480,8 @@ export default class StatusModel {
         this.store.character = character;
       }
     }
+
+    character.mainIcon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
     this.characterParameters = this.getCharacterParameters(character);
 
     // 現在表示中の都市が設定されていなければ、現在の武将の都市を設定
