@@ -457,7 +457,7 @@
         <div class="dialog-content loading-container">
           <SimpleCharacterList
             :countries="model.countries"
-            :characters="model.townCharacters"
+            :characters="model.loadedTownCharacters"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
             @private-chat="readyPrivateChat($event); isOpenTownCharactersDialog = false"/>
@@ -476,7 +476,7 @@
         <div class="dialog-content loading-container">
           <SimpleCharacterList
             :countries="model.countries"
-            :characters="model.townDefenders"
+            :characters="model.loadedTownDefenders"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
             @private-chat="readyPrivateChat($event); isOpenTownDefendersDialog = false"/>

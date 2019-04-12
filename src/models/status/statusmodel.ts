@@ -42,6 +42,8 @@ export default class StatusModel {
   public characterLogs: api.CharacterLog[] = [];
   public townCharacters: api.Character[] = [];
   public townDefenders: api.Character[] = [];
+  public loadedTownCharacters: api.Character[] = [];
+  public loadedTownDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
@@ -605,6 +607,8 @@ export default class StatusModel {
           if (scoutedTown) {
             this.townCharacters = scoutedTown.characters;
             this.townDefenders = scoutedTown.defenders;
+            this.loadedTownCharacters = scoutedTown.characters;
+            this.loadedTownDefenders = scoutedTown.defenders;
             scoutedTown.countryId = town.countryId;
             this.setTown(scoutedTown);
           } else {
@@ -705,7 +709,7 @@ export default class StatusModel {
             });
           }
         });
-        this.townCharacters = characters;
+        this.loadedTownCharacters = characters;
       })
       .catch(() => {
         NotificationService.getTownCharactersFailed.notify();
@@ -719,7 +723,7 @@ export default class StatusModel {
     this.isUpdatingTownDefenders = true;
     api.Api.getAllDefendersAtTown(this.town.id)
       .then((characters) => {
-        this.townDefenders = characters;
+        this.loadedTownDefenders = characters;
       })
       .catch(() => {
         NotificationService.getTownCharactersFailed.notify();
