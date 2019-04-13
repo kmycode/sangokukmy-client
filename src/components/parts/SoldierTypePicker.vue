@@ -6,10 +6,10 @@
       :key="soldier.id">
       <div class="soldier-info">
         <div class="standard">
-          <div class="name"><span class="kind kind-strong" v-if="soldier.kind === 0 || soldier.kind === 2">武</span><span class="kind kind-intellect" v-if="soldier.kind === 1">知</span><span class="kind kind-wall" v-if="soldier.kind === 2">壁</span>{{ soldier.name }}</div>
+          <div class="name"><span class="kind kind-wall" v-if="soldier.kind === 2">壁</span>{{ soldier.name }}</div>
           <div class="detail">
             <span class="value-name">金</span><span class="value">{{ soldier.money }}<span v-if="!soldier.isCustom">0</span></span>
-            <span v-if="!soldier.isCustom" class="value-name">攻撃力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.attackPower }}</span>
+            <span v-if="!soldier.isCustom" class="value-name">攻撃力</span><span class="kind kind-strong" v-if="soldier.kind === 0 || soldier.kind === 2">武力</span><span class="kind kind-intellect" v-if="soldier.kind === 1">知力</span><span class="kind-plus">+</span><span v-if="!soldier.isCustom" class="value">{{ soldier.attackPower }}</span>
             <span v-if="!soldier.isCustom" class="value-name">防御力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.defencePower }}</span>
           </div>
           <div class="description">{{ soldier.description }}</div>
@@ -94,16 +94,8 @@ export default class SoldierTypePicker extends Vue {
           margin-right: 8px;
         }
 
-        .kind-strong {
-          background: #c00;
-        }
-
         .kind-wall {
           background: #ca0;
-        }
-
-        .kind-intellect {
-          background: #00c;
         }
       }
 
@@ -114,10 +106,39 @@ export default class SoldierTypePicker extends Vue {
 
       .detail {
         padding-left: 12px;
+
+        .kind {
+          display: inline-block;
+          width: 32px;
+          height: 16px;
+          line-height: 16px;
+          color: white;
+          border-radius: 8px;
+          font-size: 12px;
+          font-weight: bold;
+          text-align: center;
+          margin-right: 4px;
+        }
+
+        .kind-plus {
+          margin-right: 4px;
+          font-size: 12px;
+          line-height: 16px;
+        }
+
+        .kind-intellect {
+          background: #66c;
+        }
+
+        .kind-strong {
+          background: #c66;
+        }
+
         .value-name {
           color: #969;
           padding-right: 4px;
         }
+
         .value {
           font-weight: bold;
           padding-right: 12px;
