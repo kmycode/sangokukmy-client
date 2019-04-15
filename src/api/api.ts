@@ -587,6 +587,7 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public x: number = 0,
                      public y: number = 0,
                      public people: number = 0,
+                     public peopleMax: number = 0,
                      public agriculture: number = 0,
                      public agricultureMax: number = 0,
                      public commercial: number = 0,

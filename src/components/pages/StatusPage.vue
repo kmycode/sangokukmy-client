@@ -35,7 +35,7 @@
             :countries="model.countries"
             :town="model.town"
             :currentTown="model.characterTown"
-            :mode="0"
+            :mode="mapMode"
             :store="model.store"
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
@@ -82,6 +82,7 @@
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 4 }" @click.prevent.stop="selectedInformationTab = 4; mapShowType = 0" href="#">データ</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
           </ul>
         </div>
@@ -123,6 +124,41 @@
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
             <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
+          </div>
+        </div>
+        <!-- データ -->
+        <div v-show="selectedInformationTab === 4" :class="'information-content information-data country-color-' + model.characterCountryColor">
+          <h4 :class="'country-color-' + model.characterCountryColor">データ
+            <span v-show="mapMode === 1">【滞在】</span>
+            <span v-show="mapMode === 2">【守備】</span>
+            <span v-show="mapMode === 3">【滞在】</span>
+            <span v-show="mapMode === 4">【守備】</span>
+            <span v-show="mapMode === 5">【農・商】</span>
+            <span v-show="mapMode === 6">【技・壁】</span>
+            <span v-show="mapMode === 7">【人・技】</span>
+            <span v-show="mapMode === 8">【人・忠・技】</span>
+          </h4>
+          <div class="content-main">
+            <div class="buttons">
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 0, 'btn-outline-secondary': mapMode !== 0}" @click="mapMode = 0">なし</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1, 'btn-outline-secondary': mapMode !== 1}" @click="mapMode = 1">滞在</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2, 'btn-outline-secondary': mapMode !== 2}" @click="mapMode = 2">守備</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">滞在 (数)</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">守備 (数)</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 5, 'btn-outline-secondary': mapMode !== 5}" @click="mapMode = 5">農・商</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 6, 'btn-outline-secondary': mapMode !== 6}" @click="mapMode = 6">技・壁</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 7, 'btn-outline-secondary': mapMode !== 7}" @click="mapMode = 7">人・技</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 8, 'btn-outline-secondary': mapMode !== 8}" @click="mapMode = 8">人・忠・技</button>
+            </div>
+            <h3>滞在武将</h3>
+            <MiniCharacterList
+              :countries="model.countries"
+              :characters="model.townCharactersForData"/>
+            <h3 v-show="model.town.countryId === model.character.countryId">守備武将</h3>
+            <MiniCharacterList
+              v-show="model.town.countryId === model.character.countryId"
+              :countries="model.countries"
+              :characters="model.townDefenders"/>
           </div>
         </div>
         <!-- 報告 -->
@@ -953,6 +989,7 @@ export default class StatusPage extends Vue {
   public model: StatusModel = new StatusModel();
   public isOpenRightSidePopupMenu: boolean = false;
   public isOpenSoliderDropdown: boolean = false;
+  public mapMode: number = 0;
   public selectedInformationTab: number = 0;
   public selectedActionTab: number = 0;
   public selectedActionTabSubPanel: number = 0;
@@ -1464,6 +1501,16 @@ ul.nav {
     background: $color-navigation-commands;
     button {
       margin-right: 4px;
+    }
+  }
+  &.information-data {
+    .content-main {
+      padding: 8px 12px;
+      height: calc(100% - 2rem);
+      h3 {
+        font-size: 1.2rem;
+        margin: 8px 0;
+      }
     }
   }
   &.information-logs {
