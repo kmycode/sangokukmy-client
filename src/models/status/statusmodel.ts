@@ -168,6 +168,13 @@ export default class StatusModel {
     return this.getCountry(this.character.countryId).colorId;
   }
 
+  public get townCharactersForData(): api.Character[] {
+    return Enumerable
+      .from(this.store.characters)
+      .where((c) => c.townId === this.store.town.id)
+      .toArray();
+  }
+
   public get countrySecretaries(): api.Character[] {
     return Enumerable
       .from(this.countryCharacters)
