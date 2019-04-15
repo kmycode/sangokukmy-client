@@ -15,7 +15,7 @@
           :key="chara.id"
           :icon="chara.mainIcon"/>
       </div>
-      <div v-if="mode === 3 || (mode === 4 && t.countryId === store.character.countryId)" class="town-info-number">
+      <div v-if="(mode === 3 || (mode === 4 && t.countryId === store.character.countryId)) && getModeCharactersCount(t) > 0" class="town-info-number">
         <span class="number">{{ getModeCharactersCount(t) }}</span>
       </div>
       <div v-if="mode >= 5 && mode <= 10 && t.countryId === store.character.countryId" :class="{'town-info-graph': true, 'town-info-graph-triple': mode === 8}">
