@@ -168,18 +168,6 @@
             建国する場合は、上のボタンをONにしてください
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown, 'warning': town.type === 3 }">
-          <div class="label">選択都市の都市特化</div>
-          <div class="field">
-            <span v-show="town.type === 1">農業都市</span>
-            <span v-show="town.type === 2">商業都市</span>
-            <span v-show="town.type === 3">城塞都市</span>
-            <span v-show="town.type === 4">大都市</span>
-          </div>
-          <div class="detail">
-            <span v-show="town.type === 3">城塞都市は、<u>農業・商業最大がゼロになることがある</u>ため、<strong>初心者にはおすすめできません</strong></span>
-          </div>
-        </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の都市施設</div>
           <div class="field">
