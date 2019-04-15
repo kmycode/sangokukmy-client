@@ -145,7 +145,7 @@ export default class Map extends Vue {
     return this.mode === 5 ? (index === 0 ? town.agriculture : town.commercial)
          : this.mode === 6 ? (index === 0 ? town.technology : town.wall)
          : this.mode === 7 ? (index === 0 ? town.people : town.technology)
-         : this.mode === 8 ? (index === 0 ? town.peopleMax : index === 1 ? town.security : town.technologyMax)
+         : this.mode === 8 ? (index === 0 ? town.people : index === 1 ? town.security : town.technology)
          : 1;
   }
 }
