@@ -214,6 +214,7 @@
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
                            :canScouter="model.canScouter"
+                           :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"/>
         </div>
         <!-- 手紙 -->

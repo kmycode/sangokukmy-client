@@ -116,6 +116,7 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import CommandList from '@/models/status/commandlist';
 import * as def from '@/common/definitions';
+import Enumerable from 'linq';
 
 @Component({
   components: {
@@ -127,6 +128,7 @@ export default class CommandListView extends Vue {
   @Prop() private canSafeOut!: boolean;
   @Prop() private canSecretary!: boolean;
   @Prop() private canScouter!: boolean;
+  @Prop() private gameDate!: api.GameDateTime;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
   private isOpenAxb: boolean = false;
@@ -144,10 +146,8 @@ export default class CommandListView extends Vue {
 
   public get isShowDeleteTurn(): boolean {
     let isShow = this.characterDeleteTurn > 0;
-    const firstCommand = this.list.commands.length > 0 ?
-      this.list.commands[this.list.commands.length - 1] : undefined;
-    if (firstCommand) {
-      isShow = isShow && def.UPDATE_START_YEAR < firstCommand.gameDate.year;
+    if (this.gameDate.year < def.UPDATE_START_YEAR) {
+      isShow = isShow && this.list.isFewRemaining;
     }
     return isShow;
   }
