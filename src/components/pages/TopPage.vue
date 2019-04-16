@@ -297,7 +297,7 @@ export default class TopPage extends Vue {
           api.Api.getMapLog(this.lastMapLogId, 300)
             .then((logs) => {
               if (logs.length > 0) {
-                logs.forEach((l) => this.onMapLogReceived(l, true));
+                Enumerable.from(logs).reverse().forEach((l) => this.onMapLogReceived(l, true));
               } else {
                 this.isNoMoreMapLogs = true;
               }
