@@ -315,7 +315,7 @@ export default class TopPage extends Vue {
 
   private isScrolled(event: any): boolean {
     // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
-    return (event.target.scrollTop + 250 + event.target.offsetHeight) >= event.target.scrollHeight;
+    return (window.pageYOffset + 250 + window.innerHeight) >= document.body.scrollHeight;
   }
 }
 </script>
