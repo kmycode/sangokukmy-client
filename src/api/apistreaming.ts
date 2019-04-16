@@ -37,13 +37,12 @@ export default class ApiStreaming {
   private listeners: ApiStreamingListener[] = [];
   private streaming: Streaming = new Streaming();
 
-  private constructor(uri: string,
+  private constructor(private uri: string,
                       method: string,
                       private isAuthorize: boolean) {
     // ストリーミングを初期化
     this.streaming.onReceiveObject = (obj) => this.onReceiveObject(obj);
     this.streaming.onError = (code, err) => this.onError(code, err);
-    this.streaming.uri = uri + '?unique=' + Math.random() * 100000;
     this.streaming.method = method;
   }
 
@@ -57,6 +56,7 @@ export default class ApiStreaming {
           Authorization: 'Bearer ' + current.authorizationToken,
         };
       }
+      this.streaming.uri = this.uri + '?unique=' + Math.random() * 10000000;
       this.streaming.start();
       this.isStreaming = true;
     }
@@ -100,59 +100,8 @@ export default class ApiStreaming {
       this.isLastError = false;
       NotificationService.serverReconnectionSucceed.notify();
     }
-    switch (obj.type) {
-      case api.DateTime.typeId:
-        this.fire(obj.type, obj.data as api.DateTime);
-        break;
-      case api.GameDateTime.typeId:
-        this.fire(obj.type, obj.data as api.GameDateTime);
-        break;
-      case api.MapLog.typeId:
-        this.fire(obj.type, obj.data as api.MapLog);
-        break;
-      case api.CharacterUpdateLog.typeId:
-        this.fire(obj.type, obj.data as api.CharacterUpdateLog);
-        break;
-      case api.Character.typeId:
-        this.fire(obj.type, obj.data as api.Character);
-        break;
-      case api.Country.typeId:
-        this.fire(obj.type, obj.data as api.Country);
-        break;
-      case api.Town.typeId:
-        this.fire(obj.type, obj.data as api.Town);
-        break;
-      case api.ApiSignal.typeId:
-        this.fire(obj.type, obj.data as api.ApiSignal);
-        break;
-      case api.ScoutedTown.typeId:
-        this.fire(obj.type, obj.data as api.ScoutedTown);
-        break;
-      case api.ChatMessage.typeId:
-        this.fire(obj.type, obj.data as api.ChatMessage);
-        break;
-      case api.CountryPost.typeId:
-        this.fire(obj.type, obj.data as api.CountryPost);
-        break;
-      case api.CharacterUpdateLog.typeId:
-        this.fire(obj.type, obj.data as api.CharacterUpdateLog);
-        break;
-      case api.ThreadBbsItem.typeId:
-        this.fire(obj.type, obj.data as api.ThreadBbsItem);
-        break;
-      case api.CharacterOnline.typeId:
-        this.fire(obj.type, obj.data as api.CharacterOnline);
-        break;
-      case api.Reinforcement.typeId:
-        this.fire(obj.type, obj.data as api.Reinforcement);
-        break;
-      case api.CountryMessage.typeId:
-        this.fire(obj.type, obj.data as api.CountryMessage);
-        break;
-      default:
-        this.fire(obj.type, obj.data);
-        break;
-    }
+
+    this.fire(obj.type, obj.data);
   }
 
   private onError(code: number, error: api.ApiError | null) {

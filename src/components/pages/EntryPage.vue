@@ -563,7 +563,7 @@ span.number { font-weight: bold; }
         @include country-color-deep('color');
         @include country-color-deep('border-bottom-color');
         padding: 8px;
-        opacity: 0.5;
+        opacity: 0.2;
         border-bottom-width: 3px;
         border-bottom-style: double;
         &:last-child {

@@ -71,37 +71,49 @@
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
-      <div v-show="isEntry">
+      <div v-show="selectedTab === 1">
         <EntryPage :system="system"
                    :countries="countries"
                    :countryMessages="countryMessages"
                    :towns="towns"
                    @entry-succeed="$emit('entry-succeed')"/>
       </div>
-      <div v-show="!isEntry" class="row">
+      <div v-show="selectedTab !== 1" class="row">
         <div class="top-content col-sm-12">
           <ul class="nav nav-tabs nav-fill">
-            <li class="nav-item"><a class="nav-link active" href="#" @click.prevent.stop="">トップページ</a></li>
+            <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 0}" href="#" @click.prevent.stop="selectedTab = 0">トップページ</a></li>
             <li class="nav-item"><a class="nav-link" href="https://github.com/kmycode/sangokukmy/wiki" target="_blank">説明書</a></li>
-            <!-- <li class="nav-item"><a class="nav-link" href="#">勢力図</a></li> -->
+            <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 2}" href="#" @click.prevent.stop="selectedTab = 2">勢力図</a></li>
             <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li> -->
           </ul>
         </div>
       </div>
-      <div v-show="!isEntry" id="app-index" class="row">
+      <div v-show="selectedTab === 0" class="row">
         <div class="col-sm-12 loading-container">
           <!--マップログ（細字）-->
           <div class="top-table-flat">
-            <MapLogList :logs="mlogs" :type="'normal'"/>
+            <MapLogList :logs="topMlogs" :type="'normal'"/>
           </div>
           <!--マップログ（太字）-->
           <div class="top-table-flat">
-            <MapLogList :logs="m2logs" :type="'important'"/>
+            <MapLogList :logs="topM2logs" :type="'important'"/>
           </div>
           <!-- 武将更新ログ -->
           <div class="top-table-flat">
             <MapLogList :logs="updateLogs" :type="'character-update-log'"/>
+          </div>
+          <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
+        </div>
+      </div>
+      <div v-show="selectedTab === 2" class="row">
+        <div class="col-sm-12 loading-container">
+          <Map style="height:100vh;max-height:600px" :towns="towns" :countries="countries"/>
+          <button type="button" :class="{'btn': true, 'btn-toggle': true, 'selected': isImportantMapLogs}" @click="isImportantMapLogs = !isImportantMapLogs">重要ログのみ</button>
+          <div class="top-table-flat">
+            <MapLogList v-show="!isImportantMapLogs" :logs="mlogs" :type="'normal'"/>
+            <MapLogList v-show="isImportantMapLogs" :logs="m2logs" :type="'normal'"/>
+            <div v-show="isLoadingMoreMapLogs" class="loading-container" style="height:40px"><div class="loading"><div class="loading-icon"></div></div></div>
           </div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
@@ -118,7 +130,9 @@ import MapLogList from '../parts/MapLogList.vue';
 import MapLogLine from '../parts/MapLogLine.vue';
 import RealDateTime from '../parts/RealDateTime.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
+import NotificationService from '@/services/notificationservice';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import Map from '@/components/parts/Map.vue';
 import EntryPage from '@/components/pages/EntryPage.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
 import ArrayUtil from '../../models/common/arrayutil';
@@ -128,6 +142,7 @@ import * as api from './../../api/api';
 import * as def from '@/common/definitions';
 import * as current from '@/common/current';
 import OnlineModel from '@/models/status/onlinemodel';
+import Enumerable from 'linq';
 
 @Component({
   components: {
@@ -135,15 +150,17 @@ import OnlineModel from '@/models/status/onlinemodel';
     MapLogLine,
     RealDateTime,
     MiniCharacterList,
+    Map,
     CharacterIcon,
     EntryPage,
     Footer,
   },
 })
 export default class TopPage extends Vue {
-  private mlogs = new Array<api.MapLog>();
-  private m2logs = new Array<api.MapLog>();
-  private updateLogs = new Array<api.CharacterUpdateLog>();
+  private mlogs: api.MapLog[] = [];
+  private m2logs: api.MapLog[] = [];
+  private updateLogs: api.CharacterUpdateLog[] = [];
+
   private system: api.SystemData = new api.SystemData();
   private countries: api.Country[] = [];
   private countryMessages: api.CountryMessage[] = [];
@@ -156,7 +173,19 @@ export default class TopPage extends Vue {
   private currentCharacter = new api.Character();
 
   private nextMonthSecondsTimer = 0;
-  private isEntry = false;
+  private selectedTab = 0;
+  private lastMapLogId = Number.MAX_VALUE;
+  private isNoMoreMapLogs = false;
+  private isLoadingMoreMapLogs = false;
+  private isImportantMapLogs = false;
+
+  public get topMlogs(): api.MapLog[] {
+    return Enumerable.from(this.mlogs).take(5).toArray();
+  }
+
+  public get topM2logs(): api.MapLog[] {
+    return Enumerable.from(this.m2logs).take(5).toArray();
+  }
 
   public login() {
     this.$router.push('login');
@@ -167,7 +196,11 @@ export default class TopPage extends Vue {
   }
 
   public entry() {
-    this.isEntry = !this.isEntry;
+    if (this.selectedTab !== 1) {
+      this.selectedTab = 1;
+    } else if (this.selectedTab === 1) {
+      this.selectedTab = 0;
+    }
   }
 
   private created() {
@@ -215,10 +248,7 @@ export default class TopPage extends Vue {
       ArrayUtil.addItem(this.towns, log);
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
-      ArrayUtil.addLog(this.mlogs, log, 5);
-      if (log.isImportant) {
-        ArrayUtil.addLog(this.m2logs, log, 5);
-      }
+      this.onMapLogReceived(log);
     });
     ApiStreaming.top.on<api.CharacterUpdateLog>(api.CharacterUpdateLog.typeId, (log) => {
       ArrayUtil.addLog(this.updateLogs, log, 5);
@@ -233,10 +263,59 @@ export default class TopPage extends Vue {
       api.CharacterOnline.typeId,
       (obj) => this.onlines.onOnlineDataReceived(obj));
     ApiStreaming.top.start();
+
+    window.onscroll = (ev) => this.onPageScrolled(ev);
   }
 
   private destroyed() {
     ApiStreaming.top.stop();
+  }
+
+  private onMapLogReceived(log: api.MapLog, isLast: boolean = false) {
+    if (!isLast) {
+      ArrayUtil.addLog(this.mlogs, log);
+      if (log.isImportant) {
+        ArrayUtil.addLog(this.m2logs, log);
+      }
+    } else {
+      ArrayUtil.addItem(this.mlogs, log);
+      if (log.isImportant) {
+        ArrayUtil.addItem(this.m2logs, log);
+      }
+    }
+    if (log.id < this.lastMapLogId) {
+      this.lastMapLogId = log.id;
+    }
+  }
+
+  private onPageScrolled(event: any) {
+    if (this.isScrolled(event)) {
+      if (this.selectedTab === 2) {
+        // 地図
+        if (!this.isNoMoreMapLogs) {
+          this.isLoadingMoreMapLogs = true;
+          api.Api.getMapLog(this.lastMapLogId, 300)
+            .then((logs) => {
+              if (logs.length > 0) {
+                logs.forEach((l) => this.onMapLogReceived(l, true));
+              } else {
+                this.isNoMoreMapLogs = true;
+              }
+            })
+            .catch(() => {
+              NotificationService.loadMapLogFailed.notify();
+            })
+            .finally(() => {
+              this.isLoadingMoreMapLogs = false;
+            });
+        }
+      }
+    }
+  }
+
+  private isScrolled(event: any): boolean {
+    // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
+    return (event.target.scrollTop + 250 + event.target.offsetHeight) >= event.target.scrollHeight;
   }
 }
 </script>

@@ -41,7 +41,7 @@
         <CharacterList :countries="countries" :characters="defaultCountryCharacters"/>
       </div>
       <div class="summary">
-        登録武将数: <span class="number">{{ count }}</span> 名
+        登録武将数 (非AI): <span class="number">{{ count }}</span> 名
       </div>
       <div class="cancel">
         <button type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
@@ -86,7 +86,7 @@ export default class AllCharactersPage extends Vue {
   private async initializeAsync() {
     const charas = await api.Api.getAllCharacters();
     const allCountries = await api.Api.getAllCountries();
-    this.count = charas.length;
+    this.count = Enumerable.from(charas).count((c) => c.aiType === api.Character.aiHuman);
     this.allCharacters = charas;
 
     const countries = Enumerable.from(allCountries)
