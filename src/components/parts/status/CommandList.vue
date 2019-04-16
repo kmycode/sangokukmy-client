@@ -146,8 +146,8 @@ export default class CommandListView extends Vue {
 
   public get isShowDeleteTurn(): boolean {
     let isShow = this.characterDeleteTurn > 0;
-    if (this.gameDate.year < def.UPDATE_START_YEAR) {
-      isShow = isShow && this.list.isFewRemaining;
+    if (isShow && this.gameDate.year < def.UPDATE_START_YEAR) {
+      isShow = this.list.isFewRemaining;
     }
     return isShow;
   }
