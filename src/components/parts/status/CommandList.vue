@@ -101,10 +101,14 @@
             :key="command.commandNumber"
             :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
             @click="onCommandSelected(command, $event)">
-        <div class="number">{{ command.commandNumber }}</div>
-        <div class="command-information">
-          <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
-          <div class="command-text">{{ command.name }}</div>
+        <div v-if="command.isPreview" class="background-layer background-layer-previewed"></div>
+        <div class="command-list-item-background"></div>
+        <div class="command-list-item-content">
+          <div class="number">{{ command.commandNumber }}</div>
+          <div class="command-information">
+            <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
+            <div class="command-text">{{ command.name }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -263,35 +267,64 @@ $color-navigation-commands: #e0e0e0;
     -webkit-overflow-scrolling: touch;
   }
   .command-list-item {
-    background: #f4f4ff;
-    padding: 2px 4px;
-    display: flex;
     border-bottom: 1px dashed #ccf;
+    background: white;
     cursor: pointer;
     user-select: none;
-    transition: background-color .1s ease-in;
+    position: relative;
     &:last-child {
       border-bottom: none;
     }
     &:hover {
-      background: #e4e4f6;
-    }
-    &.previewed {
-      background: #fec;
+      .command-list-item-background {
+        background: #c1c4ec;
+      }
     }
     &.selected {
-      background: #c6caf0;
-      &:hover {
-        background: #b1b1df;
+      .command-list-item-background {
+        background: #9699e4;
       }
-      &.previewed {
-        background: #afa474;
+      &:hover {
+        .command-list-item-background {
+          background: #6161bf;
+        }
       }
     }
     &.disabled {
       opacity: 0.3;
       cursor: default;
     }
+  }
+  .command-list-item-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: #eaeafc;
+    opacity: 0.5;
+    transition: background-color .1s ease-in;
+    z-index: 0;
+  }
+  .background-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0.5;
+    &.background-layer-war {
+      background: #f66;
+    }
+    &.background-layer-previewed {
+      background: #eb2;
+    }
+  }
+  .command-list-item-content {
+    padding: 2px 4px;
+    display: flex;
+    z-index: 1;
+    position: relative;
     .number {
       font-size: 1rem;
       width: 3rem;

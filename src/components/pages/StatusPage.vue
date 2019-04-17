@@ -28,7 +28,7 @@
         <div id="directive" :class="'country-color-' + model.characterCountryColor" @click="isOpenCommandersDialog = true">
           指令: <KmyChatTagText :text="model.countryCommandersMessage.message" :isNewLine="false"/>
         </div>
-        <div id="map-container">
+        <div id="map-container" :class="{'mini-mode': mapMode === 9}">
           <Map
             v-show="mapShowType === 0"
             :towns="model.towns"
@@ -87,7 +87,7 @@
           </ul>
         </div>
         <!-- 都市情報 -->
-        <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor">
+        <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor + (mapMode === 9 ? ' mini-mode' : '')">
           <h4 :class="'country-color-' + model.townCountryColor">
             {{ model.town.name }}
             <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
@@ -112,7 +112,7 @@
           </div>
         </div>
         <!-- 国情報 -->
-        <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId">
+        <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId + (mapMode === 9 ? ' mini-mode' : '')">
           <h4 :class="'country-color-' + model.country.colorId">{{ model.country.name }}</h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
@@ -127,7 +127,7 @@
           </div>
         </div>
         <!-- データ -->
-        <div v-show="selectedInformationTab === 4" :class="'information-content information-data country-color-' + model.characterCountryColor">
+        <div v-show="selectedInformationTab === 4" :class="'information-content information-data country-color-' + model.characterCountryColor + (mapMode === 9 ? ' mini-mode' : '')">
           <h4 :class="'country-color-' + model.characterCountryColor">データ
             <span v-show="mapMode === 1">【滞在】</span>
             <span v-show="mapMode === 2">【守備】</span>
@@ -141,28 +141,30 @@
           <div class="content-main">
             <div class="buttons">
               <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 0, 'btn-outline-secondary': mapMode !== 0}" @click="mapMode = 0">なし</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 9, 'btn-outline-secondary': mapMode !== 9}" @click="mapMode = 9">一覧</button>
               <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1, 'btn-outline-secondary': mapMode !== 1}" @click="mapMode = 1">滞在</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">(数)</button>
               <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2, 'btn-outline-secondary': mapMode !== 2}" @click="mapMode = 2">守備</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">滞在 (数)</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">守備 (数)</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 5, 'btn-outline-secondary': mapMode !== 5}" @click="mapMode = 5">農・商</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 6, 'btn-outline-secondary': mapMode !== 6}" @click="mapMode = 6">技・壁</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 7, 'btn-outline-secondary': mapMode !== 7}" @click="mapMode = 7">人・技</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 8, 'btn-outline-secondary': mapMode !== 8}" @click="mapMode = 8">人・忠・技</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">(数)</button>
             </div>
-            <h3>滞在武将</h3>
-            <MiniCharacterList
-              :countries="model.countries"
-              :characters="model.townCharactersForData"/>
-            <h3 v-show="model.town.countryId === model.character.countryId">守備武将</h3>
-            <MiniCharacterList
-              v-show="model.town.countryId === model.character.countryId"
-              :countries="model.countries"
-              :characters="model.townDefenders"/>
+            <div v-show="mapMode !== 9">
+              <h3>滞在武将</h3>
+              <MiniCharacterList
+                :countries="model.countries"
+                :characters="model.townCharactersForData"/>
+              <h3 v-show="model.town.countryId === model.character.countryId">守備武将</h3>
+              <MiniCharacterList
+                v-show="model.town.countryId === model.character.countryId"
+                :countries="model.countries"
+                :characters="model.townDefenders"/>
+            </div>
+            <div v-if="mapMode === 9" class="data-list">
+              <TownList :store="model.store" :town="model.town" @selected="model.selectTown($event)"/>
+            </div>
           </div>
         </div>
         <!-- 報告 -->
-        <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId">
+        <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId + (mapMode === 9 ? ' mini-mode' : '')">
           <h4>情勢</h4>
           <div class="content-main" @scroll="onMapLogScrolled($event)">
             <MapLogList :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
@@ -933,6 +935,7 @@ import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import StatusParametersPanel from '@/components/parts/StatusParameters.vue';
 import ChatMessagePanel from '@/components/parts/ChatMessagePanel.vue';
 import MapLogList from '@/components/parts/MapLogList.vue';
+import TownList from '@/components/parts/TownList.vue';
 import SimpleCharacterList from '@/components/parts/SimpleCharacterList.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import GameDateTimePicker from '@/components/parts/GameDateTimePicker.vue';
@@ -966,6 +969,7 @@ import EventObject from '@/models/common/EventObject';
     StatusParametersPanel,
     ChatMessagePanel,
     MapLogList,
+    TownList,
     SimpleCharacterList,
     MiniCharacterList,
     GameDateTimePicker,
@@ -1304,6 +1308,7 @@ export default class StatusPage extends Vue {
 
 $current-display-height: 40px;
 $nav-tab-height: 40px;
+$map-mini-mode-height: 320px;
 $left-side-fixed-height: $current-display-height + $nav-tab-height;
 $right-side-fixed-height: $nav-tab-height;
 
@@ -1409,9 +1414,15 @@ ul.nav {
 // マップのコンテナ
 #map-container {
   height: calc(65vh - #{$left-side-fixed-height});
-  min-height: 320px;
+  min-height: $map-mini-mode-height;
+
+  &.mini-mode {
+    height: $map-mini-mode-height;
+  }
 
   .online-list {
+    height: 100%;
+    overflow: auto;
     padding: 8px;
 
     .online-list-item {
@@ -1422,41 +1433,40 @@ ul.nav {
       }
     }
   }
-}
 
-// 武将情報
-.character-information {
-  height: calc(65vh - #{$left-side-fixed-height});
-  min-height: 320px;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  @include country-color-deep('border-color');
-  @include country-color-light('background-color');
-  .commands {
-    text-align: right;
-    min-height: 44px;
-    padding: 4px 4px 0 4px;
-    border-bottom: 1px dotted black;
-    button {
-      margin-right: 4px;
+  // 武将情報
+  .character-information {
+    height: 100%;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    @include country-color-deep('border-color');
+    @include country-color-light('background-color');
+    .commands {
+      text-align: right;
+      min-height: 44px;
+      padding: 4px 4px 0 4px;
+      border-bottom: 1px dotted black;
+      button {
+        margin-right: 4px;
+      }
     }
-  }
-  h4 {
-    margin: 0;
-    padding: 12px 0;
-    font-size: 1.4rem;
-    line-height: 2rem;
-    text-align: center;
-    font-weight: bold;
-    border-top: 2px dashed;
-    @include country-color-deep('color');
-    @include country-color-deep('border-top-color');
-    img {
-      margin-right: 8px;
+    h4 {
+      margin: 0;
+      padding: 12px 0;
+      font-size: 1.4rem;
+      line-height: 2rem;
+      text-align: center;
+      font-weight: bold;
+      border-top: 2px dashed;
+      @include country-color-deep('color');
+      @include country-color-deep('border-top-color');
+      img {
+        margin-right: 8px;
+      }
     }
-  }
-  .character-logs {
-    margin-top: 16px;
+    .character-logs {
+      margin-top: 16px;
+    }
   }
 }
 
@@ -1464,6 +1474,9 @@ ul.nav {
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
   overflow: hidden;
+  &.mini-mode {
+    height: calc(100vh - #{$left-side-fixed-height} - #{$nav-tab-height} - #{$map-mini-mode-height});
+  }
   @include media-query-lower(sm) {
     height: auto;
   }
@@ -1508,9 +1521,16 @@ ul.nav {
     .content-main {
       padding: 8px 12px;
       height: calc(100% - 2rem);
+      display: flex;
+      flex-direction: column;
       h3 {
         font-size: 1.2rem;
         margin: 8px 0;
+      }
+      .data-list {
+        flex: 1;
+        margin: -8px -12px;
+        overflow-y: hidden;
       }
     }
   }

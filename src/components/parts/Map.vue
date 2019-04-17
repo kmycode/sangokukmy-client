@@ -6,8 +6,8 @@
         :class="'map-cell country-color-' + getTownColor(t) + (currentTown.id === t.id ? ' current-town' : '')"
         :style="{ top: t.y + '0%', left: t.x + '0%', }"
         @click="$emit('selected', t.id)">
-      <div v-if="mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)" :class="'town-type town-type-' + t.type"></div>
-      <span v-if="mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)" class="town-name">{{ t.name }}</span>
+      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + t.type"></div>
+      <span v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" class="town-name">{{ t.name }}</span>
       <div v-if="mode === 1 || (mode === 2 && t.countryId === store.character.countryId)" class="town-info-character-icons">
         <CharacterIcon
           class="icon-mini"
@@ -18,7 +18,7 @@
       <div v-if="(mode === 3 || (mode === 4 && t.countryId === store.character.countryId)) && getModeCharactersCount(t) > 0" class="town-info-number">
         <span class="number">{{ getModeCharactersCount(t) }}</span>
       </div>
-      <div v-if="mode >= 5 && mode <= 10 && t.countryId === store.character.countryId" :class="{'town-info-graph': true, 'town-info-graph-triple': mode === 8}">
+      <div v-if="mode >= 5 && mode <= 8 && t.countryId === store.character.countryId" :class="{'town-info-graph': true, 'town-info-graph-triple': mode === 8}">
         <div class="graph-group">
           <div v-for="i in (mode === 8 ? 3 : 2)" :key="i" class="max" :style="{'height': getModeGraphMax(t, i - 1) + '%'}">
             <div :class="{'current': true, 'almost-all': isModeGraphAlmostAll(t, i - 1), 'max-val': isModeGraphMax(t, i - 1)}" :style="{'height': getModeGraphCurrent(t, i - 1) + '%'}"></div>
