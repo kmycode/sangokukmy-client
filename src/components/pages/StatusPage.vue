@@ -142,10 +142,10 @@
             <div class="buttons">
               <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 0, 'btn-outline-secondary': mapMode !== 0}" @click="mapMode = 0">なし</button>
               <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 9, 'btn-outline-secondary': mapMode !== 9}" @click="mapMode = 9">一覧</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1, 'btn-outline-secondary': mapMode !== 1}" @click="mapMode = 1">滞在</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">(数)</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2, 'btn-outline-secondary': mapMode !== 2}" @click="mapMode = 2">守備</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">(数)</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1, 'btn-outline-secondary': mapMode !== 1}" @click="mapMode = 1">滞</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">数</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2, 'btn-outline-secondary': mapMode !== 2}" @click="mapMode = 2">守</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">数</button>
             </div>
             <div v-show="mapMode !== 9">
               <h3>滞在武将</h3>
@@ -1473,18 +1473,19 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
+  min-height: 180px;
   overflow: hidden;
   &.mini-mode {
     height: calc(100vh - #{$left-side-fixed-height} - #{$nav-tab-height} - #{$map-mini-mode-height});
   }
   @include media-query-lower(sm) {
     height: auto;
+    min-height: 220px;
   }
   @include media-query-lower(md) {
     margin-bottom: 48px;
     overflow: visible;
   }
-  min-height: 180px;
   border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
@@ -1523,6 +1524,7 @@ ul.nav {
       height: calc(100% - 2rem);
       display: flex;
       flex-direction: column;
+      overflow: auto;
       h3 {
         font-size: 1.2rem;
         margin: 8px 0;
