@@ -1473,18 +1473,19 @@ ul.nav {
 // 情報欄
 .information-content {
   height: calc(35vh - #{$nav-tab-height});
+  min-height: 180px;
   overflow: hidden;
   &.mini-mode {
     height: calc(100vh - #{$left-side-fixed-height} - #{$nav-tab-height} - #{$map-mini-mode-height});
   }
   @include media-query-lower(sm) {
     height: auto;
+    min-height: 220px;
   }
   @include media-query-lower(md) {
     margin-bottom: 48px;
     overflow: visible;
   }
-  min-height: 180px;
   border-width: 0;
   border-style: solid;
   @include country-color-deep('border-color');
@@ -1523,6 +1524,7 @@ ul.nav {
       height: calc(100% - 2rem);
       display: flex;
       flex-direction: column;
+      overflow: auto;
       h3 {
         font-size: 1.2rem;
         margin: 8px 0;
