@@ -1479,8 +1479,10 @@ ul.nav {
     height: calc(100vh - #{$left-side-fixed-height} - #{$nav-tab-height} - #{$map-mini-mode-height});
   }
   @include media-query-lower(sm) {
-    height: auto;
-    min-height: 220px;
+    height: 220px;
+    &.mini-mode {
+      height: 360px;
+    }
   }
   @include media-query-lower(md) {
     margin-bottom: 48px;
