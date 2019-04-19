@@ -22,12 +22,12 @@ import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
-import ThreadBbs from './threadbbs';
-import OnlineModel from './onlinemodel';
-import StatusStore from './statusstore';
-import UnitModel from './unitmodel';
-import ValueUtil from '../common/ValueUtil';
-import SoldierTypeModel from './soldiertypemodel';
+import ThreadBbs from '@/models/status/threadbbs';
+import OnlineModel from '@/models/status/onlinemodel';
+import StatusStore from '@/models/status/statusstore';
+import UnitModel from '@/models/status/unitmodel';
+import ValueUtil from '@/models/common/ValueUtil';
+import SoldierTypeModel from '@/models/status/soldiertypemodel';
 import VueRouter from 'vue-router';
 
 export default class StatusModel {
@@ -59,7 +59,7 @@ export default class StatusModel {
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
       || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
-      || this.isUpdatingCountrySettings || this.isUpdatingPolicies;
+      || this.isUpdatingCountrySettings || this.isUpdatingPolicies || this.isUpdatingFormations;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
@@ -69,6 +69,7 @@ export default class StatusModel {
   public isUpdatingOppositionCharacters: boolean = false;
   public isUpdatingCharacterIcons: boolean = false;
   public isUpdatingPolicies: boolean = false;
+  public isUpdatingFormations: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -151,6 +152,17 @@ export default class StatusModel {
       .where((p) => p.countryId === this.character.countryId)
       .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
       .toArray();
+  }
+
+  public get formationTypes(): def.FormationType[] {
+    // 陣形
+    const fs = Enumerable.from(this.store.formations)
+      .select((p) => Enumerable.from(def.FORMATION_TYPES).firstOrDefault((pp) => pp.id === p.type))
+      .toArray();
+    if (!Enumerable.from(fs).any((f) => f.id === 0)) {
+      fs.unshift(Enumerable.from(def.FORMATION_TYPES).first((ff) => ff.id === 0));
+    }
+    return fs;
   }
 
   public get characterTownCountryColor(): number {
@@ -465,6 +477,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterSoldierType>(
       api.CharacterSoldierType.typeId,
       (obj) => this.soldierTypes.onItemReceived(obj));
+    ApiStreaming.status.on<api.Formation>(
+      api.Formation.typeId,
+      (obj) => this.onFormationReceived(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -1536,6 +1551,11 @@ export default class StatusModel {
     }
     ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
+    const formation = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === character.formationType);
+    if (formation) {
+      ps.push(new TextStatusParameter('陣形', formation.name));
+    }
+    ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
     return ps;
   }
 
@@ -1626,6 +1646,38 @@ export default class StatusModel {
   // #region CharacterSoldierType
 
   public soldierTypes = new SoldierTypeModel(this.store);
+
+  // #endregion
+
+  // #region Formation
+
+  private onFormationReceived(formation: api.Formation) {
+    ArrayUtil.addItemUniquely(this.store.formations, formation, (f) => f.type);
+  }
+
+  public changeFormation(formation: number) {
+    if (formation === this.character.formationType ||
+        !Enumerable.from(this.store.formations).any((f) => f.type === formation)) {
+      return;
+    }
+
+    const info = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === formation);
+    if (!info) {
+      return;
+    }
+
+    this.isUpdatingFormations = true;
+    api.Api.changeFormation(formation)
+      .then(() => {
+        NotificationService.formationChanged.notifyWithParameter(info.name);
+      })
+      .catch(() => {
+        NotificationService.formationChangeFailed.notifyWithParameter(info.name);
+      })
+      .finally(() => {
+        this.isUpdatingFormations = false;
+      });
+  }
 
   // #endregion
 

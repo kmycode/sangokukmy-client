@@ -4,7 +4,7 @@ import * as api from '@/api/api';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
-import ArrayUtil from '../common/arrayutil';
+import ArrayUtil from '@/models/common/arrayutil';
 import StatusStore from './statusstore';
 
 export enum CommandSelectMode {
@@ -110,6 +110,12 @@ export default class CommandInputer {
   }
 
   public inputSecretaryRemoveCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+    });
+  }
+
+  public inputFormationCommand(commandType: number, id: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
     });

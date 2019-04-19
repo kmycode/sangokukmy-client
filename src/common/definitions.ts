@@ -307,6 +307,38 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(45, '%0% へ斥候派遣'),
   new CommandNameResolver(46, '%0% の斥候を解雇'),
   new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
+  new CommandNameResolver(48, '陣形 {0} を獲得', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const formationType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!formationType) {
+        return 'エラー (48:2)';
+      }
+      const type = Enumerable.from(FORMATION_TYPES).firstOrDefault((f) => f.id === formationType.numberValue);
+      if (!type) {
+        return 'エラー (48:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (48:1)';
+    }
+  }),
+  new CommandNameResolver(49, '陣形を {0} に変更', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const formationType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!formationType) {
+        return 'エラー (48:2)';
+      }
+      const type = Enumerable.from(FORMATION_TYPES).firstOrDefault((f) => f.id === formationType.numberValue);
+      if (!type) {
+        return 'エラー (48:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (48:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -499,4 +531,17 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
   new CountryPolicyType(8, 5000000, '連戦戦術', '連戦の戦術が利用可能になる', undefined, false),
   new CountryPolicyType(9, 5000000, '突撃戦術', '突撃の戦術が利用可能になる', undefined, false),
+];
+
+export class FormationType {
+  public constructor(public id: number = 0,
+                     public point: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public subjectAppear?: (exists: FormationType[]) => boolean,
+                     public canGet: boolean = true) {}
+}
+export const FORMATION_TYPES: FormationType[] = [
+  new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false),
+  new FormationType(1, 500, '魚鱗 Lv.1', '攻撃力 +20', undefined, true),
 ];

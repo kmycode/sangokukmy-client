@@ -358,6 +358,14 @@ export class CharacterSoldierType {
               public seiran: number = 0) {}
 }
 
+export class Formation {
+  public static readonly typeId = 35;
+
+  constructor(public id: number = 0,
+              public characterId: number = 0,
+              public type: number = 0) {}
+}
+
 /**
  * 認証データ
  */
@@ -399,6 +407,7 @@ export class Character implements IIdentitiedEntity {
                      public popularity: number = 0,
                      public popularityEx: number = 0,
                      public soldierType: number = 0,
+                     public formationType: number = 0,
                      public characterSoldierTypeId: number = 0,
                      public soldierNumber: number = 0,
                      public proficiency: number = 0,
@@ -412,6 +421,7 @@ export class Character implements IIdentitiedEntity {
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
+                     public formationPoint: number = 0,
                      public characterSoldierType?: CharacterSoldierType,
                      public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
@@ -1526,6 +1536,16 @@ export class Api {
   public static async deleteCharacterIcon(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'icons/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async changeFormation(formation: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'formations', {
+        type: formation,
+      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

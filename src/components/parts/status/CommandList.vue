@@ -50,6 +50,8 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-add')">陣<span class="redundant-text">形</span>獲得</button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-change')">陣<span class="redundant-text">形</span>変更</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
       <!-- 計略コマンド -->
