@@ -210,8 +210,12 @@ export default class CommandList {
     commandDate.setSeconds(commandDate.getSeconds() + skipMonthCount * def.UPDATE_TIME);
     this.commands.forEach((cmd, index) => {
       commandDate.setSeconds(commandDate.getSeconds() + def.UPDATE_TIME);
+
       cmd.commandNumber = index + 1;
+      cmd.gameDate = month;
       Vue.set(cmd, 'date', api.DateTime.fromDate(commandDate));
+
+      month = api.GameDateTime.nextMonth(month);
     });
   }
 
