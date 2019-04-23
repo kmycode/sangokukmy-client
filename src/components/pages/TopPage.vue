@@ -283,7 +283,7 @@ export default class TopPage extends Vue {
         ArrayUtil.addItem(this.m2logs, log);
       }
     }
-    if (log.id < this.lastMapLogId) {
+    if (log.id < this.lastMapLogId && (!log.isImportant || log.eventType === 14)) {
       this.lastMapLogId = log.id;
     }
   }
@@ -297,7 +297,10 @@ export default class TopPage extends Vue {
           api.Api.getMapLog(this.lastMapLogId, 300)
             .then((logs) => {
               if (logs.length > 0) {
-                Enumerable.from(logs).reverse().forEach((l) => this.onMapLogReceived(l, true));
+                Enumerable.from(logs).reverse().forEach((l) => {
+                  this.onMapLogReceived(l, true);
+                  this.lastMapLogId = l.id;
+                });
               } else {
                 this.isNoMoreMapLogs = true;
               }
