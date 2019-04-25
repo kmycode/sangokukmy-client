@@ -148,6 +148,7 @@ export default class ChatMessagePanel extends Vue {
 .chat-message-panel {
   display: flex;
   flex-direction: column;
+  height: 100%;
 
   .nav {
     .active {
