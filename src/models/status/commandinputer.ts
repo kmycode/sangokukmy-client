@@ -120,50 +120,59 @@ export default class CommandInputer {
           setParams(c);
         }
       });
-      api.Api.setCommands(selectCommands)
-        .then(() => {
-          selectCommands.forEach((c) => {
-            this.updateCommandName(c);
-            c.isSelected = false;
-          });
-          NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
-
-          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
-          // この部分は、コマンド入力した時にのみ呼び出される。更新時には呼び出されないので大丈夫
-          if (commandType === 19) {
-            // 米売買
-            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
-              .then((commands) => {
-                Enumerable
-                  .from(commands)
-                  .join(selectCommands,
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        // tslint:disable-next-line:arrow-return-shorthand
-                        (n, o) => { return { oldCommand: o, newCommand: n }; })
-                  .forEach((data) => {
-                    data.oldCommand.parameters = data.newCommand.parameters;
-                    this.updateCommandName(data.oldCommand);
-                  });
-              });
-          }
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
-            NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
-          } else if (ex.data.code === api.ErrorCode.numberRangeError) {
-            NotificationService.inputCommandsFailedBecauseTooLong
-              .notifyWithParameter(ex.data.data.current, ex.data.data.max);
-          } else {
-            NotificationService.inputCommandsFailed.notify();
-          }
-        })
-        .finally(() => {
-          this.isInputing = false;
-        });
+      this.sendCommands(selectCommands, () => {
+        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+      });
     } else {
       NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
     }
+  }
+
+  private sendCommands(commands: api.CharacterCommand[], onSucceed?: () => void) {
+    api.Api.setCommands(commands)
+      .then(() => {
+        commands.forEach((c) => {
+          this.updateCommandName(c);
+          c.isSelected = false;
+        });
+        if (onSucceed) {
+          onSucceed();
+        }
+
+        // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
+        // この部分は、コマンド入力した時にのみ呼び出される。更新時には呼び出されないので大丈夫
+        const cmd19 = Enumerable.from(commands).where((c) => c.type === 19).select((c) => c.gameDate).toArray();
+        if (cmd19.length > 0) {
+          // 米売買
+          api.Api.getCommands(cmd19)
+            .then((cmds) => {
+              Enumerable
+                .from(cmds)
+                .join(cmds,
+                      (c) => api.GameDateTime.toNumber(c.gameDate),
+                      (c) => api.GameDateTime.toNumber(c.gameDate),
+                      // tslint:disable-next-line:arrow-return-shorthand
+                      (n, o) => { return { oldCommand: o, newCommand: n }; })
+                .forEach((data) => {
+                  data.oldCommand.parameters = data.newCommand.parameters;
+                  this.updateCommandName(data.oldCommand);
+                });
+            });
+          }
+      })
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
+          NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
+        } else if (ex.data.code === api.ErrorCode.numberRangeError) {
+          NotificationService.inputCommandsFailedBecauseTooLong
+            .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+        } else {
+          NotificationService.inputCommandsFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isInputing = false;
+      });
   }
 
   public selectSingleCommand(command: api.CharacterCommand) {
