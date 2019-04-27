@@ -650,6 +650,7 @@
                        :lastWar="model.characterCountryLastTownWar"
                        :status="model.characterCountryTownWarStatus"
                        :town="model.town"
+                       :country="model.country"
                        :isSending="model.isSendingTownWar"
                        :canEdit="model.canDiplomacy"
                        :isShow="isOpenTownWarDialog"
