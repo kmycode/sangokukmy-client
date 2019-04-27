@@ -55,7 +55,7 @@
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="commands">
-              <button type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
+              <button v-if="false" type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
               <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
                     v-for="rein in model.store.reinforcements"

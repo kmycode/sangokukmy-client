@@ -547,5 +547,4 @@ export class FormationType {
 }
 export const FORMATION_TYPES: FormationType[] = [
   new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false, 1000),
-  new FormationType(1, 500, '魚鱗', '攻撃力 +20', undefined, true, 1000),
 ];
