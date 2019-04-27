@@ -138,11 +138,10 @@ export default class StatusModel {
     return this.getCountry(this.town.countryId).colorId;
   }
 
-  public get countryPolicyTypes(): def.CountryPolicyType[] {
+  public get countryPolicies(): api.CountryPolicy[] {
     // 選択中の国の政策
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.country.id)
-      .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
       .toArray();
   }
 

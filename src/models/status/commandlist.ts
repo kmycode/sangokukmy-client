@@ -217,7 +217,7 @@ export default class CommandList {
 
   private isPolicyEnabled(id: number): boolean {
     return Enumerable.from(this.store.policies)
-      .where((p) => p.countryId === this.store.character.countryId)
+      .where((p) => p.countryId === this.store.character.countryId && p.status === api.CountryPolicy.statusAvailable)
       .any((p) => p.type === id);
   }
 }

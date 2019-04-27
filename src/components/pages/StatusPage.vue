@@ -579,7 +579,7 @@
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <CountryPolicyList :country="model.country"
-                             :policyTypes="model.countryPolicyTypes"
+                             :policies="model.countryPolicies"
                              :canEdit="model.country.id === model.character.countryId && model.canPolicy"
                              :isMyCountry="model.country.id === model.character.countryId"
                              v-model="selectedCountryPolicyType"

@@ -454,9 +454,15 @@ export class CountryPolicy {
   public static readonly typeSoldierDevelopment = 3;
   public static readonly typeHumanDevelopment = 4;
 
+  public static readonly statusUnadopted = 0;
+  public static readonly statusAvailable = 1;
+  public static readonly statusBoosting = 2;
+  public static readonly statusBoosted = 3;
+
   public constructor(public id: number = 0,
                      public countryId: number = 0,
-                     public type: number = 0) {}
+                     public type: number = 0,
+                     public status: number = 0) {}
 }
 
 export class CountryScouter {
