@@ -16,6 +16,7 @@ import { StatusParameter,
 
 export default class StatusStore {
   public hasInitialized: boolean = false;
+  public systemData: api.SystemData = new api.SystemData();
   public countries: api.Country[] = [];
   public country: api.Country = api.Country.default;  // 自分の所属しない国が入る場合がある
   public policies: api.CountryPolicy[] = [];

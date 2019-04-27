@@ -31,7 +31,6 @@ import SoldierTypeModel from '@/models/status/soldiertypemodel';
 import VueRouter from 'vue-router';
 
 export default class StatusModel {
-  public systemData: api.SystemData = new api.SystemData();
   public gameDate: api.GameDateTime = new api.GameDateTime();
   public countryParameters: StatusParameter[] = [];
   public scoutedTowns: api.ScoutedTown[] = [];
@@ -85,6 +84,10 @@ export default class StatusModel {
   // #region Store and Compat Properties
 
   public store: StatusStore = new StatusStore();
+
+  public get systemData(): api.SystemData {
+    return this.store.systemData;
+  }
 
   public get character(): api.Character {
     return this.store.character;
@@ -575,7 +578,7 @@ export default class StatusModel {
   }
 
   private updateSystemData(data: api.SystemData) {
-    this.systemData = data;
+    this.store.systemData = data;
     this.updateGameDate(data.gameDateTime);
   }
 
