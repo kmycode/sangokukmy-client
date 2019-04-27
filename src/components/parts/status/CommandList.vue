@@ -88,8 +88,6 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">

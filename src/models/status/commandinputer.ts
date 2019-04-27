@@ -7,20 +7,8 @@ import Vue from 'vue';
 import ArrayUtil from '@/models/common/arrayutil';
 import StatusStore from './statusstore';
 
-export enum CommandSelectMode {
-  /**
-   * 置き換え
-   */
-  replace = 0,
-  /**
-   * OR
-   */
-  mode_or = 1,
-}
-
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
-  public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
   public get canInput(): boolean {
@@ -182,12 +170,8 @@ export default class CommandInputer {
     if (!command.canSelect) {
       return;
     }
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-      Vue.set(command, 'isSelected', true);
-    } else {
-      Vue.set(command, 'isSelected', !command.isSelected);
-    }
+    
+    Vue.set(command, 'isSelected', !command.isSelected);
   }
 
   public selectMultipleCommand(lastCommand: api.CharacterCommand) {
@@ -200,20 +184,7 @@ export default class CommandInputer {
       .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
       .takeWhile((c) => c.isSelected !== true)
       .toArray();
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-    }
     selected.filter((c) => c.canSelect).forEach((c) => Vue.set(c, 'isSelected', true));
-
-    // 置き換えモードで、一番最初のコマンドの選択が解除されるので選択しなおす
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      const first = Enumerable.from(this.commands)
-        .takeWhile((c) => c.isSelected !== true)
-        .lastOrDefault();
-      if (first && first.canSelect) {
-        Vue.set(first, 'isSelected', true);
-      }
-    }
   }
 
   public selectAllCommands() {
@@ -271,15 +242,7 @@ export default class CommandInputer {
       return;
     }
 
-    let isSelected = command.isSelected;
-
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      isSelected = value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
-      isSelected = isSelected || value;
-    } else {
-      NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
-    }
+    const isSelected = command.isSelected || value;
 
     if (command.isSelected !== undefined) {
       command.isSelected = isSelected;
