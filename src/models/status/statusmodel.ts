@@ -1148,7 +1148,7 @@ export default class StatusModel {
         (alliance.requestedCountryId === this.character.countryId ||
          alliance.insistedCountryId === this.character.countryId)) {
       const targetCountry = alliance.requestedCountryId === this.character.countryId ?
-        alliance.insistedCountry : alliance.requestedCountry;
+        this.getCountry(alliance.insistedCountryId) : this.getCountry(alliance.requestedCountryId);
       if (alliance.status === api.CountryAlliance.statusAvailable) {
         NotificationService.allianceCompleted.notifyWithParameter(targetCountry.name);
       } else if (alliance.status === api.CountryAlliance.statusDismissed) {
@@ -1169,7 +1169,7 @@ export default class StatusModel {
       (war.requestedCountryId === this.character.countryId ||
        war.insistedCountryId === this.character.countryId)) {
       const targetCountry = war.requestedCountryId === this.character.countryId ?
-        war.insistedCountry : war.requestedCountry;
+        this.getCountry(war.insistedCountryId) : this.getCountry(war.requestedCountryId);
       if (war.status === api.CountryWar.statusAvailable) {
         NotificationService.warStart.notifyWithParameter(targetCountry.name);
       } else if (war.status === api.CountryWar.statusInReady) {
