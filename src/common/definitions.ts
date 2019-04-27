@@ -532,6 +532,8 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
   new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
   new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
+  new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
   new CountryPolicyType(8, 5000000, '連戦戦術', '連戦の戦術が利用可能になる', undefined, false),
   new CountryPolicyType(9, 5000000, '突撃戦術', '突撃の戦術が利用可能になる', undefined, false),
 ];
