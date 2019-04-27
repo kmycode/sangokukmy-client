@@ -929,7 +929,7 @@
         <h2 :class="'dialog-title country-color-' + model.countryColor">陣形</h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
-                         :formationTypes="model.formationTypes"
+                         :formations="model.formations"
                          :formationPoint="model.character.formationPoint"
                          :canAddSelect="false"
                          v-model="selectedFormationType"
@@ -950,7 +950,7 @@
         <h2 :class="'dialog-title country-color-' + model.countryColor">陣形追加</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
-                         :formationTypes="model.formationTypes"
+                         :formations="model.formations"
                          :formationPoint="model.character.formationPoint"
                          :canChange="false"
                          v-model="selectedFormationType"
@@ -970,7 +970,7 @@
         <h2 :class="'dialog-title country-color-' + model.countryColor">陣形変更</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
-                         :formationTypes="model.formationTypes"
+                         :formations="model.formations"
                          :formationPoint="model.character.formationPoint"
                          :canAdd="false"
                          :isShowChangePoint="false"

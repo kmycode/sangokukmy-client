@@ -363,7 +363,9 @@ export class Formation {
 
   constructor(public id: number = 0,
               public characterId: number = 0,
-              public type: number = 0) {}
+              public type: number = 0,
+              public level: number = 0,
+              public experience: number = 0) {}
 }
 
 /**

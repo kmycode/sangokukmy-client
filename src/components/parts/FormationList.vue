@@ -13,17 +13,21 @@
       <h2>変更可能な陣形</h2>
       <h3 v-show="isShowChangePoint">残りポイント: {{ formationPoint }}</h3>
       <div
-        :class="{'item': true, 'selected': value.id === formation.id, 'selectable': true}"
+        :class="{'item': true, 'selected': value.id === formation.type.id, 'selectable': true}"
         v-for="formation in selectableFormationTypes"
-        :key="formation.id">
+        :key="formation.type.id">
         <div class="formation-info">
           <div class="standard">
-            <div class="name">{{ formation.name }}</div>
-            <div v-show="isShowChangePoint" class="point"><span class="value-name">ポイント</span> <span class="value">50</span></div>
-            <div class="description">{{ formation.description }}</div>
+            <div class="name">{{ formation.type.name }}</div>
+            <div v-show="isShowChangePoint" class="point">
+              <span class="value-name">ポイント</span> <span class="value">50</span>
+              <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
+              <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
+            </div>
+            <div class="description">{{ formation.type.description }}</div>
           </div>
         </div>
-        <div class="select-cover" @click="$emit('input', formation)"></div>
+        <div class="select-cover" @click="$emit('input', formation.type)"></div>
       </div>
     </div>
     <div v-show="canAdd && newFormationTypes.length > 0" style="margin-top:48px">
@@ -54,6 +58,11 @@ import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
 
+class FormationListItem {
+  public constructor(public type: def.FormationType,
+                     public data: api.Formation) {}
+}
+
 @Component({
   components: {
     CharacterIcon,
@@ -62,9 +71,11 @@ import Enumerable from 'linq';
 export default class FormationList extends Vue {
   @Prop() public formationPoint!: number;
   @Prop() public currentFormationType!: number;
-  @Prop() public formationTypes!: def.FormationType[];
-  public selectableFormationTypes: def.FormationType[] = [];
+  @Prop() public formations!: api.Formation[];
+  public formationTypes: def.FormationType[] = [];
+  public selectableFormationTypes: FormationListItem[] = [];
   public newFormationTypes: def.FormationType[] = [];
+  public currentFormation: api.Formation = new api.Formation(-1);
   public currentFormationTypeInfo: def.FormationType = new def.FormationType(-1);
   @Prop({
     default: () => new def.FormationType(-1),
@@ -82,12 +93,17 @@ export default class FormationList extends Vue {
     default: true,
   }) public canAddSelect!: boolean;
 
-  @Watch('formationTypes')
+  @Watch('formations')
   @Watch('currentFormationType')
   public onTypesChanged() {
+    this.formationTypes = Enumerable
+      .from(this.formations)
+      .select((p) => Enumerable.from(def.FORMATION_TYPES).firstOrDefault((pp) => pp.id === p.type))
+      .toArray();
     this.selectableFormationTypes = Enumerable
-      .from(this.formationTypes)
-      .where((f) => f.id !== this.currentFormationType)
+      .from(this.formations)
+      .where((f) => f.type !== this.currentFormationType)
+      .join(def.FORMATION_TYPES, (f) => f.type, (f) => f.id, (fd, fi) => new FormationListItem(fi, fd))
       .toArray();
     this.newFormationTypes = Enumerable
       .from(def.FORMATION_TYPES)
@@ -95,6 +111,9 @@ export default class FormationList extends Vue {
       .where((f) => f.canGet)
       .where((f) => f.subjectAppear === undefined || f.subjectAppear(this.formationTypes))
       .toArray();
+    this.currentFormation = Enumerable
+      .from(this.formations)
+      .firstOrDefault((f) => f.type === this.currentFormationType);
     this.currentFormationTypeInfo = Enumerable
       .from(def.FORMATION_TYPES)
       .firstOrDefault((f) => f.id === this.currentFormationType);
@@ -158,7 +177,8 @@ export default class FormationList extends Vue {
         }
         .value {
           font-weight: bold;
-          padding-left: 12px;
+          padding-left: 4px;
+          padding-right: 16px;
         }
       }
     }

@@ -539,9 +539,10 @@ export class FormationType {
                      public name: string = '',
                      public description: string = '',
                      public subjectAppear?: (exists: FormationType[]) => boolean,
-                     public canGet: boolean = true) {}
+                     public canGet: boolean = true,
+                     public nextLevel: number = 0) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false),
-  new FormationType(1, 500, '魚鱗 Lv.1', '攻撃力 +20', undefined, true),
+  new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false, 1000),
+  new FormationType(1, 500, '魚鱗', '攻撃力 +20', undefined, true, 1000),
 ];

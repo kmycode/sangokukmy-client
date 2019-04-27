@@ -154,13 +154,11 @@ export default class StatusModel {
       .toArray();
   }
 
-  public get formationTypes(): def.FormationType[] {
+  public get formations(): api.Formation[] {
     // 陣形
-    const fs = Enumerable.from(this.store.formations)
-      .select((p) => Enumerable.from(def.FORMATION_TYPES).firstOrDefault((pp) => pp.id === p.type))
-      .toArray();
-    if (!Enumerable.from(fs).any((f) => f.id === 0)) {
-      fs.unshift(Enumerable.from(def.FORMATION_TYPES).first((ff) => ff.id === 0));
+    const fs = this.store.formations;
+    if (!Enumerable.from(fs).any((f) => f.type === 0)) {
+      fs.unshift(new api.Formation(-1, this.character.id, 0, 1, 0));
     }
     return fs;
   }
@@ -1552,8 +1550,15 @@ export default class StatusModel {
     ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     const formation = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === character.formationType);
+    let formationData = Enumerable
+      .from(this.store.formations).firstOrDefault((f) => f.type === character.formationType);
+    if (!formationData) {
+      formationData = new api.Formation(-1, character.id, character.formationType, 1, 0);
+    }
     if (formation) {
       ps.push(new TextStatusParameter('陣形', formation.name));
+      ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
+                                                      'EX', formationData.experience, formation.nextLevel));
     }
     ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
     return ps;
@@ -1653,6 +1658,10 @@ export default class StatusModel {
 
   private onFormationReceived(formation: api.Formation) {
     ArrayUtil.addItemUniquely(this.store.formations, formation, (f) => f.type);
+
+    if (formation.type === this.character.formationType) {
+      this.updateCharacter(this.character);
+    }
   }
 
   public changeFormation(formation: number) {
