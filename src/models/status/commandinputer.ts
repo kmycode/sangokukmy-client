@@ -170,7 +170,7 @@ export default class CommandInputer {
     if (!command.canSelect) {
       return;
     }
-    
+
     Vue.set(command, 'isSelected', !command.isSelected);
   }
 
