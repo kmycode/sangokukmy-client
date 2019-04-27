@@ -577,13 +577,15 @@
       <!-- 政策 -->
       <div v-show="isOpenPoliciesDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
-        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
-          <CountryPolicyList :country="model.country"
-                             :policies="model.countryPolicies"
-                             :canEdit="model.country.id === model.character.countryId && model.canPolicy"
-                             :isMyCountry="model.country.id === model.character.countryId"
-                             v-model="selectedCountryPolicyType"
-                             style="flex:1"/>
+        <div class="dialog-content loading-container">
+          <div style="display:flex;flex-direction:column;overflow:auto;height:100%">
+            <CountryPolicyList :country="model.country"
+                              :policies="model.countryPolicies"
+                              :canEdit="model.country.id === model.character.countryId && model.canPolicy"
+                              :isMyCountry="model.country.id === model.character.countryId"
+                              v-model="selectedCountryPolicyType"
+                              style="flex:1"/>
+          </div>
           <div class="loading" v-show="model.isUpdatingPolicies"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
