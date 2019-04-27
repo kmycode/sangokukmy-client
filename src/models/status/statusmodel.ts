@@ -780,6 +780,7 @@ export default class StatusModel {
 
   private updateCountry(country: api.Country) {
 
+    let isUpdateRequested = false;
     const old = ArrayUtil.find(this.countries, country.id);
 
     if (old) {
@@ -794,6 +795,19 @@ export default class StatusModel {
         country.lastRiceIncomes = old.lastRiceIncomes;
         country.safeMoney = old.safeMoney;
         country.policyPoint = old.policyPoint;
+      }
+
+      // 滅亡処理
+      if (!old.hasOverthrown && country.hasOverthrown) {
+        this.store.wars = Enumerable
+          .from(this.store.wars)
+          .where((w) => w.requestedCountryId !== country.id && w.insistedCountryId !== country.id)
+          .toArray();
+        this.store.alliances = Enumerable
+          .from(this.store.alliances)
+          .where((a) => a.requestedCountryId !== country.id && a.insistedCountryId !== country.id)
+          .toArray();
+        isUpdateRequested = true;
       }
     }
 
@@ -819,7 +833,8 @@ export default class StatusModel {
       }
     }
 
-    if ((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) {
+    if (((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) ||
+        isUpdateRequested) {
       this.setCountry(country);
     }
   }
