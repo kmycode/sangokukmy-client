@@ -266,7 +266,7 @@ export default class CommandInputer {
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46 ||
         command.type === 47) {
-      // 移動、戦争
+      // 都市データ（移動、戦争）
       const paramTypeId = command.type === 47 ? 2 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
@@ -277,7 +277,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 10 || command.type === 38) {
-      // 徴兵、兵種研究
+      // カスタム兵種（徴兵、兵種研究）
       const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
       if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
         const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
@@ -310,7 +310,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
-               command.type === 47) {
+        command.type === 47) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 
@@ -339,13 +339,20 @@ export default class CommandInputer {
       // 武将名をロード
       const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetCharacterId && targetCharacterId.numberValue) {
-        api.Api.getCharacter(targetCharacterId.numberValue)
-          .then((chara) => {
-            command.name = command.name.replace('%読込中%', chara.name);
-          })
-          .catch(() => {
-            command.name = 'エラー (' + command.type + ':B)';
-          });
+        const chara = Enumerable
+          .from(this.store.characters)
+          .firstOrDefault((c) => c.id === targetCharacterId.numberValue);
+        if (chara) {
+          command.name = command.name.replace('%読込中%', chara.name);
+        } else {
+          api.Api.getCharacter(targetCharacterId.numberValue)
+            .then((chara2) => {
+              command.name = command.name.replace('%読込中%', chara2.name);
+            })
+            .catch(() => {
+              command.name = 'エラー (' + command.type + ':B)';
+            });
+        }
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
