@@ -540,6 +540,14 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
   new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(21, 2000, '攻防の礎', '守兵のランクがBになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(22, 2000, '土塁', '守兵のランクがCになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
+  new CountryPolicyType(23, 3000, '石城', '守兵のランクがDになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 22) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
   new CountryPolicyType(20, 2000, '郡県制', '大都市につき政策ポイント +5'),
   new CountryPolicyType(17, 3000, '農業国家', '農業都市につき政策ポイント +3。首都の下敷きが農業都市の場合追加 +3',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
