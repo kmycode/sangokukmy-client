@@ -9,7 +9,7 @@
     <div v-if="canEdit" class="editor">
       <button v-show="canWar && town.id !== country.capitalTownId" :class="{ 'btn': true, 'btn-secondary': isOpen, 'btn-outline-secondary': !isOpen }" @click="isOpen = true" href="#">攻略布告</button>
       <div class="alert alert-danger" v-show="town.id === country.capitalTownId">攻略は、首都に対しては実行できません</div>
-      <div class="alert alert-warning" v-show="!canWar">次回攻略には、前回攻略から10年経過する必要があります</div>
+      <div class="alert alert-danger" v-show="!canWar">次回攻略には、前回攻略から10年経過する必要があります</div>
       <div v-show="isOpen" class="content-section">
         <h3>攻略布告</h3>
         <span class="town-name">{{ town.name }}</span>
