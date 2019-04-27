@@ -91,7 +91,7 @@ export default class CountryPolicyList extends Vue {
         .from(this.policies)
         .any((pp) => pp.type === p.id && pp.status === api.CountryPolicy.statusAvailable))
       .where((p) => p.canGet)
-      .where((p) => p.subjectAppear === undefined || p.subjectAppear(this.policyTypes))
+      .where((p) => p.subjectAppear === undefined || p.subjectAppear(this.policies))
       .select((p) => {
         const data = Enumerable
           .from(this.policies)

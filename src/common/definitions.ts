@@ -515,14 +515,17 @@ export class CountryPolicyType {
                      public point: number = 0,
                      public name: string = '',
                      public description: string = '',
-                     public subjectAppear?: (exists: CountryPolicyType[]) => boolean,
+                     public subjectAppear?: (exists: api.CountryPolicy[]) => boolean,
                      public canGet: boolean = true) {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
-  new CountryPolicyType(10, 4000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 1)),
-  new CountryPolicyType(11, 4000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 10)),
-  new CountryPolicyType(12, 4000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 11)),
+  new CountryPolicyType(10, 4000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
+  new CountryPolicyType(11, 4000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+  new CountryPolicyType(12, 4000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 11)),
   new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
   new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる', undefined, false),
   new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
