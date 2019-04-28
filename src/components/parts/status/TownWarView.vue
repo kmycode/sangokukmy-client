@@ -7,15 +7,16 @@
       {{ lastWar.gameDate | gamedate }} 交戦
     </div>
     <div v-if="canEdit" class="editor">
-      <button v-show="canWar" :class="{ 'btn': true, 'btn-secondary': isOpen, 'btn-outline-secondary': !isOpen }" @click="isOpen = true" href="#">攻略布告</button>
-      <div v-show="!canWar" class="alert alert-warning">次回攻略には、前回攻略から10年経過する必要があります</div>
+      <button v-show="canWar && town.id !== country.capitalTownId" :class="{ 'btn': true, 'btn-secondary': isOpen, 'btn-outline-secondary': !isOpen }" @click="isOpen = true" href="#">攻略布告</button>
+      <div class="alert alert-danger" v-show="town.id === country.capitalTownId">攻略は、首都に対しては実行できません</div>
+      <div class="alert alert-danger" v-show="!canWar">次回攻略には、前回攻略から10年経過する必要があります</div>
       <div v-show="isOpen" class="content-section">
         <h3>攻略布告</h3>
         <span class="town-name">{{ town.name }}</span>
         {{ nextMonth | gamedate }} 開戦
       </div>
     </div>
-    <div class="alert alert-warning">次回攻略には、前回攻略から10年経過する必要があります<br>攻略は、同盟中または破棄猶予中の国に対しては布告できません<br>交戦または開戦6ヶ月前以内の国に対しては布告できません<br>攻略において、指定都市以外に攻め込むことはできません<br>布告された側が都市を奪還するには、新たな攻略を布告する必要があります<br>1都市しかない国には布告できません</div>
+    <div class="alert alert-warning">次回攻略には、前回攻略から10年経過する必要があります<br>攻略は、同盟中または破棄猶予中の国に対しては布告できません<br>交戦または開戦6ヶ月前以内の国に対しては布告できません<br>攻略において、指定都市以外に攻め込むことはできません<br>布告された側が都市を奪還するには、新たな攻略を布告する必要があります<br>1都市しかない国には布告できません<br>首都に対しては実行できません</div>
     <div class="loading" v-show="isSending"><div class="loading-icon"></div></div>
   </div>
 </template>
@@ -36,6 +37,7 @@ export default class WarView extends Vue {
   @Prop() private lastWar?: api.TownWar;
   @Prop() private status!: def.TownWarStatus;
   @Prop() private town!: api.Town;
+  @Prop() private country!: api.Country;
   @Prop() private isSending!: boolean;
   @Prop() private canEdit!: boolean;
   @Prop() private isShow!: boolean;

@@ -55,6 +55,7 @@
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="commands">
+              <button v-if="false" type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
               <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
                     v-for="rein in model.store.reinforcements"
@@ -576,13 +577,15 @@
       <!-- 政策 -->
       <div v-show="isOpenPoliciesDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
-        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
-          <CountryPolicyList :country="model.country"
-                             :policyTypes="model.countryPolicyTypes"
-                             :canEdit="model.country.id === model.character.countryId && model.canPolicy"
-                             :isMyCountry="model.country.id === model.character.countryId"
-                             v-model="selectedCountryPolicyType"
-                             style="flex:1"/>
+        <div class="dialog-content loading-container">
+          <div style="display:flex;flex-direction:column;overflow:auto;height:100%">
+            <CountryPolicyList :country="model.country"
+                              :policies="model.countryPolicies"
+                              :canEdit="model.country.id === model.character.countryId && model.canPolicy"
+                              :isMyCountry="model.country.id === model.character.countryId"
+                              v-model="selectedCountryPolicyType"
+                              style="flex:1"/>
+          </div>
           <div class="loading" v-show="model.isUpdatingPolicies"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -647,6 +650,7 @@
                        :lastWar="model.characterCountryLastTownWar"
                        :status="model.characterCountryTownWarStatus"
                        :town="model.town"
+                       :country="model.country"
                        :isSending="model.isSendingTownWar"
                        :canEdit="model.canDiplomacy"
                        :isShow="isOpenTownWarDialog"
@@ -923,6 +927,68 @@
           </div>
         </div>
       </div>
+      <!-- 陣形 -->
+      <div v-show="isOpenFormationDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形</h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
+          <FormationList :currentFormationType="model.character.formationType"
+                         :formations="model.formations"
+                         :formationPoint="model.character.formationPoint"
+                         :canAddSelect="false"
+                         v-model="selectedFormationType"
+                         style="flex:1"/>
+          <div class="loading" v-show="model.isUpdatingFormations"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenFormationDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedFormationType.id >= 0 && selectedFormationType.id !== model.character.formationType && 50 <= model.character.formationPoint" @click="model.changeFormation(selectedFormationType.id)">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 陣形追加 -->
+      <div v-show="isOpenFormationAddDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形追加</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <FormationList :currentFormationType="model.character.formationType"
+                         :formations="model.formations"
+                         :formationPoint="model.character.formationPoint"
+                         :canChange="false"
+                         v-model="selectedFormationType"
+                         style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenFormationAddDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedFormationType.id >= 0 && selectedFormationType.id !== model.character.formationType" @click="model.commands.inputer.inputFormationCommand(48, selectedFormationType.id); isOpenFormationAddDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 陣形変更 -->
+      <div v-show="isOpenFormationChangeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形変更</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <FormationList :currentFormationType="model.character.formationType"
+                         :formations="model.formations"
+                         :formationPoint="model.character.formationPoint"
+                         :canAdd="false"
+                         :isShowChangePoint="false"
+                         v-model="selectedFormationType"
+                         style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenFormationChangeDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedFormationType.id >= 0" @click="model.commands.inputer.inputFormationCommand(49, selectedFormationType.id); isOpenFormationChangeDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -950,6 +1016,7 @@ import WarView from '@/components/parts/status/WarView.vue';
 import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
+import FormationList from '@/components/parts/FormationList.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
 import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
@@ -987,6 +1054,7 @@ import EventObject from '@/models/common/EventObject';
     CustomSoldierTypeView,
     BattleSimulatorView,
     CountryPolicyList,
+    FormationList,
     RiceSimulatorView,
   },
 })
@@ -1027,6 +1095,9 @@ export default class StatusPage extends Vue {
   public isOpenRemoveSecretaryDialog: boolean = false;
   public isOpenCharacterIconPickerDialog: boolean = false;
   public isOpenPoliciesDialog: boolean = false;
+  public isOpenFormationDialog: boolean = false;
+  public isOpenFormationAddDialog: boolean = false;
+  public isOpenFormationChangeDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -1047,6 +1118,7 @@ export default class StatusPage extends Vue {
   public newIcon: api.CharacterIcon = new api.CharacterIcon(-1, 0, false, 1, '0.gif');
   public isShowIconOperations = false;
   public selectedCountryPolicyType: def.CountryPolicyType = new def.CountryPolicyType(-1);
+  public selectedFormationType: def.FormationType = new def.FormationType(-1);
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -1060,7 +1132,8 @@ export default class StatusPage extends Vue {
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
       || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
       || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
-      || this.isOpenSecretaryTownDialog;
+      || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
+      || this.isOpenFormationChangeDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1110,6 +1183,12 @@ export default class StatusPage extends Vue {
       this.targetSecretary.id = -1;
       this.model.updateCharacterCountryCharacters();
       this.isOpenSecretaryTownDialog = true;
+    } else if (event === 'formation-add') {
+      this.selectedFormationType = new def.FormationType(-1);
+      this.isOpenFormationAddDialog = true;
+    } else if (event === 'formation-change') {
+      this.selectedFormationType = new def.FormationType(-1);
+      this.isOpenFormationChangeDialog = true;
     }
   }
 
@@ -1122,7 +1201,8 @@ export default class StatusPage extends Vue {
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
       this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
       this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog =
-      this.isOpenSecretaryTownDialog = false;
+      this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
+      this.isOpenFormationChangeDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1199,17 +1279,11 @@ export default class StatusPage extends Vue {
   }
 
   public mounted() {
-    this.model.onCreate(this.$router);
+    this.model.onCreate(() => this.$router);
   }
 
   public destroyed() {
     this.model.onDestroy();
-  }
-
-  private onResetRequested() {
-    this.model.onDestroy();
-    this.model = new StatusModel();
-    this.model.onCreate(this.$router);
   }
 
   private readyPrivateChat(chara: api.Character) {

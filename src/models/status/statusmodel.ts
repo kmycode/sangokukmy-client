@@ -22,16 +22,15 @@ import ChatMessageContainer from '@/models/status/chatmessagecontainer';
 import CommandList from '@/models/status/commandlist';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
-import ThreadBbs from './threadbbs';
-import OnlineModel from './onlinemodel';
-import StatusStore from './statusstore';
-import UnitModel from './unitmodel';
-import ValueUtil from '../common/ValueUtil';
-import SoldierTypeModel from './soldiertypemodel';
+import ThreadBbs from '@/models/status/threadbbs';
+import OnlineModel from '@/models/status/onlinemodel';
+import StatusStore from '@/models/status/statusstore';
+import UnitModel from '@/models/status/unitmodel';
+import ValueUtil from '@/models/common/ValueUtil';
+import SoldierTypeModel from '@/models/status/soldiertypemodel';
 import VueRouter from 'vue-router';
 
 export default class StatusModel {
-  public systemData: api.SystemData = new api.SystemData();
   public gameDate: api.GameDateTime = new api.GameDateTime();
   public countryParameters: StatusParameter[] = [];
   public scoutedTowns: api.ScoutedTown[] = [];
@@ -59,7 +58,7 @@ export default class StatusModel {
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
       || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
-      || this.isUpdatingCountrySettings || this.isUpdatingPolicies;
+      || this.isUpdatingCountrySettings || this.isUpdatingPolicies || this.isUpdatingFormations;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
@@ -69,6 +68,7 @@ export default class StatusModel {
   public isUpdatingOppositionCharacters: boolean = false;
   public isUpdatingCharacterIcons: boolean = false;
   public isUpdatingPolicies: boolean = false;
+  public isUpdatingFormations: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -79,11 +79,15 @@ export default class StatusModel {
   public isLoadingMoreCharacterLogs: boolean = false;
   public hasLoadAllCharacterLogs: boolean = false;
 
-  private $router?: any;
+  private $router?: () => any;
 
   // #region Store and Compat Properties
 
   public store: StatusStore = new StatusStore();
+
+  public get systemData(): api.SystemData {
+    return this.store.systemData;
+  }
 
   public get character(): api.Character {
     return this.store.character;
@@ -137,11 +141,10 @@ export default class StatusModel {
     return this.getCountry(this.town.countryId).colorId;
   }
 
-  public get countryPolicyTypes(): def.CountryPolicyType[] {
+  public get countryPolicies(): api.CountryPolicy[] {
     // 選択中の国の政策
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.country.id)
-      .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
       .toArray();
   }
 
@@ -151,6 +154,15 @@ export default class StatusModel {
       .where((p) => p.countryId === this.character.countryId)
       .select((p) => Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((pp) => pp.id === p.type))
       .toArray();
+  }
+
+  public get formations(): api.Formation[] {
+    // 陣形
+    const fs = this.store.formations;
+    if (!Enumerable.from(fs).any((f) => f.type === 0)) {
+      fs.unshift(new api.Formation(-1, this.character.id, 0, 1, 0));
+    }
+    return fs;
   }
 
   public get characterTownCountryColor(): number {
@@ -393,12 +405,14 @@ export default class StatusModel {
 
   // #region Streaming
 
-  public onCreate($router: any) {
+  public onCreate($router: () => any) {
     this.onlines.beginWatch();
     this.$router = $router;
 
     ApiStreaming.status.onAuthenticationFailed = () => {
-      this.$router.push('home');
+      if (this.$router) {
+        this.$router().push('home');
+      }
     };
 
     ApiStreaming.status.clearEvents();
@@ -465,6 +479,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterSoldierType>(
       api.CharacterSoldierType.typeId,
       (obj) => this.soldierTypes.onItemReceived(obj));
+    ApiStreaming.status.on<api.Formation>(
+      api.Formation.typeId,
+      (obj) => this.onFormationReceived(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -532,7 +549,7 @@ export default class StatusModel {
     } else if (signal.type === 7) {
       // リセットされた
       if (this.$router) {
-        this.$router.push('home');
+        this.$router().push('home');
         NotificationService.reseted.notify();
       } else {
         location.href = './home';
@@ -563,7 +580,7 @@ export default class StatusModel {
   }
 
   private updateSystemData(data: api.SystemData) {
-    this.systemData = data;
+    this.store.systemData = data;
     this.updateGameDate(data.gameDateTime);
   }
 
@@ -765,6 +782,7 @@ export default class StatusModel {
 
   private updateCountry(country: api.Country) {
 
+    let isUpdateRequested = false;
     const old = ArrayUtil.find(this.countries, country.id);
 
     if (old) {
@@ -779,6 +797,19 @@ export default class StatusModel {
         country.lastRiceIncomes = old.lastRiceIncomes;
         country.safeMoney = old.safeMoney;
         country.policyPoint = old.policyPoint;
+      }
+
+      // 滅亡処理
+      if (!old.hasOverthrown && country.hasOverthrown) {
+        this.store.wars = Enumerable
+          .from(this.store.wars)
+          .where((w) => w.requestedCountryId !== country.id && w.insistedCountryId !== country.id)
+          .toArray();
+        this.store.alliances = Enumerable
+          .from(this.store.alliances)
+          .where((a) => a.requestedCountryId !== country.id && a.insistedCountryId !== country.id)
+          .toArray();
+        isUpdateRequested = true;
       }
     }
 
@@ -804,7 +835,8 @@ export default class StatusModel {
       }
     }
 
-    if ((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) {
+    if (((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) ||
+        isUpdateRequested) {
       this.setCountry(country);
     }
   }
@@ -1118,7 +1150,7 @@ export default class StatusModel {
         (alliance.requestedCountryId === this.character.countryId ||
          alliance.insistedCountryId === this.character.countryId)) {
       const targetCountry = alliance.requestedCountryId === this.character.countryId ?
-        alliance.insistedCountry : alliance.requestedCountry;
+        this.getCountry(alliance.insistedCountryId) : this.getCountry(alliance.requestedCountryId);
       if (alliance.status === api.CountryAlliance.statusAvailable) {
         NotificationService.allianceCompleted.notifyWithParameter(targetCountry.name);
       } else if (alliance.status === api.CountryAlliance.statusDismissed) {
@@ -1139,7 +1171,7 @@ export default class StatusModel {
       (war.requestedCountryId === this.character.countryId ||
        war.insistedCountryId === this.character.countryId)) {
       const targetCountry = war.requestedCountryId === this.character.countryId ?
-        war.insistedCountry : war.requestedCountry;
+        this.getCountry(war.insistedCountryId) : this.getCountry(war.requestedCountryId);
       if (war.status === api.CountryWar.statusAvailable) {
         NotificationService.warStart.notifyWithParameter(targetCountry.name);
       } else if (war.status === api.CountryWar.statusInReady) {
@@ -1541,6 +1573,18 @@ export default class StatusModel {
     }
     ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
+    const formation = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === character.formationType);
+    let formationData = Enumerable
+      .from(this.store.formations).firstOrDefault((f) => f.type === character.formationType);
+    if (!formationData) {
+      formationData = new api.Formation(-1, character.id, character.formationType, 1, 0);
+    }
+    if (formation) {
+      // ps.push(new TextStatusParameter('陣形', formation.name));
+      // ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
+      //                                                'EX', formationData.experience, formation.nextLevel));
+    }
+    // ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
     return ps;
   }
 
@@ -1631,6 +1675,42 @@ export default class StatusModel {
   // #region CharacterSoldierType
 
   public soldierTypes = new SoldierTypeModel(this.store);
+
+  // #endregion
+
+  // #region Formation
+
+  private onFormationReceived(formation: api.Formation) {
+    ArrayUtil.addItemUniquely(this.store.formations, formation, (f) => f.type);
+
+    if (formation.type === this.character.formationType) {
+      this.updateCharacter(this.character);
+    }
+  }
+
+  public changeFormation(formation: number) {
+    if (formation === this.character.formationType ||
+        !Enumerable.from(this.store.formations).any((f) => f.type === formation)) {
+      return;
+    }
+
+    const info = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === formation);
+    if (!info) {
+      return;
+    }
+
+    this.isUpdatingFormations = true;
+    api.Api.changeFormation(formation)
+      .then(() => {
+        NotificationService.formationChanged.notifyWithParameter(info.name);
+      })
+      .catch(() => {
+        NotificationService.formationChangeFailed.notifyWithParameter(info.name);
+      })
+      .finally(() => {
+        this.isUpdatingFormations = false;
+      });
+  }
 
   // #endregion
 

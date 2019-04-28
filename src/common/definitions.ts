@@ -81,14 +81,14 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(2, 0, '禁兵', 1, 0, '15', '15'),
   new SoldierType(500, 0, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
   new SoldierType(3, 0, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
-  new SoldierType(4, 0, '弓兵',    3, 200,  '0', '15', '弓を持った兵士'),
+  new SoldierType(4, 0, '弓兵',    3, 200,  '0', '10', '弓を持った兵士'),
   new SoldierType(5, 0, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),
-  new SoldierType(6, 0, '強弩兵',  7, 400, '10', '35', '弩を持った兵士'),
+  new SoldierType(6, 0, '強弩兵',  7, 400, '10', '30', '弩を持った兵士'),
   new SoldierType(7, 1, '神鬼兵',  10, 500, '武力', '0', '基礎能力として武力の代わりに知力を用いた兵種。武力が攻撃力に補正として加算される'),
   new SoldierType(8, 0, '重歩兵',  12, 600, '50', '30', '重装備の歩兵'),
   new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
-  new SoldierType(11, 0, '連弩兵', 20, 900, '90', '30', '連弩を持った兵士'),
+  new SoldierType(11, 0, '連弩兵', 20, 900, '90', '40', '連弩を持った兵士'),
   new SoldierType(12, 0, '壁守兵', 22, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
@@ -307,6 +307,38 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(45, '%0% へ斥候派遣'),
   new CommandNameResolver(46, '%0% の斥候を解雇'),
   new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
+  new CommandNameResolver(48, '陣形 {0} を獲得', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const formationType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!formationType) {
+        return 'エラー (48:2)';
+      }
+      const type = Enumerable.from(FORMATION_TYPES).firstOrDefault((f) => f.id === formationType.numberValue);
+      if (!type) {
+        return 'エラー (48:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (48:1)';
+    }
+  }),
+  new CommandNameResolver(49, '陣形を {0} に変更', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const formationType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!formationType) {
+        return 'エラー (48:2)';
+      }
+      const type = Enumerable.from(FORMATION_TYPES).firstOrDefault((f) => f.id === formationType.numberValue);
+      if (!type) {
+        return 'エラー (48:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (48:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -483,20 +515,59 @@ export class CountryPolicyType {
                      public point: number = 0,
                      public name: string = '',
                      public description: string = '',
-                     public subjectAppear?: (exists: CountryPolicyType[]) => boolean,
+                     public subjectAppear?: (exists: api.CountryPolicy[]) => boolean,
                      public canGet: boolean = true) {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
-  new CountryPolicyType(10, 4000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 1)),
-  new CountryPolicyType(11, 4000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 10)),
-  new CountryPolicyType(12, 4000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万', (ps) => ps.some((p) => p.id === 11)),
+  new CountryPolicyType(10, 4000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
+  new CountryPolicyType(11, 4000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+  new CountryPolicyType(12, 4000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 11)),
   new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
   new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる', undefined, false),
   new CountryPolicyType(4, 4000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
+  new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
+  new CountryPolicyType(15, 2000, '文官国家', '文官数につき毎ターン政策ポイント +4',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
+  new CountryPolicyType(16, 2000, '人情国家', '仁官数につき毎ターン政策ポイント +8',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 15)),
   new CountryPolicyType(5, 2000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
   new CountryPolicyType(6, 4000, '災害対策', '洪水、地震の被害をなくす'),
   new CountryPolicyType(7, 4000, '賊の監視', '賊の被害を未然に防ぐ'),
+  new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(21, 2000, '攻防の礎', '守兵のランクがBになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(22, 2000, '土塁', '守兵のランクがCになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
+  new CountryPolicyType(23, 3000, '石城', '守兵のランクがDになる',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 22) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
+  new CountryPolicyType(20, 2000, '郡県制', '大都市につき政策ポイント +5'),
+  new CountryPolicyType(17, 3000, '農業国家', '農業都市につき政策ポイント +3。首都の下敷きが農業都市の場合追加 +3',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
+  new CountryPolicyType(18, 3000, '商業国家', '商業都市につき政策ポイント +3。首都の下敷きが商業都市の場合追加 +3',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
+  new CountryPolicyType(19, 3000, '城塞国家', '城塞都市につき政策ポイント +3。首都の下敷きが城塞都市の場合追加 +3',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
   new CountryPolicyType(8, 5000000, '連戦戦術', '連戦の戦術が利用可能になる', undefined, false),
   new CountryPolicyType(9, 5000000, '突撃戦術', '突撃の戦術が利用可能になる', undefined, false),
+];
+
+export class FormationType {
+  public constructor(public id: number = 0,
+                     public point: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public subjectAppear?: (exists: FormationType[]) => boolean,
+                     public canGet: boolean = true,
+                     public nextLevel: number = 0) {}
+}
+export const FORMATION_TYPES: FormationType[] = [
+  new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false, 1000),
 ];

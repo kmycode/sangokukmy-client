@@ -50,6 +50,8 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
+        <button v-if="false" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-add')">陣<span class="redundant-text">形</span>獲得</button>
+        <button v-if="false" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-change')">陣<span class="redundant-text">形</span>変更</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
       <!-- 計略コマンド -->
@@ -86,8 +88,6 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 0, 'btn-info': list.inputer.commandSelectMode === 0 }" @click="list.inputer.commandSelectMode = 0">置換</button>
-      <button type="button" :class="{ 'btn': true, 'btn-outline-info': list.inputer.commandSelectMode !== 1, 'btn-info': list.inputer.commandSelectMode === 1 }" @click="list.inputer.commandSelectMode = 1">OR</button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">

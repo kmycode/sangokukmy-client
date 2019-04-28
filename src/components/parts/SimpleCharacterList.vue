@@ -14,8 +14,8 @@
             <div class="commands">
             </div>
             <div class="commands">
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
+              <button v-if="canReinforcement && chara.countryId !== myCountryId && !chara.aiType && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
+              <button v-if="canReinforcement && chara.countryId !== myCountryId && !chara.aiType && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
               <button v-if="canPrivateChat && chara.id !== myCharacterId && !chara.aiType" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>

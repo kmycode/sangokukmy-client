@@ -4,23 +4,11 @@ import * as api from '@/api/api';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
-import ArrayUtil from '../common/arrayutil';
+import ArrayUtil from '@/models/common/arrayutil';
 import StatusStore from './statusstore';
-
-export enum CommandSelectMode {
-  /**
-   * 置き換え
-   */
-  replace = 0,
-  /**
-   * OR
-   */
-  mode_or = 1,
-}
 
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
-  public commandSelectMode: CommandSelectMode = CommandSelectMode.mode_or;
   public isInputing = false;
 
   public get canInput(): boolean {
@@ -115,6 +103,12 @@ export default class CommandInputer {
     });
   }
 
+  public inputFormationCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -126,62 +120,67 @@ export default class CommandInputer {
           setParams(c);
         }
       });
-      api.Api.setCommands(selectCommands)
-        .then(() => {
-          selectCommands.forEach((c) => {
-            this.updateCommandName(c);
-            c.isSelected = false;
-          });
-          NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
-
-          // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
-          // この部分は、コマンド入力した時にのみ呼び出される。更新時には呼び出されないので大丈夫
-          if (commandType === 19) {
-            // 米売買
-            api.Api.getCommands(Enumerable.from(selectCommands).select((c) => c.gameDate).toArray())
-              .then((commands) => {
-                Enumerable
-                  .from(commands)
-                  .join(selectCommands,
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        (c) => api.GameDateTime.toNumber(c.gameDate),
-                        // tslint:disable-next-line:arrow-return-shorthand
-                        (n, o) => { return { oldCommand: o, newCommand: n }; })
-                  .forEach((data) => {
-                    data.oldCommand.parameters = data.newCommand.parameters;
-                    this.updateCommandName(data.oldCommand);
-                  });
-              });
-          }
-        })
-        .catch((ex) => {
-          if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
-            NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
-          } else if (ex.data.code === api.ErrorCode.numberRangeError) {
-            NotificationService.inputCommandsFailedBecauseTooLong
-              .notifyWithParameter(ex.data.data.current, ex.data.data.max);
-          } else {
-            NotificationService.inputCommandsFailed.notify();
-          }
-        })
-        .finally(() => {
-          this.isInputing = false;
-        });
+      this.sendCommands(selectCommands, () => {
+        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+      });
     } else {
       NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
     }
+  }
+
+  private sendCommands(commands: api.CharacterCommand[], onSucceed?: () => void) {
+    api.Api.setCommands(commands)
+      .then(() => {
+        commands.forEach((c) => {
+          this.updateCommandName(c);
+          c.isSelected = false;
+        });
+        if (onSucceed) {
+          onSucceed();
+        }
+
+        // サーバが設定したコマンドパラメータ取得の必要があるものをとってくる
+        // この部分は、コマンド入力した時にのみ呼び出される。更新時には呼び出されないので大丈夫
+        const cmd19 = Enumerable.from(commands).where((c) => c.type === 19).select((c) => c.gameDate).toArray();
+        if (cmd19.length > 0) {
+          // 米売買
+          api.Api.getCommands(cmd19)
+            .then((cmds) => {
+              Enumerable
+                .from(cmds)
+                .join(cmds,
+                      (c) => api.GameDateTime.toNumber(c.gameDate),
+                      (c) => api.GameDateTime.toNumber(c.gameDate),
+                      // tslint:disable-next-line:arrow-return-shorthand
+                      (n, o) => { return { oldCommand: o, newCommand: n }; })
+                .forEach((data) => {
+                  data.oldCommand.parameters = data.newCommand.parameters;
+                  this.updateCommandName(data.oldCommand);
+                });
+            });
+          }
+      })
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.lackOfTownTechnologyForSoldier) {
+          NotificationService.inputCommandsFailedBecauseLackOfSoldierTechnology.notify();
+        } else if (ex.data.code === api.ErrorCode.numberRangeError) {
+          NotificationService.inputCommandsFailedBecauseTooLong
+            .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+        } else {
+          NotificationService.inputCommandsFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isInputing = false;
+      });
   }
 
   public selectSingleCommand(command: api.CharacterCommand) {
     if (!command.canSelect) {
       return;
     }
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-      Vue.set(command, 'isSelected', true);
-    } else {
-      Vue.set(command, 'isSelected', !command.isSelected);
-    }
+
+    Vue.set(command, 'isSelected', !command.isSelected);
   }
 
   public selectMultipleCommand(lastCommand: api.CharacterCommand) {
@@ -194,20 +193,7 @@ export default class CommandInputer {
       .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
       .takeWhile((c) => c.isSelected !== true)
       .toArray();
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      this.clearAllCommandSelections();
-    }
     selected.filter((c) => c.canSelect).forEach((c) => Vue.set(c, 'isSelected', true));
-
-    // 置き換えモードで、一番最初のコマンドの選択が解除されるので選択しなおす
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      const first = Enumerable.from(this.commands)
-        .takeWhile((c) => c.isSelected !== true)
-        .lastOrDefault();
-      if (first && first.canSelect) {
-        Vue.set(first, 'isSelected', true);
-      }
-    }
   }
 
   public selectAllCommands() {
@@ -265,15 +251,7 @@ export default class CommandInputer {
       return;
     }
 
-    let isSelected = command.isSelected;
-
-    if (this.commandSelectMode === CommandSelectMode.replace) {
-      isSelected = value;
-    } else if (this.commandSelectMode === CommandSelectMode.mode_or) {
-      isSelected = isSelected || value;
-    } else {
-      NotificationService.invalidStatus.notifyWithParameter('commandSelectMode:' + this.commandSelectMode);
-    }
+    const isSelected = command.isSelected || value;
 
     if (command.isSelected !== undefined) {
       command.isSelected = isSelected;
@@ -297,7 +275,7 @@ export default class CommandInputer {
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46 ||
         command.type === 47) {
-      // 移動、戦争
+      // 都市データ（移動、戦争）
       const paramTypeId = command.type === 47 ? 2 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
@@ -308,7 +286,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 10 || command.type === 38) {
-      // 徴兵、兵種研究
+      // カスタム兵種（徴兵、兵種研究）
       const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
       if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
         const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
@@ -341,7 +319,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
-               command.type === 47) {
+        command.type === 47) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 
@@ -370,13 +348,20 @@ export default class CommandInputer {
       // 武将名をロード
       const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
       if (targetCharacterId && targetCharacterId.numberValue) {
-        api.Api.getCharacter(targetCharacterId.numberValue)
-          .then((chara) => {
-            command.name = command.name.replace('%読込中%', chara.name);
-          })
-          .catch(() => {
-            command.name = 'エラー (' + command.type + ':B)';
-          });
+        const chara = Enumerable
+          .from(this.store.characters)
+          .firstOrDefault((c) => c.id === targetCharacterId.numberValue);
+        if (chara) {
+          command.name = command.name.replace('%読込中%', chara.name);
+        } else {
+          api.Api.getCharacter(targetCharacterId.numberValue)
+            .then((chara2) => {
+              command.name = command.name.replace('%読込中%', chara2.name);
+            })
+            .catch(() => {
+              command.name = 'エラー (' + command.type + ':B)';
+            });
+        }
       } else {
         command.name = 'エラー (' + command.type + ':A)';
       }
