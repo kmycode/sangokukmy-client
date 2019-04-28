@@ -1580,11 +1580,11 @@ export default class StatusModel {
       formationData = new api.Formation(-1, character.id, character.formationType, 1, 0);
     }
     if (formation) {
-      ps.push(new TextStatusParameter('陣形', formation.name));
-      ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
-                                                      'EX', formationData.experience, formation.nextLevel));
+      // ps.push(new TextStatusParameter('陣形', formation.name));
+      // ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
+      //                                                'EX', formationData.experience, formation.nextLevel));
     }
-    ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
+    // ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
     return ps;
   }
 
