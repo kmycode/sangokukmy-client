@@ -79,7 +79,7 @@ export default class StatusModel {
   public isLoadingMoreCharacterLogs: boolean = false;
   public hasLoadAllCharacterLogs: boolean = false;
 
-  private $router?: any;
+  private $router?: () => any;
 
   // #region Store and Compat Properties
 
@@ -405,12 +405,14 @@ export default class StatusModel {
 
   // #region Streaming
 
-  public onCreate($router: any) {
+  public onCreate($router: () => any) {
     this.onlines.beginWatch();
     this.$router = $router;
 
     ApiStreaming.status.onAuthenticationFailed = () => {
-      this.$router.push('home');
+      if (this.$router) {
+        this.$router().push('home');
+      }
     };
 
     ApiStreaming.status.clearEvents();
@@ -547,7 +549,7 @@ export default class StatusModel {
     } else if (signal.type === 7) {
       // リセットされた
       if (this.$router) {
-        this.$router.push('home');
+        this.$router().push('home');
         NotificationService.reseted.notify();
       } else {
         location.href = './home';
