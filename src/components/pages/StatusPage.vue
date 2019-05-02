@@ -594,7 +594,7 @@
           </div>
           <div class="right-side">
             <button class="btn btn-light" v-show="model.country.id !== model.character.countryId || !model.canPolicy" @click="isOpenPoliciesDialog = false">閉じる</button>
-            <button class="btn btn-primary" v-show="model.country.id === model.character.countryId && model.canPolicy && selectedCountryPolicyType.id > 0 && selectedCountryPolicyType.point <= model.country.policyPoint" @click="model.addPolicy(selectedCountryPolicyType.id)">承認</button>
+            <button class="btn btn-primary" v-show="model.country.id === model.character.countryId && model.canPolicy && selectedCountryPolicyType.id > 0 && getPolicyPoint(selectedCountryPolicyType) <= model.country.policyPoint" @click="model.addPolicy(selectedCountryPolicyType.id)">承認</button>
           </div>
         </div>
       </div>
@@ -1276,6 +1276,17 @@ export default class StatusPage extends Vue {
 
   public getCustomSoldierTypeTechnology(type: api.CharacterSoldierType): number {
     return api.CharacterSoldierType.getTechnology(type);
+  }
+
+  public getPolicyPoint(type: def.CountryPolicyType): number {
+    const policy = Enumerable
+      .from(this.model.store.policies)
+      .firstOrDefault((p) => p.type === type.id && p.countryId === this.model.character.countryId);
+    if (policy) {
+      return policy.status === api.CountryPolicy.statusBoosted ? type.point / 2 : type.point;
+    } else {
+      return 65535;
+    }
   }
 
   public mounted() {
