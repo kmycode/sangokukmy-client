@@ -1285,7 +1285,7 @@ export default class StatusPage extends Vue {
     if (policy) {
       return policy.status === api.CountryPolicy.statusBoosted ? type.point / 2 : type.point;
     } else {
-      return 65535;
+      return type.point;
     }
   }
 
