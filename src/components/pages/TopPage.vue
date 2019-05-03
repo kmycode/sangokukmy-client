@@ -82,7 +82,7 @@
         <div class="top-content col-sm-12">
           <ul class="nav nav-tabs nav-fill">
             <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 0}" href="#" @click.prevent.stop="selectedTab = 0">トップページ</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://github.com/kmycode/sangokukmy/wiki" target="_blank">説明書</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://sangoku-doc.kmycode.net/" target="_blank">説明書</a></li>
             <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 2}" href="#" @click.prevent.stop="selectedTab = 2">勢力図</a></li>
             <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li> -->
