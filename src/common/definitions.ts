@@ -531,17 +531,41 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(4, 3000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
   new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
+  new CountryPolicyType(24, 3000, '施設連携', '強化系都市施設効果 +7',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 15)),
   new CountryPolicyType(15, 2000, '文官国家', '文官数につき毎ターン政策ポイント +4',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
   new CountryPolicyType(16, 2000, '人情国家', '仁官数につき毎ターン政策ポイント +8',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 15)),
   new CountryPolicyType(5, 4000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(25, 4000, '徴収', '国庫納入する収入余剰最大 +2000',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
+  new CountryPolicyType(26, 4000, '壁に耳', '国庫納入する収入余剰最大 +2000',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 25) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+  new CountryPolicyType(27, 2000, '増給', '武将収入の階級加算 +50',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
   new CountryPolicyType(6, 3000, '災害対策', '洪水、地震の被害をなくす'),
+  new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
   new CountryPolicyType(7, 3000, '賊の監視', '賊の被害を未然に防ぐ'),
   new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(29, 2000, '正義とは', '義賊の効果増大',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 13)),
+  new CountryPolicyType(30, 3000, '檄', '義勇兵が徴兵可能',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 29) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
   new CountryPolicyType(21, 2000, '攻防の礎', '守兵のランクがBになる',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
+  new CountryPolicyType(31, 4000, '攻城', '井闌1小隊あたり徴兵コスト -50',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
+            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
+  new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、常に城壁攻撃力 +60',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 31)),
   new CountryPolicyType(22, 2000, '土塁', '守兵のランクがCになる',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
             ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
