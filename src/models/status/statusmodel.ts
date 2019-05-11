@@ -346,7 +346,16 @@ export default class StatusModel {
       if (t.id !== 1 && t.id !== 2 && t.id !== 15) {
         if (this.characterTown.countryId === this.character.countryId) {
           if (t.technology <= this.characterTown.technology) {
-            types.push(t);
+            if (t.requestedPolicyType) {
+              const can = Enumerable
+                .from(this.store.policies)
+                .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
+              if (can) {
+                types.push(t);
+              }
+            } else {
+              types.push(t);
+            }
           }
         } else {
           if (t.technology === 0) {
