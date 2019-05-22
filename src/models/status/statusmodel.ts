@@ -349,6 +349,7 @@ export default class StatusModel {
             if (t.requestedPolicyType) {
               const can = Enumerable
                 .from(this.store.policies)
+                .where((p) => p.countryId === this.character.countryId)
                 .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
               if (can) {
                 types.push(t);
