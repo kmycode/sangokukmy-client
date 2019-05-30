@@ -329,6 +329,19 @@ export default class StatusModel {
       .any((s) => s.townId === this.town.id);
   }
 
+  public get secretaryMaxValue(): number {
+    // 自国の政務官の最大
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .count((p) => p.type === 4 || p.type === 34);
+  }
+
+  public get canSecretaryUnitLeader(): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .any((p) => p.type === 33);
+  }
+
   public get safeMaxValue(): number {
     // 自国の金庫の最大容量
     return Enumerable.from(this.store.policies)
