@@ -632,6 +632,10 @@ export default class NotificationService {
     '政策追加',
     '所属国に政策 {0} が追加されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly policyBoosted = new NotificationServiceItem(
+    '政策ブースト',
+    '所属国の政策 {0} がブーストされました',
+    NotificationServiceItemDefaultType.information);
   public static readonly scouterAdded = new NotificationServiceItem(
     '斥候派遣',
     '{0} に斥候が派遣されました',

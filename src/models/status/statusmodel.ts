@@ -1448,7 +1448,11 @@ export default class StatusModel {
     if (this.store.hasInitialized && policy.countryId === this.character.countryId) {
       const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy.type);
       if (info) {
-        NotificationService.policyAdded.notifyWithParameter(info.name);
+        if (policy.status === api.CountryPolicy.statusAvailable) {
+          NotificationService.policyAdded.notifyWithParameter(info.name);
+        } else if (policy.status === api.CountryPolicy.statusBoosted) {
+          NotificationService.policyBoosted.notifyWithParameter(info.name);
+        }
       }
     }
   }
