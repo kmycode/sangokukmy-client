@@ -298,7 +298,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       }
       return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' :
                                    type.numberValue === api.Character.aiSecretaryUnitGather ? '集合官' :
-                                   type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' : '不明');
+                                   type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' :
+                                   type.numberValue === api.Character.aiSecretaryUnitLeader ? '部隊長' : '不明');
     } else {
       return 'エラー (39:1)';
     }

@@ -192,7 +192,8 @@ export default class StatusModel {
       .from(this.countryCharacters)
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
                     c.aiType === api.Character.aiSecretaryUnitGather ||
-                    c.aiType === api.Character.aiSecretaryPioneer)
+                    c.aiType === api.Character.aiSecretaryPioneer ||
+                    c.aiType === api.Character.aiSecretaryUnitLeader)
       .toArray();
   }
 
