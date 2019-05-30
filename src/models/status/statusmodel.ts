@@ -192,7 +192,8 @@ export default class StatusModel {
       .from(this.countryCharacters)
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
                     c.aiType === api.Character.aiSecretaryUnitGather ||
-                    c.aiType === api.Character.aiSecretaryPioneer)
+                    c.aiType === api.Character.aiSecretaryPioneer ||
+                    c.aiType === api.Character.aiSecretaryUnitLeader)
       .toArray();
   }
 
@@ -326,6 +327,19 @@ export default class StatusModel {
   public get characterTownHasScouter(): boolean {
     return Enumerable.from(this.store.scouters)
       .any((s) => s.townId === this.town.id);
+  }
+
+  public get secretaryMaxValue(): number {
+    // 自国の政務官の最大
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .count((p) => p.type === 4 || p.type === 34);
+  }
+
+  public get canSecretaryUnitLeader(): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .any((p) => p.type === 33);
   }
 
   public get safeMaxValue(): number {
@@ -1434,7 +1448,11 @@ export default class StatusModel {
     if (this.store.hasInitialized && policy.countryId === this.character.countryId) {
       const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy.type);
       if (info) {
-        NotificationService.policyAdded.notifyWithParameter(info.name);
+        if (policy.status === api.CountryPolicy.statusAvailable) {
+          NotificationService.policyAdded.notifyWithParameter(info.name);
+        } else if (policy.status === api.CountryPolicy.statusBoosted) {
+          NotificationService.policyBoosted.notifyWithParameter(info.name);
+        }
       }
     }
   }
