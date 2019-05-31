@@ -277,6 +277,25 @@
         <!-- 国設定 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 1 && model.canCountrySetting" class="right-side-content content-setting" style="display:flex;flex-direction:column">
           <div class="setting-list">
+            <div v-if="model.store.systemData.isWaitingReset && model.canCountryUnifiedMessage" class="setting-row loading-container">
+              <h3 :class="'country-color-' + model.characterCountryColor">統一国君主のあいさつ</h3>
+              <div class="current-message">
+                <h4>現在の設定</h4>
+                <div :class="'current-message-content country-color-' + model.characterCountryColor">
+                  <KmyChatTagText v-if="model.countryUnifiedMessage.message" :text="model.countryUnifiedMessage.message"/>
+                  <span v-if="!model.countryUnifiedMessage.message" class="message-empty">なし</span>
+                  <div v-else class="current-message-writer">
+                    {{ model.countryUnifiedMessage.writerCharacterName }} ({{ model.getPostName(model.countryUnifiedMessage.writerPost) }})
+                  </div>
+                </div>
+              </div>
+              <textarea v-model="newCountryCommandersMessage" ref="commandersMessageInput"></textarea>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="newCountryCommandersMessage = model.countryCommandersMessage.message">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryCommandersMessage)">承認</button>
+              </div>
+              <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
+            </div>
             <div class="setting-row loading-container">
               <h3 :class="'country-color-' + model.characterCountryColor">指令</h3>
               <div class="current-message">

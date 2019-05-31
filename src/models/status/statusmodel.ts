@@ -51,6 +51,7 @@ export default class StatusModel {
   public newWarData: api.CountryWar = new api.CountryWar();
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
+  public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
@@ -834,6 +835,7 @@ export default class StatusModel {
           .where((a) => a.requestedCountryId !== country.id && a.insistedCountryId !== country.id)
           .toArray();
         isUpdateRequested = true;
+        this.commands.updateCommandListInformations();
       }
     }
 
@@ -924,7 +926,16 @@ export default class StatusModel {
       Enumerable.from(country.posts).orderBy((p) => p.type).forEach((p) => {
         const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((cp) => cp.id === p.type);
         if (postType) {
-          ps.push(new TextStatusParameter(postType.name, p.character.name));
+          let characterName = '';
+          if (!p.character) {
+            const chara = ArrayUtil.find(this.store.characters, p.characterId);
+            if (chara) {
+              characterName = chara.name;
+            }
+          } else {
+            characterName = p.character.name;
+          }
+          ps.push(new TextStatusParameter(postType.name, characterName));
         }
       });
     }
@@ -1009,6 +1020,9 @@ export default class StatusModel {
                message.countryId === this.store.character.countryId) {
       // 新規登録者勧誘文
       this.countrySolicitationMessage = message;
+    } else if (message.type === api.CountryMessage.typeUnified &&
+               message.countryId === this.store.character.countryId) {
+      this.countryUnifiedMessage = message;
     }
   }
 
@@ -1020,6 +1034,20 @@ export default class StatusModel {
       })
       .catch(() => {
         NotificationService.countryCommandersMessageSetFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
+  public updateCountryUnifiedMessage(message: string) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryMessage(message, api.CountryMessage.typeUnified)
+      .then(() => {
+        NotificationService.countryUnifiedMessageUpdated.notify();
+      })
+      .catch(() => {
+        NotificationService.countryUnifiedMessageUpdateFailed.notify();
       })
       .finally(() => {
         this.isUpdatingCountrySettings = false;
@@ -1156,6 +1184,12 @@ export default class StatusModel {
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
+  public get canCountryUnifiedMessage(): boolean {
+    // 自分が国の設定を行う権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && p.type === 1);
+  }
+
   public get canRemoveAllCountryBbsItems(): boolean {
     // 自分が会議室の全書き込み削除権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
@@ -1203,6 +1237,7 @@ export default class StatusModel {
           targetCountry.name,
           api.GameDateTime.toFormatedString(war.startGameDate));
       }
+      this.commands.updateCommandListInformations();
     }
   }
 

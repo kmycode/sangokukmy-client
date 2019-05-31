@@ -6,7 +6,7 @@
         :class="'map-cell country-color-' + getTownColor(t) + (currentTown.id === t.id ? ' current-town' : '')"
         :style="{ top: t.y + '0%', left: t.x + '0%', }"
         @click="$emit('selected', t.id)">
-      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + t.type"></div>
+      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2)"></div>
       <span v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" class="town-name">{{ t.name }}</span>
       <div v-if="mode === 1 || (mode === 2 && t.countryId === store.character.countryId)" class="town-info-character-icons">
         <CharacterIcon

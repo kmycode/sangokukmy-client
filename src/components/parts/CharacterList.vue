@@ -14,7 +14,7 @@
           </div>
           <div class="right-block">
             <div v-if="chara.deleteTurn > 0" class="delete-turn">放置削除まで {{ getDeleteTurn(chara) }} ターン</div>
-            <div class="class-name">階級: {{ getClassName(chara) }}</div>
+            <div class="class-name" v-if="getClassName(chara)">階級: {{ getClassName(chara) }}</div>
           </div>
         </div>
         <div class="parameters">

@@ -180,6 +180,7 @@ export default class SimpleCharacterList extends Vue {
 
 <style lang="scss" scoped>
 @import '@/scss/country-color.scss';
+@import '@/scss/bootstrap-helper.scss';
 
 .simple-character-list {
   .item {
@@ -228,10 +229,20 @@ export default class SimpleCharacterList extends Vue {
 
         .standard {
           display: flex;
+          flex-wrap: wrap;
 
           .name {
             font-size: 1.6rem;
             flex: 1;
+            white-space: nowrap;
+
+            @include media-query-lower(md) {
+              font-size: 1.4rem;
+            }
+
+            @include media-query-lower(sm) {
+              font-size: 1.2rem;
+            }
           }
 
           .commands {

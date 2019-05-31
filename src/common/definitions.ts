@@ -20,6 +20,7 @@ export const DEFAULT_ICONS_HOST = HOST_ROOT + 'images/character-default-icons/';
  * アップロードされたアイコンの置き場所
  */
 export const UPLOADED_ICONS_HOST = HOST_ROOT + 'images/character-uploaded-icons/';
+export const UPLOADED_HISTORICAL_ICONS_HOST = HOST_ROOT + 'images/character-historical-uploaded-icons/';
 
 /**
  * 更新時間
