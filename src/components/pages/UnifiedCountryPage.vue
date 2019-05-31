@@ -12,7 +12,7 @@
         <h4 :class="'unified-date country-color-' + history.unifiedCountry.colorId">{{ history.history.unifiedDateTime | realdate }}</h4>
         <div :class="'post country-color-' + history.unifiedCountry.colorId">
           <h4 class="post-name">君主</h4>
-          <div class="post-character" v-if="history.monarch.id > 0">
+          <div class="post-character" v-if="history.monarch.name">
             <div class="icon"><CharacterIcon :icon="history.monarch.mainIcon"/></div>
             <div class="name">{{ history.monarch.name }}</div>
           </div>
@@ -20,7 +20,7 @@
         </div>
         <div :class="'post post-small country-color-' + history.unifiedCountry.colorId">
           <h4 class="post-name">軍師</h4>
-          <div class="post-character" v-if="history.warrior.id > 0">
+          <div class="post-character" v-if="history.warrior.name">
             <div class="icon"><CharacterIcon :icon="history.warrior.mainIcon"/></div>
             <div class="name">{{ history.warrior.name }}</div>
           </div>
@@ -28,7 +28,7 @@
         </div>
         <div :class="'post post-small country-color-' + history.unifiedCountry.colorId">
           <h4 class="post-name">大将軍</h4>
-          <div class="post-character" v-if="history.grandGeneral.id > 0">
+          <div class="post-character" v-if="history.grandGeneral.name">
             <div class="icon"><CharacterIcon :icon="history.grandGeneral.mainIcon"/></div>
             <div class="name">{{ history.grandGeneral.name }}</div>
           </div>
