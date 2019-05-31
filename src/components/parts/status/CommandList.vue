@@ -102,12 +102,18 @@
             :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
             @click="onCommandSelected(command, $event)">
         <div v-if="command.isPreview" class="background-layer background-layer-previewed"></div>
+        <div v-if="command.event === 1" class="background-layer background-layer-war-start"></div>
+        <div v-if="command.event === 2" class="background-layer background-layer-in-war"></div>
+        <div v-if="command.event === 3" class="background-layer background-layer-town-war"></div>
+        <div v-if="command.event === 4" class="background-layer background-layer-reset"></div>
+        <div v-if="command.event === 5" class="background-layer background-layer-battle-start"></div>
         <div class="command-list-item-background"></div>
         <div class="command-list-item-content">
           <div class="number">{{ command.commandNumber }}</div>
           <div class="command-information">
             <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
             <div class="command-text">{{ command.name }}</div>
+            <div v-if="command.eventMessage" class="event-message">{{ command.eventMessage }}</div>
           </div>
         </div>
       </div>
@@ -313,8 +319,20 @@ $color-navigation-commands: #e0e0e0;
     bottom: 0;
     right: 0;
     opacity: 0.5;
-    &.background-layer-war {
-      background: #f66;
+    &.background-layer-war-start {
+      background: #f22;
+    }
+    &.background-layer-in-war {
+      background: #f99;
+    }
+    &.background-layer-town-war {
+      background: #f4c;
+    }
+    &.background-layer-reset {
+      background: #892;
+    }
+    &.background-layer-battle-start {
+      background: #29f;
     }
     &.background-layer-previewed {
       background: #eb2;
@@ -357,6 +375,12 @@ $color-navigation-commands: #e0e0e0;
         height: 1.4rem;
         line-height: 1.4rem;
         font-weight: bold;
+      }
+      .event-message {
+        font-size: 0.9rem;
+        height: 1.1rem;
+        line-height: 1.1rem;
+        color: #454545;
       }
     }
   }

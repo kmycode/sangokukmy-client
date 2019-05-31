@@ -548,6 +548,14 @@ export default class NotificationService {
     '勧誘文更新失敗',
     '新規登録者勧誘文更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryUnifiedMessageUpdated = new NotificationServiceItem(
+    'あいさつ更新',
+    'あいさつを更新しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countryUnifiedMessageUpdateFailed = new NotificationServiceItem(
+    'あいさつ更新失敗',
+    'あいさつ更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly townWarSent = new NotificationServiceItem(
     '攻略布告',
     '{0}、 {1} への攻略を布告しました',
@@ -648,6 +656,10 @@ export default class NotificationService {
     'リセット',
     'ゲームはリセットされました。新しいドラマが始まります',
     NotificationServiceItemDefaultType.information);
+  public static readonly historyLoadFailed = new NotificationServiceItem(
+    '統一履歴取得失敗',
+    '統一履歴の取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly formationChanged = new NotificationServiceItem(
     '陣形変更',
     '陣形を {0} に変更しました',

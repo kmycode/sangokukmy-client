@@ -425,6 +425,7 @@ export class Character implements IIdentitiedEntity {
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
                      public formationPoint: number = 0,
+                     public postType: number = 0,   // 統一記録のみで有効
                      public characterSoldierType?: CharacterSoldierType,
                      public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
@@ -685,6 +686,13 @@ export class CharacterCommandParameter {
 export class CharacterCommand {
   public static readonly typeId: number = 14;
 
+  public static readonly eventNone: number = 0;
+  public static readonly eventWarStart: number = 1;
+  public static readonly eventWaring: number = 2;
+  public static readonly eventTownWar: number = 3;
+  public static readonly eventReset: number = 4;
+  public static readonly eventBattleStart: number = 5;
+
   public static updateName(command: CharacterCommand) {
     const cmd = def.getCommandNameByType(command.type);
     if (cmd) {
@@ -702,7 +710,9 @@ export class CharacterCommand {
                      public gameDate: GameDateTime = new GameDateTime(),
                      public date?: DateTime,
                      public isSelected?: boolean,
-                     public canSelect?: boolean) {}
+                     public canSelect?: boolean,
+                     public event: number = 0,
+                     public eventMessage?: string) {}
 }
 
 /**
@@ -724,7 +734,11 @@ export class CharacterIcon {
     if (icon) {
       if (icon.type === 2) {
         // アップロードされたアイコン
-        return def.UPLOADED_ICONS_HOST + icon.fileName;
+        if (!icon.isHistorical) {
+          return def.UPLOADED_ICONS_HOST + icon.fileName;
+        } else {
+          return def.UPLOADED_HISTORICAL_ICONS_HOST + icon.fileName;
+        }
       } else if (icon.type === 3) {
         // Gravatar
         return 'https://www.gravatar.com/avatar/' + icon.fileName + '?s=128';
@@ -769,6 +783,7 @@ export class CharacterIcon {
     return icon;
   }
 
+  public isHistorical?: boolean = false;
   private isNotDefaultPrivate?: boolean = false;
 
   public constructor(public id: number = 0,
@@ -938,6 +953,18 @@ export class Reinforcement {
                      public characterCountryId: number,
                      public requestedCountryId: number,
                      public status: number) {}
+}
+
+export class History {
+  public constructor(public id: number,
+                     public period: number,
+                     public betaVersion: number,
+                     public unifiedDateTime: DateTime,
+                     public unifiedCountryMessage: string,
+                     public characters: Character[],
+                     public countries: Country[],
+                     public maplogs: MapLog[],
+                     public towns: Town[]) {}
 }
 
 export class Api {
@@ -1555,6 +1582,26 @@ export class Api {
       await axios.put(def.API_HOST + 'formations', {
         type: formation,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getHistories(): Promise<History[]> {
+    try {
+      const result = await axios.get<History[]>(
+        def.API_HOST + 'histories', this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getHistory(id: number): Promise<History> {
+    try {
+      const result = await axios.get<History>(
+        def.API_HOST + 'histories/' + id, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

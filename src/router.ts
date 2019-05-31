@@ -32,5 +32,10 @@ export default new Router({
       name: 'characters',
       component: () => import('./components/pages/AllCharactersPage.vue'),
     },
+    {
+      path: '/histories',
+      name: 'histories',
+      component: () => import('./components/pages/UnifiedCountryPage.vue'),
+    },
   ],
 });
