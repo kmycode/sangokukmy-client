@@ -188,6 +188,30 @@ export default class StatusModel {
       .toArray();
   }
 
+  public get characterItems(): api.CharacterItem[] {
+    return Enumerable
+      .from(this.store.items)
+      .where((i) => i.status === api.CharacterItem.statusCharacterHold &&
+                    i.characterId === this.character.id)
+      .toArray();
+  }
+
+  public get townItems(): api.CharacterItem[] {
+    return Enumerable
+      .from(this.store.items)
+      .where((i) => i.status === api.CharacterItem.statusTownOnSale &&
+                    i.townId === this.town.id)
+      .toArray();
+  }
+
+  public get characterTownItems(): api.CharacterItem[] {
+    return Enumerable
+      .from(this.store.items)
+      .where((i) => i.status === api.CharacterItem.statusTownOnSale &&
+                    i.townId === this.character.townId)
+      .toArray();
+  }
+
   public get countrySecretaries(): api.Character[] {
     return Enumerable
       .from(this.countryCharacters)
@@ -507,6 +531,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.Formation>(
       api.Formation.typeId,
       (obj) => this.onFormationReceived(obj));
+    ApiStreaming.status.on<api.CharacterItem>(
+      api.CharacterItem.typeId,
+      (obj) => this.onCharacterItemReceived(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -1773,6 +1800,14 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingFormations = false;
       });
+  }
+
+  // #endregion
+
+  // #region CharacterItem
+
+  private onCharacterItemReceived(item: api.CharacterItem) {
+    ArrayUtil.addItem(this.store.items, item);
   }
 
   // #endregion

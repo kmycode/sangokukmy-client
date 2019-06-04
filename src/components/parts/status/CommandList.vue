@@ -50,8 +50,13 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
-        <button v-if="false" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-add')">陣<span class="redundant-text">形</span>獲得</button>
-        <button v-if="false" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'formation-change')">陣<span class="redundant-text">形</span>変更</button>
+        <button v-if="false" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenFormationPopup = !isOpenFormationPopup">陣形
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenFormationPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; list.inputer.inputCommand(53)">研究</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'formation-add')">獲得</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'formation-change')">変更</a>
+          </div>
+        </button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
       <!-- 計略コマンド -->
@@ -64,6 +69,13 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')"><span class="redundant-text">能力</span>強化</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
+        <button v-if="false" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenItemPopup = !isOpenItemPopup">アイテム
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenItemPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-buy')">購入</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-sell')">売却</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-handover')">譲渡</a>
+          </div>
+        </button>
         <!-- <button type="button" class="btn btn-light">武器</button>
         <button type="button" class="btn btn-light">書物</button> -->
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
@@ -146,6 +158,8 @@ export default class CommandListView extends Vue {
   private isOpenSafePopup: boolean = false;
   private isOpenScouterPopup: boolean = false;
   private isOpenSecretaryPopup: boolean = false;
+  private isOpenFormationPopup: boolean = false;
+  private isOpenItemPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;

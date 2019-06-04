@@ -109,6 +109,19 @@ export default class CommandInputer {
     });
   }
 
+  public inputItemCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+    });
+  }
+
+  public inputHandOverItemCommand(commandType: number, id: number, target: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, target));
+    });
+  }
+
   private inputCommandPrivate(commandType: number, setParams?: (c: api.CharacterCommand) => void) {
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
     if (selectCommands.length > 0) {
@@ -319,7 +332,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
-        command.type === 47) {
+        command.type === 47 || command.type === 52) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 
@@ -346,7 +359,8 @@ export default class CommandInputer {
       }
 
       // 武将名をロード
-      const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
+      const paramType = command.type === 52 ? 2 : 1;
+      const targetCharacterId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramType);
       if (targetCharacterId && targetCharacterId.numberValue) {
         const chara = Enumerable
           .from(this.store.characters)
