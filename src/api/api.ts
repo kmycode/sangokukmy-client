@@ -401,6 +401,7 @@ export class Character implements IIdentitiedEntity {
                      public name: string = '',
                      public countryId: number = 0,
                      public aiType: number = 0,
+                     public from: number = 0,
                      public strong: number = 0,
                      public strongEx: number = 0,
                      public intellect: number = 0,
@@ -702,6 +703,26 @@ export class CharacterCommand {
     }
   }
 
+  public static clone(command: CharacterCommand): CharacterCommand {
+    const parameters: CharacterCommandParameter[] = [];
+    command.parameters.forEach((p) => {
+      parameters.push(new CharacterCommandParameter(p.type, p.numberValue, p.stringValue));
+    });
+
+    return new CharacterCommand(
+      command.commandNumber,
+      command.characterId,
+      command.type,
+      command.name,
+      parameters,
+      new GameDateTime(command.gameDate.year, command.gameDate.month),
+      command.date,
+      command.isSelected,
+      command.canSelect,
+      command.event,
+      command.eventMessage);
+  }
+
   public constructor(public commandNumber: number = 0,
                      public characterId: number = 0,
                      public type: number = 0,
@@ -965,6 +986,20 @@ export class History {
                      public countries: Country[],
                      public maplogs: MapLog[],
                      public towns: Town[]) {}
+}
+
+export class CharacterItem {
+  public static readonly typeId: number = 36;
+
+  public static readonly statusTownOnSale: number = 1;
+  public static readonly statusTownHidden: number = 2;
+  public static readonly statusCharacterHold: number = 3;
+
+  public constructor(public id: number,
+                     public status: number,
+                     public type: number,
+                     public townId: number,
+                     public characterId: number) {}
 }
 
 export class Api {

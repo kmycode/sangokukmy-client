@@ -33,6 +33,7 @@ export default class StatusStore {
   public reinforcements: api.Reinforcement[] = [];
   public soldierTypes: api.CharacterSoldierType[] = [];
   public formations: api.Formation[] = [];
+  public items: api.CharacterItem[] = [];
 
   public soldierTypeCaches: api.CharacterSoldierType[] = [];  // 他人の種類をキャッシュする
 }

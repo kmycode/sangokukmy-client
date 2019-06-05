@@ -332,17 +332,66 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       const p = Enumerable.from(params);
       const formationType = p.firstOrDefault((pp) => pp.type === 1);
       if (!formationType) {
-        return 'エラー (48:2)';
+        return 'エラー (49:2)';
       }
       const type = Enumerable.from(FORMATION_TYPES).firstOrDefault((f) => f.id === formationType.numberValue);
       if (!type) {
-        return 'エラー (48:3)';
+        return 'エラー (49:3)';
       }
       return format.replace('{0}', type.name);
     } else {
-      return 'エラー (48:1)';
+      return 'エラー (49:1)';
     }
   }),
+  new CommandNameResolver(50, '{0} を購入', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (50:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (50:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (50:1)';
+    }
+  }),
+  new CommandNameResolver(51, '{0} を売却', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (51:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (51:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (51:1)';
+    }
+  }),
+  new CommandNameResolver(52, '{0} を %読込中% に譲渡', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (52:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (52:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (52:1)';
+    }
+  }),
+  new CommandNameResolver(53, '陣形研究'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -600,15 +649,33 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる', undefined, false),
 ];
 
+/**
+ * 陣形
+ */
 export class FormationType {
   public constructor(public id: number = 0,
                      public point: number = 0,
                      public name: string = '',
-                     public description: string = '',
+                     public descriptions: string[] = [],
                      public subjectAppear?: (exists: FormationType[]) => boolean,
                      public canGet: boolean = true,
                      public nextLevel: number = 0) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', '通常の陣形。効果なし', undefined, false, 1000),
+  new FormationType(0, 0, '通常', ['効果なし'], undefined, false, 1000),
+];
+
+/**
+ * アイテム
+ */
+export class CharacterItemType {
+  public constructor(public id: number = 0,
+                     public money: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public canSell: boolean = true,
+                     public canHandOver: boolean = true) {}
+}
+export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
+  new CharacterItemType(1, 1000, '槍', '武力 +1'),
 ];

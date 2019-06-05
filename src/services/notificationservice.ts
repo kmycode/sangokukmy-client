@@ -668,6 +668,22 @@ export default class NotificationService {
     '陣形変更失敗',
     '陣形を {0} に変更しようとしましたが、失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly itemGot = new NotificationServiceItem(
+    'アイテム入手',
+    'アイテム {0} を入手しました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly itemReleased = new NotificationServiceItem(
+    'アイテム手放し',
+    'アイテム {0} を手放しました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly commandInserted = new NotificationServiceItem(
+    'コマンド挿入',
+    'コマンドの挿入に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly commandRemoved = new NotificationServiceItem(
+    'コマンド削除',
+    'コマンドの削除に成功しました',
+    NotificationServiceItemDefaultType.succeed);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

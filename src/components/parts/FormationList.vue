@@ -5,7 +5,7 @@
       <div class="formation-info">
         <div class="standard">
           <div class="name">{{ currentFormationTypeInfo.name }}</div>
-          <div class="description">{{ currentFormationTypeInfo.description }}</div>
+          <div class="description">{{ currentFormationTypeInfo.descriptions[currentFormation.level - 1] }}</div>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
             </div>
-            <div class="description">{{ formation.type.description }}</div>
+            <div class="description">{{ formation.type.descriptions[formation.data.level - 1] }}</div>
           </div>
         </div>
         <div class="select-cover" @click="$emit('input', formation.type)"></div>
@@ -41,7 +41,7 @@
           <div class="standard">
             <div class="name">{{ formation.name }}</div>
             <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span></div>
-            <div class="description">{{ formation.description }}</div>
+            <div class="description">{{ formation.descriptions[0] }}</div>
           </div>
         </div>
         <div class="select-cover" @click="$emit('input', formation)"></div>
