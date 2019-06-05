@@ -703,6 +703,26 @@ export class CharacterCommand {
     }
   }
 
+  public static clone(command: CharacterCommand): CharacterCommand {
+    const parameters: CharacterCommandParameter[] = [];
+    command.parameters.forEach((p) => {
+      parameters.push(new CharacterCommandParameter(p.type, p.numberValue, p.stringValue));
+    });
+
+    return new CharacterCommand(
+      command.commandNumber,
+      command.characterId,
+      command.type,
+      command.name,
+      parameters,
+      new GameDateTime(command.gameDate.year, command.gameDate.month),
+      command.date,
+      command.isSelected,
+      command.canSelect,
+      command.event,
+      command.eventMessage);
+  }
+
   public constructor(public commandNumber: number = 0,
                      public characterId: number = 0,
                      public type: number = 0,
