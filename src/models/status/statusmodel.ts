@@ -1809,7 +1809,7 @@ export default class StatusModel {
   private onCharacterItemReceived(item: api.CharacterItem) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === item.type);
     const old = ArrayUtil.find(this.store.items, item.id);
-    if (old &&
+    if (old && this.store.hasInitialized &&
       old.status === api.CharacterItem.statusCharacterHold && old.characterId === this.character.id &&
       (item.status !== api.CharacterItem.statusCharacterHold || item.characterId !== this.character.id)) {
       if (info) {
@@ -1819,7 +1819,8 @@ export default class StatusModel {
 
     ArrayUtil.addItem(this.store.items, item);
 
-    if (item.status === api.CharacterItem.statusCharacterHold && item.characterId === this.character.id) {
+    if (this.store.hasInitialized &&
+      item.status === api.CharacterItem.statusCharacterHold && item.characterId === this.character.id) {
       if (info) {
         NotificationService.itemGot.notifyWithParameter(info.name);
       }
