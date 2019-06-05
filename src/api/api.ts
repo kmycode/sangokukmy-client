@@ -705,9 +705,11 @@ export class CharacterCommand {
 
   public static clone(command: CharacterCommand): CharacterCommand {
     const parameters: CharacterCommandParameter[] = [];
-    command.parameters.forEach((p) => {
-      parameters.push(new CharacterCommandParameter(p.type, p.numberValue, p.stringValue));
-    });
+    if (command.parameters) {
+      command.parameters.forEach((p) => {
+        parameters.push(new CharacterCommandParameter(p.type, p.numberValue, p.stringValue));
+      });
+    }
 
     return new CharacterCommand(
       command.commandNumber,
