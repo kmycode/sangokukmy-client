@@ -1807,7 +1807,23 @@ export default class StatusModel {
   // #region CharacterItem
 
   private onCharacterItemReceived(item: api.CharacterItem) {
+    const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === item.type);
+    const old = ArrayUtil.find(this.store.items, item.id);
+    if (old &&
+      old.status === api.CharacterItem.statusCharacterHold && old.characterId === this.character.id &&
+      (item.status !== api.CharacterItem.statusCharacterHold || item.characterId !== this.character.id)) {
+      if (info) {
+        NotificationService.itemReleased.notifyWithParameter(info.name);
+      }
+    }
+
     ArrayUtil.addItem(this.store.items, item);
+
+    if (item.status === api.CharacterItem.statusCharacterHold && item.characterId === this.character.id) {
+      if (info) {
+        NotificationService.itemGot.notifyWithParameter(info.name);
+      }
+    }
   }
 
   // #endregion
