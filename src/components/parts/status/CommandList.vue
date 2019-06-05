@@ -100,6 +100,8 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿入<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削除<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">

@@ -161,7 +161,7 @@ export default class CommandInputer {
             .then((cmds) => {
               Enumerable
                 .from(cmds)
-                .join(cmds,
+                .join(commands,
                       (c) => api.GameDateTime.toNumber(c.gameDate),
                       (c) => api.GameDateTime.toNumber(c.gameDate),
                       // tslint:disable-next-line:arrow-return-shorthand
@@ -280,6 +280,99 @@ export default class CommandInputer {
       .forEach((c) => {
         c.isSelected = false;
       });
+  }
+
+  public insertCommands() {
+    this.editCommands(true);
+  }
+
+  public removeCommands() {
+    this.editCommands(false);
+  }
+
+  private editCommands(isInsert: boolean) {
+    let count = 0;
+    let isCounting = false;
+    const pushCommands: api.CharacterCommand[] = [];
+    let selectedCommands: api.CharacterCommand[] = [];
+    const commands = Enumerable
+      .from(this.commands)
+      .where((c) => c.canSelect === true)
+      .skipWhile((c) => c.isSelected !== true)
+      .toArray();
+
+    commands.forEach((c) => {
+      if (c.isSelected) {
+        if (!isCounting) {
+          count = 0;
+          isCounting = true;
+          selectedCommands = [];
+        }
+        count++;
+        if (isInsert) {
+          selectedCommands.push(api.CharacterCommand.clone(c));
+        }
+      } else {
+        if (isCounting) {
+          isCounting = false;
+          if (isInsert) {
+            for (let j = 0; j < count; j++) {
+              const cmd = new api.CharacterCommand();
+              pushCommands.push(cmd);
+              this.updateCommandName(cmd);
+            }
+          }
+          selectedCommands.forEach((sc) => {
+            pushCommands.push(sc);
+          });
+        }
+        pushCommands.push(api.CharacterCommand.clone(c));
+      }
+    });
+
+    for (let i = pushCommands.length; i < commands.length; i++) {
+      const cmd = new api.CharacterCommand();
+      pushCommands.push(cmd);
+      this.updateCommandName(cmd);
+    }
+
+    Enumerable.from(commands).zip(pushCommands, (a, b) => {
+      return { old: a, new: b };
+    }).forEach((es) => {
+      es.new.commandNumber = es.old.commandNumber;
+      es.new.date = es.old.date;
+      es.new.gameDate = es.old.gameDate;
+      es.new.event = es.old.event;
+      es.new.eventMessage = es.old.eventMessage;
+      es.new.canSelect = es.old.canSelect;
+      this.updateCommandName(es.new);
+    });
+
+    this.sendCommands(pushCommands, () => {
+      const newCommands = Enumerable
+        .from(pushCommands)
+        .concat(this.commands.filter((c) => !commands.some((cc) => cc.commandNumber === c.commandNumber)))
+        .orderBy((c) => c.commandNumber)
+        .distinct((c) => c.commandNumber)
+        .take(200)
+        .toArray();
+      if (newCommands.length < 200) {
+        for (let i = newCommands.length; i < 200; i++) {
+          const cmd = api.CharacterCommand.clone(this.commands[i]);
+          cmd.type = 0;
+          cmd.parameters = [];
+          this.updateCommandName(cmd);
+          newCommands.push(cmd);
+        }
+      }
+      this.commands = newCommands;
+
+      if (isInsert) {
+        NotificationService.commandInserted.notify();
+      } else {
+        NotificationService.commandRemoved.notify();
+      }
+    });
   }
 
   public updateCommandName(command: api.CharacterCommand) {
