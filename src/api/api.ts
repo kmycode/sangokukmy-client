@@ -51,6 +51,7 @@ export enum ErrorCode {
   duplicateEntryError = 40,
   invitationCodeRequestedError = 41,
   invalidSecretKeyError = 43,
+  notMoreItemsError = 45,
 }
 
 /**
@@ -426,6 +427,7 @@ export class Character implements IIdentitiedEntity {
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
                      public formationPoint: number = 0,
+                     public skillPoint: number = 0,
                      public postType: number = 0,   // 統一記録のみで有効
                      public characterSoldierType?: CharacterSoldierType,
                      public commands?: CharacterCommand[],
@@ -996,12 +998,25 @@ export class CharacterItem {
   public static readonly statusTownOnSale: number = 1;
   public static readonly statusTownHidden: number = 2;
   public static readonly statusCharacterHold: number = 3;
+  public static readonly statusCharacterPending: number = 5;
 
   public constructor(public id: number,
                      public status: number,
                      public type: number,
                      public townId: number,
                      public characterId: number) {}
+}
+
+export class CharacterSkill {
+  public static readonly typeId: number = 37;
+
+  public static readonly statusAvailable = 1;
+  public static readonly statusAvailableByItem = 2;
+
+  public constructor(public id: number,
+                     public type: number,
+                     public characterId: number,
+                     public status: number) {}
 }
 
 export class Api {
@@ -1618,6 +1633,27 @@ export class Api {
     try {
       await axios.put(def.API_HOST + 'formations', {
         type: formation,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addCharacterItem(item: number, status: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'items', {
+        type: item,
+        status,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addSkill(skill: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'skills', {
+        type: skill,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

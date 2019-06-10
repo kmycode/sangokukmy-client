@@ -59,7 +59,8 @@ export default class StatusModel {
       || this.isAppointing || this.isSendingAlliance || this.isSendingWar
       || this.isLoadingMoreMapLogs || this.countryChat.isLoading || this.globalChat.isLoading
       || this.privateChat.isLoading || this.isUpdatingOppositionCharacters
-      || this.isUpdatingCountrySettings || this.isUpdatingPolicies || this.isUpdatingFormations;
+      || this.isUpdatingCountrySettings || this.isUpdatingPolicies || this.isUpdatingFormations
+      || this.isUpdatingSkills || this.isUpdatingItems;
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
@@ -70,6 +71,8 @@ export default class StatusModel {
   public isUpdatingCharacterIcons: boolean = false;
   public isUpdatingPolicies: boolean = false;
   public isUpdatingFormations: boolean = false;
+  public isUpdatingItems: boolean = false;
+  public isUpdatingSkills: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -161,7 +164,9 @@ export default class StatusModel {
     // 陣形
     const fs = this.store.formations;
     if (!Enumerable.from(fs).any((f) => f.type === 0)) {
-      fs.unshift(new api.Formation(-1, this.character.id, 0, 1, 0));
+      const fss = Array.from(fs);
+      fss.unshift(new api.Formation(-1, this.character.id, 0, 1, 0));
+      return fss;
     }
     return fs;
   }
@@ -191,7 +196,8 @@ export default class StatusModel {
   public get characterItems(): api.CharacterItem[] {
     return Enumerable
       .from(this.store.items)
-      .where((i) => i.status === api.CharacterItem.statusCharacterHold &&
+      .where((i) => (i.status === api.CharacterItem.statusCharacterHold ||
+                     i.status === api.CharacterItem.statusCharacterPending) &&
                     i.characterId === this.character.id)
       .toArray();
   }
@@ -210,6 +216,14 @@ export default class StatusModel {
       .where((i) => i.status === api.CharacterItem.statusTownOnSale &&
                     i.townId === this.character.townId)
       .toArray();
+  }
+
+  public get characterItemsMax(): number {
+    return 3;
+  }
+
+  public get characterRiceBuyMax(): number {
+    return def.RICE_BUY_MAX;
   }
 
   public get countrySecretaries(): api.Character[] {
@@ -534,6 +548,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterItem>(
       api.CharacterItem.typeId,
       (obj) => this.onCharacterItemReceived(obj));
+    ApiStreaming.status.on<api.CharacterSkill>(
+      api.CharacterSkill.typeId,
+      (obj) => this.onCharacterSkillReceived(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -592,6 +609,7 @@ export default class StatusModel {
         this.promotions.isUnread =
         this.countryThreadBbs.isUnread =
         this.globalThreadBbs.isUnread = false;
+      this.updateCharacter(this.character);
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -1670,11 +1688,20 @@ export default class StatusModel {
       formationData = new api.Formation(-1, character.id, character.formationType, 1, 0);
     }
     if (formation) {
-      // ps.push(new TextStatusParameter('陣形', formation.name));
-      // ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
-      //                                                'EX', formationData.experience, formation.nextLevel));
+      ps.push(new TextStatusParameter('陣形', formation.name));
+      if (formationData.level <= formation.nextLevel.length) {
+        ps.push(new TwinNoRangeAndRangedStatusParameter('陣形レベル', formationData.level,
+          'EX', formationData.experience, formation.nextLevel[formationData.level - 1]));
+      } else {
+        ps.push(new NoRangeStatusParameter('陣形レベル', formationData.level));
+      }
     }
-    // ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
+    ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
+    ps.push(new NoRangeStatusParameter('技能ポイント', character.skillPoint));
+    ps.push(new RangedStatusParameter(
+      'アイテム',
+      Enumerable.from(this.characterItems).count((i) => i.status === api.CharacterItem.statusCharacterHold),
+      this.characterItemsMax));
     return ps;
   }
 
@@ -1814,16 +1841,76 @@ export default class StatusModel {
       (item.status !== api.CharacterItem.statusCharacterHold || item.characterId !== this.character.id)) {
       if (info) {
         NotificationService.itemReleased.notifyWithParameter(info.name);
+        this.updateCharacter(this.character);
       }
     }
 
     ArrayUtil.addItem(this.store.items, item);
 
-    if (this.store.hasInitialized &&
-      item.status === api.CharacterItem.statusCharacterHold && item.characterId === this.character.id) {
-      if (info) {
+    if (this.store.hasInitialized && item.characterId === this.character.id && info) {
+      if (item.status === api.CharacterItem.statusCharacterHold) {
         NotificationService.itemGot.notifyWithParameter(info.name);
+        this.updateCharacter(this.character);
+      } else if (item.status === api.CharacterItem.statusCharacterPending) {
+        NotificationService.itemPending.notifyWithParameter(info.name);
       }
+    }
+  }
+
+  public addCharacterItem(item: number, status: number) {
+    if (!this.isUpdatingItems) {
+      this.isUpdatingItems = true;
+      api.Api.addCharacterItem(item, status)
+        .then(() => {
+          if (status === api.CharacterItem.statusCharacterHold) {
+            NotificationService.itemGotByPending.notify();
+          } else {
+            NotificationService.itemReleasedByPending.notify();
+          }
+        })
+        .catch((ex) => {
+          if (ex.data.code === api.ErrorCode.notMoreItemsError) {
+            NotificationService.itemGetFailedByPendingBecauseOfMax.notify();
+          } else {
+            NotificationService.itemGetFailedByPending.notify();
+          }
+        })
+        .finally(() => {
+          this.isUpdatingItems = false;
+        });
+    }
+  }
+
+  // #endregion
+
+  // #region CharacterSkill
+
+  private onCharacterSkillReceived(item: api.CharacterSkill) {
+    const info = Enumerable.from(def.CHARACTER_SKILL_TYPES).firstOrDefault((i) => i.id === item.type);
+    ArrayUtil.addItem(this.store.skills, item);
+
+    if (this.store.hasInitialized &&
+      (item.status === api.CharacterSkill.statusAvailable ||
+       item.status === api.CharacterSkill.statusAvailableByItem)) {
+      if (info) {
+        NotificationService.skillGot.notifyWithParameter(info.name);
+      }
+    }
+  }
+
+  public addSkill(skill: number) {
+    if (!this.isUpdatingSkills) {
+      this.isUpdatingSkills = true;
+      api.Api.addSkill(skill)
+        .then(() => {
+          NotificationService.skillGetSucceed.notify();
+        })
+        .catch(() => {
+          NotificationService.skillGetFailed.notify();
+        })
+        .finally(() => {
+          this.isUpdatingSkills = false;
+        });
     }
   }
 

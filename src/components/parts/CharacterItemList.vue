@@ -16,6 +16,25 @@
       </div>
       <div v-if="canEdit" class="select-cover" @click="$emit('input', item.type)"></div>
     </div>
+    <div v-show="isShowPendings && pendingTypes.length > 0" style="margin-top:48px">
+      <h2>受け取り保留中</h2>
+      <div
+        :class="{'item': true, 'selected': value.id === item.type.id, 'selectable': canEditPending}"
+        v-for="item in pendingTypes"
+        :key="item.data[0].id">
+        <div class="item-info">
+          <div class="standard">
+            <div class="name">{{ item.type.name }}</div>
+            <div class="params">
+              <span class="value-name">価格</span> <span class="value">{{ (isSell ? item.type.money / 2 : item.type.money) }}</span>
+              <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
+            </div>
+            <div class="description">{{ item.type.description }}</div>
+          </div>
+        </div>
+        <div v-if="canEditPending" class="select-cover" @click="$emit('input', item.type)"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -44,9 +63,16 @@ class CharacterItemListItem {
 export default class CharacterItemList extends Vue {
   @Prop() public items!: api.CharacterItem[];
   public itemTypes: CharacterItemListItem[] = [];
+  public pendingTypes: CharacterItemListItem[] = [];
   @Prop({
     default: false,
   }) public canEdit!: boolean;
+  @Prop({
+    default: false,
+  }) public canEditPending!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowPendings!: boolean;
   @Prop({
     default: false,
   }) public isSell!: boolean;
@@ -61,7 +87,13 @@ export default class CharacterItemList extends Vue {
   @Watch('isSell')
   @Watch('isHandOver')
   public onTypesChanged() {
-    this.itemTypes = Enumerable.from(this.items)
+    this.itemTypes = this.getItemTypes((i) => i.status !== api.CharacterItem.statusCharacterPending);
+    this.pendingTypes = this.getItemTypes((i) => i.status === api.CharacterItem.statusCharacterPending);
+  }
+
+  private getItemTypes(subject: (item: api.CharacterItem) => boolean): CharacterItemListItem[] {
+    return Enumerable.from(this.items)
+      .where((i) => subject(i))
       .groupBy((i) => i.type)
       .join(
         def.CHARACTER_ITEM_TYPES,

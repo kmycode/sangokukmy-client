@@ -57,7 +57,7 @@ export const COUNTRY_COLOR_NUM = 11;
  */
 export const DEFAULT_ICON_NUM = 98;
 
-export const RICE_BUY_MAX = 20000;
+export const RICE_BUY_MAX = 10000;
 
 export const PAY_SAFE_MAX = 100000;
 
@@ -657,12 +657,12 @@ export class FormationType {
                      public point: number = 0,
                      public name: string = '',
                      public descriptions: string[] = [],
-                     public subjectAppear?: (exists: FormationType[]) => boolean,
+                     public subjectAppear?: (exists: api.Formation[]) => boolean,
                      public canGet: boolean = true,
-                     public nextLevel: number = 0) {}
+                     public nextLevel: number[] = []) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', ['効果なし'], undefined, false, 1000),
+  new FormationType(0, 0, '通常', ['効果なし', '効果あり'], undefined, false, [100]),
 ];
 
 /**
@@ -678,4 +678,19 @@ export class CharacterItemType {
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 1000, '槍', '武力 +1'),
+];
+
+/**
+ * 技能
+ */
+export class CharacterSkillType {
+  public constructor(public id: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public point: number = 0,
+                     public subjectAppear?: (exists: api.CharacterSkill[]) => boolean) {}
+}
+export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
+  new CharacterSkillType(1, '武家 Lv.1', 'なにか', 0, undefined),
+  new CharacterSkillType(2, '武家 Lv.2', 'あるとね', 0, undefined),
 ];
