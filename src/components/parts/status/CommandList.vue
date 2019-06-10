@@ -95,7 +95,7 @@
       <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全て</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶数</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇数</button>
-      <button type="button" class="btn btn-light" @click="isOpenAxb = !isOpenAxb">ax+b</button>
+      <button type="button" :class="{'btn': true, 'btn-light': !isOpenAxb, 'btn-primary': isOpenAxb}" @click="isOpenAxb = !isOpenAxb">ax+b</button>
     </div>
     <div v-show="isOpenAxb" class="command-input-axb">
       <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0">
