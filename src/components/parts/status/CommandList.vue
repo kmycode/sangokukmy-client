@@ -267,7 +267,7 @@ $color-navigation-commands: #e0e0e0;
     padding: 0 4px 8px;
     background-color: $color-navigation-commands;
     input {
-      width: 4em;
+      width: 3.6em;
       padding: 0 8px;
       font-size: 1.4em;
       text-align: right;
