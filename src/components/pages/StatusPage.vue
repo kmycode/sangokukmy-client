@@ -469,21 +469,6 @@
           </div>
         </div>
       </div>
-      <!-- 能力強化 -->
-      <div v-show="isOpenTrainingDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">能力強化</h2>
-        <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 1)">武力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 2)">知力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 3)">統率</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 4)">人望</button>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenTrainingDialog = false">キャンセル</button>
-          </div>
-        </div>
-      </div>
       <!-- 登用 -->
       <div v-show="isOpenPromotionDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">登用</h2>
@@ -1206,7 +1191,6 @@ export default class StatusPage extends Vue {
   public isCustomSoldierTypeSelected: boolean = false;
   public isOpenSoldierDialog: boolean = false;
   public isOpenResearchSoldierDialog: boolean = false;
-  public isOpenTrainingDialog: boolean = false;
   public isOpenTownCharactersDialog: boolean = false;
   public isOpenTownDefendersDialog: boolean = false;
   public isOpenCountryCharactersDialog: boolean = false;
@@ -1265,7 +1249,7 @@ export default class StatusPage extends Vue {
   public callPrivateChatFocus?: EventObject;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
+    return this.isOpenSoldierDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
@@ -1279,9 +1263,7 @@ export default class StatusPage extends Vue {
   }
 
   public openCommandDialog(event: string) {
-    if (event === 'training') {
-      this.isOpenTrainingDialog = true;
-    } else if (event === 'soldier') {
+    if (event === 'soldier') {
       if (this.isCustomSoldierTypeSelected &&
           this.selectedCustomSoliderType.status !== api.CharacterSoldierType.statusAvailable) {
         this.isCustomSoldierTypeSelected = false;
@@ -1345,7 +1327,7 @@ export default class StatusPage extends Vue {
   }
 
   public closeDialogs() {
-    this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
+    this.isOpenSoldierDialog = this.isOpenTownCharactersDialog =
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =

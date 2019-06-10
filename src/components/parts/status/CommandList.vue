@@ -66,7 +66,14 @@
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')"><span class="redundant-text">能力</span>強化</button>
+        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenTrainingPopup = !isOpenTrainingPopup"><span class="redundant-text">能力</span>強化
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenTrainingPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 1)">武力</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 2)">知力</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 3)">統率</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 4)">人望</a>
+          </div>
+        </button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
         <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenItemPopup = !isOpenItemPopup">アイテム
@@ -160,6 +167,7 @@ export default class CommandListView extends Vue {
   private isOpenSecretaryPopup: boolean = false;
   private isOpenFormationPopup: boolean = false;
   private isOpenItemPopup: boolean = false;
+  private isOpenTrainingPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;
