@@ -283,15 +283,20 @@ export default class CommandInputer {
   }
 
   public insertCommands() {
-    this.editCommands(true);
+    this.editCommands(true, false);
   }
 
   public removeCommands() {
-    this.editCommands(false);
+    this.editCommands(false, false);
   }
 
-  private editCommands(isInsert: boolean) {
+  public loopCommands() {
+    this.editCommands(false, true);
+  }
+
+  private editCommands(isInsert: boolean, isLoop: boolean) {
     let count = 0;
+    let countAfterSelection = 0;
     let isCounting = false;
     const pushCommands: api.CharacterCommand[] = [];
     let selectedCommands: api.CharacterCommand[] = [];
@@ -309,12 +314,13 @@ export default class CommandInputer {
           selectedCommands = [];
         }
         count++;
-        if (isInsert) {
+        if (isInsert || isLoop) {
           selectedCommands.push(api.CharacterCommand.clone(c));
         }
       } else {
         if (isCounting) {
           isCounting = false;
+          countAfterSelection = 0;
           if (isInsert) {
             for (let j = 0; j < count; j++) {
               const cmd = new api.CharacterCommand();
@@ -326,7 +332,12 @@ export default class CommandInputer {
             pushCommands.push(sc);
           });
         }
-        pushCommands.push(api.CharacterCommand.clone(c));
+        if (count > 0 && isLoop) {
+          pushCommands.push(api.CharacterCommand.clone(selectedCommands[countAfterSelection % count]));
+        } else {
+          pushCommands.push(api.CharacterCommand.clone(c));
+        }
+        countAfterSelection++;
       }
     });
 
@@ -369,6 +380,8 @@ export default class CommandInputer {
 
       if (isInsert) {
         NotificationService.commandInserted.notify();
+      } else if (isLoop) {
+        NotificationService.commandLooped.notify();
       } else {
         NotificationService.commandRemoved.notify();
       }

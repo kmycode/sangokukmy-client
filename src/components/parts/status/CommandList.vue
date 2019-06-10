@@ -105,8 +105,9 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿入<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削除<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿<span class="redundant-text">入</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削<span class="redundant-text">除</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.loopCommands()">繰返<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
@@ -223,16 +224,18 @@ $color-navigation-commands: #e0e0e0;
       background-color: #6bf;
     }
   }
+  button {
+    @include media-query-lower(sm) {
+      .redundant-text {
+        display: none;
+      }
+    }
+  }
   .commands {
     display: flex;
     flex-flow: row wrap;
     button {
       margin: 4px 4px 0 0;
-      @include media-query-lower(sm) {
-        .redundant-text {
-          display: none;
-        }
-      }
       &.btn-light {
         background-color: #e7e7e7;
         &:hover {
