@@ -1,9 +1,9 @@
 <template>
   <div class="skill-list">
-    <div class="item">
-      <div class="skill-info"
-           v-for="skill in skillTypes"
-           :key="skill.type.id">
+    <div class="item"
+         v-for="skill in skillTypes"
+         :key="skill.type.id">
+      <div class="skill-info">
         <div class="standard">
           <div class="name">{{ skill.type.name }}</div>
           <div class="description">{{ skill.type.description }}</div>

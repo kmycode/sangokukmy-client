@@ -219,10 +219,30 @@ export default class StatusModel {
   }
 
   public get characterItemsMax(): number {
-    return 3;
+    let max = 3;
+    const skills = this.characterSkills;
+
+    if (skills.some((s) => s.type === 11)) {
+      max += 2;
+    }
+    if (skills.some((s) => s.type === 15)) {
+      max += 2;
+    }
+
+    return max;
+  }
+
+  public get characterSkills(): api.CharacterSkill[] {
+    return Enumerable
+      .from(this.store.skills)
+      .where((i) => i.characterId === this.character.id)
+      .toArray();
   }
 
   public get characterRiceBuyMax(): number {
+    if (this.characterSkills.some((s) => s.type === 12)) {
+      return def.RICE_BUY_MAX + 5000;
+    }
     return def.RICE_BUY_MAX;
   }
 
@@ -404,6 +424,13 @@ export default class StatusModel {
                 .from(this.store.policies)
                 .where((p) => p.countryId === this.character.countryId)
                 .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
+              if (can) {
+                types.push(t);
+              }
+            } else if (t.id === 11) {
+              const can = Enumerable
+                .from(this.store.skills)
+                .any((s) => s.characterId === this.character.id && s.type === 4);
               if (can) {
                 types.push(t);
               }
@@ -1298,11 +1325,13 @@ export default class StatusModel {
       if (this.character.countryId === war.requestedCountryId) {
         NotificationService.townWarSentByMyCountry.notifyWithParameter(
           api.GameDateTime.toFormatedString(war.gameDate), war.town.name);
+        this.commands.updateCommandListInformations();
       } else if (this.character.countryId === war.insistedCountryId) {
         NotificationService.townWarSentByOtherCountry.notifyWithParameter(
           api.GameDateTime.toFormatedString(war.gameDate),
           war.requestedCountry.name,
           war.town.name);
+        this.commands.updateCommandListInformations();
       }
     }
   }
@@ -1890,8 +1919,8 @@ export default class StatusModel {
     ArrayUtil.addItem(this.store.skills, item);
 
     if (this.store.hasInitialized &&
-      (item.status === api.CharacterSkill.statusAvailable ||
-       item.status === api.CharacterSkill.statusAvailableByItem)) {
+        item.status === api.CharacterSkill.statusAvailable &&
+        item.characterId === this.character.id) {
       if (info) {
         NotificationService.skillGot.notifyWithParameter(info.name);
       }

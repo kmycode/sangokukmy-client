@@ -1011,7 +1011,10 @@ export class CharacterSkill {
   public static readonly typeId: number = 37;
 
   public static readonly statusAvailable = 1;
-  public static readonly statusAvailableByItem = 2;
+
+  public static readonly typeStrong = 1;
+  public static readonly typeIntellect = 2;
+  public static readonly typeMerchant = 3;
 
   public constructor(public id: number,
                      public type: number,
@@ -1496,6 +1499,7 @@ export class Api {
           popularity: chara.popularity,
           townId: chara.townId,
           message: chara.message,
+          from: chara.from,
         },
         icon: {
           type: icon.type,

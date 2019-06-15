@@ -17,11 +17,12 @@
           </button>
           <span v-if="message.type === 9" style="color:red;font-weight:bold">承諾しました</span>
           <span v-if="message.type === 10" style="color:blue;font-weight:bold">丁重に断りました</span>
+          <span v-if="message.type === 11" style="color:gray;font-weight:bold">この登用は無効です</span>
         </div>
       </div>
       <div class="message-footer">
         <span v-if="message.receiverName" class="character-name-group">
-          <span class="character-name">{{ message.character.name }}</span> から <span class="character-name">{{ message.receiverName }}</span> ヘ
+          <span class="character-name">{{ message.character.name }}</span> ({{ countryName }}) から <span class="character-name">{{ message.receiverName }}</span> ヘ
         </span>
         <span v-else class="character-name-group">
           <span class="character-name">{{ message.character.name }}</span>
@@ -70,6 +71,15 @@ export default class ChatMessageItem extends Vue {
       return country.colorId;
     } else {
       return 0;
+    }
+  }
+
+  private get countryName(): string {
+    const country = ArrayUtil.find(this.countries, this.message.characterCountryId);
+    if (country) {
+      return country.name;
+    } else {
+      return '無所属';
     }
   }
 }

@@ -302,6 +302,10 @@ export default class TopPage extends Vue {
                   this.onMapLogReceived(l, true);
                   this.lastMapLogId = l.id;
                 });
+                this.mlogs = Enumerable
+                  .from(this.mlogs)
+                  .orderByDescending((m) => api.DateTime.toDate(m.date))
+                  .toArray();
               } else {
                 this.isNoMoreMapLogs = true;
               }

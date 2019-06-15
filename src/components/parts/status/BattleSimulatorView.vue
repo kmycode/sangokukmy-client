@@ -206,14 +206,17 @@ class BattleCharacter {
       let enemySoldierNumber = enemy.soldierNumber;
 
       for (let t = 0; t < 50; t++) {
-        let myDamage = Math.max(Math.random() * enemy.attack, 1);
-        let enemyDamage = Math.max(Math.random() * this.attack, 1);
+        let myAttack = this.attack;
+        let enemyAttack = enemy.attack;
 
         if (this.isRush()) {
-          enemyDamage += this.rushAttack;
+          myAttack += this.rushAttack;
         } else if (enemy.isRush()) {
-          myDamage += enemy.rushAttack;
+          enemyAttack += enemy.rushAttack;
         }
+
+        const myDamage = Math.max(Math.random() * enemyAttack, 1);
+        const enemyDamage = Math.max(Math.random() * myAttack, 1);
 
         mySoldierNumber -= myDamage;
         enemySoldierNumber -= enemyDamage;

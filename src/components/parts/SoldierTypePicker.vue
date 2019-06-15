@@ -8,7 +8,7 @@
         <div class="standard">
           <div class="name"><span class="kind kind-wall" v-if="soldier.kind === 2">壁</span>{{ soldier.name }}</div>
           <div class="detail">
-            <span class="value-name">金</span><span class="value">{{ soldier.money }}<span v-if="!soldier.isCustom">0</span></span>
+            <span class="value-name">金</span><span class="value">{{ getSoldierMoney(soldier) }}<span v-if="!soldier.isCustom">0</span></span>
             <span v-if="!soldier.isCustom" class="value-name">攻撃力</span><span class="kind kind-strong" v-if="soldier.kind === 0 || soldier.kind === 2">武力</span><span class="kind kind-intellect" v-if="soldier.kind === 1">知力</span><span class="kind kind-popularity" v-if="soldier.kind === 3">人望</span><span class="kind-plus">+</span><span v-if="!soldier.isCustom" class="value">{{ soldier.attackPower }}</span>
             <span v-if="!soldier.isCustom" class="value-name">防御力</span><span v-if="!soldier.isCustom" class="value">{{ soldier.defencePower }}</span>
           </div>
@@ -38,6 +38,16 @@ export default class SoldierTypePicker extends Vue {
   @Prop({
     default: () => new def.SoldierType(-1),
   }) public value!: def.SoldierType;
+  @Prop({
+    default: () => [],
+  }) public skills!: api.CharacterSkill[];
+
+  public getSoldierMoney(type: def.SoldierType): number {
+    if (this.skills.some((s) => s.type === 3)) {
+      return Math.floor(type.money * 0.9);
+    }
+    return type.money;
+  }
 }
 </script>
 

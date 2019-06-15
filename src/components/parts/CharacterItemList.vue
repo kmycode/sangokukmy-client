@@ -8,7 +8,7 @@
         <div class="standard">
           <div class="name">{{ item.type.name }}</div>
           <div class="params">
-            <span class="value-name">価格</span> <span class="value">{{ (isSell ? item.type.money / 2 : item.type.money) }}</span>
+            <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
           </div>
           <div class="description">{{ item.type.description }}</div>
@@ -78,10 +78,16 @@ export default class CharacterItemList extends Vue {
   }) public isSell!: boolean;
   @Prop({
     default: false,
+  }) public isBuy!: boolean;
+  @Prop({
+    default: false,
   }) public isHandOver!: boolean;
   @Prop({
     default: () => new def.CharacterItemType(-1),
   }) public value!: def.CharacterItemType;
+  @Prop({
+    default: () => [],
+  }) public skills!: api.CharacterSkill[];
 
   @Watch('items')
   @Watch('isSell')
@@ -103,6 +109,17 @@ export default class CharacterItemList extends Vue {
       .where((i) => this.isHandOver ? i.type.canHandOver : true)
       .where((i) => this.isSell ? i.type.canSell : true)
       .toArray();
+  }
+
+  private getItemMoney(item: CharacterItemListItem): number {
+    if (this.isSell) {
+      return item.type.money / 2;
+    } else if (this.isBuy) {
+      if (this.skills.some((s) => s.type === 13)) {
+        return Math.floor(item.type.money * 0.9);
+      }
+    }
+    return item.type.money;
   }
 }
 </script>

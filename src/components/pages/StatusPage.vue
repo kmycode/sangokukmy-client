@@ -412,6 +412,7 @@
             <div class="character-list">
               <SoldierTypePicker
                 :soldierTypes="model.selectableSoldierTypes"
+                :skills="model.characterSkills"
                 v-model="selectedSoldierType"/>
             </div>
             <div class="soldier-input">
@@ -1001,6 +1002,7 @@
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム</h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
+                             :skills="model.characterSkills"
                               v-model="selectedCharacterItemType"
                               isShowPendings="true"
                               canEditPending="true"
@@ -1022,7 +1024,9 @@
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム購入</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterTownItems"
+                             :skills="model.characterSkills"
                               canEdit="true"
+                              isBuy="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>
@@ -1040,6 +1044,7 @@
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム売却</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
+                             :skills="model.characterSkills"
                               canEdit="true"
                               isSell="true"
                               v-model="selectedCharacterItemType"
@@ -1068,6 +1073,7 @@
             </div>
             <div class="item-list">
               <CharacterItemList :items="model.characterItems"
+                                 :skills="model.characterSkills"
                                  canEdit="true"
                                  isHandOver="true"
                                  v-model="selectedCharacterItemType"/>
@@ -1088,7 +1094,7 @@
       <div v-show="isOpenSkillDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">技能</h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
-            <SkillList :skills="model.store.skills"
+            <SkillList :skills="model.characterSkills"
                        :skillPoint="model.character.skillPoint"
                        v-model="selectedSkillType"
                        style="flex:1"/>
