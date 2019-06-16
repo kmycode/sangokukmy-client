@@ -4,7 +4,11 @@
     <div class="item">
       <div class="formation-info">
         <div class="standard">
-          <div class="name">{{ currentFormationTypeInfo.name }}</div>
+          <div class="name responsive-header">{{ currentFormationTypeInfo.name }}</div>
+            <div v-show="isShowChangePoint" class="point">
+              <span class="value-name">レベル</span> <span class="value">{{ currentFormation.level }}</span>
+              <span class="value-name">Ex</span> <span class="value">{{ currentFormation.experience }}</span>
+            </div>
           <div class="description">{{ currentFormationTypeInfo.descriptions[currentFormation.level - 1] }}</div>
         </div>
       </div>
@@ -18,7 +22,7 @@
         :key="formation.type.id">
         <div class="formation-info">
           <div class="standard">
-            <div class="name">{{ formation.type.name }}</div>
+            <div class="name responsive-header">{{ formation.type.name }}</div>
             <div v-show="isShowChangePoint" class="point">
               <span class="value-name">ポイント</span> <span class="value">50</span>
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
@@ -95,7 +99,7 @@ export default class FormationList extends Vue {
 
   @Watch('formations')
   @Watch('currentFormationType')
-  public onTypesChanged() {
+  public onFormationChanged() {
     this.formationTypes = Enumerable
       .from(this.formations)
       .select((p) => Enumerable.from(def.FORMATION_TYPES).firstOrDefault((pp) => pp.id === p.type))
@@ -109,7 +113,7 @@ export default class FormationList extends Vue {
       .from(def.FORMATION_TYPES)
       .where((f) => !Enumerable.from(this.formationTypes).any((ff) => ff.id === f.id))
       .where((f) => f.canGet)
-      .where((f) => f.subjectAppear === undefined || f.subjectAppear(this.formationTypes))
+      .where((f) => f.subjectAppear === undefined || f.subjectAppear(this.formations))
       .toArray();
     this.currentFormation = Enumerable
       .from(this.formations)
@@ -125,6 +129,7 @@ export default class FormationList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 
 .formation-list {
@@ -161,7 +166,6 @@ export default class FormationList extends Vue {
 
     .formation-info {
       .name {
-        font-size: 1.6rem;
         flex: 1;
       }
 

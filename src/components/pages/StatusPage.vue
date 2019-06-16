@@ -55,8 +55,9 @@
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="commands">
-              <button v-if="false" type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
-              <button v-if="false" type="button" class="btn btn-info" @click="isOpenCharacterItemDialog = true">アイテム</button>
+              <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
+              <button type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
+              <button type="button" class="btn btn-info" @click="isOpenCharacterItemDialog = true">アイテム</button>
               <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
                     v-for="rein in model.store.reinforcements"
@@ -121,7 +122,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
+            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
@@ -411,6 +412,7 @@
             <div class="character-list">
               <SoldierTypePicker
                 :soldierTypes="model.selectableSoldierTypes"
+                :skills="model.characterSkills"
                 v-model="selectedSoldierType"/>
             </div>
             <div class="soldier-input">
@@ -465,21 +467,6 @@
           </div>
           <div class="right-side">
             <button v-show="selectedCustomSoliderType.id" class="btn btn-primary" @click="isOpenResearchSoldierDialog = false; model.commands.inputer.inputSoldierResearchCommand(38, selectedCustomSoliderType.id)">承認</button>
-          </div>
-        </div>
-      </div>
-      <!-- 能力強化 -->
-      <div v-show="isOpenTrainingDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">能力強化</h2>
-        <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 1)">武力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 2)">知力</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 3)">統率</button>
-          <button class="btn btn-secondary" @click="isOpenTrainingDialog = false; model.commands.inputer.inputTrainingCommand(18, 4)">人望</button>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenTrainingDialog = false">キャンセル</button>
           </div>
         </div>
       </div>
@@ -745,10 +732,10 @@
                 <div class="label">現在の相場</div><div class="value">{{ model.characterTownRiceTrend }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">金20000 を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
+                <div class="label">金{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">米20000 を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
+                <div class="label">米{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
               </div>
             </div>
             <div class="commands">
@@ -770,7 +757,7 @@
             <button class="btn btn-light" @click="isOpenRiceDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= 20000" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
+            <button v-show="selectedRiceStatus !== 0 && payRiceOrMoney > 0 && payRiceOrMoney <= model.characterRiceBuyMax" class="btn btn-primary" @click="model.commands.inputer.inputRiceCommand(19, selectedRiceStatus, payRiceOrMoney); isOpenRiceDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -950,7 +937,7 @@
       </div>
       <!-- 陣形 -->
       <div v-show="isOpenFormationDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形</h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -971,7 +958,7 @@
       </div>
       <!-- 陣形追加 -->
       <div v-show="isOpenFormationAddDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形追加</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形追加</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -991,7 +978,7 @@
       </div>
       <!-- 陣形変更 -->
       <div v-show="isOpenFormationChangeDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">陣形変更</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形変更</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -1012,26 +999,35 @@
       </div>
       <!-- アイテム一覧 -->
       <div v-show="isOpenCharacterItemDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">アイテム</h2>
-        <div class="dialog-content" style="display:flex;flex-direction:column">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム</h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
+                             :skills="model.characterSkills"
                               v-model="selectedCharacterItemType"
+                              isShowPendings="true"
+                              canEditPending="true"
                               style="flex:1"/>
+          <div class="loading" v-show="model.isUpdatingItems"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCharacterItemDialog = false">閉じる</button>
+            <button class="btn btn-danger" v-show="selectedCharacterItemType.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.id, 1)">拒否</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-light" @click="isOpenCharacterItemDialog = false">閉じる</button>
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.id, 3)">承認</button>
           </div>
         </div>
       </div>
       <!-- アイテム購入 -->
       <div v-show="isOpenCharacterItemBuyDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">アイテム購入</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム購入</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
+          <div class="alert alert-warning">次に都市ごとのアイテムがシャッフルされるのは <span style="font-weight:bold">{{ model.nextItemShuffleYear }}</span> 年 1 月 です。先行入力のときはこれを超えないよう注意してください</div>
           <CharacterItemList :items="model.characterTownItems"
+                             :skills="model.characterSkills"
                               canEdit="true"
+                              isBuy="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>
@@ -1046,9 +1042,10 @@
       </div>
       <!-- アイテム売却 -->
       <div v-show="isOpenCharacterItemSellDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">アイテム売却</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム売却</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
+                             :skills="model.characterSkills"
                               canEdit="true"
                               isSell="true"
                               v-model="selectedCharacterItemType"
@@ -1077,6 +1074,7 @@
             </div>
             <div class="item-list">
               <CharacterItemList :items="model.characterItems"
+                                 :skills="model.characterSkills"
                                  canEdit="true"
                                  isHandOver="true"
                                  v-model="selectedCharacterItemType"/>
@@ -1090,6 +1088,25 @@
           </div>
           <div class="right-side">
             <button class="btn btn-primary" v-show="targetCharacter.id > 0 && selectedCharacterItemType.id > 0" @click="model.commands.inputer.inputHandOverItemCommand(52, selectedCharacterItemType.id, targetCharacter.id); isOpenCharacterItemHandOverDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 技能 -->
+      <div v-show="isOpenSkillDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">技能</h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
+            <SkillList :skills="model.characterSkills"
+                       :skillPoint="model.character.skillPoint"
+                       v-model="selectedSkillType"
+                       style="flex:1"/>
+          <div class="loading" v-show="model.isUpdatingSkills"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenSkillDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedSkillType.id >= 0 && selectedSkillType.point <= model.character.skillPoint" @click="model.addSkill(selectedSkillType.id)">承認</button>
           </div>
         </div>
       </div>
@@ -1121,6 +1138,7 @@ import TownWarView from '@/components/parts/status/TownWarView.vue';
 import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import FormationList from '@/components/parts/FormationList.vue';
+import SkillList from '@/components/parts/SkillList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
@@ -1161,6 +1179,7 @@ import EventObject from '@/models/common/EventObject';
     CountryPolicyList,
     FormationList,
     CharacterItemList,
+    SkillList,
     RiceSimulatorView,
   },
 })
@@ -1179,7 +1198,6 @@ export default class StatusPage extends Vue {
   public isCustomSoldierTypeSelected: boolean = false;
   public isOpenSoldierDialog: boolean = false;
   public isOpenResearchSoldierDialog: boolean = false;
-  public isOpenTrainingDialog: boolean = false;
   public isOpenTownCharactersDialog: boolean = false;
   public isOpenTownDefendersDialog: boolean = false;
   public isOpenCountryCharactersDialog: boolean = false;
@@ -1208,6 +1226,7 @@ export default class StatusPage extends Vue {
   public isOpenCharacterItemBuyDialog: boolean = false;
   public isOpenCharacterItemSellDialog: boolean = false;
   public isOpenCharacterItemHandOverDialog: boolean = false;
+  public isOpenSkillDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -1231,12 +1250,13 @@ export default class StatusPage extends Vue {
   public selectedCountryPolicyType: def.CountryPolicyType = new def.CountryPolicyType(-1);
   public selectedFormationType: def.FormationType = new def.FormationType(-1);
   public selectedCharacterItemType: def.CharacterItemType = new def.CharacterItemType(-1);
+  public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
 
   public get isOpenDialog(): boolean {
-    return this.isOpenSoldierDialog || this.isOpenTrainingDialog || this.isOpenTownCharactersDialog
+    return this.isOpenSoldierDialog || this.isOpenTownCharactersDialog
       || this.isOpenTownDefendersDialog || this.isOpenCountryCharactersDialog
       || this.isOpenAllianceDialog || this.isOpenWarDialog || this.isOpenUnitsDialog
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
@@ -1246,13 +1266,11 @@ export default class StatusPage extends Vue {
       || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
-      || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog;
+      || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog;
   }
 
   public openCommandDialog(event: string) {
-    if (event === 'training') {
-      this.isOpenTrainingDialog = true;
-    } else if (event === 'soldier') {
+    if (event === 'soldier') {
       if (this.isCustomSoldierTypeSelected &&
           this.selectedCustomSoliderType.status !== api.CharacterSoldierType.statusAvailable) {
         this.isCustomSoldierTypeSelected = false;
@@ -1316,7 +1334,7 @@ export default class StatusPage extends Vue {
   }
 
   public closeDialogs() {
-    this.isOpenSoldierDialog = this.isOpenTrainingDialog = this.isOpenTownCharactersDialog =
+    this.isOpenSoldierDialog = this.isOpenTownCharactersDialog =
       this.isOpenTownDefendersDialog = this.isOpenCountryCharactersDialog =
       this.isOpenAllianceDialog = this.isOpenWarDialog = this.isOpenUnitsDialog =
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
@@ -1327,7 +1345,7 @@ export default class StatusPage extends Vue {
       this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
-      false;
+      this.isOpenSkillDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

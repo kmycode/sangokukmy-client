@@ -57,7 +57,7 @@ export const COUNTRY_COLOR_NUM = 11;
  */
 export const DEFAULT_ICON_NUM = 98;
 
-export const RICE_BUY_MAX = 20000;
+export const RICE_BUY_MAX = 10000;
 
 export const PAY_SAFE_MAX = 100000;
 
@@ -79,15 +79,15 @@ export class SoldierType {
                      public requestedPolicyType?: number) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
-  new SoldierType(1, 0, '雑兵', 1, 0, '0', '0'),
+  new SoldierType(1, 0, '剣兵', 1, 0, '0', '0'),
   new SoldierType(2, 0, '禁兵', 1, 0, '15', '15'),
-  new SoldierType(500, 0, '雑兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
-  new SoldierType(3, 0, '軽歩兵',  2, 100, '10', '0', '軽装備の歩兵'),
+  new SoldierType(500, 0, '剣兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
+  new SoldierType(3, 0, '軽戟兵',  2, 100, '10', '0', '軽装備の戟兵'),
   new SoldierType(4, 0, '弓兵',    3, 200,  '0', '10', '弓を持った兵士'),
   new SoldierType(5, 0, '軽騎兵',  5, 300, '35', '10', '軽装備の騎兵'),
   new SoldierType(6, 0, '強弩兵',  7, 400, '10', '30', '弩を持った兵士'),
   new SoldierType(7, 1, '神鬼兵',  10, 500, '武力', '0', '基礎能力として武力の代わりに知力を用いた兵種。武力が攻撃力に補正として加算される'),
-  new SoldierType(8, 0, '重歩兵',  12, 600, '50', '30', '重装備の歩兵'),
+  new SoldierType(8, 0, '重戟兵',  12, 600, '50', '30', '重装備の戟兵'),
   new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, 0, '連弩兵', 20, 900, '90', '40', '連弩を持った兵士'),
@@ -392,6 +392,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     }
   }),
   new CommandNameResolver(53, '陣形研究'),
+  new CommandNameResolver(54, '都市巡回'),
+  new CommandNameResolver(55, '都市投資'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -580,30 +582,27 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(19, 3000, '城塞国家', '城塞都市につき政策ポイント +3。首都の下敷きが城塞都市の場合追加 +3',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
 
-  new CountryPolicyType(5, 4000, '経済評論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(5, 4000, '経済論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5)),
   new CountryPolicyType(25, 4000, '徴収', '国庫納入する収入余剰最大 +2000',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
   new CountryPolicyType(27, 2000, '増給', '武将収入の階級加算 +50',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 25)),
+  new CountryPolicyType(10, 2000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 27)),
   new CountryPolicyType(26, 4000, '壁に耳', '国庫納入する収入余剰の最大 x2',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 27) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+  new CountryPolicyType(11, 2000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 26)),
   new CountryPolicyType(36, 4000, '障子に目', '国庫納入する収入余剰の最大 x2',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 26) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 11)),
+  new CountryPolicyType(12, 3000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 36)),
   new CountryPolicyType(6, 3000, '災害対策', '洪水、地震の被害をなくす',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5)),
   new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
-
-  new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万'),
-  new CountryPolicyType(10, 2000, '地下貯蔵', '地下に財産を貯蔵する。国庫最高 +100万',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
-  new CountryPolicyType(11, 2000, '胃の中', '人間の胃の中に袋に入った粉状の財産を貯蔵する。国庫最高 +100万',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 10)),
-  new CountryPolicyType(12, 3000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 11)),
 
   new CountryPolicyType(4, 3000, '人材開発', '政務庁が利用可能になる。政務官 +1名'),
   new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
@@ -612,41 +611,29 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
   new CountryPolicyType(33, 3000, '号令', '政務官部隊長が雇用可能',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 15)),
-  new CountryPolicyType(24, 3000, '施設連携', '強化系都市施設効果 +7',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 33)),
   new CountryPolicyType(16, 2000, '人情国家', '仁官数につき毎ターン政策ポイント +8',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 24)),
-  new CountryPolicyType(34, 2000, '採用策', '政務官 +1',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 33)),
+  new CountryPolicyType(24, 3000, '施設連携', '強化系都市施設効果 +7',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 16)),
+  new CountryPolicyType(34, 2000, '採用策', '政務官 +1',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 24)),
   new CountryPolicyType(35, 2000, '武官の肇', '取得から 144 ターン武力と知力の高い方を内政に使用。文官国家をブースト',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
   new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名'),
 
   new CountryPolicyType(7, 3000, '賊の監視', '賊の被害を未然に防ぐ'),
-  new CountryPolicyType(21, 2000, '攻防の礎', '守兵のランクがBになる',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
   new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 7)),
   new CountryPolicyType(29, 2000, '正義とは', '義賊の効果増大',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 13)),
-  new CountryPolicyType(30, 3000, '檄', '義勇兵が徴兵可能',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 29) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
-  new CountryPolicyType(22, 2000, '土塁', '守兵のランクがCになる',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
-  new CountryPolicyType(23, 3000, '石城', '守兵のランクがDになる',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 22) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
   new CountryPolicyType(31, 4000, '攻城', '井闌1小隊あたり徴兵コスト -50',
-    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 21) &&
-            ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
-  new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、常に城壁攻撃力 +60',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 29)),
+  new CountryPolicyType(30, 3000, '檄', '義勇兵が徴兵可能',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 31)),
+  new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、攻城属性を除き、常に城壁攻撃力 +60',
+    (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 30)),
 
-  new CountryPolicyType(8, 5000000, '連戦戦術', '連戦の戦術が利用可能になる', undefined, false),
-  new CountryPolicyType(9, 5000000, '突撃戦術', '突撃の戦術が利用可能になる', undefined, false),
-  new CountryPolicyType(3, 4000, '兵種開発', '兵種研究所が利用可能になる', undefined, false),
+  new CountryPolicyType(37, 0, '胡人徴発', '重騎兵の徴兵コスト /2', undefined, false),
 ];
 
 /**
@@ -657,12 +644,12 @@ export class FormationType {
                      public point: number = 0,
                      public name: string = '',
                      public descriptions: string[] = [],
-                     public subjectAppear?: (exists: FormationType[]) => boolean,
+                     public subjectAppear?: (exists: api.Formation[]) => boolean,
                      public canGet: boolean = true,
-                     public nextLevel: number = 0) {}
+                     public nextLevel: number[] = []) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', ['効果なし'], undefined, false, 1000),
+  new FormationType(0, 0, '通常', ['効果なし', '攻撃力 +1', '攻撃力 +2', '攻撃力 +4', '攻撃力 +8'], undefined, false, [2000, 3000, 6000, 10000]),
 ];
 
 /**
@@ -677,5 +664,66 @@ export class CharacterItemType {
                      public canHandOver: boolean = true) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
-  new CharacterItemType(1, 1000, '槍', '武力 +1'),
+  new CharacterItemType(1, 5000, '槍', '武力 +1'),
+  new CharacterItemType(2, 5000, '戟', '武力 +1'),
+  new CharacterItemType(3, 5000, '弓', '武力 +1'),
+  new CharacterItemType(4, 5000, '大金槌', '武力 +1'),
+  new CharacterItemType(5, 15000, '三尖両刃刀', '武力 +3'),
+  new CharacterItemType(6, 15000, '鎖鉄球', '武力 +3'),
+  new CharacterItemType(7, 15000, '麒麟牙', '武力 +3'),
+  new CharacterItemType(8, 15000, '流星槌', '武力 +3'),
+  new CharacterItemType(9, 15000, '金蛇剣', '武力 +3'),
+  new CharacterItemType(10, 28000, '飛燕', '武力 +5'),
+  new CharacterItemType(11, 28000, '古錠刀', '武力 +5'),
+  new CharacterItemType(12, 28000, '柳葉刀', '武力 +5'),
+  new CharacterItemType(13, 28000, '鳳嘴刀', '武力 +5'),
+  new CharacterItemType(14, 55000, '蚩尤砕', '武力 +10'),
+  new CharacterItemType(15, 55000, '玄鉄剣', '武力 +10'),
+  new CharacterItemType(16, 55000, '碧銘剣', '武力 +10'),
+  new CharacterItemType(17, 55000, '青紅の剣', '武力 +10'),
+  new CharacterItemType(18, 55000, '倚天剣', '武力 +10'),
+  new CharacterItemType(19, 78000, '雌雄一対の剣', '武力 +15', false),
+  new CharacterItemType(20, 78000, '竜胆', '武力 +15', false),
+  new CharacterItemType(21, 78000, '青龍堰月刀', '武力 +15', false),
+  new CharacterItemType(22, 105000, '方天画戟', '武力 +20', false),
+  new CharacterItemType(23, 105000, '神龍の剣', '武力 +20', false, false),
+  new CharacterItemType(24, 5000, '平蛮指掌図', '知力 +1'),
+  new CharacterItemType(25, 5000, '太平妖術の書', '知力 +1'),
+  new CharacterItemType(26, 15000, '墨子', '知力 +3'),
+  new CharacterItemType(27, 15000, '六韜', '知力 +3'),
+  new CharacterItemType(28, 28000, '西蜀地形図', '知力 +5'),
+  new CharacterItemType(29, 28000, '遁甲天書', '知力 +5'),
+  new CharacterItemType(30, 28000, '孫子の兵法書', '知力 +5'),
+  new CharacterItemType(31, 55000, '青嚢書', '知力 +10'),
+  new CharacterItemType(32, 55000, '孟徳新書', '知力 +10'),
+  new CharacterItemType(33, 78000, '兵法二十四編', '知力 +15'),
+  new CharacterItemType(34, 105000, '信仰新書', '知力 +20'),
+];
+
+/**
+ * 技能
+ */
+export class CharacterSkillType {
+  public constructor(public id: number = 0,
+                     public name: string = '',
+                     public description: string = '',
+                     public point: number = 0,
+                     public subjectAppear?: (exists: api.CharacterSkill[]) => boolean) {}
+}
+export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
+  new CharacterSkillType(1, '武家 Lv.1', '毎月武力Ex +7', 0, (_) => false),
+  new CharacterSkillType(2, '武家 Lv.2', '攻撃力 +20', 10, (skills) => skills.some((s) => s.type === 1)),
+  new CharacterSkillType(3, '武家 Lv.3', '徴兵に必要な金 -10%', 10, (skills) => skills.some((s) => s.type === 2)),
+  new CharacterSkillType(4, '武家 Lv.4', '兵種 連弩兵、攻撃力 +20、突撃確率 +2%、突撃威力 +75', 10, (skills) => skills.some((s) => s.type === 3)),
+  new CharacterSkillType(5, '武家 Lv.5', 'コマンド 都市巡回', 10, (skills) => skills.some((s) => s.type === 4)),
+  new CharacterSkillType(6, '文官 Lv.1', '毎月知力Ex +7', 0, (_) => false),
+  new CharacterSkillType(7, '文官 Lv.2', '内政効果 +40%', 10, (skills) => skills.some((s) => s.type === 6)),
+  new CharacterSkillType(8, '文官 Lv.3', '政策開発時、未取得政策ブースト確率 +0.4%', 10, (skills) => skills.some((s) => s.type === 7)),
+  new CharacterSkillType(9, '文官 Lv.4', '護衛属性含む兵種使用時、防御力 +40', 10, (skills) => skills.some((s) => s.type === 8)),
+  new CharacterSkillType(10, '文官 Lv.5', '内政効果 +40%', 10, (skills) => skills.some((s) => s.type === 9)),
+  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2', 0, (_) => false),
+  new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000', 10, (skills) => skills.some((s) => s.type === 11)),
+  new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -10%', 10, (skills) => skills.some((s) => s.type === 12)),
+  new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 10, (skills) => skills.some((s) => s.type === 13)),
+  new CharacterSkillType(15, '商人 Lv.5', 'アイテム上限 +2', 10, (skills) => skills.some((s) => s.type === 14)),
 ];

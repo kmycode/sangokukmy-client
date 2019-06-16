@@ -86,37 +86,61 @@
         <div style="margin:8px 0">
           自分に向いた能力を高めに設定しましょう。戦争参加する場合、統率は最低でも50は確保します
         </div>
-        <div :class="{ 'form-row': true, 'error': !isOkStrong, }">
-          <div class="label">武力（戦争参加／時間のある方／深夜遊べる方向け）</div>
+        <div :class="{ 'form-row': true, 'error': !isOkFrom, }">
+          <div class="label">出身</div>
           <div class="field">
-            <input type="number" :max="extraData.attributeMax" min="5" v-model="character.strong">
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 1, 'btn-secondary': character.from === 1, }" @click="onFromChanged(1)">武家</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">文官</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
+          </div>
+          <div class="detail">
+            出身を指定してください。出身に合った能力が自動で入力されます
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkSumOfAttributes || !isOkStrong || !isOkIntellect || !isOkLeadership || !isOkPopularity, }">
+          <div class="label">武将能力の編集</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isEditAttributes, }" @click="isEditAttributes ^= true">直接編集する</button>
+          </div>
+          <div class="detail">
+            能力を自分で編集する場合は、チェックしてください。なお、プログラムミスで能力値に不正な値が設定されエラーになることもあります。その場合も手動での編集が必要になります
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkStrong, }">
+          <div class="label">武力</div>
+          <div class="field">
+            <input v-show="isEditAttributes" type="number" :max="extraData.attributeMax" min="5" v-model="character.strong">
+            <span v-show="!isEditAttributes">{{ character.strong }}</span>
           </div>
           <div class="detail">
             5 - {{ extraData.attributeMax }} の範囲で設定してください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkIntellect, }">
-          <div class="label">知力（内政／弱めの兵種で戦争参加可／初心者だけど活躍したい人向け）</div>
+          <div class="label">知力</div>
           <div class="field">
-            <input type="number" :max="extraData.attributeMax" min="5" v-model="character.intellect">
+            <input v-show="isEditAttributes" type="number" :max="extraData.attributeMax" min="5" v-model="character.intellect">
+            <span v-show="!isEditAttributes">{{ character.intellect }}</span>
           </div>
           <div class="detail">
             5 - {{ extraData.attributeMax }} の範囲で設定してください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkLeadership, }">
-          <div class="label">統率（徴兵可能な兵士数。戦争参加に必要）</div>
+          <div class="label">統率</div>
           <div class="field">
-            <input type="number" :max="extraData.attributeMax" min="5" v-model="character.leadership">
+            <input v-show="isEditAttributes" type="number" :max="extraData.attributeMax" min="5" v-model="character.leadership">
+            <span v-show="!isEditAttributes">{{ character.leadership }}</span>
           </div>
           <div class="detail">
             5 - {{ extraData.attributeMax }} の範囲で設定してください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkPopularity, }">
-          <div class="label">人望（時間ほとんどない方／初心者で雰囲気だけでも知りたい方向け）</div>
+          <div class="label">人望</div>
           <div class="field">
-            <input type="number" :max="extraData.attributeMax" min="5" v-model="character.popularity">
+            <input v-show="isEditAttributes" type="number" :max="extraData.attributeMax" min="5" v-model="character.popularity">
+            <span v-show="!isEditAttributes">{{ character.popularity }}</span>
           </div>
           <div class="detail">
             5 - {{ extraData.attributeMax }} の範囲で設定してください
@@ -258,6 +282,7 @@ export default class EntryPage extends Vue {
   private icon: api.CharacterIcon = new api.CharacterIcon(0, 0, true, 1, '0.gif');
   private isPublish: boolean = false;
   private invitationCode: string = '';
+  private isEditAttributes: boolean = false;
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -327,6 +352,10 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
+  private get isOkFrom(): boolean {
+    return this.character.from !== 0;
+  }
+
   private get isOkStrong(): boolean {
     return this.character.strong >= 5 && this.character.strong <= this.extraData.attributeMax;
   }
@@ -362,6 +391,7 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
+      this.isOkFrom &&
       this.isOkStrong &&
       this.isOkIntellect &&
       this.isOkLeadership &&
@@ -472,6 +502,76 @@ export default class EntryPage extends Vue {
       this.town = t;
       this.character.townId = t.id;
     }
+  }
+
+  private onFromChanged(id: number) {
+    this.character.from = id;
+    if (this.isEditAttributes) {
+      return;
+    }
+
+    let strong = 0;
+    let intellect = 0;
+    let leadership = 0;
+    let popularity = 0;
+    let primaries: number[] | undefined;
+
+    if (id === api.CharacterSkill.typeStrong) {
+      strong = 100;
+      intellect = 5;
+      leadership = 90;
+      popularity = 5;
+      primaries = [1, 3, 2, 4];
+    } else if (id === api.CharacterSkill.typeIntellect) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+    } else if (id === api.CharacterSkill.typeMerchant) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+    }
+
+    if (!primaries) {
+      return;
+    }
+
+    const sum = this.extraData.attributeSumMax;
+    const max = this.extraData.attributeMax;
+
+    let tip = sum - (strong + intellect + leadership + popularity);
+    if (tip > 0) {
+      primaries.forEach((p) => {
+        if (tip > 0) {
+          if (p === 1) {
+            const val = Math.min(max - strong, tip);
+            strong += val;
+            tip -= val;
+          } else if (p === 2) {
+            const val = Math.min(max - intellect, tip);
+            intellect += val;
+            tip -= val;
+          } else if (p === 3) {
+            const val = Math.min(max - leadership, tip);
+            leadership += val;
+            tip -= val;
+          } else if (p === 4) {
+            const val = Math.min(max - popularity, tip);
+            popularity += val;
+            tip -= val;
+          }
+        }
+      });
+    }
+
+    this.character.strong = strong;
+    this.character.intellect = intellect;
+    this.character.leadership = leadership;
+    this.character.popularity = popularity;
   }
 
   private entry() {

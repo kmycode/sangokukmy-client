@@ -45,6 +45,16 @@ export default class CommandList {
     return this.restTurns < 50;
   }
 
+  public get canInputTownPatrol(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 2);
+  }
+
+  public get canInputTownInvent(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 14);
+  }
+
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;

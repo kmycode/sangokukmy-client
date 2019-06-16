@@ -10,7 +10,7 @@
         </div>
         <div class="information">
           <div class="standard">
-            <div class="name">{{ chara.name }}</div>
+            <div class="name responsive-header">{{ chara.name }}</div>
             <div class="commands">
             </div>
             <div class="commands">
@@ -35,6 +35,11 @@
             </div>
           </div>
           <div class="parameters">
+            <span class="parameter-from-wrapper">
+              <span :class="'parameter-from parameter-from-' + chara.from">
+                {{ chara | charafromname }}
+              </span>
+            </span>
             <span class="parameter-item">
               <span class="parameter-name">武力</span>
               <span class="parameter-value">{{ chara.strong }}</span>
@@ -179,6 +184,7 @@ export default class SimpleCharacterList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 @import '@/scss/bootstrap-helper.scss';
 
@@ -232,17 +238,8 @@ export default class SimpleCharacterList extends Vue {
           flex-wrap: wrap;
 
           .name {
-            font-size: 1.6rem;
             flex: 1;
             white-space: nowrap;
-
-            @include media-query-lower(md) {
-              font-size: 1.4rem;
-            }
-
-            @include media-query-lower(sm) {
-              font-size: 1.2rem;
-            }
           }
 
           .commands {
@@ -264,6 +261,9 @@ export default class SimpleCharacterList extends Vue {
         }
 
         .parameters {
+          .parameter-from {
+            padding-right: 0;
+          }
           .parameter-item {
             padding-right: 12px;
             .parameter-name {

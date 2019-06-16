@@ -672,9 +672,41 @@ export default class NotificationService {
     'アイテム入手',
     'アイテム {0} を入手しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly itemPending = new NotificationServiceItem(
+    'アイテム入手',
+    'アイテム {0} を受け取りました。利用するには、アイテム一覧より受け取る必要があります',
+    NotificationServiceItemDefaultType.information);
+  public static readonly itemGotByPending = new NotificationServiceItem(
+    'アイテム入手',
+    'アイテムを入手しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly itemReleasedByPending = new NotificationServiceItem(
+    'アイテム受取拒否',
+    'アイテム受け取りを拒否しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly itemGetFailedByPending = new NotificationServiceItem(
+    'アイテム入手失敗',
+    'アイテム入手に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly itemGetFailedByPendingBecauseOfMax = new NotificationServiceItem(
+    'アイテム入手失敗',
+    'アイテム入手に失敗しました。アイテム所持数がすでに最大に達しています。不要なアイテムを売却するなどしてください',
+    NotificationServiceItemDefaultType.error);
   public static readonly itemReleased = new NotificationServiceItem(
     'アイテム手放し',
     'アイテム {0} を手放しました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly skillGetSucceed = new NotificationServiceItem(
+    '技能獲得成功',
+    '技能の獲得に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly skillGetFailed = new NotificationServiceItem(
+    '技能獲得失敗',
+    '技能の獲得に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly skillGot = new NotificationServiceItem(
+    '技能獲得',
+    '技能 {0} を獲得しました',
     NotificationServiceItemDefaultType.information);
   public static readonly commandInserted = new NotificationServiceItem(
     'コマンド挿入',
@@ -683,6 +715,10 @@ export default class NotificationService {
   public static readonly commandRemoved = new NotificationServiceItem(
     'コマンド削除',
     'コマンドの削除に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly commandLooped = new NotificationServiceItem(
+    'コマンドのループ',
+    'コマンドの繰り返し入力に成功しました',
     NotificationServiceItemDefaultType.succeed);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',

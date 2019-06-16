@@ -5,8 +5,8 @@
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 0 }" @click.prevent.stop="selectedCommandCategory = 0" href="#">内政</a></li>
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">政策</a></li>
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
-      <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 3 }" @click.prevent.stop="selectedCommandCategory = 3" href="#">計略</a></li> -->
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 5 }" @click.prevent.stop="selectedCommandCategory = 5" href="#">技能</a></li>
     </ul>
     <div class="loading-container">
       <!-- 内政コマンド -->
@@ -50,37 +50,42 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(13)">戦争</button>
-        <button v-if="false" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenFormationPopup = !isOpenFormationPopup">陣形
+        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenFormationPopup = !isOpenFormationPopup">陣形
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenFormationPopup && list.inputer.canInput ? 'block' : 'none' }">
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; list.inputer.inputCommand(53)">研究</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'formation-add')">獲得</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'formation-change')">変更</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenFormationPopup = false; $emit('open', 'formation-add')">獲得</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenFormationPopup = false; $emit('open', 'formation-change')">変更</a>
           </div>
         </button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
-      <!-- 計略コマンド -->
-      <div v-show="selectedCommandCategory === 3" class="commands">
-        <!-- <button type="button" class="btn btn-light">密偵</button> -->
-      </div>
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(17)">移動</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'training')"><span class="redundant-text">能力</span>強化</button>
+        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenTrainingPopup = !isOpenTrainingPopup"><span class="redundant-text">能力</span>強化
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenTrainingPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 1)">武力</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 2)">知力</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 3)">統率</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 4)">人望</a>
+          </div>
+        </button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'rice')">米売買</button>
-        <button v-if="false" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenItemPopup = !isOpenItemPopup">アイテム
+        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenItemPopup = !isOpenItemPopup">アイテム
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenItemPopup && list.inputer.canInput ? 'block' : 'none' }">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-buy')">購入</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-sell')">売却</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenItemPopup = false; $emit('open', 'item-handover')">譲渡</a>
           </div>
         </button>
-        <!-- <button type="button" class="btn btn-light">武器</button>
-        <button type="button" class="btn btn-light">書物</button> -->
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(0)">何もしない</button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
+        <button v-if="!list.store.character.countryId" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
         <!-- <button type="button" class="btn btn-light">下野</button> -->
+      </div>
+      <!-- 特殊コマンド -->
+      <div v-show="selectedCommandCategory === 5" class="commands">
+        <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
+        <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
     </div>
@@ -90,7 +95,7 @@
       <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全て</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶数</button>
       <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇数</button>
-      <button type="button" class="btn btn-light" @click="isOpenAxb = !isOpenAxb">ax+b</button>
+      <button type="button" :class="{'btn': true, 'btn-light': !isOpenAxb, 'btn-primary': isOpenAxb}" @click="isOpenAxb = !isOpenAxb">ax+b</button>
     </div>
     <div v-show="isOpenAxb" class="command-input-axb">
       <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0">
@@ -100,8 +105,9 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿入<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削除<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿<span class="redundant-text">入</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削<span class="redundant-text">除</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.loopCommands()">繰返<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
     </div>
     <!-- 放置削除の通知 -->
     <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
@@ -162,6 +168,7 @@ export default class CommandListView extends Vue {
   private isOpenSecretaryPopup: boolean = false;
   private isOpenFormationPopup: boolean = false;
   private isOpenItemPopup: boolean = false;
+  private isOpenTrainingPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -217,16 +224,18 @@ $color-navigation-commands: #e0e0e0;
       background-color: #6bf;
     }
   }
+  button {
+    @include media-query-lower(sm) {
+      .redundant-text {
+        display: none;
+      }
+    }
+  }
   .commands {
     display: flex;
     flex-flow: row wrap;
     button {
       margin: 4px 4px 0 0;
-      @include media-query-lower(sm) {
-        .redundant-text {
-          display: none;
-        }
-      }
       &.btn-light {
         background-color: #e7e7e7;
         &:hover {
@@ -258,7 +267,7 @@ $color-navigation-commands: #e0e0e0;
     padding: 0 4px 8px;
     background-color: $color-navigation-commands;
     input {
-      width: 4em;
+      width: 3.6em;
       padding: 0 8px;
       font-size: 1.4em;
       text-align: right;
