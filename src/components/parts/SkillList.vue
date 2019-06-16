@@ -5,7 +5,7 @@
          :key="skill.type.id">
       <div class="skill-info">
         <div class="standard">
-          <div class="name">{{ skill.type.name }}</div>
+          <div class="name responsive-header">{{ skill.type.name }}</div>
           <div class="description">{{ skill.type.description }}</div>
         </div>
       </div>
@@ -19,7 +19,7 @@
         :key="skill.id">
         <div class="skill-info">
           <div class="standard">
-            <div class="name">{{ skill.name }}</div>
+            <div class="name responsive-header">{{ skill.name }}</div>
             <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ skill.point }}</span></div>
             <div class="description">{{ skill.description }}</div>
           </div>
@@ -76,6 +76,7 @@ export default class SkillList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 
 .skill-list {
@@ -112,7 +113,6 @@ export default class SkillList extends Vue {
 
     .skill-info {
       .name {
-        font-size: 1.6rem;
         flex: 1;
       }
 

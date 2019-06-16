@@ -31,6 +31,9 @@ Vue.filter('shortrealdate', (value: api.DateTime): string => {
 Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
   return api.GameDateTime.toRealDate(value);
 });
+Vue.filter('charafromname', (chara: api.Character): string => {
+  return chara.from === 1 ? '武家' : chara.from === 2 ? '文官' : chara.from === 3 ? '商人' : 'なし';
+});
 
 @Component({
   components: {

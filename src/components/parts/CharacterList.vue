@@ -18,6 +18,11 @@
           </div>
         </div>
         <div class="parameters">
+          <span class="parameter-from-wrapper">
+            <span :class="'parameter-from parameter-from-' + chara.from">
+              {{ chara | charafromname }}
+            </span>
+          </span>
           <span class="parameter-item">
             <span class="parameter-name">武力</span>
             <span class="parameter-value">{{ chara.strong }}</span>
@@ -79,6 +84,7 @@ export default class CharacterList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 @import '@/scss/bootstrap-helper.scss';
 

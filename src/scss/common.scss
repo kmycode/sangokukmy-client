@@ -1,0 +1,39 @@
+@import '@/scss/bootstrap-helper.scss';
+
+.parameter-from {
+  font-size: 0.8rem;
+  padding: 4px;
+  margin-right: 12px;
+  border: 1px solid black;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  &.parameter-from-0 {
+    border-color: gray;
+    color: gray;
+  }
+  &.parameter-from-1 {
+    border-color: red;
+    color: red;
+  }
+  &.parameter-from-2 {
+    border-color: blue;
+    color: blue;
+  }
+  &.parameter-from-3 {
+    border-color: green;
+    color: green;
+  }
+}
+
+.responsive-header {
+  font-size: 1.6rem;
+
+  @include media-query-lower(md) {
+    font-size: 1.4rem;
+  }
+
+  @include media-query-lower(sm) {
+    font-size: 1.2rem;
+  }
+}

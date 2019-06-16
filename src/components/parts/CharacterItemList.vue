@@ -6,7 +6,7 @@
       :key="item.data[0].id">
       <div class="item-info">
         <div class="standard">
-          <div class="name">{{ item.type.name }}</div>
+          <div class="name responsive-header">{{ item.type.name }}</div>
           <div class="params">
             <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
@@ -24,7 +24,7 @@
         :key="item.data[0].id">
         <div class="item-info">
           <div class="standard">
-            <div class="name">{{ item.type.name }}</div>
+            <div class="name responsive-header">{{ item.type.name }}</div>
             <div class="params">
               <span class="value-name">価格</span> <span class="value">{{ (isSell ? item.type.money / 2 : item.type.money) }}</span>
               <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
@@ -125,6 +125,7 @@ export default class CharacterItemList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 
 .item-list {
@@ -161,7 +162,6 @@ export default class CharacterItemList extends Vue {
 
     .item-info {
       .name {
-        font-size: 1.6rem;
         flex: 1;
       }
 

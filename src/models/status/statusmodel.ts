@@ -226,10 +226,18 @@ export default class StatusModel {
       max += 2;
     }
     if (skills.some((s) => s.type === 15)) {
-      max += 1;
+      max += 2;
     }
 
     return max;
+  }
+
+  public get nextItemShuffleYear(): number {
+    const year = this.gameDate.year - (this.gameDate.year % 12) + 4;
+    if (year > this.gameDate.year) {
+      return year;
+    }
+    return year + 12;
   }
 
   public get characterSkills(): api.CharacterSkill[] {

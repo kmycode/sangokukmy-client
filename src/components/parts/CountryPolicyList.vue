@@ -7,7 +7,7 @@
       :key="policy.id">
       <div class="policy-info">
         <div class="standard">
-          <div class="name">{{ policy.name }}</div>
+          <div class="name responsive-header">{{ policy.name }}</div>
           <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.point }}</span></div>
           <div class="description">{{ policy.description }}</div>
         </div>
@@ -22,7 +22,7 @@
         :key="policy.id">
         <div class="policy-info">
           <div class="standard">
-            <div class="name">{{ policy.type.name }}</div>
+            <div class="name responsive-header">{{ policy.type.name }}</div>
             <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.requestedPoint }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
             <div class="description">{{ policy.type.description }}</div>
           </div>
@@ -104,6 +104,7 @@ export default class CountryPolicyList extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/country-color.scss';
 
 .policy-list {
@@ -140,7 +141,6 @@ export default class CountryPolicyList extends Vue {
 
     .policy-info {
       .name {
-        font-size: 1.6rem;
         flex: 1;
       }
 

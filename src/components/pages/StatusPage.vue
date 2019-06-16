@@ -122,7 +122,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
+            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
@@ -1023,6 +1023,7 @@
       <div v-show="isOpenCharacterItemBuyDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム購入</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
+          <div class="alert alert-warning">次に都市ごとのアイテムがシャッフルされるのは <span style="font-weight:bold">{{ model.nextItemShuffleYear }}</span> 年 1 月 です。先行入力のときはこれを超えないよう注意してください</div>
           <CharacterItemList :items="model.characterTownItems"
                              :skills="model.characterSkills"
                               canEdit="true"
