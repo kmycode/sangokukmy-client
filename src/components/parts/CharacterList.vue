@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="parameters">
-          <span class="parameter-from-wrapper">
+          <span v-if="isWithFrom" class="parameter-from-wrapper">
             <span :class="'parameter-from parameter-from-' + chara.from">
               {{ chara | charafromname }}
             </span>
@@ -61,6 +61,9 @@ import Enumerable from 'linq';
 export default class CharacterList extends Vue {
   @Prop() public characters!: api.Character[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: true,
+  }) public isWithFrom!: boolean;
 
   private isOpenPostsPopup: boolean = false;
 

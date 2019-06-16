@@ -38,7 +38,7 @@
         <div class="history-toggle" v-show="history.isOpen" @click="history.isOpen = false">閉じる<div class="layer"></div></div>
         <div :class="'character-list country-color-' + history.unifiedCountry.colorId">
           <MiniCharacterList v-if="!history.isOpen" :countries="history.history.countries" :characters="history.history.characters"/>
-          <CharacterList v-else :countries="history.history.countries" :characters="history.history.characters"/>
+          <CharacterList v-else :countries="history.history.countries" :isWithFrom="false" :characters="history.history.characters"/>
         </div>
         <div class="detail" v-if="history.isOpen">
           <div class="top-table-flat monarch-message">
