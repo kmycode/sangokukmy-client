@@ -208,6 +208,14 @@
           <div class="detail">
           </div>
         </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+          <div class="label">選択都市の特化</div>
+          <div class="field">
+            {{ townType }}
+          </div>
+          <div class="detail">
+          </div>
+        </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryName, }">
           <div class="label">国名</div>
           <div class="field">
@@ -410,6 +418,13 @@ export default class EntryPage extends Vue {
     } else {
       return def.BuildingType.default;
     }
+  }
+
+  public get townType(): string {
+    if (this.town.id > 0) {
+      return def.TOWN_TYPES[this.town.type];
+    }
+    return '未選択';
   }
 
   private initializeRecaptcha() {
