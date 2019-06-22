@@ -35,7 +35,7 @@
             </div>
           </div>
           <div class="parameters">
-            <span class="parameter-from-wrapper">
+            <span v-if="isWithFrom" class="parameter-from-wrapper">
               <span :class="'parameter-from parameter-from-' + chara.from">
                 {{ chara | charafromname }}
               </span>
@@ -113,6 +113,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canReinforcement!: boolean;
+  @Prop({
+    default: true,
+  }) public isWithFrom!: boolean;
   @Prop({
     default: false,
   }) public canSelect!: boolean;
