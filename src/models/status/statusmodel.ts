@@ -1739,6 +1739,9 @@ export default class StatusModel {
       'アイテム',
       Enumerable.from(this.characterItems).count((i) => i.status === api.CharacterItem.statusCharacterHold),
       this.characterItemsMax));
+    ps.push(new NoRangeStatusParameter(
+      '保留中アイテム',
+      Enumerable.from(this.characterItems).count((i) => i.status === api.CharacterItem.statusCharacterPending)));
     return ps;
   }
 
