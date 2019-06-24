@@ -207,6 +207,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="https://sangoku-doc.kmycode.net/" target="_blank">説明書</a>
+                <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
               </div>
             </li>
@@ -1240,7 +1242,7 @@ export default class StatusPage extends Vue {
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
-  public payRiceOrMoney: number = def.RICE_BUY_MAX;
+  public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
   public paySafeTarget: api.Character = new api.Character(-1);
   public canTownWar: boolean = false;
@@ -1283,6 +1285,9 @@ export default class StatusPage extends Vue {
       this.promotionMessage = '';
       this.isOpenPromotionDialog = true;
     } else if (event === 'rice') {
+      if (this.payRiceOrMoney < 0) {
+        this.payRiceOrMoney = this.model.characterRiceBuyMax;
+      }
       this.selectedRiceStatus = 0;
       this.isOpenRiceDialog = true;
     } else if (event === 'safe') {

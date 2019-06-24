@@ -585,7 +585,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(5, 4000, '経済論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
   new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5)),
-  new CountryPolicyType(25, 4000, '徴収', '国庫納入する収入余剰最大 +2000',
+  new CountryPolicyType(25, 3000, '徴収', '国庫納入する収入余剰最大 +2000',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 1)),
   new CountryPolicyType(27, 2000, '増給', '武将収入の階級加算 +50',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 25)),
