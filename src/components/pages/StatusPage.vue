@@ -1240,7 +1240,7 @@ export default class StatusPage extends Vue {
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
-  public payRiceOrMoney: number = def.RICE_BUY_MAX;
+  public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
   public paySafeTarget: api.Character = new api.Character(-1);
   public canTownWar: boolean = false;
@@ -1283,6 +1283,9 @@ export default class StatusPage extends Vue {
       this.promotionMessage = '';
       this.isOpenPromotionDialog = true;
     } else if (event === 'rice') {
+      if (this.payRiceOrMoney < 0) {
+        this.payRiceOrMoney = this.model.characterRiceBuyMax;
+      }
       this.selectedRiceStatus = 0;
       this.isOpenRiceDialog = true;
     } else if (event === 'safe') {
