@@ -1093,6 +1093,25 @@
           </div>
         </div>
       </div>
+      <!-- アイテム使用 -->
+      <div v-show="isOpenCharacterItemUseDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム使用</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <CharacterItemList :items="model.characterItems"
+                             :skills="model.characterSkills"
+                              canEdit="true"
+                              v-model="selectedCharacterItemType"
+                              style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCharacterItemUseDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.id >= 0" @click="model.commands.inputer.inputItemCommand(56, selectedCharacterItemType.id); isOpenCharacterItemUseDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 技能 -->
       <div v-show="isOpenSkillDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">技能</h2>
@@ -1228,6 +1247,7 @@ export default class StatusPage extends Vue {
   public isOpenCharacterItemBuyDialog: boolean = false;
   public isOpenCharacterItemSellDialog: boolean = false;
   public isOpenCharacterItemHandOverDialog: boolean = false;
+  public isOpenCharacterItemUseDialog: boolean = false;
   public isOpenSkillDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
@@ -1268,7 +1288,8 @@ export default class StatusPage extends Vue {
       || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
-      || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog;
+      || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
+      || this.isOpenCharacterItemUseDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1335,6 +1356,9 @@ export default class StatusPage extends Vue {
       this.selectedCharacterItemType = new def.CharacterItemType(-1);
       this.model.updateCharacterCountryCharacters();
       this.isOpenCharacterItemHandOverDialog = true;
+    } else if (event === 'item-use') {
+      this.selectedCharacterItemType = new def.CharacterItemType(-1);
+      this.isOpenCharacterItemUseDialog = true;
     }
   }
 
@@ -1350,7 +1374,7 @@ export default class StatusPage extends Vue {
       this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
-      this.isOpenSkillDialog = false;
+      this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

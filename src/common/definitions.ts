@@ -394,6 +394,22 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(53, '陣形研究'),
   new CommandNameResolver(54, '都市巡回'),
   new CommandNameResolver(55, '都市投資'),
+  new CommandNameResolver(56, '{0} を使用', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (56:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (56:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (56:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -698,6 +714,30 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(32, 55000, '孟徳新書', '知力 +10'),
   new CharacterItemType(33, 78000, '兵法二十四編', '知力 +15'),
   new CharacterItemType(34, 105000, '信仰新書', '知力 +20'),
+  new CharacterItemType(35, 28000, '十六国春秋', '知力 +5'),
+  new CharacterItemType(36, 28000, '春秋左氏伝', '知力 +5'),
+  new CharacterItemType(37, 55000, '呂氏春秋', '知力 +10'),
+  new CharacterItemType(38, 55000, '呉越春秋', '知力 +10'),
+  new CharacterItemType(39, 78000, '戦国策', '知力 +15', false),
+  new CharacterItemType(40, 78000, '史記', '知力 +15', false),
+  new CharacterItemType(41, 105000, '三国志', '知力 +20', false, false),
+  new CharacterItemType(42, 36000, '傷寒論', '人望 +10'),
+  new CharacterItemType(43, 55000, '易経', '統率 +10'),
+  new CharacterItemType(44, 55000, '書経', '統率 +10'),
+  new CharacterItemType(45, 55000, '詩経', '統率 +10'),
+  new CharacterItemType(46, 55000, '楽経', '統率 +10'),
+  new CharacterItemType(47, 55000, '礼記', '統率 +10'),
+  new CharacterItemType(48, 10000, '茶', '使用で金 +100k', false),
+  new CharacterItemType(49, 10000, '青釉穀倉罐', '使用で金 +100k', false),
+  new CharacterItemType(50, 10000, '酒杯', '使用で金 +100k', false),
+  new CharacterItemType(51, 20000, '算盤', '使用で金 +200k', false),
+  new CharacterItemType(52, 20000, '呂氏鏡', '使用で金 +200k', false),
+  new CharacterItemType(53, 30000, '博山炉', '使用で金 +300k', false),
+  new CharacterItemType(54, 30000, '金象嵌の壺', '使用で金 +300k', false),
+  new CharacterItemType(55, 30000, '玉龍紋璧', '使用で金 +300k', false),
+  new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false),
+  new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false),
+  new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false),
 ];
 
 /**
