@@ -1100,6 +1100,7 @@
           <CharacterItemList :items="model.characterItems"
                              :skills="model.characterSkills"
                               canEdit="true"
+                              isUse="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>

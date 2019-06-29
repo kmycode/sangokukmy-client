@@ -677,7 +677,8 @@ export class CharacterItemType {
                      public name: string = '',
                      public description: string = '',
                      public canSell: boolean = true,
-                     public canHandOver: boolean = true) {}
+                     public canHandOver: boolean = true,
+                     public canUse: boolean = false) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 5000, '槍', '武力 +1'),
@@ -727,17 +728,17 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(45, 55000, '詩経', '統率 +10'),
   new CharacterItemType(46, 55000, '楽経', '統率 +10'),
   new CharacterItemType(47, 55000, '礼記', '統率 +10'),
-  new CharacterItemType(48, 10000, '茶', '使用で金 +100k', false),
-  new CharacterItemType(49, 10000, '青釉穀倉罐', '使用で金 +100k', false),
-  new CharacterItemType(50, 10000, '酒杯', '使用で金 +100k', false),
-  new CharacterItemType(51, 20000, '算盤', '使用で金 +200k', false),
-  new CharacterItemType(52, 20000, '呂氏鏡', '使用で金 +200k', false),
-  new CharacterItemType(53, 30000, '博山炉', '使用で金 +300k', false),
-  new CharacterItemType(54, 30000, '金象嵌の壺', '使用で金 +300k', false),
-  new CharacterItemType(55, 30000, '玉龍紋璧', '使用で金 +300k', false),
-  new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false),
-  new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false),
-  new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false),
+  new CharacterItemType(48, 10000, '茶', '使用で金 +100k', false, true, true),
+  new CharacterItemType(49, 10000, '青釉穀倉罐', '使用で金 +100k', false, true, true),
+  new CharacterItemType(50, 10000, '酒杯', '使用で金 +100k', false, true, true),
+  new CharacterItemType(51, 20000, '算盤', '使用で金 +200k', false, true, true),
+  new CharacterItemType(52, 20000, '呂氏鏡', '使用で金 +200k', false, true, true),
+  new CharacterItemType(53, 30000, '博山炉', '使用で金 +300k', false, true, true),
+  new CharacterItemType(54, 30000, '金象嵌の壺', '使用で金 +300k', false, true, true),
+  new CharacterItemType(55, 30000, '玉龍紋璧', '使用で金 +300k', false, true, true),
+  new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false, true, true),
+  new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
+  new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
 ];
 
 /**
