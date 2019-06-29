@@ -394,6 +394,22 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(53, '陣形研究'),
   new CommandNameResolver(54, '都市巡回'),
   new CommandNameResolver(55, '都市投資'),
+  new CommandNameResolver(56, '{0} を使用', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (56:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (56:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (56:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -661,7 +677,8 @@ export class CharacterItemType {
                      public name: string = '',
                      public description: string = '',
                      public canSell: boolean = true,
-                     public canHandOver: boolean = true) {}
+                     public canHandOver: boolean = true,
+                     public canUse: boolean = false) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 5000, '槍', '武力 +1'),
@@ -698,6 +715,30 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(32, 55000, '孟徳新書', '知力 +10'),
   new CharacterItemType(33, 78000, '兵法二十四編', '知力 +15'),
   new CharacterItemType(34, 105000, '信仰新書', '知力 +20'),
+  new CharacterItemType(35, 28000, '十六国春秋', '知力 +5'),
+  new CharacterItemType(36, 28000, '春秋左氏伝', '知力 +5'),
+  new CharacterItemType(37, 55000, '呂氏春秋', '知力 +10'),
+  new CharacterItemType(38, 55000, '呉越春秋', '知力 +10'),
+  new CharacterItemType(39, 78000, '戦国策', '知力 +15', false),
+  new CharacterItemType(40, 78000, '史記', '知力 +15', false),
+  new CharacterItemType(41, 105000, '三国志', '知力 +20', false, false),
+  new CharacterItemType(42, 36000, '傷寒論', '人望 +10'),
+  new CharacterItemType(43, 55000, '易経', '統率 +10'),
+  new CharacterItemType(44, 55000, '書経', '統率 +10'),
+  new CharacterItemType(45, 55000, '詩経', '統率 +10'),
+  new CharacterItemType(46, 55000, '楽経', '統率 +10'),
+  new CharacterItemType(47, 55000, '礼記', '統率 +10'),
+  new CharacterItemType(48, 10000, '茶', '使用で金 +100k', false, true, true),
+  new CharacterItemType(49, 10000, '青釉穀倉罐', '使用で金 +100k', false, true, true),
+  new CharacterItemType(50, 10000, '酒杯', '使用で金 +100k', false, true, true),
+  new CharacterItemType(51, 20000, '算盤', '使用で金 +200k', false, true, true),
+  new CharacterItemType(52, 20000, '呂氏鏡', '使用で金 +200k', false, true, true),
+  new CharacterItemType(53, 30000, '博山炉', '使用で金 +300k', false, true, true),
+  new CharacterItemType(54, 30000, '金象嵌の壺', '使用で金 +300k', false, true, true),
+  new CharacterItemType(55, 30000, '玉龍紋璧', '使用で金 +300k', false, true, true),
+  new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false, true, true),
+  new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
+  new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
 ];
 
 /**
@@ -713,17 +754,17 @@ export class CharacterSkillType {
 export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(1, '武家 Lv.1', '毎月武力Ex +7', 0, (_) => false),
   new CharacterSkillType(2, '武家 Lv.2', '攻撃力 +20', 10, (skills) => skills.some((s) => s.type === 1)),
-  new CharacterSkillType(3, '武家 Lv.3', '徴兵に必要な金 -10%', 10, (skills) => skills.some((s) => s.type === 2)),
-  new CharacterSkillType(4, '武家 Lv.4', '兵種 連弩兵、攻撃力 +20、突撃確率 +2%、突撃威力 +75', 10, (skills) => skills.some((s) => s.type === 3)),
-  new CharacterSkillType(5, '武家 Lv.5', 'コマンド 都市巡回', 10, (skills) => skills.some((s) => s.type === 4)),
+  new CharacterSkillType(3, '武家 Lv.3', '徴兵に必要な金 -15%', 10, (skills) => skills.some((s) => s.type === 2)),
+  new CharacterSkillType(4, '武家 Lv.4', '兵種 連弩兵、攻撃力 +20、突撃確率 +2%、突撃威力 +80', 10, (skills) => skills.some((s) => s.type === 3)),
+  new CharacterSkillType(5, '武家 Lv.5', 'コマンド 都市巡回、戦闘が 1 ターンで終了時の連戦確率 +80%', 10, (skills) => skills.some((s) => s.type === 4)),
   new CharacterSkillType(6, '文官 Lv.1', '毎月知力Ex +7', 0, (_) => false),
-  new CharacterSkillType(7, '文官 Lv.2', '内政効果 +40%', 10, (skills) => skills.some((s) => s.type === 6)),
-  new CharacterSkillType(8, '文官 Lv.3', '政策開発時、未取得政策ブースト確率 +0.4%', 10, (skills) => skills.some((s) => s.type === 7)),
-  new CharacterSkillType(9, '文官 Lv.4', '護衛属性含む兵種使用時、防御力 +40', 10, (skills) => skills.some((s) => s.type === 8)),
-  new CharacterSkillType(10, '文官 Lv.5', '内政効果 +40%', 10, (skills) => skills.some((s) => s.type === 9)),
+  new CharacterSkillType(7, '文官 Lv.2', '内政効果 +40%', 8, (skills) => skills.some((s) => s.type === 6)),
+  new CharacterSkillType(8, '文官 Lv.3', '政策開発時、未取得政策ブースト確率 +0.5%', 8, (skills) => skills.some((s) => s.type === 7)),
+  new CharacterSkillType(9, '文官 Lv.4', '護衛属性含む兵種使用時、攻撃力 +20、防御力 +40', 12, (skills) => skills.some((s) => s.type === 8)),
+  new CharacterSkillType(10, '文官 Lv.5', '内政効果 +40%', 12, (skills) => skills.some((s) => s.type === 9)),
   new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2', 0, (_) => false),
-  new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000', 10, (skills) => skills.some((s) => s.type === 11)),
-  new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -10%', 10, (skills) => skills.some((s) => s.type === 12)),
+  new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000、貢献 +15', 11, (skills) => skills.some((s) => s.type === 11)),
+  new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 10, (skills) => skills.some((s) => s.type === 12)),
   new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 10, (skills) => skills.some((s) => s.type === 13)),
-  new CharacterSkillType(15, '商人 Lv.5', 'アイテム上限 +2', 10, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(15, '商人 Lv.5', '米売買上限 +3000', 9, (skills) => skills.some((s) => s.type === 14)),
 ];

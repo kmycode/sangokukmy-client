@@ -83,6 +83,9 @@ export default class CharacterItemList extends Vue {
     default: false,
   }) public isHandOver!: boolean;
   @Prop({
+    default: false,
+  }) public isUse!: boolean;
+  @Prop({
     default: () => new def.CharacterItemType(-1),
   }) public value!: def.CharacterItemType;
   @Prop({
@@ -108,6 +111,7 @@ export default class CharacterItemList extends Vue {
         (ig, it) => new CharacterItemListItem(it, ig.toArray()))
       .where((i) => this.isHandOver ? i.type.canHandOver : true)
       .where((i) => this.isSell ? i.type.canSell : true)
+      .where((i) => this.isUse ? i.type.canUse : true)
       .toArray();
   }
 
