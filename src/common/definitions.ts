@@ -559,6 +559,7 @@ export const TOWN_BUILDINGS: BuildingType[] = [
   new BuildingType(13, '災害対策拠点'),
   new BuildingType(14, '太守府'),
   new BuildingType(15, '蛮族の家'),
+  new BuildingType(16, '宮殿'),
 ];
 /**
  * 国家施設
