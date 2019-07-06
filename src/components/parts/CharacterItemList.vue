@@ -120,7 +120,7 @@ export default class CharacterItemList extends Vue {
       return item.type.money / 2;
     } else if (this.isBuy) {
       if (this.skills.some((s) => s.type === 13)) {
-        return Math.floor(item.type.money * 0.9);
+        return Math.floor(item.type.money * 0.8);
       }
     }
     return item.type.money;
