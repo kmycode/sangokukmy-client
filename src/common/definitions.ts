@@ -666,7 +666,7 @@ export class FormationType {
                      public nextLevel: number[] = []) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', ['効果なし', '攻撃力 +1', '攻撃力 +2', '攻撃力 +4', '攻撃力 +8'], undefined, false, [2000, 3000, 6000, 10000]),
+  new FormationType(0, 0, '通常', ['効果なし', '攻撃力 +1', '攻撃力 +2', '攻撃力 +4', '攻撃力 +8'], undefined, false, [1000, 3000, 6000, 10000]),
 ];
 
 /**
