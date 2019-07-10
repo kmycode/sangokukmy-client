@@ -248,10 +248,14 @@ export default class StatusModel {
   }
 
   public get characterRiceBuyMax(): number {
+    let max = def.RICE_BUY_MAX;
     if (this.characterSkills.some((s) => s.type === 12)) {
-      return def.RICE_BUY_MAX + 5000;
+      max += 5000;
     }
-    return def.RICE_BUY_MAX;
+    if (this.characterSkills.some((s) => s.type === 15)) {
+      max += 3000;
+    }
+    return max;
   }
 
   public get countrySecretaries(): api.Character[] {
