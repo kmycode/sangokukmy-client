@@ -2092,7 +2092,7 @@ ul.nav {
           flex-direction: column;
           height: 100%;
 
-          .character-list {
+          .character-list, .item-list {
             flex: 1;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
