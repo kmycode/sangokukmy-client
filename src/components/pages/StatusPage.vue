@@ -1050,6 +1050,8 @@
                              :skills="model.characterSkills"
                               canEdit="true"
                               isSell="true"
+                              isShowPendings="true"
+                              canEditPending="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>
@@ -1079,6 +1081,8 @@
                                  :skills="model.characterSkills"
                                  canEdit="true"
                                  isHandOver="true"
+                                 isShowPendings="true"
+                                 canEditPending="true"
                                  v-model="selectedCharacterItemType"/>
             </div>
           </div>
