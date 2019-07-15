@@ -90,7 +90,7 @@
           <div class="label">出身</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 1, 'btn-secondary': character.from === 1, }" @click="onFromChanged(1)">武家</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">文官</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">官吏</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
           </div>
           <div class="detail">

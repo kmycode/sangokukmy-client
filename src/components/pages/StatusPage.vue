@@ -1050,6 +1050,8 @@
                              :skills="model.characterSkills"
                               canEdit="true"
                               isSell="true"
+                              isShowPendings="true"
+                              canEditPending="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>
@@ -1079,6 +1081,8 @@
                                  :skills="model.characterSkills"
                                  canEdit="true"
                                  isHandOver="true"
+                                 isShowPendings="true"
+                                 canEditPending="true"
                                  v-model="selectedCharacterItemType"/>
             </div>
           </div>
@@ -2088,7 +2092,7 @@ ul.nav {
           flex-direction: column;
           height: 100%;
 
-          .character-list {
+          .character-list, .item-list {
             flex: 1;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
