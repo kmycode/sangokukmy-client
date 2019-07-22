@@ -219,7 +219,7 @@ export default class StatusModel {
   }
 
   public get characterItemsMax(): number {
-    let max = 3;
+    let max = 4;
     const skills = this.characterSkills;
 
     if (skills.some((s) => s.type === 11)) {
