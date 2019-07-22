@@ -87,6 +87,7 @@
       <div v-show="selectedCommandCategory === 5" class="commands">
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
+        <button v-if="list.canInputGenerateItem" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">資源製造</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
     </div>

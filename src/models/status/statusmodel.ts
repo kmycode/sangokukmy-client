@@ -1901,10 +1901,10 @@ export default class StatusModel {
     }
   }
 
-  public addCharacterItem(item: number, status: number) {
+  public addCharacterItem(item: number, itemId: number, status: number) {
     if (!this.isUpdatingItems) {
       this.isUpdatingItems = true;
-      api.Api.addCharacterItem(item, status)
+      api.Api.addCharacterItem(item, itemId, status)
         .then(() => {
           if (status === api.CharacterItem.statusCharacterHold) {
             NotificationService.itemGotByPending.notify();

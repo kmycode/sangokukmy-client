@@ -1,7 +1,7 @@
 <template>
   <div class="item-list">
     <div
-      :class="{'item': true, 'selected': value.id === item.type.id, 'selectable': canEdit}"
+      :class="{'item': true, 'selected': value.type.id === item.type.id, 'selectable': canEdit}"
       v-for="item in itemTypes"
       :key="item.data[0].id">
       <div class="item-info">
@@ -9,17 +9,22 @@
           <div class="name responsive-header">{{ item.type.name }}</div>
           <div class="params">
             <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
-            <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
+            <span v-if="item.type.isResource">
+              <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
+            </span>
+            <span v-else>
+              <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
+            </span>
           </div>
           <div class="description">{{ item.type.description }}</div>
         </div>
       </div>
-      <div v-if="canEdit" class="select-cover" @click="$emit('input', item.type)"></div>
+      <div v-if="canEdit" class="select-cover" @click="$emit('input', { type: item.type, id: item.data[0].id })"></div>
     </div>
     <div v-show="isShowPendings && pendingTypes.length > 0" style="margin-top:48px">
       <h2>受け取り保留中</h2>
       <div
-        :class="{'item': true, 'selected': value.id === item.type.id, 'selectable': canEditPending}"
+        :class="{'item': true, 'selected': value.type.id === item.type.id, 'selectable': canEditPending}"
         v-for="item in pendingTypes"
         :key="item.data[0].id">
         <div class="item-info">
@@ -32,7 +37,7 @@
             <div class="description">{{ item.type.description }}</div>
           </div>
         </div>
-        <div v-if="canEditPending" class="select-cover" @click="$emit('input', item.type)"></div>
+        <div v-if="canEditPending" class="select-cover" @click="$emit('input', { type: item.type, id: item.data[0].id })"></div>
       </div>
     </div>
   </div>
@@ -116,14 +121,16 @@ export default class CharacterItemList extends Vue {
   }
 
   private getItemMoney(item: CharacterItemListItem): number {
+    const m = !item.type.isResource ? item.type.money : item.data[0].resource * item.type.money;
+
     if (this.isSell) {
-      return item.type.money / 2;
+      return m / 2;
     } else if (this.isBuy) {
       if (this.skills.some((s) => s.type === 13)) {
-        return Math.floor(item.type.money * 0.8);
+        return Math.floor(m * 0.8);
       }
     }
-    return item.type.money;
+    return m;
   }
 }
 </script>

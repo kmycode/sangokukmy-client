@@ -1,6 +1,7 @@
 /* tslint:disable:member-ordering */
 
 import * as api from '@/api/api';
+import * as def from '@/common/definitions';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
@@ -109,16 +110,30 @@ export default class CommandInputer {
     });
   }
 
-  public inputItemCommand(commandType: number, id: number) {
+  public inputItemCommand(commandType: number, id: number, itemId: number) {
+    const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
+      if (info && info.isResource) {
+        c.parameters.push(new api.CharacterCommandParameter(commandType === 50 ? 3 : 2, itemId));
+      }
     });
   }
 
-  public inputHandOverItemCommand(commandType: number, id: number, target: number) {
+  public inputHandOverItemCommand(commandType: number, id: number, itemId: number, target: number) {
+    const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
       c.parameters.push(new api.CharacterCommandParameter(2, target));
+      if (info && info.isResource) {
+        c.parameters.push(new api.CharacterCommandParameter(3, itemId));
+      }
+    });
+  }
+
+  public inputGenerateItemCommand(commandType: number, id: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
     });
   }
 

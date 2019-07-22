@@ -410,6 +410,22 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (56:1)';
     }
   }),
+  new CommandNameResolver(57, '{0} を製造', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (57:2)';
+      }
+      const type = Enumerable.from(CHARACTER_ITEM_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (57:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (57:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -679,7 +695,9 @@ export class CharacterItemType {
                      public description: string = '',
                      public canSell: boolean = true,
                      public canHandOver: boolean = true,
-                     public canUse: boolean = false) {}
+                     public canUse: boolean = false,
+                     public isResource: boolean = false,
+                     public defaultResource: number = 0) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 5000, '槍', '武力 +1'),
@@ -740,6 +758,8 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false, true, true),
   new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
   new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
+  new CharacterItemType(59, 18, '装備戟', '（資源）重戟兵徴兵費 -30%', true, true, false, true, 1000),
+  new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵徴兵費 -30%', true, true, false, true, 1000),
 ];
 
 /**
