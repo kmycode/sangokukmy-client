@@ -71,7 +71,7 @@
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
-      <div class="alert alert-danger">プログラムミスにより、統一記録を含むすべてのデータが消失しました。定期バックアップなど再発時対策を実施することで対処いたしました。ご迷惑おかけして大変申し訳ございませんが、再度ご登録頂く必要があります。(July 22, 2019)</div>
+      <div class="alert alert-danger">サーバに何らかの問題が発生し、統一記録を含むすべてのデータが消失しました。定期バックアップなど再発時対策を実施することで対処いたしました。ご迷惑おかけして大変申し訳ございませんが、プレイには再度ご登録頂く必要があります。(July 22, 2019)</div>
       <div v-show="selectedTab === 1">
         <EntryPage :system="system"
                    :countries="countries"
