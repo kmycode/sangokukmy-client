@@ -1004,7 +1004,8 @@ export class CharacterItem {
                      public status: number,
                      public type: number,
                      public townId: number,
-                     public characterId: number) {}
+                     public characterId: number,
+                     public resource: number) {}
 }
 
 export class CharacterSkill {
@@ -1643,10 +1644,11 @@ export class Api {
     }
   }
 
-  public static async addCharacterItem(item: number, status: number): Promise<any> {
+  public static async addCharacterItem(item: number, itemId: number, status: number): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'items', {
         type: item,
+        id: itemId,
         status,
       }, this.authHeader);
     } catch (ex) {

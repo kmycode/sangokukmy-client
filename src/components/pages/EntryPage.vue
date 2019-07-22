@@ -18,11 +18,10 @@
       <div class="alert alert-info">
         <h3>説明書</h3>
         <ul>
-          <li><a href="https://github.com/kmycode/sangokukmy/wiki">説明書目次</a></li>
-          <li><a href="https://github.com/kmycode/sangokukmy/wiki/%E4%B8%89%E5%9B%BD%E5%BF%97NET%E3%81%AE%E5%9F%BA%E6%9C%AC">三国志NETの基本</a> - 三国志NETは、他のゲームとは違った特徴があります。それをまとめています</li>
-          <li><a href="https://github.com/kmycode/sangokukmy/wiki/%E5%BD%B9%E5%89%B2%E5%88%86%E6%8B%85">役割分担</a> - 武力などの能力によって、最適な仕事が変わります。それをまとめています</li>
+          <li><a href="https://sangoku-doc.kmycode.net/">説明書目次</a></li>
+          <li><a href="https://sangoku-doc.kmycode.net/bas-g-entry.html">初心者向けガイド</a></li>
+          <li><a href="https://sangoku-doc.kmycode.net/bas-ui.html">画面の見方</a></li>
         </ul>
-        本ゲームのチュートリアルはまだ整備しておりません。ゲーム内の「手紙」→「全国」からどなたかに質問するか、説明書を参照してください。
       </div>
       <div class="section">
         <h3>基本情報</h3>

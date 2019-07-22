@@ -55,6 +55,10 @@ export default class CommandList {
     return skills.some((s) => s === 14);
   }
 
+  public get canInputGenerateItem(): boolean {
+    return false;
+  }
+
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;
