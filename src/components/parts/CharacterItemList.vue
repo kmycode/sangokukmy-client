@@ -1,7 +1,7 @@
 <template>
   <div class="item-list">
     <div
-      :class="{'item': true, 'selected': value.type.id === item.type.id, 'selectable': canEdit}"
+      :class="{'item': true, 'selected': value.type.id === item.type.id && (!value.id || value.id === item.data[0].id), 'selectable': canEdit}"
       v-for="item in itemTypes"
       :key="item.data[0].id">
       <div class="item-info">
@@ -24,7 +24,7 @@
     <div v-show="isShowPendings && pendingTypes.length > 0" style="margin-top:48px">
       <h2>受け取り保留中</h2>
       <div
-        :class="{'item': true, 'selected': value.type.id === item.type.id, 'selectable': canEditPending}"
+        :class="{'item': true, 'selected': value.type.id === item.type.id && (!value.id || value.id === item.data[0].id), 'selectable': canEditPending}"
         v-for="item in pendingTypes"
         :key="item.data[0].id">
         <div class="item-info">
@@ -106,14 +106,21 @@ export default class CharacterItemList extends Vue {
   }
 
   private getItemTypes(subject: (item: api.CharacterItem) => boolean): CharacterItemListItem[] {
-    return Enumerable.from(this.items)
+    const types = Enumerable.from(this.items)
       .where((i) => subject(i))
       .groupBy((i) => i.type)
       .join(
         def.CHARACTER_ITEM_TYPES,
         (ig) => ig.key(),
         (i) => i.id,
-        (ig, it) => new CharacterItemListItem(it, ig.toArray()))
+        (ig, it) => new CharacterItemListItem(it, ig.toArray()));
+
+    const items = types.where((i) => !i.type.isResource);
+    const resources = types.where((i) => i.type.isResource)
+      .selectMany((i) => Enumerable.from(i.data).select((d) => new CharacterItemListItem(i.type, [d])));
+
+    return items
+      .concat(resources)
       .where((i) => this.isHandOver ? i.type.canHandOver : true)
       .where((i) => this.isSell ? i.type.canSell : true)
       .where((i) => this.isUse ? i.type.canUse : true)
