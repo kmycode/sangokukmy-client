@@ -221,6 +221,7 @@ $color-navigation-commands: #e0e0e0;
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
   .nav {
     .active {
       background-color: #6bf;
