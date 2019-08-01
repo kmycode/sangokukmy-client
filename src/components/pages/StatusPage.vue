@@ -734,10 +734,10 @@
                 <div class="label">現在の相場</div><div class="value">{{ model.characterTownRiceTrend }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">金{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice() }}</div>
+                <div class="label">金{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">米 {{ model.characterTownMoneyToRicePrice(model.characterRiceBuyMax) }}</div>
               </div>
               <div class="content-row col-lg-4 col-md-6">
-                <div class="label">米{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice() }}</div>
+                <div class="label">米{{ model.characterRiceBuyMax }} を交換した場合</div><div class="value">金 {{ model.characterTownRiceToMoneyPrice(model.characterRiceBuyMax) }}</div>
               </div>
             </div>
             <div class="commands">
