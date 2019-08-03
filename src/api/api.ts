@@ -900,7 +900,9 @@ export class BattleLogLine {
                      public attackerDamage: number = 0,
                      public attackerNumber: number = 0,
                      public defenderDamage: number = 0,
-                     public defenderNumber: number = 0) {}
+                     public defenderNumber: number = 0,
+                     public isAttackerRush: boolean = false,
+                     public isDefenderRush: boolean = false) {}
 }
 
 export class BattleLog {
