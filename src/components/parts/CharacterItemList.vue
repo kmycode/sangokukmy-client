@@ -31,7 +31,7 @@
           <div class="standard">
             <div class="name responsive-header">{{ item.type.name }}</div>
             <div class="params">
-              <span class="value-name">価格</span> <span class="value">{{ (isSell ? item.type.money / 2 : item.type.money) }}</span>
+              <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span v-if="item.type.isResource">
                 <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
               </span>
