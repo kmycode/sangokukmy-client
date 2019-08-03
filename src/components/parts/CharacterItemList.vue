@@ -32,7 +32,12 @@
             <div class="name responsive-header">{{ item.type.name }}</div>
             <div class="params">
               <span class="value-name">価格</span> <span class="value">{{ (isSell ? item.type.money / 2 : item.type.money) }}</span>
-              <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
+              <span v-if="item.type.isResource">
+                <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
+              </span>
+              <span v-else>
+                <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
+              </span>
             </div>
             <div class="description">{{ item.type.description }}</div>
           </div>
