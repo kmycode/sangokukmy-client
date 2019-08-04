@@ -156,7 +156,7 @@ export default class BattleLogView extends Vue {
       background-color: #f99;
     }
     .turn-rush-defender {
-      background-color: #e8f;
+      background-color: #99f;
     }
   }
 }
