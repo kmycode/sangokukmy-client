@@ -1,6 +1,6 @@
 <template>
   <div v-if="log.id > 0">
-    <SimpleCharacterList :characters="characters" :countries="countries" :isShowCustomSoldierTypeDetail="true" :isWithFrom="false"/>
+    <SimpleCharacterList :characters="characters" :countries="countries" :isShowCustomSoldierTypeDetail="true"/>
     <div class="message first">
       {{ log.maplog.gameDate | gamedate }}、
       <KmyLogTagText
