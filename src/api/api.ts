@@ -856,6 +856,7 @@ export class ChatMessage implements IIdentitiedEntity {
   public static readonly typePromotion = 8;
   public static readonly typePromotionAccepted = 9;
   public static readonly typePromotionRefused = 10;
+  public static readonly typePromotionDenied = 11;
 
   public constructor(public id: number,
                      public characterCountryId: number,

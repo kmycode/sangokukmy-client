@@ -17,7 +17,7 @@
           </button>
           <span v-if="message.type === 9" style="color:red;font-weight:bold">承諾しました</span>
           <span v-if="message.type === 10" style="color:blue;font-weight:bold">丁重に断りました</span>
-          <span v-if="message.type === 11" style="color:gray;font-weight:bold">この登用は無効です</span>
+          <span v-if="message.type === 11" style="color:gray;font-weight:bold">登用国滅亡のため無効</span>
         </div>
       </div>
       <div class="message-footer">

@@ -2092,7 +2092,8 @@ export default class StatusModel {
       }
     } else if (message.type === api.ChatMessage.typePromotion ||
                message.type === api.ChatMessage.typePromotionAccepted ||
-               message.type === api.ChatMessage.typePromotionRefused) {
+               message.type === api.ChatMessage.typePromotionRefused ||
+               message.type === api.ChatMessage.typePromotionDenied) {
       // 登用
       this.promotions.append(message);
       if (this.store.hasInitialized) {
