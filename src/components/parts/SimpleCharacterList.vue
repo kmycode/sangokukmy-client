@@ -64,6 +64,18 @@
           <div v-if="isShowCustomSoldierTypeDetail && chara.characterSoldierType && hasSoldierData(chara)" class="soldier-type-detail">
             {{ getSoldierTypeDescription(chara) }}
           </div>
+          <div v-if="isShowFormationType && chara.formationLevel !== undefined" class="soldier-type-detail">
+            <div class="parameters parameters-no-from">
+              <span class="parameter-item">
+                <span class="parameter-name">陣形</span>
+                <span class="parameter-value">{{ getCharacterFormationName(chara) }}</span>
+              </span>
+              <span class="parameter-item">
+                <span class="parameter-name">Lv</span>
+                <span class="parameter-value">{{ chara.formationLevel }}</span>
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
@@ -104,6 +116,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public isShowCustomSoldierTypeDetail!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowFormationType!: boolean;
   @Prop({
     default: false,
   }) public canEdit!: boolean;
@@ -178,6 +193,14 @@ export default class SimpleCharacterList extends Vue {
 
   private getCommandUniqueKey(cmd: api.CharacterCommand): number {
     return api.GameDateTime.toNumber(cmd.gameDate);
+  }
+
+  private getCharacterFormationName(chara: api.Character): string {
+    const formationType = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((st) => st.id === chara.formationType);
+    if (formationType) {
+      return formationType.name;
+    }
+    return '通常';
   }
 
   private togglePostsPopup(chara: api.Character) {
@@ -265,7 +288,9 @@ export default class SimpleCharacterList extends Vue {
 
         .parameters {
           .parameter-from {
-            padding-right: 0;
+            width: 4em;
+            padding: 2px 0;
+            display: inline-block;
           }
           .parameter-item {
             padding-right: 12px;
@@ -281,6 +306,9 @@ export default class SimpleCharacterList extends Vue {
               width: 2rem;
               text-align: center;
             }
+          }
+          &.parameters-no-from {
+            margin-left: 4em;
           }
         }
       }
