@@ -944,7 +944,6 @@
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
                          :formationPoint="model.character.formationPoint"
-                         :canAddSelect="false"
                          v-model="selectedFormationType"
                          style="flex:1"/>
           <div class="loading" v-show="model.isUpdatingFormations"><div class="loading-icon"></div></div>
