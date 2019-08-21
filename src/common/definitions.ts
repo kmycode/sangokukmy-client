@@ -801,7 +801,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(1, '武家 Lv.1', '毎月武力Ex +7', 0, (_) => false),
   new CharacterSkillType(2, '武家 Lv.2', '攻撃力 +20', 10, (skills) => skills.some((s) => s.type === 1)),
   new CharacterSkillType(3, '武家 Lv.3', '徴兵に必要な金 -15%', 10, (skills) => skills.some((s) => s.type === 2)),
-  new CharacterSkillType(4, '武家 Lv.4', '兵種 連弩兵、攻撃力 +20、突撃確率 +2%、突撃威力 +80', 10, (skills) => skills.some((s) => s.type === 3)),
+  new CharacterSkillType(4, '武家 Lv.4', '攻撃力 +20、突撃確率 +2%、突撃威力 +80', 10, (skills) => skills.some((s) => s.type === 3)),
   new CharacterSkillType(5, '武家 Lv.5', 'コマンド 都市巡回、戦闘が 1 ターンで終了時の連戦確率 +80%', 10, (skills) => skills.some((s) => s.type === 4)),
   new CharacterSkillType(6, '官吏 Lv.1', '毎月知力Ex +7', 0, (_) => false),
   new CharacterSkillType(7, '官吏 Lv.2', '内政効果 +40%', 8, (skills) => skills.some((s) => s.type === 6)),
