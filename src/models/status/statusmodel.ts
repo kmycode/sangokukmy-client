@@ -279,7 +279,7 @@ export default class StatusModel {
   public get characterCountryTownWarStatus(): def.TownWarStatus {
     const last = Enumerable.from(this.store.townWars)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
-      .firstOrDefault();
+      .firstOrDefault((tw) => tw.requestedCountryId === this.character.countryId);
     if (last) {
       const status = Enumerable.from(def.TOWN_WAR_STATUSES)
         .firstOrDefault((s) => s.id === last.status);
