@@ -43,7 +43,7 @@
         :key="formation.id">
         <div class="formation-info">
           <div class="standard">
-            <div class="name">{{ formation.name }}</div>
+            <div class="name responsive-header">{{ formation.name }}</div>
             <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span></div>
             <div class="description">{{ formation.descriptions[0] }}</div>
           </div>
