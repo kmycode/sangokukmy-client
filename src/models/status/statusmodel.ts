@@ -279,7 +279,7 @@ export default class StatusModel {
   public get characterCountryTownWarStatus(): def.TownWarStatus {
     const last = Enumerable.from(this.store.townWars)
       .orderByDescending((tw) => api.GameDateTime.toNumber(tw.gameDate))
-      .firstOrDefault();
+      .firstOrDefault((tw) => tw.requestedCountryId === this.character.countryId);
     if (last) {
       const status = Enumerable.from(def.TOWN_WAR_STATUSES)
         .firstOrDefault((s) => s.id === last.status);
@@ -1741,7 +1741,15 @@ export default class StatusModel {
     ps.push(new NoRangeStatusParameter('技能ポイント', character.skillPoint));
     ps.push(new RangedStatusParameter(
       'アイテム',
-      Enumerable.from(this.characterItems).count((i) => i.status === api.CharacterItem.statusCharacterHold),
+      Enumerable.from(this.characterItems)
+        .where((i) => i.status === api.CharacterItem.statusCharacterHold)
+        .count((i) => {
+          const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((ii) => ii.id === i.type);
+          if (info) {
+            return !info.isResource;
+          }
+          return true;
+        }),
       this.characterItemsMax));
     ps.push(new NoRangeStatusParameter(
       '保留中アイテム',

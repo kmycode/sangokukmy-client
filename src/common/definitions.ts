@@ -682,7 +682,30 @@ export class FormationType {
                      public nextLevel: number[] = []) {}
 }
 export const FORMATION_TYPES: FormationType[] = [
-  new FormationType(0, 0, '通常', ['効果なし', '攻撃力 +4', '攻撃力 +8', '攻撃力 +16', '攻撃力 +32'], undefined, false, [1000, 3000, 6000, 10000]),
+  new FormationType(0, 0, '通常', ['効果なし',
+                                  '攻撃力 +4',
+                                  '攻撃力 +8',
+                                  '攻撃力 +16',
+                                  '攻撃力 +32'],
+                        undefined, false, [1000, 3000, 6000, 10000]),
+  new FormationType(1, 500, '魚鱗', ['戟兵で攻撃力 +10',
+                                    '戟兵で攻撃力 +19',
+                                    '戟兵で攻撃力 +27、対騎兵攻撃力 +8',
+                                    '戟兵で攻撃力 +34、対騎兵攻撃力 +8、突撃確率 +1%、突撃威力 +35',
+                                    '戟兵で攻撃力 +40、対騎兵攻撃力 +20、突撃確率 +3%、突撃威力 +85'],
+                        undefined, false, [1000, 3000, 6000, 10000]),
+  new FormationType(2, 500, '蜂矢', ['騎兵で攻撃力 +10',
+                                    '騎兵で攻撃力 +19',
+                                    '騎兵で攻撃力 +27、対弩兵攻撃力 +8',
+                                    '騎兵で攻撃力 +34、対弩兵攻撃力 +8、突撃確率 +1%、突撃威力 +35',
+                                    '騎兵で攻撃力 +40、対弩兵攻撃力 +20、突撃確率 +3%、突撃威力 +85'],
+                        undefined, false, [1000, 3000, 6000, 10000]),
+  new FormationType(3, 500, '錐行', ['弩兵で攻撃力 +10',
+                                    '弩兵で攻撃力 +19',
+                                    '弩兵で攻撃力 +27、対歩兵攻撃力 +8',
+                                    '弩兵で攻撃力 +34、対歩兵攻撃力 +8、突撃確率 +1%、突撃威力 +35',
+                                    '弩兵で攻撃力 +40、対歩兵攻撃力 +20、突撃確率 +3%、突撃威力 +85'],
+                        undefined, false, [1000, 3000, 6000, 10000]),
 ];
 
 /**
@@ -722,7 +745,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(20, 78000, '竜胆', '武力 +15', false),
   new CharacterItemType(21, 78000, '青龍堰月刀', '武力 +15', false),
   new CharacterItemType(22, 105000, '方天画戟', '武力 +20', false),
-  new CharacterItemType(23, 105000, '神龍の剣', '武力 +20', false, false),
+  new CharacterItemType(23, 105000, '神龍の剣', '武力 +20', false),
   new CharacterItemType(24, 5000, '平蛮指掌図', '知力 +1'),
   new CharacterItemType(25, 5000, '太平妖術の書', '知力 +1'),
   new CharacterItemType(26, 15000, '墨子', '知力 +3'),
@@ -740,7 +763,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(38, 55000, '呉越春秋', '知力 +10'),
   new CharacterItemType(39, 78000, '戦国策', '知力 +15', false),
   new CharacterItemType(40, 78000, '史記', '知力 +15', false),
-  new CharacterItemType(41, 105000, '三国志', '知力 +20', false, false),
+  new CharacterItemType(41, 105000, '三国志', '知力 +20', false),
   new CharacterItemType(42, 36000, '傷寒論', '人望 +10'),
   new CharacterItemType(43, 55000, '易経', '統率 +10'),
   new CharacterItemType(44, 55000, '書経', '統率 +10'),
@@ -760,6 +783,8 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
   new CharacterItemType(59, 18, '装備戟', '（資源）重戟兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵徴兵費 -30%', true, true, false, true, 1000),
+  new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
+  new CharacterItemType(62, 100000, '論語', '人望 +20', false),
 ];
 
 /**
