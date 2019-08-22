@@ -695,6 +695,7 @@ export class CharacterCommand {
   public static readonly eventTownWar: number = 3;
   public static readonly eventReset: number = 4;
   public static readonly eventBattleStart: number = 5;
+  public static readonly eventAfterReset: number = 6;
 
   public static updateName(command: CharacterCommand) {
     const cmd = def.getCommandNameByType(command.type);
