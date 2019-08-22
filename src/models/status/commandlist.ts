@@ -267,10 +267,13 @@ export default class CommandList {
       const numMonth = api.GameDateTime.toNumber(month);
       let event = api.CharacterCommand.eventNone;
       let eventMessage = '';
-      if (this.store.systemData.isWaitingReset &&
-          month.year === this.store.systemData.resetGameDateTime.year && month.month === 1) {
-        event = api.CharacterCommand.eventReset;
-        eventMessage = 'リセット';
+      if (this.store.systemData.isWaitingReset) {
+        if (numMonth === api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
+          event = api.CharacterCommand.eventReset;
+          eventMessage = 'リセット';
+        } else if (numMonth > api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
+          event = api.CharacterCommand.eventAfterReset;
+        }
       }
       if (numMonth > firstWarStart) {
         event = api.CharacterCommand.eventWaring;

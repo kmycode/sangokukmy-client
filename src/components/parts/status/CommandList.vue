@@ -129,6 +129,7 @@
         <div v-if="command.event === 3" class="background-layer background-layer-town-war"></div>
         <div v-if="command.event === 4" class="background-layer background-layer-reset"></div>
         <div v-if="command.event === 5" class="background-layer background-layer-battle-start"></div>
+        <div v-if="command.event === 6" class="background-layer background-layer-after-reset"></div>
         <div class="command-list-item-background"></div>
         <div class="command-list-item-content">
           <div class="number">{{ command.commandNumber }}</div>
@@ -361,6 +362,9 @@ $color-navigation-commands: #e0e0e0;
     }
     &.background-layer-battle-start {
       background: #29f;
+    }
+    &.background-layer-after-reset {
+      background: #999;
     }
     &.background-layer-previewed {
       background: #eb2;
