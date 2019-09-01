@@ -13,6 +13,11 @@
       />
       <KmyLogTagText v-show="log.lines.length <= 0" :text="'応戦できる者はいませんでした'"/>
     </div>
+    <div class="battle-info">
+      <div class="chara attacker">{{ log.attackerAttackPower }}</div>
+      <div class="label">攻撃力</div>
+      <div class="chara defender">{{ log.defenderAttackPower }}</div>
+    </div>
     <div class="lines">
       <div class="line" v-for="line in log.lines" :key="line.id">
         <div class="chara attacker">
@@ -117,6 +122,24 @@ export default class BattleLogView extends Vue {
   &.maplog {
     font-size: 20px;
     margin: 16px 0 8px;
+  }
+}
+
+.battle-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed #ccc;
+  .chara {
+    flex: 1;
+    text-align: center;
+    font-size: 1.4em;
+    color: #c00;
+    font-weight: bold;
+  }
+  .label {
+    font-size: 1em;
   }
 }
 

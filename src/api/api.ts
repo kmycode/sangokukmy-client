@@ -914,6 +914,8 @@ export class BattleLog {
   public constructor(public id: number = 0,
                      public town: Town = Town.default,
                      public defenderType: number = 0,
+                     public attackerAttackPower: number = 0,
+                     public defenderAttackPower: number = 0,
                      public attackerCache: Character = new Character(-1),
                      public defenderCache: Character = new Character(-1),
                      public maplog: MapLog = new MapLog(-1),

@@ -4,12 +4,14 @@ import ArrayUtil from '@/models/common/arrayutil';
 import NotificationService from '@/services/notificationservice';
 import Vue from 'vue';
 import StatusStore from './statusstore';
+import { TOWN_BUILDINGS } from '@/common/definitions';
 
 export interface IChatMessageContainer {
   messages: api.ChatMessage[];
   isPosting: boolean;
   isLoading: boolean;
   isUnread: boolean;
+  isScrolledTop: boolean;
   count: number;
   sendTo?: any;
 
@@ -29,6 +31,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public isPosting: boolean = false;
   public isLoading: boolean = false;
   public isUnread: boolean = false;
+  public isScrolledTop: boolean = true;
   public count: number = 0;
   public sendTo: T = {} as T;
   private hasLoadAll: boolean = false;
@@ -65,6 +68,14 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       old.message = message.message;
     } else {
       this.messages.unshift(message);
+
+      // スクロールされていない状態であれば、古いのを消す
+      if (this.isScrolledTop) {
+        if (this.messages.length > 100) {
+          this.messages = this.messages.slice(0, 100);
+          this.hasLoadAll = false;
+        }
+      }
 
       // 登用以外は無条件で加算する
       if (message.type === api.ChatMessage.typePromotion ||
