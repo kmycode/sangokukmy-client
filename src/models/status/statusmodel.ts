@@ -1888,6 +1888,8 @@ export default class StatusModel {
 
   // #region CharacterItem
 
+  private itemNotificationLock: number = 0;
+
   private onCharacterItemReceived(item: api.CharacterItem) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === item.type);
     const old = ArrayUtil.find(this.store.items, item.id);
@@ -1903,11 +1905,15 @@ export default class StatusModel {
     ArrayUtil.addItem(this.store.items, item);
 
     if (this.store.hasInitialized && item.characterId === this.character.id && info) {
-      if (item.status === api.CharacterItem.statusCharacterHold) {
-        NotificationService.itemGot.notifyWithParameter(info.name);
-        this.updateCharacter(this.character);
-      } else if (item.status === api.CharacterItem.statusCharacterPending) {
-        NotificationService.itemPending.notifyWithParameter(info.name);
+      if (!this.isUpdatingItems && this.itemNotificationLock <= 0) {
+        if (item.status === api.CharacterItem.statusCharacterHold) {
+          NotificationService.itemGot.notifyWithParameter(info.name);
+          this.updateCharacter(this.character);
+        } else if (item.status === api.CharacterItem.statusCharacterPending) {
+          NotificationService.itemPending.notifyWithParameter(info.name);
+        }
+      } else {
+        this.itemNotificationLock--;
       }
     }
   }
@@ -1915,6 +1921,7 @@ export default class StatusModel {
   public addCharacterItem(item: number, itemId: number, status: number) {
     if (!this.isUpdatingItems) {
       this.isUpdatingItems = true;
+      this.itemNotificationLock++;
       api.Api.addCharacterItem(item, itemId, status)
         .then(() => {
           if (status === api.CharacterItem.statusCharacterHold) {
@@ -1929,6 +1936,7 @@ export default class StatusModel {
           } else {
             NotificationService.itemGetFailedByPending.notify();
           }
+          this.itemNotificationLock--;
         })
         .finally(() => {
           this.isUpdatingItems = false;
