@@ -133,6 +133,11 @@ export default class ChatMessagePanel extends Vue {
     if (this.isScrolled(event)) {
       this.model.loadOldChatsAsync();
     }
+    this.model.isScrolledTop = this.isOnTopScrolled(event);
+  }
+
+  private isOnTopScrolled(event: any): boolean {
+    return 50 >= event.target.scrollTop;
   }
 
   private isScrolled(event: any): boolean {
