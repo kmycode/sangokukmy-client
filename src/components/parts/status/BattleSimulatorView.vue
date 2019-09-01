@@ -7,16 +7,17 @@
         <div class="value"><input type="number" min="0" v-model.number="battleCount"></div>
       </div>
     </div>
+    <div class="alert alert-primary">
+      <h4>能力について</h4>
+      神鬼兵の場合に限り、武力と知力の合計を入力してください。<br>
+      それ以外の場合は、兵種に応じて武力・知力・人望のいずれかを入力してください。
+    </div>
     <h2>攻撃側</h2>
     <h3>武将</h3>
     <div class="edit-list">
       <div class="data-row">
-        <div class="label">武力</div>
+        <div class="label">能力</div>
         <div class="value"><input type="number" min="0" v-model.number="my.strong"></div>
-      </div>
-      <div class="data-row">
-        <div class="label">知力</div>
-        <div class="value"><input type="number" min="0" v-model.number="my.intellect"></div>
       </div>
       <div class="data-row">
         <div class="label">兵士小隊数</div>
@@ -38,14 +39,6 @@
         <div class="value"><input type="number" min="0" v-model.number="my.baseDefend"></div>
       </div>
       <div class="data-row">
-        <div class="label">知力攻撃力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" v-model.number="my.intellectAttack"></div>
-      </div>
-      <div class="data-row">
-        <div class="label">知力防御力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" v-model.number="my.intellectDefend"></div>
-      </div>
-      <div class="data-row">
         <div class="label">突撃確率 (基準値: 100)</div>
         <div class="value"><input type="number" min="0" v-model.number="my.rushProbability"></div>
       </div>
@@ -58,12 +51,8 @@
     <h3>武将</h3>
     <div class="edit-list">
       <div class="data-row">
-        <div class="label">武力</div>
+        <div class="label">能力</div>
         <div class="value"><input type="number" min="0" v-model.number="enemy.strong"></div>
-      </div>
-      <div class="data-row">
-        <div class="label">知力</div>
-        <div class="value"><input type="number" min="0" v-model.number="enemy.intellect"></div>
       </div>
       <div class="data-row">
         <div class="label">兵士小隊数</div>
@@ -83,14 +72,6 @@
       <div class="data-row">
         <div class="label">基本防御力</div>
         <div class="value"><input type="number" min="0" v-model.number="enemy.baseDefend"></div>
-      </div>
-      <div class="data-row">
-        <div class="label">知力攻撃力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" v-model.number="enemy.intellectAttack"></div>
-      </div>
-      <div class="data-row">
-        <div class="label">知力防御力 (基準値: 100)</div>
-        <div class="value"><input type="number" min="0" v-model.number="enemy.intellectDefend"></div>
       </div>
       <div class="data-row">
         <div class="label">突撃確率 (基準値: 100)</div>
@@ -152,14 +133,11 @@ import Enumerable from 'linq';
 
 class BattleCharacter {
   public constructor(public strong = 0,
-                     public intellect = 0,
                      public soldierNumber = 0,
                      public proficiency = 0,
                      public attack = 0,
                      public baseAttack = 0,
                      public baseDefend = 0,
-                     public intellectAttack = 0,
-                     public intellectDefend = 0,
                      public rushProbability = 0,
                      public rushAttack = 0,
                      public winCount = 0,
@@ -168,11 +146,11 @@ class BattleCharacter {
                      public restSoldierNumberAverage = 0) {}
 
   public getAttackCorrection(): number {
-    return this.baseAttack + (this.intellectAttack / 100 * this.intellect);
+    return this.baseAttack;
   }
 
   public getDefendCorrection(): number {
-    return this.baseDefend + (this.intellectDefend / 100 * this.intellect);
+    return this.baseDefend;
   }
 
   public isRush(): boolean {
