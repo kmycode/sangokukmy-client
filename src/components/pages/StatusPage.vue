@@ -104,11 +104,11 @@
               :characters="model.townCharacters"/>
           </div>
           <div class="commands">
-            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">武将</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">滞在</button>
             <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownDefenders(); isOpenTownDefendersDialog = true">守備</button>
             <button v-show="model.town.id === model.character.townId && model.town.countryId !== model.character.countryId" type="button" class="btn btn-secondary loading-container" :style="{ 'pointer-events': model.isScouting ? 'none' : 'all' }" @click="model.scoutTown()">諜報<div v-show="model.isScouting" class="loading"><div class="loading-icon"></div></div></button>
-            <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">武将（当時）</button>
-            <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備（当時）</button>
+            <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">諜報時点滞在</button>
+            <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">諜報時点守備</button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
