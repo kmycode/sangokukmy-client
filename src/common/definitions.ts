@@ -76,21 +76,22 @@ export class SoldierType {
                      public attackPower?: string,
                      public defencePower?: string,
                      public description?: string,
-                     public requestedPolicyType?: number) {}
+                     public requestedPolicyType?: number,
+                     public isNeedResource?: boolean) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, 0, '剣兵', 1, 0, '0', '0'),
   new SoldierType(2, 0, '禁兵', 1, 0, '15', '15'),
   new SoldierType(500, 0, '剣兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、攻撃力・防御力に補正を得る'),
-  new SoldierType(3, 0, '軽戟兵',  2, 100, '30', '10', '軽装備の戟兵'),
-  new SoldierType(4, 0, '弓兵',    3, 200, '30', '10', '弓を持った兵士'),
+  new SoldierType(3, 0, '軽戟兵',  2, 100, '10', '0', '軽装備の戟兵'),
+  new SoldierType(4, 0, '弓兵',    3, 200, '0', '10', '弓を持った兵士'),
   new SoldierType(5, 0, '軽騎兵',  5, 300, '30', '10', '軽装備の騎兵'),
-  new SoldierType(6, 0, '強弩兵',  7, 400, '40', '10', '弩を持った兵士'),
+  new SoldierType(6, 0, '強弩兵',  7, 400, '10', '30', '弩を持った兵士'),
   new SoldierType(7, 1, '神鬼兵',  10, 500, '武力', '0', '基礎能力として武力の代わりに知力を用いた兵種。武力が攻撃力に補正として加算される'),
-  new SoldierType(8, 0, '重戟兵',  12, 600, '60', '40', '重装備の戟兵'),
+  new SoldierType(8, 0, '重戟兵',  12, 600, '50', '30', '重装備の戟兵'),
   new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
-  new SoldierType(11, 0, '連弩兵', 20, 800, '60', '40', '連弩を持った兵士'),
+  new SoldierType(11, 0, '連弩兵', 20, 800, '90', '40', '連弩を持った兵士', undefined, true),
   new SoldierType(12, 0, '壁守兵', 14, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
@@ -785,6 +786,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
   new CharacterItemType(62, 100000, '論語', '人望 +20', false),
+  new CharacterItemType(63, 14, '装備連弩', '（資源）連弩兵徴兵可能', true, true, false, true, 1000),
 ];
 
 /**
