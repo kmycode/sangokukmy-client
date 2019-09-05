@@ -92,6 +92,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, 0, '連弩兵', 20, 800, '90', '40', '連弩を持った兵士', undefined, true),
+  new SoldierType(26, 0, '青洲兵', 25, 900, '90', '70', '青洲出身の強力な兵士', undefined, true),
   new SoldierType(12, 0, '壁守兵', 14, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
@@ -787,6 +788,9 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
   new CharacterItemType(62, 100000, '論語', '人望 +20', false),
   new CharacterItemType(63, 14, '装備連弩', '（資源）連弩兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(64, 18, '青洲槍', '（資源）青洲兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(65, 22, '装備良戟', '（資源）重戟兵徴兵費 -60%', true, true, false, true, 1000),
+  new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵徴兵費 -60%', true, true, false, true, 1000),
 ];
 
 /**
@@ -815,4 +819,9 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 10, (skills) => skills.some((s) => s.type === 12)),
   new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 10, (skills) => skills.some((s) => s.type === 13)),
   new CharacterSkillType(15, '商人 Lv.5', '米売買上限 +3000', 9, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
+  new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、装備良戟・装備良馬生産可能', 8, (skills) => skills.some((s) => s.type === 16)),
+  new CharacterSkillType(18, '技師 Lv.3', '装備連弩生産可能', 9, (skills) => skills.some((s) => s.type === 17)),
+  new CharacterSkillType(19, '技師 Lv.4', 'アイテム上限 +3', 11, (skills) => skills.some((s) => s.type === 18)),
+  new CharacterSkillType(20, '技師 Lv.5', '青洲槍生産可能', 12, (skills) => skills.some((s) => s.type === 19)),
 ];
