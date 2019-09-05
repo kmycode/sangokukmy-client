@@ -92,6 +92,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 1, 'btn-secondary': character.from === 1, }" @click="onFromChanged(1)">武家</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">官吏</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 4, 'btn-secondary': character.from === 4, }" @click="onFromChanged(4)">技師</button>
           </div>
           <div class="detail">
             出身を指定してください。出身に合った能力が自動で入力されます
@@ -549,6 +550,12 @@ export default class EntryPage extends Vue {
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+    } else if (id === api.CharacterSkill.typeEngineer) {
+      strong = 100;
+      intellect = 5;
+      leadership = 90;
+      popularity = 5;
+      primaries = [1, 3, 2, 4];
     }
 
     if (!primaries) {

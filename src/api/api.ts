@@ -1022,6 +1022,7 @@ export class CharacterSkill {
   public static readonly typeStrong = 1;
   public static readonly typeIntellect = 2;
   public static readonly typeMerchant = 3;
+  public static readonly typeEngineer = 4;
 
   public constructor(public id: number,
                      public type: number,
