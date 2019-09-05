@@ -16,7 +16,7 @@
           <div class="description">{{ item.description }}</div>
         </div>
       </div>
-      <div v-if="canEdit" class="select-cover" @click="$emit('input', item.id)"></div>
+      <div class="select-cover" @click="$emit('input', item)"></div>
     </div>
   </div>
 </template>
@@ -34,7 +34,7 @@ import Enumerable from 'linq';
     CharacterIcon,
   },
 })
-export default class CharacterItemList extends Vue {
+export default class GenerateItemTypePicker extends Vue {
   public itemTypes: def.CharacterItemType[] = [];
   @Prop({
     default: () => new def.CharacterItemType(-1),
@@ -46,6 +46,23 @@ export default class CharacterItemList extends Vue {
   @Watch('skills')
   public onSkillsChanged() {
     this.itemTypes = [];
+    if (this.skills.some((s) => s.type === 17)) {
+      this.addItemType(65);
+      this.addItemType(66);
+    }
+    if (this.skills.some((s) => s.type === 18)) {
+      this.addItemType(63);
+    }
+    if (this.skills.some((s) => s.type === 20)) {
+      this.addItemType(64);
+    }
+  }
+
+  private addItemType(id: number) {
+    const item = def.CHARACTER_ITEM_TYPES.find((val) => val.id === id);
+    if (item) {
+      this.itemTypes.push(item);
+    }
   }
 
   private getItemMoney(item: def.CharacterItemType): number {

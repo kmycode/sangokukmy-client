@@ -6,7 +6,7 @@
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 1 }" @click.prevent.stop="selectedCommandCategory = 1" href="#">政策</a></li>
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 2 }" @click.prevent.stop="selectedCommandCategory = 2" href="#">軍事</a></li>
       <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 4 }" @click.prevent.stop="selectedCommandCategory = 4" href="#">個人</a></li>
-      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 5 }" @click.prevent.stop="selectedCommandCategory = 5" href="#">技能</a></li>
+      <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedCommandCategory === 5 }" @click.prevent.stop="selectedCommandCategory = 5" href="#">特殊</a></li>
     </ul>
     <div class="loading-container">
       <!-- 内政コマンド -->

@@ -56,7 +56,8 @@ export default class CommandList {
   }
 
   public get canInputGenerateItem(): boolean {
-    return false;
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 16);
   }
 
   public get restTurns(): number {
