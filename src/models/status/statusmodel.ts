@@ -593,6 +593,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterSkill>(
       api.CharacterSkill.typeId,
       (obj) => this.onCharacterSkillReceived(obj));
+    ApiStreaming.status.on<api.CommandComment>(
+      api.CommandComment.typeId,
+      (obj) => this.onCommandCommentReceived(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -670,6 +673,10 @@ export default class StatusModel {
       // 守備中に戦闘があった
       const notify = signal.data.isWin ? NotificationService.defenderWon : NotificationService.defenderLose;
       notify.notifyWithParameter(signal.data.townName, signal.data.targetName);
+    } else if (signal.type === 9) {
+      // CommandCommentの受信・更新が完了した
+      this.commands.updateCommandListInformations();
+      NotificationService.commandCommentUpdated.notify();
     }
   }
 
@@ -1243,6 +1250,12 @@ export default class StatusModel {
 
   public get canScouter(): boolean {
     // 自分が諜報府権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canCommandComment(): boolean {
+    // 自分がコマンドコメント権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
@@ -1985,6 +1998,10 @@ export default class StatusModel {
 
   public get isCommandInputing(): boolean {
     return this.commands.inputer.isInputing;
+  }
+
+  private onCommandCommentReceived(item: api.CommandComment) {
+    ArrayUtil.addItemUniquely(this.store.commandComments, item, (obj) => api.GameDateTime.toNumber(obj.gameDate));
   }
 
   // #endregion

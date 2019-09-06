@@ -319,6 +319,18 @@ export default class CommandList {
           eventMessage = '戦闘解除';
         }
       }
+
+      const comment = this.store.commandComments
+        .find((c) => c.gameDate.year === month.year && c.gameDate.month === month.month);
+      if (comment && comment.message) {
+        event = api.CharacterCommand.eventCustomMessage;
+        if (eventMessage) {
+          eventMessage += ' / ' + comment.message;
+        } else {
+          eventMessage = comment.message;
+        }
+      }
+
       Vue.set(cmd, 'event', event);
       Vue.set(cmd, 'eventMessage', eventMessage);
 

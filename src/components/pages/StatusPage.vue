@@ -222,6 +222,7 @@
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
                            :canScouter="model.canScouter"
+                           :canCommandComment="model.canCommandComment"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"/>
         </div>
@@ -1156,6 +1157,26 @@
           </div>
         </div>
       </div>
+      <!-- コマンドコメント -->
+      <div v-show="isOpenCommandCommentDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">コメント</h2>
+        <div class="dialog-content dialog-content-promotion">
+          <div class="dialog-content-promotion-main">
+            <div class="comment-input">
+              コメントを入力してください...<br>
+              <input v-model="commandCommentMessage" style="width:100%">
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCommandCommentDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="model.commands.inputer.setCommandComments(commandCommentMessage); isOpenCommandCommentDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -1277,6 +1298,7 @@ export default class StatusPage extends Vue {
   public isOpenCharacterItemUseDialog: boolean = false;
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
+  public isOpenCommandCommentDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -1303,6 +1325,7 @@ export default class StatusPage extends Vue {
     { type: new def.CharacterItemType(-1), id: -1 };
   public selectedGenerateItemType: def.CharacterItemType = new def.CharacterItemType(-1);
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
+  public commandCommentMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -1319,7 +1342,7 @@ export default class StatusPage extends Vue {
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
-      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog;
+      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1392,6 +1415,9 @@ export default class StatusPage extends Vue {
     } else if (event === 'item-generate') {
       this.selectedGenerateItemType = new def.CharacterItemType(-1);
       this.isOpenGenerateItemUseDialog = true;
+    } else if (event === 'command-comment') {
+      this.commandCommentMessage = '';
+      this.isOpenCommandCommentDialog = true;
     }
   }
 
@@ -1407,7 +1433,8 @@ export default class StatusPage extends Vue {
       this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
-      this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog = false;
+      this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
+      this.isOpenCommandCommentDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

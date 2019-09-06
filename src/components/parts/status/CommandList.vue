@@ -88,6 +88,7 @@
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
         <button v-if="list.canInputGenerateItem" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">資源製造</button>
+        <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
     </div>
@@ -130,6 +131,7 @@
         <div v-if="command.event === 4" class="background-layer background-layer-reset"></div>
         <div v-if="command.event === 5" class="background-layer background-layer-battle-start"></div>
         <div v-if="command.event === 6" class="background-layer background-layer-after-reset"></div>
+        <div v-if="command.event === 7" class="background-layer background-layer-custom-message"></div>
         <div class="command-list-item-background"></div>
         <div class="command-list-item-content">
           <div class="number">{{ command.commandNumber }}</div>
@@ -161,6 +163,7 @@ export default class CommandListView extends Vue {
   @Prop() private canSafeOut!: boolean;
   @Prop() private canSecretary!: boolean;
   @Prop() private canScouter!: boolean;
+  @Prop() private canCommandComment!: boolean;
   @Prop() private gameDate!: api.GameDateTime;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
@@ -365,6 +368,9 @@ $color-navigation-commands: #e0e0e0;
     }
     &.background-layer-after-reset {
       background: #999;
+    }
+    &.background-layer-custom-message {
+      background: rgb(196, 169, 13);
     }
     &.background-layer-previewed {
       background: #eb2;
