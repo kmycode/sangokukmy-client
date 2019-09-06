@@ -416,6 +416,7 @@
               <SoldierTypePicker
                 :soldierTypes="model.selectableSoldierTypes"
                 :skills="model.characterSkills"
+                :items="model.characterItems"
                 v-model="selectedSoldierType"/>
             </div>
             <div class="soldier-input">

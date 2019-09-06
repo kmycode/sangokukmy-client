@@ -77,7 +77,8 @@ export class SoldierType {
                      public defencePower?: string,
                      public description?: string,
                      public requestedPolicyType?: number,
-                     public isNeedResource?: boolean) {}
+                     public isNeedResource?: boolean,
+                     public requestedItemType?: number) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, 0, '剣兵', 1, 0, '0', '0'),
@@ -91,8 +92,8 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(8, 0, '重戟兵',  12, 600, '50', '30', '重装備の戟兵'),
   new SoldierType(9, 0, '重騎兵',  15, 700, '60', '40', '重装備の騎兵'),
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
-  new SoldierType(11, 0, '連弩兵', 20, 800, '90', '40', '連弩を持った兵士', undefined, true),
-  new SoldierType(26, 0, '青洲兵', 25, 900, '90', '70', '青洲出身の強力な兵士', undefined, true),
+  new SoldierType(11, 0, '連弩兵', 20, 800, '90', '40', '連弩を持った兵士', undefined, true, 63),
+  new SoldierType(26, 0, '青洲兵', 25, 900, '90', '70', '青洲出身の強力な兵士', undefined, true, 64),
   new SoldierType(12, 0, '壁守兵', 14, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
