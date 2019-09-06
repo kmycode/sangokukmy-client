@@ -32,7 +32,10 @@ Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
   return api.GameDateTime.toRealDate(value);
 });
 Vue.filter('charafromname', (chara: api.Character): string => {
-  return chara.from === 1 ? '武家' : chara.from === 2 ? '官吏' : chara.from === 3 ? '商人' : 'なし';
+  return chara.from === 1 ? '武家' :
+    chara.from === 2 ? '官吏' :
+    chara.from === 3 ? '商人' :
+    chara.from === 4 ? '技師' : 'なし';
 });
 
 @Component({

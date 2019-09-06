@@ -10,10 +10,12 @@
         <h3>初心者向けの注意点</h3>
         本ゲームは、一般的なスマホゲームなどと、以下の点において異なります。あらかじめご留意ください。
         <ul>
-          <li>5日以上ログインしていないとアカウントが削除されるようになっています。毎日3〜5分程度（慣れれば1分程度）のプレイが推奨されます。</li>
+          <li><strong>5日以上ログインしていないとアカウントが削除されるようになっています。毎日3〜5分程度（慣れれば1分程度）のプレイが推奨されます。</strong></li>
+          <li>自分の国が滅亡したら、他の国に仕官することでゲームを続行できます。</li>
           <li>どこかの国が統一するとすべてのゲームデータが初期化され、また最初から登録し直しになります。</li>
           <li>全員が１つになって競い合うゲームです。自分１人や一部の集団ではなく、みなさんが楽しめる思い出作りをしていきましょう。戦争に勝つこと、全国を統一することも大切ですが、ゲームを楽しむことを目標にしましょう。</li>
         </ul>
+        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
       </div>
       <div class="alert alert-info">
         <h3>説明書</h3>
@@ -91,6 +93,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 1, 'btn-secondary': character.from === 1, }" @click="onFromChanged(1)">武家</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">官吏</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 4, 'btn-secondary': character.from === 4, }" @click="onFromChanged(4)">技師</button>
           </div>
           <div class="detail">
             出身を指定してください。出身に合った能力が自動で入力されます
@@ -548,6 +551,12 @@ export default class EntryPage extends Vue {
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+    } else if (id === api.CharacterSkill.typeEngineer) {
+      strong = 100;
+      intellect = 5;
+      leadership = 90;
+      popularity = 5;
+      primaries = [1, 3, 2, 4];
     }
 
     if (!primaries) {

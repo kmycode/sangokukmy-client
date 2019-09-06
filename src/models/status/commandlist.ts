@@ -56,7 +56,8 @@ export default class CommandList {
   }
 
   public get canInputGenerateItem(): boolean {
-    return false;
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 16);
   }
 
   public get restTurns(): number {
@@ -318,6 +319,18 @@ export default class CommandList {
           eventMessage = '戦闘解除';
         }
       }
+
+      const comment = this.store.commandComments
+        .find((c) => c.gameDate.year === month.year && c.gameDate.month === month.month);
+      if (comment && comment.message) {
+        event = api.CharacterCommand.eventCustomMessage;
+        if (eventMessage) {
+          eventMessage += ' / ' + comment.message;
+        } else {
+          eventMessage = comment.message;
+        }
+      }
+
       Vue.set(cmd, 'event', event);
       Vue.set(cmd, 'eventMessage', eventMessage);
 

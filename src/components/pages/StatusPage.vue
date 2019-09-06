@@ -207,7 +207,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://sangoku-doc.kmycode.net/" target="_blank">説明書</a>
+                <a class="dropdown-item" href="https://sangoku-doc.kmycode.net/" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
+                <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
               </div>
@@ -221,6 +222,7 @@
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
                            :canScouter="model.canScouter"
+                           :canCommandComment="model.canCommandComment"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"/>
         </div>
@@ -404,10 +406,10 @@
         <div class="dialog-content dialog-content-soldier">
           <div class="dialog-content-soldier-main">
             <div class="row">
-              <div class="content-row col-md-6">
+              <div class="content-row col-6">
                 <div class="label">統率</div><div class="value">{{ model.character.leadership }}</div>
               </div>
-              <div class="content-row col-md-6">
+              <div class="content-row col-6">
                 <div class="label">現在の兵数</div><div class="value">{{ model.character.soldierNumber }}</div>
               </div>
             </div>
@@ -415,6 +417,7 @@
               <SoldierTypePicker
                 :soldierTypes="model.selectableSoldierTypes"
                 :skills="model.characterSkills"
+                :items="model.characterItems"
                 v-model="selectedSoldierType"/>
             </div>
             <div class="soldier-input">
@@ -1120,7 +1123,7 @@
       </div>
       <!-- アイテム生成 -->
       <div v-show="isOpenGenerateItemUseDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム生成</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">資源製造</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <GenerateItemTypePicker :skills="model.characterSkills"
                                   v-model="selectedGenerateItemType"
@@ -1131,7 +1134,7 @@
             <button class="btn btn-light" @click="isOpenGenerateItemUseDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="selectedGenerateItemType.id >= 0" @click="model.commands.inputer.inputGenerateItemCommand(57, selectedGenerateItemType.type.id); isOpenGenerateItemUseDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="selectedGenerateItemType.id >= 0" @click="model.commands.inputer.inputGenerateItemCommand(57, selectedGenerateItemType.id); isOpenGenerateItemUseDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1151,6 +1154,26 @@
           </div>
           <div class="right-side">
             <button class="btn btn-primary" v-show="selectedSkillType.id >= 0 && selectedSkillType.point <= model.character.skillPoint" @click="model.addSkill(selectedSkillType.id)">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- コマンドコメント -->
+      <div v-show="isOpenCommandCommentDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">コメント</h2>
+        <div class="dialog-content dialog-content-promotion">
+          <div class="dialog-content-promotion-main">
+            <div class="comment-input">
+              コメントを入力してください...<br>
+              <input v-model="commandCommentMessage" style="width:100%">
+            </div>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCommandCommentDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="model.commands.inputer.setCommandComments(commandCommentMessage); isOpenCommandCommentDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1275,6 +1298,7 @@ export default class StatusPage extends Vue {
   public isOpenCharacterItemUseDialog: boolean = false;
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
+  public isOpenCommandCommentDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -1301,6 +1325,7 @@ export default class StatusPage extends Vue {
     { type: new def.CharacterItemType(-1), id: -1 };
   public selectedGenerateItemType: def.CharacterItemType = new def.CharacterItemType(-1);
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
+  public commandCommentMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -1317,7 +1342,7 @@ export default class StatusPage extends Vue {
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
-      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog;
+      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1390,6 +1415,9 @@ export default class StatusPage extends Vue {
     } else if (event === 'item-generate') {
       this.selectedGenerateItemType = new def.CharacterItemType(-1);
       this.isOpenGenerateItemUseDialog = true;
+    } else if (event === 'command-comment') {
+      this.commandCommentMessage = '';
+      this.isOpenCommandCommentDialog = true;
     }
   }
 
@@ -1405,7 +1433,8 @@ export default class StatusPage extends Vue {
       this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
-      this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog = false;
+      this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
+      this.isOpenCommandCommentDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {

@@ -696,6 +696,7 @@ export class CharacterCommand {
   public static readonly eventReset: number = 4;
   public static readonly eventBattleStart: number = 5;
   public static readonly eventAfterReset: number = 6;
+  public static readonly eventCustomMessage: number = 7;
 
   public static updateName(command: CharacterCommand) {
     const cmd = def.getCommandNameByType(command.type);
@@ -1022,11 +1023,20 @@ export class CharacterSkill {
   public static readonly typeStrong = 1;
   public static readonly typeIntellect = 2;
   public static readonly typeMerchant = 3;
+  public static readonly typeEngineer = 4;
 
   public constructor(public id: number,
                      public type: number,
                      public characterId: number,
                      public status: number) {}
+}
+
+export class CommandComment {
+  public static readonly typeId: number = 38;
+
+  public constructor(public id: number,
+                     public gameDate: GameDateTime,
+                     public message: string) {}
 }
 
 export class Api {
@@ -1093,6 +1103,17 @@ export class Api {
   public static async setCommands(commands: CharacterCommand[]) {
     try {
       await axios.put(def.API_HOST + 'commands', commands, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  /**
+   * コマンドコメントを更新
+   */
+  public static async setCommandComments(comments: CommandComment[]): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'commands/comments', comments, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

@@ -18,6 +18,30 @@ export default class CommandInputer {
 
   public constructor(private store: StatusStore) {}
 
+  public setCommandComments(message: string) {
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    if (selectCommands.length > 0) {
+      this.isInputing = true;
+      const messages: api.CommandComment[] = [];
+      selectCommands.forEach((c) => {
+        messages.push(new api.CommandComment(0, c.gameDate, message));
+      });
+      api.Api.setCommandComments(messages)
+        .then(() => {
+          NotificationService.commandCommentUpdateSucceed.notify();
+          selectCommands.forEach((c) => {
+            c.isSelected = false;
+          });
+        }).catch(() => {
+          NotificationService.commandCommentUpdateFailed.notify();
+        }).finally(() => {
+          this.isInputing = false;
+        });
+    } else {
+      NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
+    }
+  }
+
   public inputCommand(commandType: number) {
     this.inputCommandPrivate(commandType);
   }
