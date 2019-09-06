@@ -405,10 +405,10 @@
         <div class="dialog-content dialog-content-soldier">
           <div class="dialog-content-soldier-main">
             <div class="row">
-              <div class="content-row col-md-6">
+              <div class="content-row col-6">
                 <div class="label">統率</div><div class="value">{{ model.character.leadership }}</div>
               </div>
-              <div class="content-row col-md-6">
+              <div class="content-row col-6">
                 <div class="label">現在の兵数</div><div class="value">{{ model.character.soldierNumber }}</div>
               </div>
             </div>
