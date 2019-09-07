@@ -655,6 +655,7 @@ export default class StatusModel {
         this.countryThreadBbs.isUnread =
         this.globalThreadBbs.isUnread = false;
       this.updateCharacter(this.character);
+      this.commands.initialize(this.character.lastUpdatedGameDate, this.character.lastUpdated);
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -1662,9 +1663,6 @@ export default class StatusModel {
       .catch(() => {
         NotificationService.getIconsFailed.notify();
       });
-
-    // コマンドを初期化
-    this.commands.initialize(character.lastUpdatedGameDate, character.lastUpdated);
   }
 
   private updateCharacter(character: api.Character) {
