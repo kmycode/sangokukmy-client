@@ -618,7 +618,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(19, 3000, '城塞国家', '城塞都市につき政策ポイント +3。首都の下敷きが城塞都市の場合追加 +3',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 20)),
 
-  new CountryPolicyType(5, 4000, '経済論', '蝗害、疫病の被害をなくし、豊作、市場の効果を上げる'),
+  new CountryPolicyType(5, 4000, '経済論', '蝗害、疫病の被害を軽減し、豊作、市場の効果を上げる'),
   new CountryPolicyType(1, 4000, '貯蔵', '国庫が利用可能になる。国庫最高 +100万',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5)),
   new CountryPolicyType(25, 3000, '徴収', '国庫納入する収入余剰最大 +2000',
@@ -635,7 +635,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 11)),
   new CountryPolicyType(12, 3000, '血管の中', '人間の血管の中に細かく砕いた財産を貯蔵する。国庫最高 +100万',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 36)),
-  new CountryPolicyType(6, 3000, '災害対策', '洪水、地震の被害をなくす',
+  new CountryPolicyType(6, 3000, '災害対策', '洪水、地震の被害を軽減する',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 5)),
   new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
     (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
