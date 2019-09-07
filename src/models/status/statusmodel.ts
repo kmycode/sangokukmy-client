@@ -1919,10 +1919,12 @@ export default class StatusModel {
 
     if (this.store.hasInitialized && item.characterId === this.character.id && info) {
       if (!this.isUpdatingItems && this.itemNotificationLock <= 0) {
-        if (item.status === api.CharacterItem.statusCharacterHold) {
+        if (item.status === api.CharacterItem.statusCharacterHold &&
+          (!old || old.status !== item.status)) {
           NotificationService.itemGot.notifyWithParameter(info.name);
           this.updateCharacter(this.character);
-        } else if (item.status === api.CharacterItem.statusCharacterPending) {
+        } else if (item.status === api.CharacterItem.statusCharacterPending &&
+          (!old || old.status !== item.status)) {
           NotificationService.itemPending.notifyWithParameter(info.name);
         }
       } else {
