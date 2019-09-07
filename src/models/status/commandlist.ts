@@ -268,14 +268,6 @@ export default class CommandList {
       const numMonth = api.GameDateTime.toNumber(month);
       let event = api.CharacterCommand.eventNone;
       let eventMessage = '';
-      if (this.store.systemData.isWaitingReset) {
-        if (numMonth === api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
-          event = api.CharacterCommand.eventReset;
-          eventMessage = 'リセット';
-        } else if (numMonth > api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
-          event = api.CharacterCommand.eventAfterReset;
-        }
-      }
       if (numMonth > firstWarStart) {
         event = api.CharacterCommand.eventWaring;
       }
@@ -328,6 +320,15 @@ export default class CommandList {
           eventMessage += ' / ' + comment.message;
         } else {
           eventMessage = comment.message;
+        }
+      }
+      if (this.store.systemData.isWaitingReset) {
+        if (numMonth === api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
+          event = api.CharacterCommand.eventReset;
+          eventMessage = 'リセット';
+        } else if (numMonth > api.GameDateTime.toNumber(this.store.systemData.resetGameDateTime)) {
+          event = api.CharacterCommand.eventAfterReset;
+          eventMessage = '';
         }
       }
 
