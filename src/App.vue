@@ -36,7 +36,7 @@ Vue.filter('charafromname', (chara: api.Character): string => {
     chara.from === 2 ? '官吏' :
     chara.from === 3 ? '商人' :
     chara.from === 4 ? '技師' :
-    chara.from === 5 ? 'AI' : 'なし';
+    chara.from === 5 ? 'ＡＩ' : 'なし';
 });
 
 @Component({
