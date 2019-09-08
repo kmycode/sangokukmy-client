@@ -50,7 +50,7 @@ export const NEXT_LANK = 1200;
 /**
  * 国色の数
  */
-export const COUNTRY_COLOR_NUM = 14;
+export const COUNTRY_COLOR_NUM = 18;
 
 /**
  * アイコン数
