@@ -9,6 +9,7 @@
                   borderLeftWidth: isLeftTownSameCountry(t) ? '0' : '1px', paddingLeft: !isLeftTownSameCountry(t) ? '0' : '1px',
                   borderRightWidth: isRightTownSameCountry(t) ? '0' : '1px', paddingRight: !isRightTownSameCountry(t) ? '0' : '1px',
                   borderBottomWidth: isBottomTownSameCountry(t) ? '0' : '1px', paddingBottom: !isBottomTownSameCountry(t) ? '0' : '1px', }"
+        :title="getCountryName(t)"
         @click="$emit('selected', t.id)">
       <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2)"></div>
       <span v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" class="town-name">{{ t.name }}</span>
@@ -64,6 +65,17 @@ export default class Map extends Vue {
 
   private isSelected(current: api.Town): boolean {
     return this.town.id === current.id;
+  }
+
+  private getCountryName(town: api.Town): string {
+    const country = Enumerable
+      .from(this.countries)
+      .firstOrDefault((c) => c.id === town.countryId);
+    if (country !== undefined) {
+      return country.name;
+    } else {
+      return '無所属';
+    }
   }
 
   private getTownColor(town: api.Town): number {
