@@ -4,7 +4,11 @@
         v-for="t in towns"
         :key="t.id"
         :class="'map-cell country-color-' + getTownColor(t) + (currentTown.id === t.id ? ' current-town' : '')"
-        :style="{ top: t.y + '0%', left: t.x + '0%', }"
+        :style="{ top: t.y + '0%', left: t.x + '0%',
+                  borderTopWidth: isTopTownSameCountry(t) ? '0' : '1px', paddingTop: !isTopTownSameCountry(t) ? '0' : '1px',
+                  borderLeftWidth: isLeftTownSameCountry(t) ? '0' : '1px', paddingLeft: !isLeftTownSameCountry(t) ? '0' : '1px',
+                  borderRightWidth: isRightTownSameCountry(t) ? '0' : '1px', paddingRight: !isRightTownSameCountry(t) ? '0' : '1px',
+                  borderBottomWidth: isBottomTownSameCountry(t) ? '0' : '1px', paddingBottom: !isBottomTownSameCountry(t) ? '0' : '1px', }"
         @click="$emit('selected', t.id)">
       <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2)"></div>
       <span v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" class="town-name">{{ t.name }}</span>
@@ -108,6 +112,46 @@ export default class Map extends Vue {
     }
   }
 
+  private getTopTown(town: api.Town): api.Town | undefined {
+    return this.towns.find((t) => t.x === town.x && t.y === town.y - 1);
+  }
+
+  private getLeftTown(town: api.Town): api.Town | undefined {
+    return this.towns.find((t) => t.x === town.x - 1 && t.y === town.y);
+  }
+
+  private getRightTown(town: api.Town): api.Town | undefined {
+    return this.towns.find((t) => t.x === town.x + 1 && t.y === town.y);
+  }
+
+  private getBottomTown(town: api.Town): api.Town | undefined {
+    return this.towns.find((t) => t.x === town.x && t.y === town.y + 1);
+  }
+
+  private isTopTownSameCountry(town: api.Town): boolean {
+    const target = this.getTopTown(town);
+    return this.isSameCountry(town, target);
+  }
+
+  private isLeftTownSameCountry(town: api.Town): boolean {
+    const target = this.getLeftTown(town);
+    return this.isSameCountry(town, target);
+  }
+
+  private isRightTownSameCountry(town: api.Town): boolean {
+    const target = this.getRightTown(town);
+    return this.isSameCountry(town, target);
+  }
+
+  private isBottomTownSameCountry(town: api.Town): boolean {
+    const target = this.getBottomTown(town);
+    return this.isSameCountry(town, target);
+  }
+
+  private isSameCountry(t1: api.Town | undefined, t2: api.Town | undefined): boolean {
+    return t1 === undefined || t2 === undefined || t1.countryId === t2.countryId;
+  }
+
   private getModeGraphMax(town: api.Town, index: number): number {
     const townMax = this.getModeMaxValuePrivate(town, index);
     const maxMax = Enumerable
@@ -180,6 +224,9 @@ export default class Map extends Vue {
     padding: 2px;
     margin: 1px;
     font-weight: bold;
+    border-color: #e7e7e7;
+    border-style: dashed;
+    border-width: 0;
 
     position: absolute;
 
