@@ -413,7 +413,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (56:1)';
     }
   }),
-  new CommandNameResolver(57, '{0} を製造', (format, params) => {
+  new CommandNameResolver(57, '{0} を生産', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);

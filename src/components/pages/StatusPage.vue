@@ -1123,7 +1123,7 @@
       </div>
       <!-- アイテム生成 -->
       <div v-show="isOpenGenerateItemUseDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">資源製造</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム生産</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <GenerateItemTypePicker :skills="model.characterSkills"
                                   v-model="selectedGenerateItemType"
