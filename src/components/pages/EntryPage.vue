@@ -90,10 +90,17 @@
         <div :class="{ 'form-row': true, 'error': !isOkFrom, }">
           <div class="label">出身</div>
           <div class="field">
+            武官系<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 1, 'btn-secondary': character.from === 1, }" @click="onFromChanged(1)">武家</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 4, 'btn-secondary': character.from === 4, }" @click="onFromChanged(4)">技師</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 6, 'btn-secondary': character.from === 6, }" @click="onFromChanged(6)">胡人</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 8, 'btn-secondary': character.from === 8, }" @click="onFromChanged(8)">兵家</button>
+            <br>文官系<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">官吏</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 4, 'btn-secondary': character.from === 4, }" @click="onFromChanged(4)">技師</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
+            <br>その他<br>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
           </div>
           <div class="detail">
             出身を指定してください。出身に合った能力が自動で入力されます
@@ -557,6 +564,30 @@ export default class EntryPage extends Vue {
       leadership = 90;
       popularity = 5;
       primaries = [1, 3, 2, 4];
+    } else if (id === api.CharacterSkill.typeTerrorist) {
+      strong = 100;
+      intellect = 5;
+      leadership = 90;
+      popularity = 5;
+      primaries = [1, 3, 2, 4];
+    } else if (id === api.CharacterSkill.typePeople) {
+      strong = 5;
+      intellect = 90;
+      leadership = 5;
+      popularity = 100;
+      primaries = [4, 2, 1, 3];
+    } else if (id === api.CharacterSkill.typeTactician) {
+      strong = 90;
+      intellect = 5;
+      leadership = 100;
+      popularity = 5;
+      primaries = [3, 1, 2, 4];
+    } else if (id === api.CharacterSkill.typeScholar) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
     }
 
     if (!primaries) {
