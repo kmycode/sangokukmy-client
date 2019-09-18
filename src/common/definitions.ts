@@ -842,6 +842,8 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(67, 22, '象', '（資源）象兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(68, 26, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(69, 8, '練兵', '（資源）徴兵時訓練値下限 60', true, true, false, true, 1000),
+  new CharacterItemType(70, 11, '精鋭兵', '（資源）徴兵時訓練値下限 100', true, true, false, true, 1000),
 ];
 
 /**
@@ -880,4 +882,9 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(23, '胡人 Lv.3', '異民族と戦闘時に限り攻撃力 +100', 9, (skills) => skills.some((s) => s.type === 22)),
   new CharacterSkillType(24, '胡人 Lv.4', 'コマンド 農民避難、農民呼寄', 12, (skills) => skills.some((s) => s.type === 23)),
   new CharacterSkillType(25, '胡人 Lv.5', 'コマンド 胡人交易、象・藤甲生産可能', 8, (skills) => skills.some((s) => s.type === 24)),
+  new CharacterSkillType(26, '農民 Lv.1', '政策によらず義勇兵雇用可能', 0, (_) => false),
+  new CharacterSkillType(27, '農民 Lv.2', 'コマンド 精鋭検査、練兵生産可能', 8, (skills) => skills.some((s) => s.type === 26)),
+  new CharacterSkillType(28, '農民 Lv.3', '米施し効果 +80%', 8, (skills) => skills.some((s) => s.type === 27)),
+  new CharacterSkillType(29, '農民 Lv.4', 'コマンド 農民避難、農民呼寄', 7, (skills) => skills.some((s) => s.type === 28)),
+  new CharacterSkillType(30, '農民 Lv.5', '精鋭兵生産可能', 12, (skills) => skills.some((s) => s.type === 29)),
 ];

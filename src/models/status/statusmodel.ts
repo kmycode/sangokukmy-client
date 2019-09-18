@@ -439,7 +439,10 @@ export default class StatusModel {
                 .from(this.store.policies)
                 .where((p) => p.countryId === this.character.countryId)
                 .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
-              if (can) {
+              const can2 = Enumerable
+                .from(this.store.skills)
+                .any((s) => s.status === api.CharacterSkill.statusAvailable && s.type === 26);
+              if (can || can2) {
                 types.push(t);
               }
             /*
