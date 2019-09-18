@@ -94,6 +94,8 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, 0, '連弩兵', 20, 800, '90', '40', '連弩を持った兵士', undefined, true, 63),
   new SoldierType(26, 0, '青洲兵', 25, 900, '90', '70', '青洲出身の強力な兵士', undefined, true, 64),
+  new SoldierType(27, 0, '象兵', 5, 999, '0', '0', '象に乗った兵士。突撃に秀でる', undefined, true, 67),
+  new SoldierType(28, 0, '藤甲兵', 5, 999, '0', '140', '藤で作った強力な鎧を装備した兵士', undefined, true, 68),
   new SoldierType(12, 0, '壁守兵', 14, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
@@ -429,6 +431,10 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (57:1)';
     }
   }),
+  new CommandNameResolver(58, '農民呼寄'),
+  new CommandNameResolver(59, '農民避難'),
+  new CommandNameResolver(60, '合同訓練'),
+  new CommandNameResolver(61, '偵察'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -834,6 +840,8 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(64, 24, '青洲槍', '（資源）青洲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(65, 22, '装備良戟', '（資源）重戟兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵徴兵費 -60%', true, true, false, true, 1000),
+  new CharacterItemType(67, 22, '象', '（資源）象兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(68, 26, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
 ];
 
 /**
@@ -867,4 +875,9 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(18, '技師 Lv.3', '装備連弩生産可能', 9, (skills) => skills.some((s) => s.type === 17)),
   new CharacterSkillType(19, '技師 Lv.4', 'アイテム上限 +3', 11, (skills) => skills.some((s) => s.type === 18)),
   new CharacterSkillType(20, '技師 Lv.5', '青洲槍生産可能', 12, (skills) => skills.some((s) => s.type === 19)),
+  new CharacterSkillType(21, '胡人 Lv.1', '毎月武力Ex +7', 0, (_) => false),
+  new CharacterSkillType(22, '胡人 Lv.2', '騎兵属性使用時に限り攻撃力 +30', 6, (skills) => skills.some((s) => s.type === 21)),
+  new CharacterSkillType(23, '胡人 Lv.3', '異民族と戦闘時に限り攻撃力 +100', 9, (skills) => skills.some((s) => s.type === 22)),
+  new CharacterSkillType(24, '胡人 Lv.4', 'コマンド 農民避難、農民呼寄', 12, (skills) => skills.some((s) => s.type === 23)),
+  new CharacterSkillType(25, '胡人 Lv.5', 'コマンド 胡人交易、象・藤甲生産可能', 8, (skills) => skills.some((s) => s.type === 24)),
 ];
