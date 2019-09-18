@@ -56,8 +56,47 @@ export default class CommandList {
   }
 
   public get canInputGenerateItem(): boolean {
+    // 資源製造
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 16);
+    return skills.some((s) => s === 17);
+  }
+
+  public get canInputGenerateItem2(): boolean {
+    // 胡人交易
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 25);
+  }
+
+  public get canInputGenerateItem3(): boolean {
+    // 精鋭検査
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 27);
+  }
+
+  public get canInputGenerateItem4(): boolean {
+    // 書物執筆
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 34 || s === 38);
+  }
+
+  public get canInputIncreasePeople(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 24 || s === 29);
+  }
+
+  public get canInputDecreasePeople(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 24 || s === 29);
+  }
+
+  public get canInputSoldierTrainingAll(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 32);
+  }
+
+  public get canInputSpy(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 40);
   }
 
   public get restTurns(): number {
