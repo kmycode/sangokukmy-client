@@ -844,6 +844,9 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(68, 26, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(69, 8, '練兵', '（資源）徴兵時訓練値下限 60', true, true, false, true, 1000),
   new CharacterItemType(70, 11, '精鋭兵', '（資源）徴兵時訓練値下限 100', true, true, false, true, 1000),
+  new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
+  new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
+  new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
 ];
 
 /**
@@ -887,4 +890,9 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(28, '農民 Lv.3', '米施し効果 +80%', 8, (skills) => skills.some((s) => s.type === 27)),
   new CharacterSkillType(29, '農民 Lv.4', 'コマンド 農民避難、農民呼寄', 7, (skills) => skills.some((s) => s.type === 28)),
   new CharacterSkillType(30, '農民 Lv.5', '精鋭兵生産可能', 12, (skills) => skills.some((s) => s.type === 29)),
+  new CharacterSkillType(31, '兵家 Lv.1', '毎ターン陣形Ex +4', 0, (_) => false),
+  new CharacterSkillType(32, '兵家 Lv.2', 'コマンド 合同訓練', 10, (skills) => skills.some((s) => s.type === 31)),
+  new CharacterSkillType(33, '兵家 Lv.3', '攻撃力 +40、突撃確率 +12%、突撃攻撃力 +60', 8, (skills) => skills.some((s) => s.type === 32)),
+  new CharacterSkillType(34, '兵家 Lv.4', 'コマンド 書物執筆、兵法書生産可能', 7, (skills) => skills.some((s) => s.type === 33)),
+  new CharacterSkillType(35, '兵家 Lv.5', '連戦確率 +6%', 10, (skills) => skills.some((s) => s.type === 34)),
 ];
