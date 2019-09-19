@@ -1,12 +1,24 @@
 <template>
   <div id="unit-list-view" class="loading-container" style="overflow:auto">
     <div style="width:100%;height:100%;overflow:auto;margin:0;">
-      <div v-if="model.leaderUnit && model.leaderUnit.id >= 0">
+      <div class="mode-toggle">
+        <button :class="{'btn': true, 'btn-secondary': mode === 0, 'btn-outline-secondary': mode !== 0}" @click="mode = 0" href="#">部隊一覧</button>
+        <button v-if="!model.leaderUnit || model.leaderUnit.id < 0" :class="{'btn': true, 'btn-secondary': mode === 1, 'btn-outline-secondary': mode !== 1}" @click="mode = 1" href="#">部隊作成</button>
+        <button v-if="model.leaderUnit && model.leaderUnit.id >= 0" :class="{'btn': true, 'btn-secondary': mode === 2, 'btn-outline-secondary': mode !== 2}" @click="mode = 2" href="#">部隊編集</button>
+      </div>
+      <div v-show="mode === 1" class="unit-form">
+        <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
+        <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
+        <div class="button-group">
+          <button class="btn btn-primary" @click="model.createUnit()" href="#">作成</button>
+        </div>
+      </div>
+      <div v-show="mode === 2">
         <h3>{{ model.leaderUnit.name }}</h3>
         <div class="unit-form">
           <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
           <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
-          <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !model.leaderUnit.isLimited, 'btn-secondary': model.leaderUnit.isLimited }" @click="model.leaderUnit.isLimited = !model.leaderUnit.isLimited">入隊を制限する</button><br>
+          <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': model.leaderUnit.isLimited }" @click="model.leaderUnit.isLimited = !model.leaderUnit.isLimited">入隊を制限する</button><br>
           <div class="button-group">
             <button class="btn btn-primary" @click="model.updateLeaderUnit()" href="#">保存</button>
             <button class="btn btn-light" @click="isShowUnitLeaderOperations = !isShowUnitLeaderOperations" href="#">その他の操作</button>
@@ -14,18 +26,9 @@
           </div>
         </div>
       </div>
-      <div v-else>
-        <button class="btn btn-secondary" @click="isShowCreateUnitForm = true" href="#">部隊作成</button>
-        <div v-show="isShowCreateUnitForm" class="unit-form">
-          <h3>部隊作成</h3>
-          <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
-          <span class="input-label unit-message-input-label">メッセージ</span><input type="text" class="unit-message-input" v-model="model.leaderUnit.message"><br>
-          <div class="button-group">
-            <button class="btn btn-primary" @click="model.createUnit()" href="#">作成</button>
-          </div>
-        </div>
-      </div>
-      <div class="unit-list">
+      <div v-show="mode === 0" class="unit-list">
+        <div v-if="!selectedUnit || !selectedUnit.id" class="alert alert-info">あなたは現在、どの部隊にも所属していません</div>
+        <div v-else class="alert alert-info">あなたは現在、<span style="font-weight:bold">{{ selectedUnit.name }}</span> に所属しています</div>
         <UnitPicker :units="model.units"
                     :value="selectedUnit"
                     :countries="model.countries"
@@ -57,7 +60,7 @@ export default class UnitListView extends Vue {
   @Prop() private model!: UnitModel;
   @Prop() private isShow!: boolean;
   private isShowUnitLeaderOperations: boolean = false;
-  private isShowCreateUnitForm: boolean = false;
+  private mode: number = 0;
 
   private get selectedUnit(): api.Unit | undefined {
     return Enumerable.from(this.model.units).firstOrDefault((u) => u.isSelected);
@@ -66,14 +69,23 @@ export default class UnitListView extends Vue {
   @Watch('isShow')
   private updateIsShow() {
     // 表示状態を初期化
-    this.isShowCreateUnitForm = false;
+    this.mode = 0;
     this.model.updateUnits();
+  }
+
+  @Watch('model.leaderUnit')
+  private updateLeaderUnit() {
+    this.mode = 0;
   }
 }
 </script>
 
 <style lang="scss" scoped>
 #unit-list-view {
+
+  .mode-toggle {
+    margin-bottom: 8px;
+  }
 
   .unit-form {
     .unit-message-input {
