@@ -434,7 +434,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(58, '農民呼寄'),
   new CommandNameResolver(59, '農民避難'),
   new CommandNameResolver(60, '合同訓練'),
-  new CommandNameResolver(61, '偵察'),
+  new CommandNameResolver(61, '%0% を偵察'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
