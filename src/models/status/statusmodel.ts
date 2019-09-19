@@ -256,7 +256,7 @@ export default class StatusModel {
       max += 5000;
     }
     if (this.characterSkills.some((s) => s.type === 15)) {
-      max += 3000;
+      max += 8000;
     }
     return max;
   }
