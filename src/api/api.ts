@@ -1449,6 +1449,16 @@ export class Api {
     }
   }
 
+  public static async changeUnitLeader(id: number, characterId: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'unit/' + id + '/leader', {
+        characterId,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async removeUnit(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'unit/' + id, this.authHeader);
