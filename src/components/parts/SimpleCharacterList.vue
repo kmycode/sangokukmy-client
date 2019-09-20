@@ -72,6 +72,10 @@
                 <span class="parameter-value">{{ getCharacterFormationName(chara) }}</span>
               </span>
               <span class="parameter-item">
+                <span class="parameter-name">属性</span>
+                <span class="parameter-value">{{ getCharacterFormationType(chara) }}</span>
+              </span>
+              <span class="parameter-item">
                 <span class="parameter-name">Lv</span>
                 <span class="parameter-value">{{ chara.formationLevel }}</span>
               </span>
@@ -202,6 +206,14 @@ export default class SimpleCharacterList extends Vue {
       return formationType.name;
     }
     return '通常';
+  }
+
+  private getCharacterFormationType(chara: api.Character): string {
+    const formationType = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((st) => st.id === chara.formationType);
+    if (formationType) {
+      return formationType.type;
+    }
+    return '無';
   }
 
   private togglePostsPopup(chara: api.Character) {
