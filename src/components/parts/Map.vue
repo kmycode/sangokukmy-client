@@ -11,9 +11,9 @@
                   borderBottomWidth: isBottomTownSameCountry(t) ? '0' : '1px', paddingBottom: !isBottomTownSameCountry(t) ? '0' : '1px', }"
         :title="getCountryName(t)"
         @click="$emit('selected', t.id)">
-      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2) + (!isMonarchIcon ? ' no-monarch-icon' : '')">
+      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2) + ((!isMonarchIcon || !t.countryId) ? ' no-monarch-icon' : '')">
         <CharacterIcon
-          v-if="isMonarchIcon"
+          v-if="isMonarchIcon && t.countryId"
           class="icon-mini"
           :icon="getMonarchIcon(t)"/>
       </div>
