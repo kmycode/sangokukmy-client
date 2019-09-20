@@ -2048,6 +2048,7 @@ ul.nav {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.3);
 
     @media screen and (max-width: 600px) {
       width: 98vw;
@@ -2060,7 +2061,7 @@ ul.nav {
       text-align: center;
       padding: 8px 0 4px;
       border-bottom-width: 2px;
-      border-bottom-style: dotted;
+      border-bottom-style: dashed;
       @include country-color-deep('color');
       @include country-color-deep('border-bottom-color');
       @include country-color-light('background-color');
@@ -2248,7 +2249,7 @@ ul.nav {
     opacity: 1;
     pointer-events: all;
     .dialog-background {
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 }
