@@ -847,7 +847,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(65, 22, '装備良戟', '（資源）重戟兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(67, 22, '象', '（資源）象兵徴兵可能', true, true, false, true, 1000),
-  new CharacterItemType(68, 26, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(68, 22, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(69, 8, '練兵', '（資源）徴兵時訓練値下限 60', true, true, false, true, 1000),
   new CharacterItemType(70, 11, '精鋭兵', '（資源）徴兵時訓練値下限 100', true, true, false, true, 1000),
   new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
