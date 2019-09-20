@@ -853,6 +853,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
   new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
   new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
+  new CharacterItemType(74, 5000000, '胡人の証', '所持した状態で経営国家、異民族に仕官可能。仕官で消費', false, true, false),
 ];
 
 /**
