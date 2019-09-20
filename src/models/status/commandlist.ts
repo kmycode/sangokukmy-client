@@ -64,7 +64,7 @@ export default class CommandList {
   public get canInputGenerateItem2(): boolean {
     // 胡人交易
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 30);
+    return skills.some((s) => s === 29);
   }
 
   public get canInputGenerateItem3(): boolean {
@@ -81,12 +81,12 @@ export default class CommandList {
 
   public get canInputIncreasePeople(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 29 || s === 34);
+    return skills.some((s) => s === 30 || s === 34);
   }
 
   public get canInputDecreasePeople(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 29 || s === 34);
+    return skills.some((s) => s === 30 || s === 34);
   }
 
   public get canInputSoldierTrainingAll(): boolean {
