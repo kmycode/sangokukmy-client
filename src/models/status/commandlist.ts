@@ -96,7 +96,7 @@ export default class CommandList {
 
   public get canInputSpy(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 45);
+    return skills.some((s) => s === 45 || s === 47);
   }
 
   public get restTurns(): number {
