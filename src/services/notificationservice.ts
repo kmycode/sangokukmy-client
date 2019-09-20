@@ -336,6 +336,14 @@ export default class NotificationService {
     '部隊更新失敗',
     '部隊 {0} の情報を更新できませんでした。名前が長すぎます (現在: {1}, 最大: {2})',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitLeaderChanged = new NotificationServiceItem(
+    '部隊長交代',
+    '部隊 {0} の部隊長交代に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitLeaderChangeFailed = new NotificationServiceItem(
+    '部隊長交代失敗',
+    '部隊 {0} の部隊長交代に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitRemoved = new NotificationServiceItem(
     '部隊削除',
     '部隊 {0} を削除しました',

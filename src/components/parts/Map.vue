@@ -11,7 +11,12 @@
                   borderBottomWidth: isBottomTownSameCountry(t) ? '0' : '1px', paddingBottom: !isBottomTownSameCountry(t) ? '0' : '1px', }"
         :title="getCountryName(t)"
         @click="$emit('selected', t.id)">
-      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2)"></div>
+      <div v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" :class="'town-type town-type-' + (t.type || 2) + ((!isMonarchIcon || !t.countryId) ? ' no-monarch-icon' : '')">
+        <CharacterIcon
+          v-if="isMonarchIcon && t.countryId"
+          class="icon-mini"
+          :icon="getMonarchIcon(t)"/>
+      </div>
       <span v-if="(mode < 1 || ((mode === 2 || mode > 3) && t.countryId !== store.character.countryId)) && mode !== 9" class="town-name">{{ t.name }}</span>
       <div v-if="mode === 1 || (mode === 2 && t.countryId === store.character.countryId)" class="town-info-character-icons">
         <CharacterIcon
@@ -62,6 +67,9 @@ export default class Map extends Vue {
   @Prop({
     default: 0,
   }) public mode!: number;
+  @Prop({
+    default: false,
+  }) public isMonarchIcon!: boolean;
 
   private isSelected(current: api.Town): boolean {
     return this.town.id === current.id;
@@ -122,6 +130,27 @@ export default class Map extends Vue {
     } else {
       return [];
     }
+  }
+
+  private getMonarchIcon(town: api.Town): api.CharacterIcon | undefined {
+    if (!this.store) {
+      return undefined;
+    }
+    const country = Enumerable
+      .from(this.countries)
+      .firstOrDefault((c) => c.id === town.countryId);
+    if (country !== undefined) {
+      const monarch = Enumerable
+        .from(country.posts)
+        .firstOrDefault((p) => p.type === api.CountryPost.typeMonarch);
+      if (monarch) {
+        const chara = Enumerable
+          .from(this.store.characters)
+          .firstOrDefault((c) => c.id === monarch.characterId);
+        return chara.mainIcon;
+      }
+    }
+    return undefined;
   }
 
   private getTopTown(town: api.Town): api.Town | undefined {
@@ -217,6 +246,11 @@ export default class Map extends Vue {
   background: #080 url('../../assets/images/sangoku-originals/mapbg.gif');
   user-select: none;
 
+  img.icon-mini {
+    width: 16px;
+    height: 16px;
+  }
+
   .selected {
     outline: 3px solid #f4d;
     z-index: 1;
@@ -225,6 +259,7 @@ export default class Map extends Vue {
     padding: 2px;
     margin: 1px;
     position: absolute;
+    pointer-events: none;
 
     transition: top .1s, left .1s;
   }
@@ -261,9 +296,17 @@ export default class Map extends Vue {
     }
 
     .town-type {
-      width: 16px;
+      width: 32px;
       height: 16px;
       margin: 0 auto;
+      padding: 0 0 0 16px;
+      background-repeat: no-repeat;
+      &.no-monarch-icon {
+        width: 16px;
+      }
+      img {
+        margin-top: -8px;
+      }
       &.town-type-1 {
         background-image: url('../../assets/images/sangoku-originals/m_4.gif');
       }
@@ -289,10 +332,6 @@ export default class Map extends Vue {
       flex-wrap: wrap;
       align-items: center;
       justify-content: center;
-      img.icon-mini {
-        width: 16px;
-        height: 16px;
-      }
     }
 
     .town-info-number {

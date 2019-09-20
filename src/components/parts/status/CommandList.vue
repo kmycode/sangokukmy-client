@@ -88,6 +88,13 @@
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
         <button v-if="list.canInputGenerateItem" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">資源製造</button>
+        <button v-if="list.canInputGenerateItem2" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">胡人交易</button>
+        <button v-if="list.canInputGenerateItem3" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">精鋭検査</button>
+        <button v-if="list.canInputGenerateItem4" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">書物執筆</button>
+        <button v-if="list.canInputIncreasePeople" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(58)">農民呼寄</button>
+        <button v-if="list.canInputDecreasePeople" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(59)">農民避難</button>
+        <button v-if="list.canInputSoldierTrainingAll" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(60)">合同訓練</button>
+        <button v-if="list.canInputSpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(61)">偵察</button>
         <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>

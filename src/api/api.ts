@@ -1024,6 +1024,11 @@ export class CharacterSkill {
   public static readonly typeIntellect = 2;
   public static readonly typeMerchant = 3;
   public static readonly typeEngineer = 4;
+  public static readonly typeTerrorist = 6;
+  public static readonly typePeople = 7;
+  public static readonly typeTactician = 8;
+  public static readonly typeScholar = 9;
+  public static readonly typeStaff = 10;
 
   public constructor(public id: number,
                      public type: number,
@@ -1439,6 +1444,16 @@ export class Api {
         name: unit.name,
         message: unit.message,
         isLimited: unit.isLimited,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async changeUnitLeader(id: number, characterId: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'unit/' + id + '/leader', {
+        characterId,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

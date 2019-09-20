@@ -228,6 +228,9 @@ export default class StatusModel {
     if (skills.some((s) => s.type === 13)) {
       max += 2;
     }
+    if (skills.some((s) => s.type === 19)) {
+      max += 3;
+    }
 
     return max;
   }
@@ -253,7 +256,7 @@ export default class StatusModel {
       max += 5000;
     }
     if (this.characterSkills.some((s) => s.type === 15)) {
-      max += 3000;
+      max += 8000;
     }
     return max;
   }
@@ -436,19 +439,12 @@ export default class StatusModel {
                 .from(this.store.policies)
                 .where((p) => p.countryId === this.character.countryId)
                 .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
-              if (can) {
-                types.push(t);
-              }
-            /*
-            // 連弩兵　技能ないと徴兵できない処理は将来使うかもなので残しておく
-            } else if (t.id === 11) {
-              const can = Enumerable
+              const can2 = Enumerable
                 .from(this.store.skills)
-                .any((s) => s.characterId === this.character.id && s.type === 4);
-              if (can) {
+                .any((s) => s.status === api.CharacterSkill.statusAvailable && s.type === 26);
+              if (can || can2) {
                 types.push(t);
               }
-              */
             } else {
               types.push(t);
             }

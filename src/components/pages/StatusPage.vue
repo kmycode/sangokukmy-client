@@ -37,6 +37,7 @@
             :currentTown="model.characterTown"
             :mode="mapMode"
             :store="model.store"
+            isMonarchIcon="true"
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
             <div class="online-list-item">
@@ -1123,7 +1124,7 @@
       </div>
       <!-- アイテム生成 -->
       <div v-show="isOpenGenerateItemUseDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">資源製造</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム生産</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <GenerateItemTypePicker :skills="model.characterSkills"
                                   v-model="selectedGenerateItemType"
@@ -2048,6 +2049,7 @@ ul.nav {
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    box-shadow: 8px 8px 8px rgba(0, 0, 0, 0.3);
 
     @media screen and (max-width: 600px) {
       width: 98vw;
@@ -2060,7 +2062,7 @@ ul.nav {
       text-align: center;
       padding: 8px 0 4px;
       border-bottom-width: 2px;
-      border-bottom-style: dotted;
+      border-bottom-style: dashed;
       @include country-color-deep('color');
       @include country-color-deep('border-bottom-color');
       @include country-color-light('background-color');
@@ -2248,7 +2250,7 @@ ul.nav {
     opacity: 1;
     pointer-events: all;
     .dialog-background {
-      opacity: 0.6;
+      opacity: 0.5;
     }
   }
 }

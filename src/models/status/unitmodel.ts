@@ -9,8 +9,14 @@ import NotificationService from '@/services/notificationservice';
 
 export default class UnitModel {
 
-  public isUpdating: boolean = false;
   public leaderUnit: api.Unit = new api.Unit(-1);
+  public countryCharacters: api.Character[] = [];
+  private isUpdatingUnit: boolean = false;
+  private isUpdatingCountryCharacters: boolean = false;
+
+  public get isUpdating(): boolean {
+    return this.isUpdatingUnit || this.isUpdatingCountryCharacters;
+  }
 
   public get units(): api.Unit[] {
     return this.store.units;
@@ -23,7 +29,7 @@ export default class UnitModel {
   public constructor(private store: StatusStore) {}
 
   public updateUnits(cb?: () => void) {
-    this.isUpdating = true;
+    this.isUpdatingUnit = true;
     api.Api.getUnits()
       .then((units) => {
         this.store.units = units;
@@ -61,18 +67,21 @@ export default class UnitModel {
         if (cb) {
           cb();
         }
+
+        // 自分の部隊の武将を更新
+        this.updateMyUnitCharacters();
       })
       .catch(() => {
         NotificationService.unitLoadFailed.notify();
       })
       .finally(() => {
-        this.isUpdating = false;
+        this.isUpdatingUnit = false;
       });
   }
 
   public toggleUnit(unit: api.Unit) {
     const isSelected: boolean = !unit.isSelected;
-    this.isUpdating = true;
+    this.isUpdatingUnit = true;
 
     if (isSelected) {
       // 部隊から抜ける
@@ -96,7 +105,7 @@ export default class UnitModel {
           }
         })
         .finally(() => {
-          this.isUpdating = false;
+          this.isUpdatingUnit = false;
           if (isSucceed) {
             this.updateUnits();
           }
@@ -118,7 +127,7 @@ export default class UnitModel {
           }
         })
         .finally(() => {
-          this.isUpdating = false;
+          this.isUpdatingUnit = false;
           if (isSucceed) {
             this.updateUnits();
           }
@@ -128,7 +137,7 @@ export default class UnitModel {
 
   public createUnit() {
     if (this.leaderUnit.id < 0) {
-      this.isUpdating = true;
+      this.isUpdatingUnit = true;
       let isSucceed = false;
       api.Api.createUnit(this.leaderUnit)
         .then(() => {
@@ -151,7 +160,7 @@ export default class UnitModel {
           }
         })
         .finally(() => {
-          this.isUpdating = false;
+          this.isUpdatingUnit = false;
           if (isSucceed) {
             this.updateUnits();
           }
@@ -161,7 +170,7 @@ export default class UnitModel {
 
   public updateLeaderUnit() {
     if (this.leaderUnit.id >= 0) {
-      this.isUpdating = true;
+      this.isUpdatingUnit = true;
       let isSucceed = false;
       api.Api.updateUnit(this.leaderUnit.id, this.leaderUnit)
         .then(() => {
@@ -182,7 +191,28 @@ export default class UnitModel {
           }
         })
         .finally(() => {
-          this.isUpdating = false;
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    }
+  }
+
+  public changeLeaderUnitLeader(newLeaderId: number) {
+    if (this.leaderUnit.id >= 0) {
+      this.isUpdatingUnit = true;
+      let isSucceed = false;
+      api.Api.changeUnitLeader(this.leaderUnit.id, newLeaderId)
+        .then(() => {
+          NotificationService.unitLeaderChanged.notifyWithParameter(this.leaderUnit.name);
+          isSucceed = true;
+        })
+        .catch(() => {
+          NotificationService.unitLeaderChangeFailed.notifyWithParameter(this.leaderUnit.name);
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
           if (isSucceed) {
             this.updateUnits();
           }
@@ -192,7 +222,7 @@ export default class UnitModel {
 
   public removeLeaderUnit() {
     if (this.leaderUnit.id >= 0) {
-      this.isUpdating = true;
+      this.isUpdatingUnit = true;
       let isSucceed = false;
       api.Api.removeUnit(this.leaderUnit.id)
         .then(() => {
@@ -203,11 +233,18 @@ export default class UnitModel {
           NotificationService.unitRemoveFailed.notifyWithParameter(this.leaderUnit.name);
         })
         .finally(() => {
-          this.isUpdating = false;
+          this.isUpdatingUnit = false;
           if (isSucceed) {
             this.updateUnits();
           }
         });
+    }
+  }
+
+  private updateMyUnitCharacters() {
+    if (this.leaderUnit && this.leaderUnit.id > 0) {
+      this.countryCharacters = this.leaderUnit.members.map((m) => m.character);
+      return;
     }
   }
 }

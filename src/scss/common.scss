@@ -9,16 +9,16 @@
   background: rgba(255, 255, 255, 0.3);
   text-align: center;
   &.parameter-from-0 {
-    border-color: gray;
-    color: gray;
+    border-color: lightgray;
+    color: lightgray;
   }
   &.parameter-from-1 {
     border-color: red;
     color: red;
   }
   &.parameter-from-2 {
-    border-color: blue;
-    color: blue;
+    border-color: #0004ff;
+    color: #0004ff;
   }
   &.parameter-from-3 {
     border-color: green;
@@ -31,6 +31,26 @@
   &.parameter-from-5 {
     border-color: black;
     color: black;
+  }
+  &.parameter-from-6 {
+    border-color: #783bda;
+    color: #783bda;
+  }
+  &.parameter-from-7 {
+    border-color: #22c202;
+    color: #22c202;
+  }
+  &.parameter-from-8 {
+    border-color: brown;
+    color: brown;
+  }
+  &.parameter-from-9 {
+    border-color: #1f72a1;
+    color: #1f72a1;
+  }
+  &.parameter-from-10 {
+    border-color: #110c72;
+    color: #110c72;
   }
 }
 

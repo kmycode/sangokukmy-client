@@ -398,6 +398,7 @@ export default class CommandInputer {
       this.updateCommandName(es.new);
     });
 
+    this.isInputing = true;
     this.sendCommands(pushCommands, () => {
       const newCommands = Enumerable
         .from(pushCommands)
@@ -432,8 +433,8 @@ export default class CommandInputer {
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46 ||
-        command.type === 47) {
-      // 都市データ（移動、戦争）
+        command.type === 47 || command.type === 61) {
+      // 都市データ（移動、戦争、偵察）
       const paramTypeId = command.type === 47 ? 2 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
