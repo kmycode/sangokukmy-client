@@ -15,6 +15,7 @@
       -->
       <div v-show="newData.status === 4 && (status.id === 0 || status.id === 3)" class="content-section">
         <h3>宣戦布告</h3>
+        <div class="alert alert-warning">12年後〜24年後までの年月を指定できます</div>
         <GameDateTimePicker v-model="newData.startGameDate"/>
       </div>
     </div>
