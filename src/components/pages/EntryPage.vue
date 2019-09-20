@@ -101,7 +101,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
             <br>その他<br>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農民</button>
           </div>
           <div class="detail">
             出身を指定してください。出身に合った能力が自動で入力されます
