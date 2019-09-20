@@ -354,6 +354,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      const itemId = p.firstOrDefault((pp) => pp.type === 3);
       if (!itemType) {
         return 'エラー (50:2)';
       }
@@ -361,7 +362,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (50:3)';
       }
-      return format.replace('{0}', type.name);
+      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
     } else {
       return 'エラー (50:1)';
     }
@@ -370,6 +371,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      const itemId = p.firstOrDefault((pp) => pp.type === 2);
       if (!itemType) {
         return 'エラー (51:2)';
       }
@@ -377,7 +379,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (51:3)';
       }
-      return format.replace('{0}', type.name);
+      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
     } else {
       return 'エラー (51:1)';
     }
@@ -386,6 +388,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      const itemId = p.firstOrDefault((pp) => pp.type === 3);
       if (!itemType) {
         return 'エラー (52:2)';
       }
@@ -393,7 +396,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (52:3)';
       }
-      return format.replace('{0}', type.name);
+      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
     } else {
       return 'エラー (52:1)';
     }
@@ -894,7 +897,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(35, '農民 Lv.5', '精鋭兵生産可能', 12, (skills) => skills.some((s) => s.type === 34)),
   new CharacterSkillType(36, '兵家 Lv.1', '毎ターン陣形Ex +4', 0, (_) => false),
   new CharacterSkillType(37, '兵家 Lv.2', 'コマンド 合同訓練', 10, (skills) => skills.some((s) => s.type === 36)),
-  new CharacterSkillType(38, '兵家 Lv.3', '攻撃力 +40、突撃確率 +12%、突撃攻撃力 +360', 8, (skills) => skills.some((s) => s.type === 37)),
+  new CharacterSkillType(38, '兵家 Lv.3', '攻撃力 +40、突撃確率 +12%、突撃攻撃力 +160', 8, (skills) => skills.some((s) => s.type === 37)),
   new CharacterSkillType(39, '兵家 Lv.4', 'コマンド 書物執筆、兵法書生産可能', 7, (skills) => skills.some((s) => s.type === 38)),
   new CharacterSkillType(40, '兵家 Lv.5', '連戦確率 +6%', 10, (skills) => skills.some((s) => s.type === 39)),
   new CharacterSkillType(41, '学者 Lv.1', '毎ターン知力 +7', 0, (_) => false),

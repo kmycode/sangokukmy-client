@@ -6,7 +6,7 @@
       :key="item.data[0].id">
       <div class="item-info">
         <div class="standard">
-          <div class="name responsive-header">{{ item.type.name }}</div>
+          <div class="name responsive-header">{{ item.type.name }}<span v-if="item.type.isResource"> No.{{ item.data[0].id }}</span></div>
           <div class="params">
             <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span v-if="item.type.isResource">
@@ -29,7 +29,7 @@
         :key="item.data[0].id">
         <div class="item-info">
           <div class="standard">
-            <div class="name responsive-header">{{ item.type.name }}</div>
+            <div class="name responsive-header">{{ item.type.name }}<span v-if="item.type.isResource"> No.{{ item.data[0].id }}</span></div>
             <div class="params">
               <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span v-if="item.type.isResource">
