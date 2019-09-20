@@ -6,6 +6,7 @@
         <div class="standard">
           <div class="name responsive-header">{{ currentFormationTypeInfo.name }}</div>
             <div v-show="isShowChangePoint" class="point">
+              <span class="value-name">属性</span> <span class="value">{{ currentFormationTypeInfo.type }}</span>
               <span class="value-name">レベル</span> <span class="value">{{ currentFormation.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ currentFormation.experience }}</span>
             </div>
@@ -25,6 +26,7 @@
             <div class="name responsive-header">{{ formation.type.name }}</div>
             <div v-show="isShowChangePoint" class="point">
               <span class="value-name">ポイント</span> <span class="value">50</span>
+              <span class="value-name">属性</span> <span class="value">{{ formation.type.name }}</span>
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
             </div>
@@ -44,7 +46,7 @@
         <div class="formation-info">
           <div class="standard">
             <div class="name responsive-header">{{ formation.name }}</div>
-            <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span></div>
+            <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div>
             <div class="description">{{ formation.descriptions[0] }}</div>
           </div>
         </div>
@@ -114,6 +116,7 @@ export default class FormationList extends Vue {
       .where((f) => !Enumerable.from(this.formationTypes).any((ff) => ff.id === f.id))
       .where((f) => f.canGet)
       .where((f) => f.subjectAppear === undefined || f.subjectAppear(this.formations))
+      .orderBy((f) => f.type)
       .toArray();
     this.currentFormation = Enumerable
       .from(this.formations)
