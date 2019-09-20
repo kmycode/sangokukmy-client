@@ -225,6 +225,7 @@ export default class Map extends Vue {
     padding: 2px;
     margin: 1px;
     position: absolute;
+    pointer-events: none;
 
     transition: top .1s, left .1s;
   }
