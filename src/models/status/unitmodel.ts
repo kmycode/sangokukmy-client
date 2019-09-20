@@ -243,7 +243,9 @@ export default class UnitModel {
 
   private updateMyUnitCharacters() {
     if (this.leaderUnit && this.leaderUnit.id > 0) {
-      this.countryCharacters = this.leaderUnit.members.map((m) => m.character);
+      this.countryCharacters = this.leaderUnit.members
+        .map((m) => m.character)
+        .filter((c) => c.aiType === api.Character.aiHuman);
       return;
     }
   }
