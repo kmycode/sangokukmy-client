@@ -55,7 +55,12 @@ export default class SoldierTypePicker extends Vue {
   @Watch('soldierTypes')
   @Watch('items')
   public onTypesChanged() {
-    this.types = this.soldierTypes.map((st) => {
+    this.types = this.soldierTypes.filter((st) => {
+      if (st.requestedSkillType && !st.isNeedResource) {
+        return this.skills.some((s) => s.type === st.requestedSkillType);
+      }
+      return true;
+    }).map((st) => {
       let isLackOfResources = false;
       let resourceNumber = 0;
       if (st.isNeedResource) {

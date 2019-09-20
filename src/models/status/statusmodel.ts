@@ -445,16 +445,6 @@ export default class StatusModel {
               if (can || can2) {
                 types.push(t);
               }
-            /*
-            // 連弩兵　技能ないと徴兵できない処理は将来使うかもなので残しておく
-            } else if (t.id === 11) {
-              const can = Enumerable
-                .from(this.store.skills)
-                .any((s) => s.characterId === this.character.id && s.type === 4);
-              if (can) {
-                types.push(t);
-              }
-              */
             } else {
               types.push(t);
             }
