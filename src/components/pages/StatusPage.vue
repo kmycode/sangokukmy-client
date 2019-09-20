@@ -37,6 +37,7 @@
             :currentTown="model.characterTown"
             :mode="mapMode"
             :store="model.store"
+            isMonarchIcon="true"
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
             <div class="online-list-item">
