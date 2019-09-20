@@ -398,6 +398,7 @@ export default class CommandInputer {
       this.updateCommandName(es.new);
     });
 
+    this.isInputing = true;
     this.sendCommands(pushCommands, () => {
       const newCommands = Enumerable
         .from(pushCommands)
