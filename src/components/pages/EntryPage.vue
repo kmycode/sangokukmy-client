@@ -99,6 +99,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 2, 'btn-secondary': character.from === 2, }" @click="onFromChanged(2)">官吏</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
             <br>その他<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
           </div>
@@ -583,6 +584,12 @@ export default class EntryPage extends Vue {
       popularity = 5;
       primaries = [3, 1, 2, 4];
     } else if (id === api.CharacterSkill.typeScholar) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+    } else if (id === api.CharacterSkill.typeStaff) {
       strong = 5;
       intellect = 100;
       leadership = 90;

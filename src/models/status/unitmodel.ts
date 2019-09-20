@@ -79,13 +79,6 @@ export default class UnitModel {
       });
   }
 
-  private updateMyUnitCharacters() {
-    if (this.leaderUnit && this.leaderUnit.id > 0) {
-      this.countryCharacters = this.leaderUnit.members.map((m) => m.character);
-      return;
-    }
-  }
-
   public toggleUnit(unit: api.Unit) {
     const isSelected: boolean = !unit.isSelected;
     this.isUpdatingUnit = true;
@@ -245,6 +238,13 @@ export default class UnitModel {
             this.updateUnits();
           }
         });
+    }
+  }
+
+  private updateMyUnitCharacters() {
+    if (this.leaderUnit && this.leaderUnit.id > 0) {
+      this.countryCharacters = this.leaderUnit.members.map((m) => m.character);
+      return;
     }
   }
 }
