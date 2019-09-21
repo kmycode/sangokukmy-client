@@ -1541,17 +1541,10 @@ export default class StatusPage extends Vue {
 
   private readyPrivateChatById(id: number) {
     const chara = Enumerable
-      .from(this.model.privateChat.messages)
-      .concat(this.model.countryChat.messages)
-      .firstOrDefault((c) => {
-        if (c.character) {
-          return c.character.id === id;
-        } else {
-          return false;
-        }
-      });
-    if (chara && chara.character) {
-      this.readyPrivateChat(new api.Character(chara.character.id, '', chara.character.name));
+      .from(this.model.store.characters)
+      .firstOrDefault((c) => c.id === id);
+    if (chara) {
+      this.readyPrivateChat(chara);
     }
   }
 
