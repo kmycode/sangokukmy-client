@@ -1326,6 +1326,7 @@ export default class StatusPage extends Vue {
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
+  public newPrivateMessage: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
   public paySafeTarget: api.Character = new api.Character(-1);
