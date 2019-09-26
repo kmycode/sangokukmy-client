@@ -740,6 +740,18 @@ export default class NotificationService {
     'コマンドコメントの更新失敗',
     'コマンドコメントの更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly privateMessageUpdated = new NotificationServiceItem(
+    'メッセージ更新',
+    'メッセージの更新に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly privateMessageUpdateFailed = new NotificationServiceItem(
+    'メッセージ更新失敗',
+    'メッセージ更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly privateMessageUpdateFailedBecauseTooLong = new NotificationServiceItem(
+    'メッセージ更新失敗',
+    'メッセージ更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

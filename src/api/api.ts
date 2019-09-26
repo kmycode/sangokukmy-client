@@ -1676,6 +1676,16 @@ export class Api {
     }
   }
 
+  public static async setPrivateMessage(message: string): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'character/message', {
+        message,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async changeFormation(formation: number): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'formations', {

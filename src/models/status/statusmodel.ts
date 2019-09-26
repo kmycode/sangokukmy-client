@@ -68,7 +68,7 @@ export default class StatusModel {
   public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
   public isUpdatingOppositionCharacters: boolean = false;
-  public isUpdatingCharacterIcons: boolean = false;
+  public isUpdatingPrivateSettings: boolean = false;
   public isUpdatingPolicies: boolean = false;
   public isUpdatingFormations: boolean = false;
   public isUpdatingItems: boolean = false;
@@ -1700,6 +1700,25 @@ export default class StatusModel {
     }
   }
 
+  public updatePrivateMessage(message: string) {
+    this.isUpdatingPrivateSettings = true;
+    api.Api.setPrivateMessage(message)
+      .then(() => {
+        NotificationService.privateMessageUpdated.notify();
+      })
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.numberRangeError) {
+          NotificationService.privateMessageUpdateFailedBecauseTooLong
+            .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+        } else {
+          NotificationService.privateMessageUpdateFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isUpdatingPrivateSettings = false;
+      });
+  }
+
   private getCharacterParameters(character: api.Character): StatusParameter[] {
     const country = this.getCountry(character.countryId);
     const ps: StatusParameter[] = [];
@@ -1788,10 +1807,10 @@ export default class StatusModel {
   // #region CharacterIcon
 
   public addCharacterIcon(icon: api.CharacterIcon) {
-    if (this.isUpdatingCharacterIcons) {
+    if (this.isUpdatingPrivateSettings) {
       return;
     }
-    this.isUpdatingCharacterIcons = true;
+    this.isUpdatingPrivateSettings = true;
     api.Api.addCharacterIcon(icon.type, icon.fileName, icon.file)
       .then((i) => {
         if (icon.isAvailable) {
@@ -1803,15 +1822,15 @@ export default class StatusModel {
         NotificationService.addIconFailed.notify();
       })
       .finally(() => {
-        this.isUpdatingCharacterIcons = false;
+        this.isUpdatingPrivateSettings = false;
       });
   }
 
   public setMainCharacterIcon(iconId: number) {
-    if (this.isUpdatingCharacterIcons) {
+    if (this.isUpdatingPrivateSettings) {
       return;
     }
-    this.isUpdatingCharacterIcons = true;
+    this.isUpdatingPrivateSettings = true;
     api.Api.setMainCharacterIcon(iconId)
       .then(() => {
         this.characterIcons.forEach((i) => {
@@ -1827,15 +1846,15 @@ export default class StatusModel {
         NotificationService.setMainIconFailed.notify();
       })
       .finally(() => {
-        this.isUpdatingCharacterIcons = false;
+        this.isUpdatingPrivateSettings = false;
       });
   }
 
   public deleteCharacterIcon(iconId: number) {
-    if (this.isUpdatingCharacterIcons) {
+    if (this.isUpdatingPrivateSettings) {
       return;
     }
-    this.isUpdatingCharacterIcons = true;
+    this.isUpdatingPrivateSettings = true;
     api.Api.deleteCharacterIcon(iconId)
       .then(() => {
         this.characterIcons = Enumerable.from(this.characterIcons).where((c) => c.id !== iconId).toArray();
@@ -1845,7 +1864,7 @@ export default class StatusModel {
         NotificationService.deleteIconFailed.notify();
       })
       .finally(() => {
-        this.isUpdatingCharacterIcons = false;
+        this.isUpdatingPrivateSettings = false;
       });
   }
 
