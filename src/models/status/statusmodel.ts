@@ -1707,9 +1707,13 @@ export default class StatusModel {
         NotificationService.privateMessageUpdated.notify();
       })
       .catch((ex) => {
-        if (ex.data.code === api.ErrorCode.numberRangeError) {
-          NotificationService.privateMessageUpdateFailedBecauseTooLong
-            .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+        if (ex.data) {
+          if (ex.data.code === api.ErrorCode.numberRangeError) {
+            NotificationService.privateMessageUpdateFailedBecauseTooLong
+              .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+          } else {
+            NotificationService.privateMessageUpdateFailed.notify();
+          }
         } else {
           NotificationService.privateMessageUpdateFailed.notify();
         }
