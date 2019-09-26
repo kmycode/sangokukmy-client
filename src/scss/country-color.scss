@@ -1,6 +1,6 @@
 
 $country-colors-deep : (#666666, #800000, #000080, #006000, #404000, #0f6080, #ac8a3a, #400040, #a80880, #048a8a, #926415, #0b7552, #c06a19, #3b3ecf, #cf2a2a, #6f7a09, #7a058a, #000000);
-$country-colors-light: (#f1f1f1, #ffcfcf, #cfefff, #c8ffc8, #cccca8, #efffff, #fffff8, #fff0ff, #f3dff2, #d9edf3, #ece0bf, #def5eb, #f8e8e2, #eaebfa, #f8e3e7, #f3f7df, #fdebfd, #ebebeb);
+$country-colors-light: (#f1f1f1, #ffcfcf, #cfefff, #c8ffc8, #cccca8, #efffff, #fffff8, #fff0ff, #f3dff2, #d9edf3, #ece0bf, #def5eb, #f8e8e2, #eaebfa, #f8e3e7, #f3f7df, #fdebfd, #d8d8d8);
 
 @mixin country-color-light($property-name) {
   @for $i from 0 through length($country-colors-light) - 1 {
