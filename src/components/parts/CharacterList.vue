@@ -40,6 +40,7 @@
             <span class="parameter-value">{{ chara.popularity }}</span>
           </span>
         </div>
+        <div class="message"><KmyChatTagText v-if="chara.message !== ''" :isNewLine="false" :text="chara.message"/></div>
       </div>
     </div>
   </div>
@@ -48,6 +49,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
@@ -56,6 +58,7 @@ import Enumerable from 'linq';
 @Component({
   components: {
     CharacterIcon,
+    KmyChatTagText,
   },
 })
 export default class CharacterList extends Vue {
@@ -159,6 +162,11 @@ export default class CharacterList extends Vue {
             text-align: center;
           }
         }
+      }
+
+      .message {
+        color: #454545;
+        margin-top: 8px;
       }
     }
   }

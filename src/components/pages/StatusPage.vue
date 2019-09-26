@@ -375,7 +375,20 @@
                 <button type="button" class="btn btn-light" @click="isShowIconOperations ^= true">操作</button>
                 <button v-show="isShowIconOperations" type="button" class="btn btn-danger" @click="model.deleteCharacterIcon(selectedIconAtPrivateConfig.id)">削除</button>
               </div>
-              <div v-show="model.isUpdatingCharacterIcons" class="loading"><div class="loading-icon"></div></div>
+              <h3 :class="'country-color-' + model.characterCountryColor">メッセージ</h3>
+              <div class="current-message">
+                <h4>現在のメッセージ</h4>
+                <div :class="'current-message-content country-color-' + model.characterCountryColor">
+                  <KmyChatTagText v-if="model.character.message" :text="model.character.message" :isNewLine="false"/>
+                  <span v-if="!model.character.message" class="message-empty">なし</span>
+                </div>
+              </div>
+              <textarea v-model="newPrivateMessage"></textarea>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="newPrivateMessage = model.character.message">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updatePrivateMessage(newPrivateMessage)">承認</button>
+              </div>
+              <div v-show="model.isUpdatingPrivateSettings" class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
         </div>
