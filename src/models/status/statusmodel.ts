@@ -413,7 +413,7 @@ export default class StatusModel {
   public get canSecretaryUnitLeader(): boolean {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
-      .any((p) => p.type === 33);
+      .any((p) => p.type === 33 && p.status === api.CountryPolicy.statusAvailable);
   }
 
   public get safeMaxValue(): number {
