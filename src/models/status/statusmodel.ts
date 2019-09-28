@@ -441,7 +441,7 @@ export default class StatusModel {
                 .any((p) => p.status === api.CountryPolicy.statusAvailable && p.type === t.requestedPolicyType);
               const can2 = Enumerable
                 .from(this.store.skills)
-                .any((s) => s.status === api.CharacterSkill.statusAvailable && s.type === 26);
+                .any((s) => s.status === api.CharacterSkill.statusAvailable && s.type === 31);
               if (can || can2) {
                 types.push(t);
               }
