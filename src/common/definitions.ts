@@ -873,7 +873,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(4, '武家 Lv.4', '攻撃力 +20、突撃確率 +2%、突撃威力 +120', 8, (skills) => skills.some((s) => s.type === 3)),
   new CharacterSkillType(5, '武家 Lv.5', '戦闘が 1 ターンで終了時の連戦確率 +80%', 9, (skills) => skills.some((s) => s.type === 4)),
   new CharacterSkillType(6, '官吏 Lv.1', '毎月知力Ex +7', 0, (_) => false),
-  new CharacterSkillType(7, '官吏 Lv.2', '内政効果 +50%攻撃力 +20、コマンド 都市巡回', 8, (skills) => skills.some((s) => s.type === 6)),
+  new CharacterSkillType(7, '官吏 Lv.2', '内政効果 +50%、コマンド 都市巡回', 8, (skills) => skills.some((s) => s.type === 6)),
   new CharacterSkillType(8, '官吏 Lv.3', '内政効果 +50%', 8, (skills) => skills.some((s) => s.type === 7)),
   new CharacterSkillType(9, '官吏 Lv.4', '護衛属性含む兵種使用時、攻撃力 +20、防御力 +50', 9, (skills) => skills.some((s) => s.type === 8)),
   new CharacterSkillType(10, '官吏 Lv.5', '政策開発時、未取得政策ブースト確率 +5%。兵種 梓叡兵', 10, (skills) => skills.some((s) => s.type === 9)),
