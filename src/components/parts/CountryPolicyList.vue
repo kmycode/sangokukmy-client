@@ -1,33 +1,56 @@
 <template>
   <div class="policy-list">
-    <h2 v-show="(canEdit || isMyCountry) && policyTypes.length > 0">現在の政策</h2>
-    <div
-      :class="{'item': true}"
-      v-for="policy in policyTypes"
-      :key="policy.id">
-      <div class="policy-info">
-        <div class="standard">
-          <div class="name responsive-header">{{ policy.name }}</div>
-          <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.point }}</span></div>
-          <div class="description">{{ policy.description }}</div>
-        </div>
-      </div>
+    <div class="buttons">
+      <button :class="{'btn': true, 'btn-secondary': category === 0, 'btn-outline-secondary': category !== 0,}" @click="category = 0">郡県制</button>
+      <button :class="{'btn': true, 'btn-secondary': category === 1, 'btn-outline-secondary': category !== 1,}" @click="category = 1">経済</button>
+      <button :class="{'btn': true, 'btn-secondary': category === 2, 'btn-outline-secondary': category !== 2,}" @click="category = 2">人材</button>
+      <button :class="{'btn': true, 'btn-secondary': category === 4, 'btn-outline-secondary': category !== 4,}" @click="category = 4">軍事</button>
+      <button :class="{'btn': true, 'btn-secondary': category === 3, 'btn-outline-secondary': category !== 3,}" @click="category = 3">特殊</button>
     </div>
-    <div v-show="(canEdit || isMyCountry) && newPolicies.length > 0" style="margin-top:48px">
-      <h2>追加可能な政策</h2>
-      <h3>残りポイント: {{ country.policyPoint }}</h3>
+    <div class="contents">
+      <h3 v-show="(canEdit || isMyCountry) && currentAvailablePolicies.length > 0" class="already-policies">現在の政策</h3>
       <div
-        :class="{'item': true, 'selected': value.id === policy.type.id, 'selectable': canEdit}"
-        v-for="policy in newPolicies"
-        :key="policy.id">
+        class="item item-available"
+        v-for="policy in currentAvailablePolicies"
+        :key="policy.type.id">
         <div class="policy-info">
           <div class="standard">
             <div class="name responsive-header">{{ policy.type.name }}</div>
-            <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.requestedPoint }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
             <div class="description">{{ policy.type.description }}</div>
           </div>
         </div>
-        <div v-if="canEdit" class="select-cover" @click="$emit('input', policy.type)"></div>
+      </div>
+      <div v-show="(canEdit || isMyCountry) && currentSelectablePolicies.length > 0">
+        <h3 class="rest-point">残りポイント: {{ country.policyPoint }}</h3>
+        <div
+          :class="{'item': true, 'selected': value.id === policy.type.id, 'selectable': canEdit, 'item-selectable': true}"
+          v-for="policy in currentSelectablePolicies"
+          :key="policy.type.id">
+          <div class="policy-info">
+            <div class="standard">
+              <div class="name responsive-header">{{ policy.type.name }}</div>
+              <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.requestedPoint }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
+              <div class="description">{{ policy.type.description }}</div>
+            </div>
+          </div>
+          <div v-if="canEdit" class="select-cover" @click="$emit('input', policy.type)"></div>
+        </div>
+      </div>
+      <div v-show="(canEdit || isMyCountry) && currentAfterPolicies.length > 0">
+        <h3 class="after-description">前提政策の取得が必要</h3>
+        <div
+          class="item item-after"
+          v-for="policy in currentAfterPolicies"
+          :key="policy.type.id">
+          <div class="policy-info">
+            <div class="standard">
+              <div class="name responsive-header">{{ policy.type.name }}</div>
+              <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.requestedPoint }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
+              <div class="description">{{ policy.type.description }}</div>
+            </div>
+          </div>
+          <div v-if="canEdit" class="select-cover" @click="$emit('input', policy.type)"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -68,8 +91,13 @@ class CountryPolicyListItem {
 export default class CountryPolicyList extends Vue {
   @Prop() public country!: api.Country;
   @Prop() public policies!: api.CountryPolicy[];
-  public policyTypes: def.CountryPolicyType[] = [];
-  public newPolicies: CountryPolicyListItem[] = [];
+  public category: number = 0;
+  public availablePolicies: CountryPolicyListItem[] = [];
+  public selectablePolicies: CountryPolicyListItem[] = [];
+  public afterPolicies: CountryPolicyListItem[] = [];
+  public currentAvailablePolicies: CountryPolicyListItem[] = [];
+  public currentSelectablePolicies: CountryPolicyListItem[] = [];
+  public currentAfterPolicies: CountryPolicyListItem[] = [];
   @Prop({
     default: false,
   }) public canEdit!: boolean;
@@ -82,23 +110,36 @@ export default class CountryPolicyList extends Vue {
 
   @Watch('policies')
   public onTypesChanged() {
-    this.policyTypes = Enumerable.from(this.policies)
-      .where((p) => p.status === api.CountryPolicy.statusAvailable)
-      .join(def.COUNTRY_POLICY_TYPES, (p) => p.type, (p) => p.id, (pd, pt) => pt)
+    const policiesAvailable = this.policies.filter((p) => p.status === api.CountryPolicy.statusAvailable);
+    const policiesNotAvailable = this.policies.filter((p) => p.status !== api.CountryPolicy.statusAvailable);
+
+    this.availablePolicies = Enumerable.from(def.COUNTRY_POLICY_TYPES)
+      .join(policiesAvailable, (p) => p.id, (p) => p.type, (pt, pd) => new CountryPolicyListItem(pt, pd))
       .toArray();
-    this.newPolicies = Enumerable.from(def.COUNTRY_POLICY_TYPES)
-      .where((p) => !Enumerable
-        .from(this.policies)
-        .any((pp) => pp.type === p.id && pp.status === api.CountryPolicy.statusAvailable))
-      .where((p) => p.canGet)
-      .where((p) => p.subjectAppear === undefined || p.subjectAppear(this.policies))
-      .select((p) => {
-        const data = Enumerable
-          .from(this.policies)
-          .firstOrDefault((pp) => pp.type === p.id && pp.status === api.CountryPolicy.statusBoosted);
-        return new CountryPolicyListItem(p, data);
-      })
+    this.selectablePolicies = Enumerable.from(def.COUNTRY_POLICY_TYPES)
+      .where((p) => !policiesAvailable.some((pp) => pp.type === p.id) && p.canGet)
+      .where((p) => !p.subjectAppear || p.subjectAppear(policiesAvailable))
+      .groupJoin(policiesNotAvailable,
+        (p) => p.id, (p) => p.type, (p, ps) => new CountryPolicyListItem(p, ps.firstOrDefault()))
       .toArray();
+    this.afterPolicies = Enumerable.from(def.COUNTRY_POLICY_TYPES)
+      .where((p) => (p.subjectAppear ? !p.subjectAppear(policiesAvailable) : false) && p.canGet)
+      .groupJoin(policiesNotAvailable,
+        (p) => p.id, (p) => p.type, (p, ps) => new CountryPolicyListItem(p, ps.firstOrDefault()))
+      .toArray();
+
+    this.currentAvailablePolicies = this.availablePolicies;
+    this.currentSelectablePolicies = this.selectablePolicies;
+    this.currentAfterPolicies = this.afterPolicies;
+
+    this.onCategoryChanged();
+  }
+
+  @Watch('category')
+  public onCategoryChanged() {
+    this.currentAvailablePolicies = this.availablePolicies.filter((p) => p.type.category === this.category);
+    this.currentSelectablePolicies = this.selectablePolicies.filter((p) => p.type.category === this.category);
+    this.currentAfterPolicies = this.afterPolicies.filter((p) => p.type.category === this.category);
   }
 }
 </script>
@@ -108,6 +149,23 @@ export default class CountryPolicyList extends Vue {
 @import '@/scss/country-color.scss';
 
 .policy-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .contents {
+    flex: 1;
+    overflow: auto;
+  }
+
+  .already-policies, .rest-point, .after-description {
+    background: #c3c4c9;
+    border-radius: 8px;
+    margin: 16px 0 0;
+    font-size: 1.2em;
+    padding: 4px 8px;
+  }
+
   .item {
     padding: 4px 8px;
     border-bottom-width: 1px;
@@ -137,6 +195,14 @@ export default class CountryPolicyList extends Vue {
         transition: background-color .12s ease-out;
         cursor: pointer;
       }
+    }
+
+    &.item-available {
+      background: #efffef;
+    }
+
+    &.item-after {
+      color: #aaa;
     }
 
     .policy-info {
