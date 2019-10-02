@@ -892,12 +892,22 @@
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（都市）</h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
-            <div class="character-list">
+            <div class="character-list-top-of-map">
               <SimpleCharacterList
                 :countries="model.countries"
                 :characters="model.countrySecretaries"
                 canSelect="true"
                 v-model="targetSecretary"/>
+            </div>
+            <div class="map">
+              <Map
+                :towns="model.towns"
+                :countries="model.countries"
+                :town="mapDialogSelectedTown"
+                :currentTown="model.characterTown"
+                :store="model.store"
+                @selected="onMapDialogSelected($event)"
+                style="height:400px;min-height:50vh"/>
             </div>
           </div>
           <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
@@ -907,7 +917,7 @@
             <button class="btn btn-light" @click="isOpenSecretaryTownDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryMoveCommand(47, targetSecretary.id); isOpenSecretaryTownDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="closeMapDialog(); isOpenSecretaryTownDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1191,6 +1201,30 @@
           </div>
         </div>
       </div>
+      <!-- 地図での都市選択 -->
+      <div v-show="isOpenMapDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">都市選択</h2>
+        <div class="dialog-content dialog-content-promotion">
+          <div class="dialog-content-promotion-main">
+            <Map
+              :towns="model.towns"
+              :countries="model.countries"
+              :town="mapDialogSelectedTown"
+              :currentTown="model.characterTown"
+              :store="model.store"
+              @selected="onMapDialogSelected($event)"
+              style="height:400px;min-height:50vh"/>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenMapDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="closeMapDialog(); isOpenMapDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -1313,12 +1347,15 @@ export default class StatusPage extends Vue {
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
   public isOpenCommandCommentDialog: boolean = false;
+  public isOpenMapDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
   public mapShowType: number = 0;
+  public mapDialogMode: number = 0;
+  public mapDialogSelectedTown: api.Town = new api.Town(-1);
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
   public targetSecretary: api.Character = new api.Character(-1);
@@ -1357,7 +1394,8 @@ export default class StatusPage extends Vue {
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
-      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog;
+      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
+      || this.isOpenMapDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1407,6 +1445,8 @@ export default class StatusPage extends Vue {
     } else if (event === 'secretary-town') {
       this.targetSecretary.id = -1;
       this.model.updateCharacterCountryCharacters();
+      this.mapDialogMode = 2;
+      this.mapDialogSelectedTown = this.model.town;
       this.isOpenSecretaryTownDialog = true;
     } else if (event === 'formation-add') {
       this.selectedFormationType = new def.FormationType(-1);
@@ -1433,6 +1473,26 @@ export default class StatusPage extends Vue {
     } else if (event === 'command-comment') {
       this.commandCommentMessage = '';
       this.isOpenCommandCommentDialog = true;
+    } else if (event === 'town-move') {
+      this.mapDialogMode = 0;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-war') {
+      this.mapDialogMode = 1;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-scouter-set') {
+      this.mapDialogMode = 3;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-scouter-unset') {
+      this.mapDialogMode = 4;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-spy') {
+      this.mapDialogMode = 5;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
     }
   }
 
@@ -1449,7 +1509,24 @@ export default class StatusPage extends Vue {
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
-      this.isOpenCommandCommentDialog = false;
+      this.isOpenCommandCommentDialog = this.isOpenMapDialog = false;
+  }
+
+  public closeMapDialog() {
+    if (this.mapDialogMode === 0) {
+      this.model.commands.inputer.inputMoveCommand(17, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 1) {
+      this.model.commands.inputer.inputMoveCommand(13, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 2) {
+      this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 3) {
+      this.model.commands.inputer.inputMoveCommand(45, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 4) {
+      this.model.commands.inputer.inputMoveCommand(46, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 5) {
+      this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
+    }
+    this.isOpenMapDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1576,6 +1653,13 @@ export default class StatusPage extends Vue {
       .firstOrDefault((c) => c.id === id);
     if (country) {
       this.readyOtherCountryChat(country);
+    }
+  }
+
+  private onMapDialogSelected(townId: number) {
+    const town = this.model.towns.find((t) => t.id === townId);
+    if (town) {
+      this.mapDialogSelectedTown = town;
     }
   }
 
@@ -2157,6 +2241,17 @@ ul.nav {
           height: 100%;
 
           .character-list, .item-list {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .map {
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .character-list-top-of-map {
             flex: 1;
             overflow: auto;
             -webkit-overflow-scrolling: touch;

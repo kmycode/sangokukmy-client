@@ -60,9 +60,9 @@ export default class CommandInputer {
     });
   }
 
-  public inputMoveCommand(commandType: number) {
+  public inputMoveCommand(commandType: number, townId?: number) {
     this.inputCommandPrivate(commandType, (c) => {
-      c.parameters.push(new api.CharacterCommandParameter(1, this.store.town.id));
+      c.parameters.push(new api.CharacterCommandParameter(1, townId || this.store.town.id));
     });
   }
 
@@ -115,10 +115,10 @@ export default class CommandInputer {
     });
   }
 
-  public inputSecretaryMoveCommand(commandType: number, id: number) {
+  public inputSecretaryMoveCommand(commandType: number, id: number, townId?: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
-      c.parameters.push(new api.CharacterCommandParameter(2, this.store.town.id));
+      c.parameters.push(new api.CharacterCommandParameter(2, townId || this.store.town.id));
     });
   }
 
