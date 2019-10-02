@@ -46,6 +46,7 @@
             <div class="standard">
               <div class="name responsive-header">{{ policy.type.name }}</div>
               <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ policy.requestedPoint }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
+              <div v-if="policy.type.specialGetSubject" class="point"><span class="value-name">取得条件</span> <span class="value">{{ policy.type.specialGetSubject }}</span> <span v-if="policy.isBoosted" class="boosted">[ブースト]</span></div>
               <div class="description">{{ policy.type.description }}</div>
             </div>
           </div>

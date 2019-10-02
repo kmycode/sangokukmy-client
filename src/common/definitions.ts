@@ -621,6 +621,7 @@ export class CountryPolicyType {
                      public description: string = '',
                      public category: number = 0,
                      public subjectAppear?: (exists: api.CountryPolicy[]) => boolean,
+                     public specialGetSubject: string = '',
                      public canGet: boolean = true) {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
@@ -668,7 +669,8 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(34, 2000, '採用策', '政務官 +1',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 24)),
   new CountryPolicyType(35, 2000, '武官の肇', '取得から 144 ターン武力と知力の高い方を内政に使用。文官国家をブースト',
-    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
+    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14),
+    '武漢国家 を取得'),
   new CountryPolicyType(2, 4000, '密偵', '諜報府が利用可能になる。斥候 +2名', 3),
 
   new CountryPolicyType(7, 3000, '賊の監視', '賊の被害を未然に防ぐ', 4),
@@ -683,7 +685,8 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、攻城属性を除き、常に城壁攻撃力 +60',
     4, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 30)),
 
-  new CountryPolicyType(37, 0, '胡人徴発', '重騎兵の徴兵コスト /2', 3, undefined, false),
+  new CountryPolicyType(37, 0, '胡人徴発', '重騎兵の徴兵コスト /2', 3, undefined,
+    '異民族を滅亡せしめる', false),
 ];
 
 /**
