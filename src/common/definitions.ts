@@ -79,7 +79,7 @@ export class SoldierType {
                      public requestedPolicyType?: number,
                      public isNeedResource?: boolean,
                      public requestedItemType?: number,
-                     public requestedSkillType?: number) {}
+                     public requestedSkillType?: number | number[]) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, 0, '剣兵', 1, 0, '0', '0'),
@@ -106,7 +106,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(20, 0, '賊兵A', 32767, 32767, '0', '0', ''),
   new SoldierType(21, 0, '賊兵B', 32767, 32767, '0', '0', ''),
   new SoldierType(22, 0, '賊兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(23, 1, '梓叡兵', 3, 200, '0', '0', '武力の代わりに知力が使用される雑兵', undefined, undefined, undefined, 48),
+  new SoldierType(23, 1, '梓叡兵', 3, 200, '0', '0', '武力の代わりに知力が使用される雑兵', undefined, undefined, undefined, [48, 10]),
   new SoldierType(24, 1, '梓馬兵', 18, 900, '60', '40', '基礎能力として武力の代わりに知力を用いた兵種。武官の重騎兵と同等の補正を持つ'),
   new SoldierType(25, 3, '義勇兵', 10, 200, '0', '0', '正義を振り翳せば従ってくれるちょろい愚民たち。基礎能力として人望を用いる', 30),
   new SoldierType(26, 1, '梓琴兵', 22, 900, '90', '40', '基礎能力として武力の代わりに知力を用いた兵種。武官の連弩兵と同等の補正を持つ', undefined, undefined, undefined, 50),
