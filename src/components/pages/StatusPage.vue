@@ -208,7 +208,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://sangoku-doc.kmycode.net/" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
+                <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
                 <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
                 <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
                 <div class="dropdown-divider"></div>
@@ -893,12 +893,22 @@
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（都市）</h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
-            <div class="character-list">
+            <div class="character-list-top-of-map">
               <SimpleCharacterList
                 :countries="model.countries"
                 :characters="model.countrySecretaries"
                 canSelect="true"
                 v-model="targetSecretary"/>
+            </div>
+            <div class="map">
+              <Map
+                :towns="model.towns"
+                :countries="model.countries"
+                :town="mapDialogSelectedTown"
+                :currentTown="model.characterTown"
+                :store="model.store"
+                @selected="onMapDialogSelected($event)"
+                style="height:400px;min-height:50vh"/>
             </div>
           </div>
           <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
@@ -908,7 +918,7 @@
             <button class="btn btn-light" @click="isOpenSecretaryTownDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryMoveCommand(47, targetSecretary.id); isOpenSecretaryTownDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="closeMapDialog(); isOpenSecretaryTownDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1192,6 +1202,63 @@
           </div>
         </div>
       </div>
+      <!-- 地図での都市選択 -->
+      <div v-show="isOpenMapDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">都市選択</h2>
+        <div class="dialog-content dialog-content-promotion">
+          <div class="dialog-content-promotion-main">
+            <Map
+              :towns="model.towns"
+              :countries="model.countries"
+              :town="mapDialogSelectedTown"
+              :currentTown="model.characterTown"
+              :store="model.store"
+              @selected="onMapDialogSelected($event)"
+              style="height:400px;min-height:50vh"/>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenMapDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="closeMapDialog(); isOpenMapDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- ようこそ -->
+      <div v-show="isOpenWelcomeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
+        <div class="dialog-content dialog-content-welcome">
+          <div class="dialog-content-welcome-main">
+            <h3>三国志NETは初めてですか？</h3>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-primary">初心者向け解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/39.html" target="_blank" class="btn btn-secondary" style="margin-left:8px">チュートリアル</a>
+            <div class="alert alert-info" style="margin-top:16px">
+              初心者向け解説は、このダイアログを閉じた後も、いつでも「メニュー」から表示することができます。<br>
+              このダイアログは、「承認」をクリックまたはタップすることで、閉じることができます。
+            </div>
+            <h3>三国志NETは経験者で、KMY Versionは初めてですか？</h3>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-primary">画面の見方</a>
+            <div style="margin-top:16px">
+              画面は他の三国志NETと大きく異なりますが、ゲームシステムは三国志NETを踏襲したものです。<br>
+              他にも、<a href="https://w.atwiki.jp/sangokukmy9/pages/19.html" target="_blank">出身</a>、<a href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">陣形</a>などの特徴的な要素があります。
+            </div>
+            <h3>コマンドを入力しましょう</h3>
+            三国志NET KMY Versionは、コマンドを入力して進行します。<br>
+            長時間コマンドを入力していないと、自動で削除されます。ゲームを続けるためには、毎日のログインが必要になります。
+            <h3>みんなの輪に入りましょう</h3>
+            「手紙」→「全国」から、みんなに挨拶しましょう。<br>
+            わからないことを質問したり、雑談したりして楽しみましょう。
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="isOpenWelcomeDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -1314,12 +1381,16 @@ export default class StatusPage extends Vue {
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
   public isOpenCommandCommentDialog: boolean = false;
+  public isOpenMapDialog: boolean = false;
+  public isOpenWelcomeDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
   public mapShowType: number = 0;
+  public mapDialogMode: number = 0;
+  public mapDialogSelectedTown: api.Town = new api.Town(-1);
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
   public targetSecretary: api.Character = new api.Character(-1);
@@ -1358,7 +1429,8 @@ export default class StatusPage extends Vue {
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
-      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog;
+      || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
+      || this.isOpenMapDialog || this.isOpenWelcomeDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1408,6 +1480,8 @@ export default class StatusPage extends Vue {
     } else if (event === 'secretary-town') {
       this.targetSecretary.id = -1;
       this.model.updateCharacterCountryCharacters();
+      this.mapDialogMode = 2;
+      this.mapDialogSelectedTown = this.model.town;
       this.isOpenSecretaryTownDialog = true;
     } else if (event === 'formation-add') {
       this.selectedFormationType = new def.FormationType(-1);
@@ -1434,6 +1508,26 @@ export default class StatusPage extends Vue {
     } else if (event === 'command-comment') {
       this.commandCommentMessage = '';
       this.isOpenCommandCommentDialog = true;
+    } else if (event === 'town-move') {
+      this.mapDialogMode = 0;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-war') {
+      this.mapDialogMode = 1;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-scouter-set') {
+      this.mapDialogMode = 3;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-scouter-unset') {
+      this.mapDialogMode = 4;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
+    } else if (event === 'town-spy') {
+      this.mapDialogMode = 5;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
     }
   }
 
@@ -1450,7 +1544,24 @@ export default class StatusPage extends Vue {
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
-      this.isOpenCommandCommentDialog = false;
+      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog = false;
+  }
+
+  public closeMapDialog() {
+    if (this.mapDialogMode === 0) {
+      this.model.commands.inputer.inputMoveCommand(17, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 1) {
+      this.model.commands.inputer.inputMoveCommand(13, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 2) {
+      this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 3) {
+      this.model.commands.inputer.inputMoveCommand(45, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 4) {
+      this.model.commands.inputer.inputMoveCommand(46, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 5) {
+      this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
+    }
+    this.isOpenMapDialog = false;
   }
 
   public get soliderDetail(): def.SoldierType {
@@ -1539,6 +1650,9 @@ export default class StatusPage extends Vue {
 
   public mounted() {
     this.model.onCreate(() => this.$router);
+    if (this.$route.query.first) {
+      this.isOpenWelcomeDialog = true;
+    }
   }
 
   public destroyed() {
@@ -1577,6 +1691,13 @@ export default class StatusPage extends Vue {
       .firstOrDefault((c) => c.id === id);
     if (country) {
       this.readyOtherCountryChat(country);
+    }
+  }
+
+  private onMapDialogSelected(townId: number) {
+    const town = this.model.towns.find((t) => t.id === townId);
+    if (town) {
+      this.mapDialogSelectedTown = town;
     }
   }
 
@@ -2151,6 +2272,18 @@ ul.nav {
         }
       }
 
+      &.dialog-content-welcome {
+        .dialog-content-welcome-main {
+          margin: 0 24px;
+          h3 {
+            &:first-child {
+              margin-top: 12px;
+            }
+            margin: 32px 0 24px;
+          }
+        }
+      }
+
       &.dialog-content-secretary {
         .dialog-content-secretary-main {
           display: flex;
@@ -2158,6 +2291,17 @@ ul.nav {
           height: 100%;
 
           .character-list, .item-list {
+            flex: 1;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .map {
+            overflow: hidden;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .character-list-top-of-map {
             flex: 1;
             overflow: auto;
             -webkit-overflow-scrolling: touch;
