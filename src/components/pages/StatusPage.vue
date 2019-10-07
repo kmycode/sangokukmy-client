@@ -1226,6 +1226,39 @@
           </div>
         </div>
       </div>
+      <!-- ようこそ -->
+      <div v-show="isOpenWelcomeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
+        <div class="dialog-content dialog-content-welcome">
+          <div class="dialog-content-welcome-main">
+            <h3>三国志NETは初めてですか？</h3>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-primary">初心者向け解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/39.html" target="_blank" class="btn btn-secondary" style="margin-left:8px">チュートリアル</a>
+            <div class="alert alert-info" style="margin-top:16px">
+              初心者向け解説は、このダイアログを閉じた後も、いつでも「メニュー」から表示することができます。<br>
+              このダイアログは、「承認」をクリックまたはタップすることで、閉じることができます。
+            </div>
+            <h3>三国志NETは経験者で、KMY Versionは初めてですか？</h3>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-primary">画面の見方</a>
+            <div style="margin-top:16px">
+              画面は他の三国志NETと大きく異なりますが、ゲームシステムは三国志NETを踏襲したものです。<br>
+              他にも、<a href="https://w.atwiki.jp/sangokukmy9/pages/19.html" target="_blank">出身</a>、<a href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">陣形</a>などの特徴的な要素があります。
+            </div>
+            <h3>コマンドを入力しましょう</h3>
+            三国志NET KMY Versionは、コマンドを入力して進行します。<br>
+            長時間コマンドを入力していないと、自動で削除されます。ゲームを続けるためには、毎日のログインが必要になります。
+            <h3>みんなの輪に入りましょう</h3>
+            「手紙」→「全国」から、みんなに挨拶しましょう。<br>
+            わからないことを質問したり、雑談したりして楽しみましょう。
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side"></div>
+          <div class="right-side">
+            <button class="btn btn-primary" @click="isOpenWelcomeDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
     </div>
     <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -1349,6 +1382,7 @@ export default class StatusPage extends Vue {
   public isOpenGenerateItemUseDialog: boolean = false;
   public isOpenCommandCommentDialog: boolean = false;
   public isOpenMapDialog: boolean = false;
+  public isOpenWelcomeDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
 
@@ -1396,7 +1430,7 @@ export default class StatusPage extends Vue {
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
-      || this.isOpenMapDialog;
+      || this.isOpenMapDialog || this.isOpenWelcomeDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1510,7 +1544,7 @@ export default class StatusPage extends Vue {
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
-      this.isOpenCommandCommentDialog = this.isOpenMapDialog = false;
+      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog = false;
   }
 
   public closeMapDialog() {
@@ -1616,6 +1650,9 @@ export default class StatusPage extends Vue {
 
   public mounted() {
     this.model.onCreate(() => this.$router);
+    if (this.$route.query.first) {
+      this.isOpenWelcomeDialog = true;
+    }
   }
 
   public destroyed() {
@@ -2231,6 +2268,18 @@ ul.nav {
               width: 100%;
               height: 100px;
             }
+          }
+        }
+      }
+
+      &.dialog-content-welcome {
+        .dialog-content-welcome-main {
+          margin: 0 24px;
+          h3 {
+            &:first-child {
+              margin-top: 12px;
+            }
+            margin: 32px 0 24px;
           }
         }
       }

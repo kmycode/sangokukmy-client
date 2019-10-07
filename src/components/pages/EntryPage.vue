@@ -645,7 +645,7 @@ export default class EntryPage extends Vue {
                     this.invitationCode)
         .then((auth) => {
           LoginService.setAccessToken(auth);
-          this.$router.push('status');
+          this.$router.push({ path: 'status', query: { first: '1' }});
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.duplicateCharacterNameOrAliasIdError) {
