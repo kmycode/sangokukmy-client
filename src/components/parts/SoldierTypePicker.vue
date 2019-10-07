@@ -57,7 +57,9 @@ export default class SoldierTypePicker extends Vue {
   public onTypesChanged() {
     this.types = this.soldierTypes.filter((st) => {
       if (st.requestedSkillType && !st.isNeedResource) {
-        return this.skills.some((s) => s.type === st.requestedSkillType);
+        return this.skills.some((s) => !Array.isArray(st.requestedSkillType) ?
+                                              s.type === st.requestedSkillType :
+                                              st.requestedSkillType.some((k) => k === s.type));
       }
       return true;
     }).map((st) => {
