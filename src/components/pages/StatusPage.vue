@@ -1240,6 +1240,7 @@
             </div>
             <h3>三国志NETは経験者で、KMY Versionは初めてですか？</h3>
             <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-primary">画面の見方</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/81.html" target="_blank" class="btn btn-light" style="margin-left:8px">他の三国志NETとの違い</a>
             <div style="margin-top:16px">
               画面は他の三国志NETと大きく異なりますが、ゲームシステムは三国志NETを踏襲したものです。<br>
               他にも、<a href="https://w.atwiki.jp/sangokukmy9/pages/19.html" target="_blank">出身</a>、<a href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">陣形</a>などの特徴的な要素があります。
