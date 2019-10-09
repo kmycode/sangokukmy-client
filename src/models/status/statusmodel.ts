@@ -1580,7 +1580,7 @@ export default class StatusModel {
   // #region CountryPolicies
 
   private onCountryPolicyReceived(policy: api.CountryPolicy) {
-    ArrayUtil.addItem(this.store.policies, policy);
+    ArrayUtil.addItemUniquely(this.store.policies, policy, (p) => '' + p.countryId + ',' + p.type);
 
     if (this.store.hasInitialized && policy.countryId === this.character.countryId) {
       const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy.type);
