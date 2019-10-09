@@ -851,7 +851,7 @@
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官</button>
           <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長</button>
-          <div class="alert alert-warning">雇える政務官は{{ model.secretaryMaxValue }}人までです<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
+          <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">

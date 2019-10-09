@@ -413,6 +413,15 @@ export default class StatusModel {
       .count((p) => p.type === 4 || p.type === 34);
   }
 
+  public get currentSecretaryPoint(): number {
+    return Enumerable.from(this.store.characters)
+      .where((c) => c.countryId === this.character.countryId)
+      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 1 :
+                  c.aiType === api.Character.aiSecretaryPioneer ? 1 :
+                  c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
+                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 : 0);
+  }
+
   public get canSecretaryUnitLeader(): boolean {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
