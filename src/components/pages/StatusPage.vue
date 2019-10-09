@@ -847,10 +847,10 @@
       <div v-show="isOpenAddSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官募集</h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官</button>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官</button>
-          <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長</button>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官 ( 1 ポイント )</button><br>
+          <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button>
           <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
         </div>
         <div class="dialog-footer">
@@ -2210,8 +2210,7 @@ ul.nav {
 
       &.dialog-content-training {
         button {
-          margin: 0 16px 0 0;
-          width: 80px;
+          margin: 0 16px 16px 0;
         }
       }
 
