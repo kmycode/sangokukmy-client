@@ -29,7 +29,7 @@
             <span class="damage">(-{{ line.attackerDamage }})</span>
           </div>
         </div>
-        <div :class="{'turn': true, 'turn-rush-attacker': line.isAttackerRush, 'turn-rush-defender': line.isDefenderRush }">{{ line.turn }}</div>
+        <div :class="{'turn': true, 'turn-rush-attacker': line.attackerCommand === 1, 'turn-rush-defender': line.defenderCommand === 1, }">{{ line.turn }}</div>
         <div class="chara defender">
           <div class="number">
             <span class="current">{{ line.defenderNumber }}</span>
