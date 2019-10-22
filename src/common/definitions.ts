@@ -592,6 +592,12 @@ export const TOWN_BUILDINGS: BuildingType[] = [
   new BuildingType(14, '太守府'),
   new BuildingType(15, '蛮族の家'),
   new BuildingType(16, '宮殿'),
+  new BuildingType(17, '住宅'),
+  new BuildingType(18, '鋳金所'),
+  new BuildingType(19, '訓練施設'),
+  new BuildingType(20, '陣'),
+  new BuildingType(21, '増築拠点'),
+  new BuildingType(22, '数寄屋'),
 ];
 /**
  * 国家施設
@@ -845,13 +851,13 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
   new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
   new CharacterItemType(59, 18, '装備戟', '（資源）重戟兵徴兵費 -30%', true, true, false, true, 1000),
-  new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵徴兵費 -30%', true, true, false, true, 1000),
+  new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵／梓馬兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
   new CharacterItemType(62, 100000, '論語', '人望 +20', false),
   new CharacterItemType(63, 20, '装備連弩', '（資源）連弩兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(64, 24, '青洲槍', '（資源）青洲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(65, 22, '装備良戟', '（資源）重戟兵徴兵費 -60%', true, true, false, true, 1000),
-  new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵徴兵費 -60%', true, true, false, true, 1000),
+  new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵／梓馬兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(67, 22, '象', '（資源）象兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(68, 22, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(69, 8, '練兵', '（資源）徴兵時訓練値下限 60', true, true, false, true, 1000),
