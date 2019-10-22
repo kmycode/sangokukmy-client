@@ -574,10 +574,10 @@ export default class EntryPage extends Vue {
       primaries = [1, 3, 2, 4];
     } else if (id === api.CharacterSkill.typePeople) {
       strong = 5;
-      intellect = 90;
-      leadership = 5;
+      intellect = 5;
+      leadership = 90;
       popularity = 100;
-      primaries = [4, 2, 1, 3];
+      primaries = [4, 3, 2, 1];
     } else if (id === api.CharacterSkill.typeTactician) {
       strong = 90;
       intellect = 5;
