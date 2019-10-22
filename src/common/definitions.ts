@@ -849,7 +849,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(55, 30000, '玉龍紋璧', '使用で金 +300k', false, true, true),
   new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false, true, true),
   new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
-  new CharacterItemType(58, 5000000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
+  new CharacterItemType(58, 500000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
   new CharacterItemType(59, 18, '装備戟', '（資源）重戟兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵／梓馬兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
@@ -865,7 +865,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
   new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
   new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
-  new CharacterItemType(74, 5000000, '胡人の証', '所持した状態で経営国家、異民族に仕官可能。仕官で消費', false, true, false),
+  new CharacterItemType(74, 500000, '胡人の証', '所持した状態で経営国家、異民族に仕官可能。仕官で消費', false, true, false),
 ];
 
 /**
