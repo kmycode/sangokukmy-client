@@ -297,10 +297,10 @@
                   </div>
                 </div>
               </div>
-              <textarea v-model="newCountryCommandersMessage" ref="commandersMessageInput"></textarea>
+              <textarea v-model="newCountryUnifiedMessage" ref="commandersMessageInput"></textarea>
               <div class="buttons">
-                <button type="button" class="btn btn-light" @click="newCountryCommandersMessage = model.countryCommandersMessage.message">リセット</button>
-                <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryCommandersMessage)">承認</button>
+                <button type="button" class="btn btn-light" @click="newCountryUnifiedMessage = model.countryUnifiedMessage.message">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryUnifiedMessage)">承認</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
@@ -1399,6 +1399,7 @@ export default class StatusPage extends Vue {
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
+  public newCountryUnifiedMessage: string = '';
   public newPrivateMessage: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
