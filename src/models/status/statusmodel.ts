@@ -413,6 +413,15 @@ export default class StatusModel {
       .count((p) => p.type === 4 || p.type === 34);
   }
 
+  public get currentSecretaryPoint(): number {
+    return Enumerable.from(this.store.characters)
+      .where((c) => c.countryId === this.character.countryId)
+      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 1 :
+                  c.aiType === api.Character.aiSecretaryPioneer ? 1 :
+                  c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
+                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 : 0);
+  }
+
   public get canSecretaryUnitLeader(): boolean {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
@@ -1580,7 +1589,7 @@ export default class StatusModel {
   // #region CountryPolicies
 
   private onCountryPolicyReceived(policy: api.CountryPolicy) {
-    ArrayUtil.addItem(this.store.policies, policy);
+    ArrayUtil.addItemUniquely(this.store.policies, policy, (p) => '' + p.countryId + ',' + p.type);
 
     if (this.store.hasInitialized && policy.countryId === this.character.countryId) {
       const info = Enumerable.from(def.COUNTRY_POLICY_TYPES).firstOrDefault((p) => p.id === policy.type);

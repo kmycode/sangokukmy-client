@@ -297,10 +297,10 @@
                   </div>
                 </div>
               </div>
-              <textarea v-model="newCountryCommandersMessage" ref="commandersMessageInput"></textarea>
+              <textarea v-model="newCountryUnifiedMessage" ref="commandersMessageInput"></textarea>
               <div class="buttons">
-                <button type="button" class="btn btn-light" @click="newCountryCommandersMessage = model.countryCommandersMessage.message">リセット</button>
-                <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryCommandersMessage)">承認</button>
+                <button type="button" class="btn btn-light" @click="newCountryUnifiedMessage = model.countryUnifiedMessage.message">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryUnifiedMessage)">承認</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
@@ -847,11 +847,11 @@
       <div v-show="isOpenAddSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官募集</h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官</button>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官</button>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官</button>
-          <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長</button>
-          <div class="alert alert-warning">雇える政務官は{{ model.secretaryMaxValue }}人までです<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官 ( 1 ポイント )</button><br>
+          <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button>
+          <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
@@ -1399,6 +1399,7 @@ export default class StatusPage extends Vue {
   public targetUnit: api.Unit = new api.Unit(-1);
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
+  public newCountryUnifiedMessage: string = '';
   public newPrivateMessage: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
@@ -2210,8 +2211,7 @@ ul.nav {
 
       &.dialog-content-training {
         button {
-          margin: 0 16px 0 0;
-          width: 80px;
+          margin: 0 16px 16px 0;
         }
       }
 

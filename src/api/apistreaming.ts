@@ -148,7 +148,7 @@ export default class ApiStreaming {
         if (!this.isStreaming) {
           this.start();
         }
-      }, 5000);
+      }, 1500);
     }
   }
 }
