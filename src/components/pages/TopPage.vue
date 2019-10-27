@@ -14,7 +14,11 @@
             <MiniCharacterList
               class="online-list"
               :countries="countries"
-              :characters="onlines.allCharacters"/>
+              :characters="onlines.activeCharacters"/>
+            <MiniCharacterList
+              class="online-list inactive"
+              :countries="countries"
+              :characters="onlines.inactiveCharacters"/>
           </div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
@@ -355,7 +359,11 @@ h1 { color: #420; }
   margin-top: 12px;
 
   .online-list {
-    margin: 4px 8px;
+    display: inline;
+
+    &.inactive {
+      opacity: 0.4;
+    }
   }
 }
 
