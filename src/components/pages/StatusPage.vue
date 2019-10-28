@@ -522,6 +522,7 @@
       <div v-show="isOpenTownCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の武将</h2>
         <div class="dialog-content loading-container">
+          <div v-if="model.loadedTownCharacters.length === 0" class="alert alert-info">武将はいません</div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.loadedTownCharacters"
