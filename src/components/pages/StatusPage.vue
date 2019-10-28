@@ -225,6 +225,7 @@
                            :canSecretary="model.canSecretary"
                            :canScouter="model.canScouter"
                            :canCommandComment="model.canCommandComment"
+                           :canSubBuilding="model.canSubBuilding"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"/>
         </div>
@@ -1205,6 +1206,38 @@
           </div>
         </div>
       </div>
+      <!-- 建築物建築 -->
+      <div v-show="isOpenBuildTownSubBuildingDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">建築物の建築</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenBuildTownSubBuildingDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedTownSubBuilding.id >= 0" @click="model.commands.inputer.inputTownSubBuildingCommand(63, selectedTownSubBuilding.id); isOpenBuildTownSubBuildingDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 建築物撤去 -->
+      <div v-show="isOpenRemoveTownSubBuildingDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">建築物の撤去</h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenRemoveTownSubBuildingDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedTownSubBuilding.id >= 0" @click="model.commands.inputer.inputTownSubBuildingCommand(64, selectedTownSubBuilding.id); isOpenRemoveTownSubBuildingDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 地図での都市選択 -->
       <div v-show="isOpenMapDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">都市選択</h2>
@@ -1292,6 +1325,7 @@ import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import FormationList from '@/components/parts/FormationList.vue';
 import SkillList from '@/components/parts/SkillList.vue';
+import TownSubBuildingList from '@/components/parts/TownSubBuildingList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import GenerateItemTypePicker from '@/components/parts/GenerateItemTypePicker.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
@@ -1335,6 +1369,7 @@ import EventObject from '@/models/common/EventObject';
     CharacterItemList,
     GenerateItemTypePicker,
     SkillList,
+    TownSubBuildingList,
     RiceSimulatorView,
   },
 })
@@ -1385,6 +1420,8 @@ export default class StatusPage extends Vue {
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
   public isOpenCommandCommentDialog: boolean = false;
+  public isOpenBuildTownSubBuildingDialog: boolean = false;
+  public isOpenRemoveTownSubBuildingDialog: boolean = false;
   public isOpenMapDialog: boolean = false;
   public isOpenWelcomeDialog: boolean = false;
   public selectedWarStatus: number = 0;
@@ -1417,6 +1454,7 @@ export default class StatusPage extends Vue {
     { type: new def.CharacterItemType(-1), id: -1 };
   public selectedGenerateItemType: def.CharacterItemType = new def.CharacterItemType(-1);
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
+  public selectedTownSubBuilding: def.TownSubBuildingType = new def.TownSubBuildingType(-1);
   public commandCommentMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
@@ -1435,7 +1473,8 @@ export default class StatusPage extends Vue {
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
-      || this.isOpenMapDialog || this.isOpenWelcomeDialog;
+      || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
+      || this.isOpenRemoveTownSubBuildingDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1533,6 +1572,12 @@ export default class StatusPage extends Vue {
       this.mapDialogMode = 5;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenMapDialog = true;
+    } else if (event === 'subbuilding-build') {
+      this.selectedTownSubBuilding = new def.TownSubBuildingType(-1);
+      this.isOpenBuildTownSubBuildingDialog = true;
+    } else if (event === 'subbuilding-remove') {
+      this.selectedTownSubBuilding = new def.TownSubBuildingType(-1);
+      this.isOpenRemoveTownSubBuildingDialog = true;
     }
   }
 
@@ -1549,7 +1594,8 @@ export default class StatusPage extends Vue {
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
-      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog = false;
+      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
+      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = false;
   }
 
   public closeMapDialog() {

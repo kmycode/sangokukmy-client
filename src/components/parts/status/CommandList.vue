@@ -18,6 +18,12 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(30)">緊急米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
+        <button v-if="canSubBuilding" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSubBuildingPopup = !isOpenSubBuildingPopup">建築物
+          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSubBuildingPopup && list.inputer.canInput ? 'block' : 'none' }">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSubBuildingPopup = false; $emit('open', 'subbuilding-build')">建設</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSubBuildingPopup = false; $emit('open', 'subbuilding-remove')">撤去</a>
+          </div>
+        </button>
       </div>
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
@@ -171,6 +177,7 @@ export default class CommandListView extends Vue {
   @Prop() private canSecretary!: boolean;
   @Prop() private canScouter!: boolean;
   @Prop() private canCommandComment!: boolean;
+  @Prop() private canSubBuilding!: boolean;
   @Prop() private gameDate!: api.GameDateTime;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
@@ -182,6 +189,7 @@ export default class CommandListView extends Vue {
   private isOpenFormationPopup: boolean = false;
   private isOpenItemPopup: boolean = false;
   private isOpenTrainingPopup: boolean = false;
+  private isOpenSubBuildingPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;

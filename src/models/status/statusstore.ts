@@ -26,6 +26,7 @@ export default class StatusStore {
   public towns: api.TownBase[] = [];
   public town: api.TownBase = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townWars: api.TownWar[] = [];
+  public subBuildings: api.TownSubBuilding[] = [];
   public character: api.Character = new api.Character(-1);  // 常に自分が入る
   public characters: api.Character[] = [];
   public defenders: api.TownDefender[] = [];

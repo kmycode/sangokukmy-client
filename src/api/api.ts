@@ -660,6 +660,23 @@ export class TownDefender {
 }
 
 /**
+ * 建築物
+ */
+export class TownSubBuilding {
+  public static readonly typeId = 39;
+
+  public static readonly statusUnknown = 0;
+  public static readonly statusAvailable = 1;
+  public static readonly statusUnderConstruction = 2;
+  public static readonly statusRemoving = 3;
+
+  public constructor(public id: number = 0,
+                     public townId: number = 0,
+                     public status: number = 0,
+                     public type: number = 0) {}
+}
+
+/**
  * 諜報された都市
  */
 export class ScoutedTown extends TownBase implements IIdentitiedEntity {
@@ -672,6 +689,7 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 
   public characters: Character[] = [];
   public defenders: Character[] = [];
+  public subBuildings: TownSubBuilding[] = [];
 }
 
 /**

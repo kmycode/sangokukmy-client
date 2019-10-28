@@ -72,6 +72,12 @@ export default class CommandInputer {
     });
   }
 
+  public inputTownSubBuildingCommand(commandType: number, type: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
+    });
+  }
+
   public inputPromotionCommand(commandType: number, targetId: number, message: string) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, targetId));

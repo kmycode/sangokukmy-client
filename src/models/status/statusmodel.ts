@@ -541,6 +541,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.TownDefender>(
       api.TownDefender.typeId,
       (obj) => this.onTownDefenderReceived(obj));
+    ApiStreaming.status.on<api.TownSubBuilding>(
+      api.TownSubBuilding.typeId,
+      (obj) => this.onTownSubBuildingReceived(obj));
     ApiStreaming.status.on<api.ScoutedTown>(
       api.ScoutedTown.typeId,
       (obj) => this.updateScoutedTown(obj));
@@ -719,6 +722,12 @@ export default class StatusModel {
   private updateTown(town: api.Town) {
     ArrayUtil.addItem(this.towns, town);
 
+    // 建築物を更新
+    const scouted = town as api.ScoutedTown;
+    if (scouted.subBuildings) {
+      scouted.subBuildings.forEach((s) => ArrayUtil.addItem(this.store.subBuildings, s));
+    }
+
     // 現在表示中の都市を更新
     if (this.town.id < 0) {
       if (this.character.id >= 0 && town.id === this.character.townId) {
@@ -838,6 +847,19 @@ export default class StatusModel {
       }
     }
 
+    this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
+      const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
+      if (info) {
+        if (s.status === api.TownSubBuilding.statusUnderConstruction) {
+          ps.push(new TextStatusParameter('建設中', info.name, 'information'));
+        } else if (s.status === api.TownSubBuilding.statusRemoving) {
+          ps.push(new TextStatusParameter('撤去中', info.name, 'warning'));
+        } else if (s.status === api.TownSubBuilding.statusAvailable) {
+          ps.push(new TextStatusParameter('建築物', info.name));
+        }
+      }
+    });
+
     if (town.countryId === this.character.countryId ||
         town.id === this.character.townId ||
         isScouted) {
@@ -902,6 +924,13 @@ export default class StatusModel {
       .finally(() => {
         this.isScouting = false;
       });
+  }
+
+  private onTownSubBuildingReceived(item: api.TownSubBuilding) {
+    ArrayUtil.addItem(this.store.subBuildings, item);
+    if (this.town.id === item.townId) {
+      this.setTown(this.town);
+    }
   }
 
   // #endregion
@@ -1267,6 +1296,13 @@ export default class StatusModel {
     // 自分がコマンドコメント権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canSubBuilding(): boolean {
+    // 自分が建築物権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 ||
+                                                          p.type === 3 || p.type === 9));
   }
 
   public get canDiplomacy(): boolean {

@@ -442,6 +442,39 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(59, '農民避難'),
   new CommandNameResolver(60, '合同訓練'),
   new CommandNameResolver(61, '%0% を偵察'),
+  new CommandNameResolver(62, '探索'),
+  new CommandNameResolver(63, '{0} を建設', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (63:2)';
+      }
+      const type = Enumerable.from(TOWN_SUB_BUILDING_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (63:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (63:1)';
+    }
+  }),
+  new CommandNameResolver(64, '{0} を撤去', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (64:2)';
+      }
+      const type = Enumerable.from(TOWN_SUB_BUILDING_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (64:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (64:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -511,6 +544,7 @@ export const COUNTRY_POSTS: CountryPostType[] = [
   new CountryPostType(6, '護衛将軍'),
   new CountryPostType(7, '将軍'),
   new CountryPostType(8, '君主（不在）'),
+  new CountryPostType(9, '建築官'),
 ];
 
 /**
@@ -925,4 +959,18 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(48, '参謀 Lv.3', '兵種 梓叡兵、突撃防御力 +20', 10, (skills) => skills.some((s) => s.type === 47)),
   new CharacterSkillType(49, '参謀 Lv.4', '突撃確率 +2%、突撃攻撃力 +60', 8, (skills) => skills.some((s) => s.type === 48)),
   new CharacterSkillType(50, '参謀 Lv.5', '兵種 梓琴兵、戦闘が１ターンで終了時の連戦確率 +50%', 9, (skills) => skills.some((s) => s.type === 49)),
+];
+
+/**
+ * 建築物
+ */
+export class TownSubBuildingType {
+  public constructor(public id: number = 0,
+                     public name: string = '',
+                     public size: number = 0,
+                     public money: number = 0,
+                     public description: string = '') {}
+}
+export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
+  new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500、収入 +20%'),
 ];
