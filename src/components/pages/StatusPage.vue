@@ -541,6 +541,8 @@
       <div v-show="isOpenTownDefendersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の守備</h2>
         <div class="dialog-content loading-container">
+          <div v-if="model.loadedTownDefenders.length > 0" class="alert alert-info">次回の攻撃相手と対戦するのは <strong>{{ model.loadedTownDefenders[0].name }}</strong> です</div>
+          <div v-else class="alert alert-info">守備はありません</div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.loadedTownDefenders"
