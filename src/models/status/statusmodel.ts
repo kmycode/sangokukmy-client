@@ -722,12 +722,6 @@ export default class StatusModel {
   private updateTown(town: api.Town) {
     ArrayUtil.addItem(this.towns, town);
 
-    // 建築物を更新
-    const scouted = town as api.ScoutedTown;
-    if (scouted.subBuildings) {
-      scouted.subBuildings.forEach((s) => ArrayUtil.addItem(this.store.subBuildings, s));
-    }
-
     // 現在表示中の都市を更新
     if (this.town.id < 0) {
       if (this.character.id >= 0 && town.id === this.character.townId) {
@@ -776,6 +770,12 @@ export default class StatusModel {
             this.loadedTownCharacters = scoutedTown.characters;
             this.loadedTownDefenders = scoutedTown.defenders;
             scoutedTown.countryId = town.countryId;
+            if (scoutedTown.subBuildings) {
+              scoutedTown.subBuildings.forEach((s) => {
+                s.townId = townId;
+                ArrayUtil.addItem(this.store.subBuildings, s);
+              });
+            }
             this.setTown(scoutedTown);
           } else {
             this.setTown(town);
