@@ -96,7 +96,6 @@
             {{ model.town.name }}
             <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
             <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
-            <span v-if="model.characterTownHasScouter">【斥候】</span>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
@@ -223,7 +222,6 @@
                            :characterDeleteTurn="model.character.deleteTurn"
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
-                           :canScouter="model.canScouter"
                            :canCommandComment="model.canCommandComment"
                            :canSubBuilding="model.canSubBuilding"
                            :gameDate="model.gameDate"
@@ -1561,14 +1559,6 @@ export default class StatusPage extends Vue {
       this.mapDialogMode = 1;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenMapDialog = true;
-    } else if (event === 'town-scouter-set') {
-      this.mapDialogMode = 3;
-      this.mapDialogSelectedTown = this.model.town;
-      this.isOpenMapDialog = true;
-    } else if (event === 'town-scouter-unset') {
-      this.mapDialogMode = 4;
-      this.mapDialogSelectedTown = this.model.town;
-      this.isOpenMapDialog = true;
     } else if (event === 'town-spy') {
       this.mapDialogMode = 5;
       this.mapDialogSelectedTown = this.model.town;
@@ -1606,10 +1596,6 @@ export default class StatusPage extends Vue {
       this.model.commands.inputer.inputMoveCommand(13, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 2) {
       this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
-    } else if (this.mapDialogMode === 3) {
-      this.model.commands.inputer.inputMoveCommand(45, this.mapDialogSelectedTown.id);
-    } else if (this.mapDialogMode === 4) {
-      this.model.commands.inputer.inputMoveCommand(46, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 5) {
       this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
     }

@@ -35,12 +35,6 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSafePopup = false; $emit('open', 'safe-out')">搬出</a>
           </div>
         </button>
-        <button v-if="list.canUseCountryScouter && canScouter" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenScouterPopup = !isOpenScouterPopup">斥候
-          <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenScouterPopup && list.inputer.canInput ? 'block' : 'none' }">
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; $emit('open', 'town-scouter-set')">派遣</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenScouterPopup = false; $emit('open', 'town-scouter-unset')">解任</a>
-          </div>
-        </button>
         <button v-if="list.canUseCountrySecretary && canSecretary" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSecretaryPopup = !isOpenSecretaryPopup">政務官
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSecretaryPopup && list.inputer.canInput ? 'block' : 'none' }">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-add')">雇用</a>
@@ -175,7 +169,6 @@ export default class CommandListView extends Vue {
   @Prop() private characterDeleteTurn!: number;
   @Prop() private canSafeOut!: boolean;
   @Prop() private canSecretary!: boolean;
-  @Prop() private canScouter!: boolean;
   @Prop() private canCommandComment!: boolean;
   @Prop() private canSubBuilding!: boolean;
   @Prop() private gameDate!: api.GameDateTime;

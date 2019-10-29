@@ -402,11 +402,6 @@ export default class StatusModel {
     return api.Town.getMoneyToRicePrice(this.characterTown, assets);
   }
 
-  public get characterTownHasScouter(): boolean {
-    return Enumerable.from(this.store.scouters)
-      .any((s) => s.townId === this.town.id);
-  }
-
   public get secretaryMaxValue(): number {
     // 自国の政務官の最大
     return Enumerable.from(this.store.policies)
@@ -618,9 +613,6 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
-    ApiStreaming.status.on<api.CountryScouter>(
-      api.CountryScouter.typeId,
-      (obj) => this.onCountryScouterReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
@@ -1118,10 +1110,6 @@ export default class StatusModel {
 
   private onCountryChanged() {
     this.countryChat.clear();
-    this.store.scouters = Enumerable
-      .from(this.store.scouters)
-      .where((s) => s.countryId === this.character.countryId)
-      .toArray();
     api.Api.getCountryChatMessage()
       .then((messages) => {
         messages.forEach((message) => {
@@ -1290,12 +1278,6 @@ export default class StatusModel {
 
   public get canSecretary(): boolean {
     // 自分が政務官任命権限を持つか
-    return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
-  }
-
-  public get canScouter(): boolean {
-    // 自分が諜報府権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
@@ -1671,28 +1653,6 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingPolicies = false;
       });
-  }
-
-  // #endregion
-
-  // #region CountryScouters
-
-  private onCountryScouterReceived(scouter: api.CountryScouter) {
-    const town = this.getTown(scouter.townId);
-
-    if (!scouter.isRemoved) {
-      ArrayUtil.addItem(this.store.scouters, scouter);
-      if (this.store.hasInitialized) {
-        NotificationService.scouterAdded.notifyWithParameter(town.name);
-      }
-    } else {
-      this.store.scouters = Enumerable.from(this.store.scouters)
-        .where((s) => s.id !== scouter.id)
-        .toArray();
-      if (this.store.hasInitialized) {
-        NotificationService.scouterRemoved.notifyWithParameter(town.name);
-      }
-    }
   }
 
   // #endregion

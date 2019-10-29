@@ -22,7 +22,6 @@ export default class StatusStore {
   public policies: api.CountryPolicy[] = [];
   public wars: api.CountryWar[] = [];
   public alliances: api.CountryAlliance[] = [];
-  public scouters: api.CountryScouter[] = [];
   public towns: api.TownBase[] = [];
   public town: api.TownBase = new api.Town(-1);           // 自分の所在しない都市が入る場合がある
   public townWars: api.TownWar[] = [];

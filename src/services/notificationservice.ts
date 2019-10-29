@@ -652,14 +652,6 @@ export default class NotificationService {
     '政策ブースト',
     '所属国の政策 {0} がブーストされました',
     NotificationServiceItemDefaultType.information);
-  public static readonly scouterAdded = new NotificationServiceItem(
-    '斥候派遣',
-    '{0} に斥候が派遣されました',
-    NotificationServiceItemDefaultType.information);
-  public static readonly scouterRemoved = new NotificationServiceItem(
-    '斥候解雇',
-    '{0} の斥候が解雇されました',
-    NotificationServiceItemDefaultType.information);
   public static readonly reseted = new NotificationServiceItem(
     'リセット',
     'ゲームはリセットされました。新しいドラマが始まります',

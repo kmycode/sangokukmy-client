@@ -25,11 +25,6 @@ export default class CommandList {
     return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
   }
 
-  public get canUseCountryScouter(): boolean {
-    // 諜報府を使えるか
-    return this.isPolicyEnabled(api.CountryPolicy.typeScouter);
-  }
-
   public get canUseCountrySoldier(): boolean {
     // 兵種研究を使えるか
     return this.isPolicyEnabled(api.CountryPolicy.typeSoldierDevelopment);
