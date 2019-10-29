@@ -270,7 +270,8 @@ export default class StatusModel {
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
                     c.aiType === api.Character.aiSecretaryUnitGather ||
                     c.aiType === api.Character.aiSecretaryPioneer ||
-                    c.aiType === api.Character.aiSecretaryUnitLeader)
+                    c.aiType === api.Character.aiSecretaryUnitLeader ||
+                    c.aiType === api.Character.aiSecretaryScouter)
       .toArray();
   }
 
@@ -419,13 +420,20 @@ export default class StatusModel {
       .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 1 :
                   c.aiType === api.Character.aiSecretaryPioneer ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
-                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 : 0);
+                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 :
+                  c.aiType === api.Character.aiSecretaryScouter ? 1 : 0);
   }
 
   public get canSecretaryUnitLeader(): boolean {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
       .any((p) => p.type === 33 && p.status === api.CountryPolicy.statusAvailable);
+  }
+
+  public get canSecretaryScouter(): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .any((p) => p.type === 2 && p.status === api.CountryPolicy.statusAvailable);
   }
 
   public get safeMaxValue(): number {

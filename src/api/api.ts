@@ -391,6 +391,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryUnitGather = 9;
   public static readonly aiSecretaryPioneer = 11;
   public static readonly aiSecretaryUnitLeader = 27;
+  public static readonly aiSecretaryScouter = 29;
 
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
