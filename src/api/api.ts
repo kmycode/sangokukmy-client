@@ -1336,21 +1336,22 @@ export class Api {
     }
   }
 
-  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
+  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/global', {
         message: mes,
         characterIconId: icon.id,
+        typeData: type,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
   }
 
-  public static async getGlobalChatMessage(since: number, count: number): Promise<ChatMessage[]> {
+  public static async getGlobalChatMessage(since: number, count: number, type: number): Promise<ChatMessage[]> {
     try {
       const result = await axios.get<ApiArrayData<ChatMessage>>(
-        def.API_HOST + 'chat/global?sinceId=' + since + '&count=' + count,
+        def.API_HOST + 'chat/global?sinceId=' + since + '&count=' + count + '&type=' + type,
         this.authHeader);
       return result.data.data;
     } catch (ex) {

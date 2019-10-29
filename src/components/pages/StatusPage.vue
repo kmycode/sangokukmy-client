@@ -182,7 +182,7 @@
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread || model.global2Chat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span class="tab-text">
@@ -234,6 +234,7 @@
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#"><span class="tab-text">自国<span class="tab-notify" v-show="model.countryChat.isUnread"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#"><span class="tab-text">個人<span class="tab-notify" v-show="model.privateChat.isUnread"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#"><span class="tab-text">全国<span class="tab-notify" v-show="model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 6 }" @click.prevent.stop="selectedChatCategory = 6" href="#"><span class="tab-text">全国2<span class="tab-notify" v-show="model.global2Chat.isUnread"></span></span></a></li>
             <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
@@ -260,6 +261,12 @@
           </div>
           <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.globalChat"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"/>
+          </div>
+          <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :model="model.global2Chat"
                               :countries="model.countries"
                               :countryColor="model.characterCountryColor"
                               :icons="model.characterIcons"/>
@@ -1640,6 +1647,8 @@ export default class StatusPage extends Vue {
         return this.model.privateChat;
       } else if (this.selectedChatCategory === 5) {
         return this.model.globalChat;
+      } else if (this.selectedChatCategory === 6) {
+        return this.model.global2Chat;
       }
     }
     return undefined;
@@ -1652,6 +1661,7 @@ export default class StatusPage extends Vue {
     this.model.countryChat.isOpen =
       this.model.privateChat.isOpen =
       this.model.globalChat.isOpen =
+      this.model.global2Chat.isOpen =
       this.model.promotions.isOpen =
       this.model.countryThreadBbs.isOpen =
       this.model.globalThreadBbs.isOpen = false;

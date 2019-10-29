@@ -662,6 +662,7 @@ export default class StatusModel {
       this.countryChat.isUnread =
         this.privateChat.isUnread =
         this.globalChat.isUnread =
+        this.global2Chat.isUnread =
         this.promotions.isUnread =
         this.countryThreadBbs.isUnread =
         this.globalThreadBbs.isUnread = false;
@@ -848,7 +849,7 @@ export default class StatusModel {
     }
 
     let subBuildingSize = 0;
-    let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+    const subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
     const buffer: StatusParameter[] = [];
     this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
       const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
@@ -2130,8 +2131,14 @@ export default class StatusModel {
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon),
-      (id) => api.Api.getGlobalChatMessage(id, 50));
+      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 0),
+      (id) => api.Api.getGlobalChatMessage(id, 50, 0));
+
+  public global2Chat: ChatMessageContainer<any>
+    = new ChatMessageContainer(
+      this.store,
+      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 1),
+      (id) => api.Api.getGlobalChatMessage(id, 50, 1));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
@@ -2160,7 +2167,11 @@ export default class StatusModel {
       this.countryChat.append(message);
     } else if (message.type === api.ChatMessage.typeGlobal) {
       // 全国宛
-      this.globalChat.append(message);
+      if (message.typeData === 0) {
+        this.globalChat.append(message);
+      } else if (message.typeData === 1) {
+        this.global2Chat.append(message);
+      }
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
       this.privateChat.append(message);
