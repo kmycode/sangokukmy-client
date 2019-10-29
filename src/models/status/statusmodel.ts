@@ -847,18 +847,24 @@ export default class StatusModel {
       }
     }
 
+    let subBuildingSize = 0;
+    let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+    const buffer: StatusParameter[] = [];
     this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
       const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
       if (info) {
         if (s.status === api.TownSubBuilding.statusUnderConstruction) {
-          ps.push(new TextStatusParameter('建設中', info.name, 'information'));
+          buffer.push(new TextStatusParameter('建設中', info.name, 'information'));
         } else if (s.status === api.TownSubBuilding.statusRemoving) {
-          ps.push(new TextStatusParameter('撤去中', info.name, 'warning'));
+          buffer.push(new TextStatusParameter('撤去中', info.name, 'warning'));
         } else if (s.status === api.TownSubBuilding.statusAvailable) {
-          ps.push(new TextStatusParameter('建築物', info.name));
+          buffer.push(new TextStatusParameter('建築物', info.name));
         }
+        subBuildingSize += info.size;
       }
     });
+    ps.push(new RangedStatusParameter('敷地', subBuildingSize, subBuildingSizeMax));
+    buffer.forEach((b) => ps.push(b));
 
     if (town.countryId === this.character.countryId ||
         town.id === this.character.townId ||
