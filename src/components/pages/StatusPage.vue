@@ -1274,14 +1274,16 @@
         <div class="dialog-content dialog-content-welcome">
           <div class="dialog-content-welcome-main">
             <h3>三国志NETは初めてですか？</h3>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-primary">初心者向け解説</a>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/39.html" target="_blank" class="btn btn-secondary" style="margin-left:8px">チュートリアル</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-light">初心者向け解説</a>
             <div class="alert alert-info" style="margin-top:16px">
               初心者向け解説は、このダイアログを閉じた後も、いつでも「メニュー」から表示することができます。<br>
+              スライド解説は、初心者向け解説ページから移動することができます。<br>
               このダイアログは、「承認」をクリックまたはタップすることで、閉じることができます。
             </div>
             <h3>三国志NETは経験者で、KMY Versionは初めてですか？</h3>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-primary">画面の見方</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-secondary">画面の見方</a>
             <a href="https://w.atwiki.jp/sangokukmy9/pages/81.html" target="_blank" class="btn btn-light" style="margin-left:8px">他の三国志NETとの違い</a>
             <div style="margin-top:16px">
               画面は他の三国志NETと大きく異なりますが、ゲームシステムは三国志NETを踏襲したものです。<br>
