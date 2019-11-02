@@ -7,23 +7,10 @@
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
       </div>
       <div class="alert alert-warning">
-        <h3>初心者向けの注意点</h3>
-        本ゲームは、一般的なスマホゲームなどと、以下の点において異なります。あらかじめご留意ください。
-        <ul>
-          <li><strong>5日以上ログインしていないとアカウントが削除されるようになっています。毎日3〜5分程度（慣れれば1分程度）のプレイが推奨されます。</strong></li>
-          <li>自分の国が滅亡したら、他の国に仕官することでゲームを続行できます。</li>
-          <li>どこかの国が統一するとすべてのゲームデータが初期化され、また最初から登録し直しになります。</li>
-          <li>全員が１つになって競い合うゲームです。自分１人や一部の集団ではなく、みなさんが楽しめる思い出作りをしていきましょう。戦争に勝つこと、全国を統一することも大切ですが、ゲームを楽しむことを目標にしましょう。</li>
-        </ul>
-        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
-      </div>
-      <div class="alert alert-info">
-        <h3>説明書</h3>
-        <ul>
-          <li><a href="https://sangoku-doc.kmycode.net/">説明書目次</a></li>
-          <li><a href="https://sangoku-doc.kmycode.net/bas-g-entry.html">初心者向けガイド</a></li>
-          <li><a href="https://sangoku-doc.kmycode.net/bas-ui.html">画面の見方</a></li>
-        </ul>
+        <h3>初心者向け</h3>
+        登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
+        <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a><br>
+¥        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
       </div>
       <div class="section">
         <h3>基本情報</h3>
