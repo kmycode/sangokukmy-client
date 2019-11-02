@@ -34,6 +34,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public isScrolledTop: boolean = true;
   public count: number = 0;
   public sendTo: T = {} as T;
+  public onOpened: (() => void) | undefined;
   private hasLoadAll: boolean = false;
   private isOpenPrivate: boolean = false;
 
@@ -54,6 +55,10 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       this.isUnread = false;
     }
     this.isOpenPrivate = value;
+
+    if (this.onOpened) {
+      this.onOpened();
+    }
   }
 
   public constructor(private store: StatusStore,

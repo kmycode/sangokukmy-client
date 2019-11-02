@@ -619,6 +619,13 @@ export default class StatusModel {
       this.commands.reset();
     };
     ApiStreaming.status.start();
+
+    this.privateChat.onOpened = () => {
+      // 個人宛タブを開いたら既読つける
+      if (this.privateChat.messages.some((m) => m.typeData2 === this.character.id && !m.isRead)) {
+        api.Api.setPrivateChatMessageRead();
+      }
+    };
   }
 
   public onDestroy() {
@@ -660,7 +667,7 @@ export default class StatusModel {
       this.countryThreadBbs.sortThreads();
       this.globalThreadBbs.sortThreads();
       this.countryChat.isUnread =
-        this.privateChat.isUnread =
+        // this.privateChat.isUnread =      // 既読機能と同時に設定する
         this.globalChat.isUnread =
         this.global2Chat.isUnread =
         this.promotions.isUnread =
@@ -2177,9 +2184,19 @@ export default class StatusModel {
       }
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
+      const oldIsUnRead = this.privateChat.isUnread;
       this.privateChat.append(message);
       if (message.character && message.character.id !== this.character.id && this.store.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
+      }
+
+      // 既読チェック（hasInitializedは確認しない）
+      if (this.privateChat.isOpen) {
+        api.Api.setPrivateChatMessageRead();
+      } else if (!message.isRead && message.typeData2 === this.character.id) {
+        this.privateChat.isUnread = true;
+      } else {
+        this.privateChat.isUnread = oldIsUnRead;
       }
     } else if (message.type === api.ChatMessage.typePromotion ||
                message.type === api.ChatMessage.typePromotionAccepted ||

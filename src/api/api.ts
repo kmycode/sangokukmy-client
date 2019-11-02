@@ -876,6 +876,7 @@ export class ChatMessage implements IIdentitiedEntity {
                      public message: string,
                      public posted: DateTime,
                      public receiverName: string,
+                     public isRead: boolean,
                      public character?: CharacterChatData,
                      public characterIcon?: CharacterIcon,
                      public typeData?: number,
@@ -1376,6 +1377,14 @@ export class Api {
         def.API_HOST + 'chat/character?sinceId=' + since + '&count=' + count,
         this.authHeader);
       return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setPrivateChatMessageRead(): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'chat/character/read', {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
