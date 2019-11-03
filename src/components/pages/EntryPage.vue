@@ -501,7 +501,6 @@ export default class EntryPage extends Vue {
   }
 
   private updateExtraData(isHidden: boolean = false) {
-    console.log(this.isOpened);
     if (!this.isOpened) {
       return;
     }
