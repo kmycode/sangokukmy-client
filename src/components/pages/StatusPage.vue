@@ -85,10 +85,10 @@
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0" href="#">都市</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0" href="#">国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 4 }" @click.prevent.stop="selectedInformationTab = 4; mapShowType = 0" href="#">データ</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0; model.isMapLogTabOpen = false" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0; model.isMapLogTabOpen = false" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 4 }" @click.prevent.stop="selectedInformationTab = 4; mapShowType = 0; model.isMapLogTabOpen = false" href="#">データ</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3; model.isMapLogTabOpen = true" href="#"><span class="tab-text">情勢<span class="tab-notify" v-show="model.isMapLogTabUnread"></span></span></a></li>
           </ul>
         </div>
         <!-- 都市情報 -->

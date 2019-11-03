@@ -82,6 +82,8 @@ export default class StatusModel {
   public hasLoadAllMapLogs: boolean = false;
   public isLoadingMoreCharacterLogs: boolean = false;
   public hasLoadAllCharacterLogs: boolean = false;
+  public isMapLogTabOpenPrivate: boolean = false;
+  public isMapLogTabUnread: boolean = false;
 
   private $router?: () => any;
 
@@ -522,6 +524,17 @@ export default class StatusModel {
     return types;
   }
 
+  public get isMapLogTabOpen(): boolean {
+    return this.isMapLogTabOpenPrivate;
+  }
+
+  public set isMapLogTabOpen(value: boolean) {
+    this.isMapLogTabOpenPrivate = value;
+    if (value) {
+      this.isMapLogTabUnread = false;
+    }
+  }
+
   // #endregion
 
   // #region Streaming
@@ -679,6 +692,7 @@ export default class StatusModel {
         this.promotions.isUnread =
         this.countryThreadBbs.isUnread =
         this.globalThreadBbs.isUnread = false;
+      this.isMapLogTabUnread = false;
       this.updateCharacter(this.character);
       this.commands.initialize(this.character.lastUpdatedGameDate, this.character.lastUpdated);
     } else if (signal.type === 5) {
@@ -2090,6 +2104,9 @@ export default class StatusModel {
 
   private addMapLog(log: api.MapLog) {
     ArrayUtil.addLog(this.mapLogs, log);
+    if (!this.isMapLogTabOpen) {
+      this.isMapLogTabUnread = true;
+    }
   }
 
   public loadOldMapLogs() {
