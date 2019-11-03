@@ -80,6 +80,7 @@
                    :countries="countries"
                    :countryMessages="countryMessages"
                    :towns="towns"
+                   :isOpened="selectedTab === 1"
                    @entry-succeed="$emit('entry-succeed')"/>
       </div>
       <div v-show="selectedTab !== 1" class="row">

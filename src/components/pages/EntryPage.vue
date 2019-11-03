@@ -250,7 +250,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
@@ -295,6 +295,9 @@ export default class EntryPage extends Vue {
   @Prop() private countryMessages!: api.CountryMessage[];
   private extraData: api.EntryExtraData = api.EntryExtraData.default;
   @Prop() private towns!: api.Town[];
+  @Prop({
+    default: true,
+  }) private isOpened!: boolean;
   private nextMonthSeconds = 0;
 
   private isLoadingExtraData = true;
@@ -426,6 +429,13 @@ export default class EntryPage extends Vue {
     return '未選択';
   }
 
+  @Watch('isOpened')
+  public onIsOpenedChanged() {
+    if (this.isOpened) {
+      this.updateExtraData();
+    }
+  }
+
   private initializeRecaptcha() {
     // https://stackoverflow.com/questions/43890035/vue-js-google-recaptcha-callback
     setTimeout(() => {
@@ -491,7 +501,12 @@ export default class EntryPage extends Vue {
   }
 
   private updateExtraData(isHidden: boolean = false) {
-    if (this.isLoadingExtraDataPrivate || (!this.isLoadingExtraDataPrivate && isHidden)) {
+    console.log(this.isOpened);
+    if (!this.isOpened) {
+      return;
+    }
+
+    if (this.isLoadingExtraData || (!this.isLoadingExtraDataPrivate && isHidden)) {
       if (!isHidden) {
         this.isLoadingExtraData = true;
       }
