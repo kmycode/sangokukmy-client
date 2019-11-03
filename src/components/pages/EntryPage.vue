@@ -298,6 +298,7 @@ export default class EntryPage extends Vue {
   private nextMonthSeconds = 0;
 
   private isLoadingExtraData = true;
+  private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
 
   private get sumOfAttributes(): number {
@@ -471,11 +472,10 @@ export default class EntryPage extends Vue {
 
     // ストリーミングを開始
     ApiStreaming.top.on<api.SystemData>(api.SystemData.typeId, (log) => {
-      this.updateExtraData();
+      this.updateExtraData(true);
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
-      if (log.eventType === 12 ||
-          log.eventType === 15 ||
+      if (log.eventType === 15 ||
           log.eventType === 16 ||
           log.eventType === 17 ||
           log.eventType === 18 ||
@@ -483,19 +483,19 @@ export default class EntryPage extends Vue {
           log.eventType === 20 ||
           log.eventType === 21 ||
           log.eventType === 22) {
-        this.updateExtraData();
+        this.updateExtraData(true);
       }
     });
 
     this.updateExtraData();
   }
 
-  private updateExtraData() {
-    const requested = Enumerable.from(this.countries)
-      .any((c) => api.GameDateTime.toNumber(c.established) + def.BATTLE_STOP_TURN >
-          api.GameDateTime.toNumber(this.system.gameDateTime));
-    if (requested || this.isLoadingExtraData) {
-      this.isLoadingExtraData = true;
+  private updateExtraData(isHidden: boolean = false) {
+    if (this.isLoadingExtraDataPrivate || (!this.isLoadingExtraDataPrivate && isHidden)) {
+      if (!isHidden) {
+        this.isLoadingExtraData = true;
+      }
+      this.isLoadingExtraDataPrivate = true;
       api.Api.getEntryExtraData()
         .then((data) => {
           this.extraData = data;
@@ -504,7 +504,10 @@ export default class EntryPage extends Vue {
           NotificationService.entryExtraDataFailed.notify();
         })
         .finally(() => {
-          this.isLoadingExtraData = false;
+          if (!isHidden) {
+            this.isLoadingExtraData = false;
+          }
+          this.isLoadingExtraDataPrivate = false;
         });
     }
   }
