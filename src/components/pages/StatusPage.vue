@@ -1056,6 +1056,7 @@
             <button class="btn btn-danger" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 1)">拒否</button>
           </div>
           <div class="right-side">
+            <button class="btn btn-secondary" v-show="model.hasPendingItems" @click="model.receiveAllItems()">一括受取</button>
             <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 3)">承認</button>
           </div>
         </div>

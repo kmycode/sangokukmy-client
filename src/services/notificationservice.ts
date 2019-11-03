@@ -696,6 +696,10 @@ export default class NotificationService {
     'アイテム手放し',
     'アイテム {0} を手放しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly itemGetAll = new NotificationServiceItem(
+    'アイテム一括入手',
+    '入手できるだけのアイテムを入手しました',
+    NotificationServiceItemDefaultType.succeed);
   public static readonly skillGetSucceed = new NotificationServiceItem(
     '技能獲得成功',
     '技能の獲得に成功しました',

@@ -1728,6 +1728,14 @@ export class Api {
     }
   }
 
+  public static async addAllCharacterItems(): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'items/all', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async addSkill(skill: number): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'skills', {

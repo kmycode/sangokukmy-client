@@ -238,6 +238,11 @@ export default class StatusModel {
     return max;
   }
 
+  public get hasPendingItems(): boolean {
+    return this.store.items.some((i) => i.status === api.CharacterItem.statusCharacterPending &&
+                                        i.characterId === this.character.id);
+  }
+
   public get nextItemShuffleYear(): number {
     const year = this.gameDate.year - (this.gameDate.year % 12) + 4;
     if (year > this.gameDate.year) {
@@ -2003,6 +2008,22 @@ export default class StatusModel {
             NotificationService.itemGetFailedByPending.notify();
           }
           this.itemNotificationLock--;
+        })
+        .finally(() => {
+          this.isUpdatingItems = false;
+        });
+    }
+  }
+
+  public receiveAllItems() {
+    if (!this.isUpdatingItems) {
+      this.isUpdatingItems = true;
+      api.Api.addAllCharacterItems()
+        .then(() => {
+          NotificationService.itemGetAll.notify();
+        })
+        .catch(() => {
+          NotificationService.itemGetFailedByPending.notify();
         })
         .finally(() => {
           this.isUpdatingItems = false;
