@@ -617,6 +617,7 @@ export default class StatusModel {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
       this.commands.reset();
+      this.onlines.reset();
     };
     ApiStreaming.status.start();
 

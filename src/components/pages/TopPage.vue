@@ -269,6 +269,9 @@ export default class TopPage extends Vue {
       (obj) => this.onlines.onOnlineDataReceived(obj));
     ApiStreaming.top.start();
 
+    ApiStreaming.top.onBeforeReconnect = () => {
+      this.onlines.reset();
+    };
     window.onscroll = (ev: any) => this.onPageScrolled(ev);
   }
 
