@@ -13,7 +13,7 @@
                 <a :class="{'nav-link': true, 'active': mapShowType === 1}" href="#" @click.prevent.stop="mapShowType = 1">ON</a>
               </li>
               <li class="nav-item">
-                <a :class="{'nav-link': true, 'active': mapShowType === 2}" href="#" @click.prevent.stop="mapShowType = 2">武将</a>
+                <a :class="{'nav-link': true, 'active': mapShowType === 2}" href="#" @click.prevent.stop="mapShowType = 2"><span class="tab-text">武将<span class="tab-notify" v-show="model.hasPendingItems"></span></span></a>
               </li>
             </ul>
           </div>
@@ -55,6 +55,7 @@
           </div>
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
+            <div class="alert alert-warning" v-show="model.hasPendingItems">保留中のアイテムがあります</div>
             <div class="commands">
               <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
               <button type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
