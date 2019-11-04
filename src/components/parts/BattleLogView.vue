@@ -29,7 +29,14 @@
             <span class="damage">(-{{ line.attackerDamage }})</span>
           </div>
         </div>
-        <div :class="{'turn': true, 'turn-rush-attacker': line.attackerCommand === 1, 'turn-rush-defender': line.defenderCommand === 1, }">{{ line.turn }}</div>
+        <div :class="{ 'turn-command-1-attacker': line.attackerCommand === 1, 'turn-command-1-defender': line.defenderCommand === 1,
+                       'turn-command-2-attacker': line.attackerCommand === 2, 'turn-command-2-defender': line.defenderCommand === 2,
+                       'turn-command-3-attacker': line.attackerCommand === 3, 'turn-command-3-defender': line.defenderCommand === 3, }">
+          <div class="turn">{{ line.turn }}</div>
+          <div class="turn-comment" v-if="line.attackerCommand === 1 || line.defenderCommand === 1">突撃</div>
+          <div class="turn-comment" v-if="line.attackerCommand === 2 || line.defenderCommand === 2">混乱</div>
+          <div class="turn-comment" v-if="line.attackerCommand === 3 || line.defenderCommand === 3">同討</div>
+        </div>
         <div class="chara defender">
           <div class="number">
             <span class="current">{{ line.defenderNumber }}</span>
@@ -175,11 +182,32 @@ export default class BattleLogView extends Vue {
       font-weight: bold;
       font-size: 1.2rem;
     }
-    .turn-rush-attacker {
-      background-color: #f99;
+    .turn-command-1-attacker, .turn-command-2-attacker, .turn-command-3-attacker {
+      .turn {
+        background-color: #f99;
+        margin-top: 8px;
+      }
     }
-    .turn-rush-defender {
-      background-color: #99f;
+    .turn-command-1-defender, .turn-command-2-defender, .turn-command-3-defender {
+      .turn {
+        background-color: #99f;
+        margin-top: 8px;
+      }
+    }
+    .turn-comment {
+      text-align: center;
+      font-weight: bold;
+      color: gray;
+      font-size: 0.9em;
+    }
+    .turn-command-1-attacker .turn-comment, .turn-command-1-defender .turn-comment {
+      color: red;
+    }
+    .turn-command-2-attacker .turn-comment, .turn-command-2-defender .turn-comment {
+      color: green;
+    }
+    .turn-command-3-attacker .turn-comment, .turn-command-3-defender .turn-comment {
+      color: blue;
     }
   }
 }
