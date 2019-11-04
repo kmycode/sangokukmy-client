@@ -3,7 +3,7 @@
     <div v-for="param in parameters" :key="param.id" :class="'item' + (param.type === 4 ? ' item-character-icon' : (param.type === 5 || param.type === 7) ? ' item-twin' : '')">
       <div v-if="param.type === 1" class="item-container">
         <div class="bar-background"></div>
-        <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
+        <div :class="'bar' + (param.valueRatio === 100 ? ' bar-max' : param.valueRatio >= 100 ? ' bar-over-max' : param.valueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.valueRatio + '%'}"></div>
         <div class="name">{{ param.name }}</div>
         <div class="value value-ranged">
           <span class="current">{{ param.value }}</span>
@@ -43,7 +43,7 @@
         </div>
         <div class="twin-part">
           <div class="bar-background"></div>
-          <div :class="'bar' + (param.extraValueRatio === 100 ? ' bar-max' : param.extraValueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.ranged.valueRatio + '%'}"></div>
+          <div :class="'bar' + (param.extraValueRatio === 100 ? ' bar-max' : param.extraValueRatio >= 100 ? ' bar-over-max' : param.extraValueRatio >= 90 ? ' bar-many' : '')" v-bind:style="{'width': param.ranged.valueRatio + '%'}"></div>
           <div class="name">{{ param.extraName }}</div>
           <div class="value value-ranged">
             <span class="current">{{ param.extraValue }}</span>
@@ -139,6 +139,9 @@ export default class StatusParametersPanel extends Vue {
         background: #56e;
         &.bar-max {
           background: #596;
+        }
+        &.bar-over-max {
+          background: #40e23a;
         }
         &.bar-many {
           background: #6bd;
