@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" v-if="!isUsingMSIE">
         <div v-if="isLoadingCurrentCharacter || currentCharacter.id" class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
           <div v-if="currentCharacter.id" style="text-align:center">
             <div class="login-form">
@@ -73,6 +73,14 @@
         <div v-else class="top-login-form col-sm-6 offset-sm-3">
           <button type="button" class="btn btn-light" @click="login">ログイン</button>
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
+        </div>
+      </div>
+      <div class="row" v-else>
+        <div class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
+          <div class="alert alert-danger" style="margin-top:8px">
+            Internet ExplorerまたはMicrosoft Edgeの使用が検出されました。このブラウザでは、三国志NET KMY Versionを正常にお楽しみいただけません。<br>
+            恐れ入りますが、<a href="https://www.google.com/intl/ja_jp/chrome/">Google Chrome</a>など別のブラウザをご利用下さい。
+          </div>
         </div>
       </div>
       <div v-show="selectedTab === 1">
@@ -191,6 +199,11 @@ export default class TopPage extends Vue {
 
   public get topM2logs(): api.MapLog[] {
     return Enumerable.from(this.m2logs).take(5).toArray();
+  }
+
+  public get isUsingMSIE(): boolean {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return userAgent.indexOf('msie') >= 0 || userAgent.indexOf('trident') >= 0 || userAgent.indexOf('edge') >= 0;
   }
 
   public login() {
