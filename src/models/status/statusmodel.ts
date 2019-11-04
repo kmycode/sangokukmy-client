@@ -1720,6 +1720,14 @@ export default class StatusModel {
     }
 
     if (!character.hasRemoved) {
+      // アイコンデータがなくなることがある（原因不明）ので、古いデータにアイコンがあればそれを設定する
+      if (!character.mainIcon || !character.mainIcon.id) {
+        const old = ArrayUtil.find(this.store.characters, character.id);
+        if (old) {
+          character.mainIcon = old.mainIcon;
+        }
+      }
+
       ArrayUtil.addItem(this.store.characters, character);
     } else {
       this.store.characters = this.store.characters.filter((c) => c.id !== character.id);
