@@ -633,6 +633,7 @@ export const TOWN_BUILDINGS: BuildingType[] = [
   new BuildingType(20, '陣'),
   new BuildingType(21, '増築拠点'),
   new BuildingType(22, '数寄屋'),
+  new BuildingType(23, '小学'),
 ];
 /**
  * 国家施設
