@@ -419,7 +419,7 @@ export default class StatusModel {
   public get currentSecretaryPoint(): number {
     return Enumerable.from(this.store.characters)
       .where((c) => c.countryId === this.character.countryId)
-      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 1 :
+      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 2 :
                   c.aiType === api.Character.aiSecretaryPioneer ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitLeader ? 1 :
