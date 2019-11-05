@@ -101,15 +101,6 @@
               <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
               <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
             </div>
-            <div class="help">
-              <button class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-custom" @click="isOpenTownHelpPopup = !isOpenTownHelpPopup">？
-                <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenTownHelpPopup ? 'block' : 'none', }">
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/48.html" target="_blank" @click="isOpenTownHelpPopup = false">都市特化</a>
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/53.html" target="_blank" @click="isOpenTownHelpPopup = false">都市施設</a>
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/104.html" target="_blank" @click="isOpenTownHelpPopup = false">建築物</a>
-                </div>
-              </button>
-            </div>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
@@ -132,15 +123,6 @@
         <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId + (mapMode === 9 ? ' mini-mode' : '')">
           <h4 :class="'country-color-' + model.country.colorId">
             <div class="header">{{ model.country.name }}</div>
-            <div class="help">
-              <button class="btn btn-sm btn-info dropdown-toggle dropdown-toggle-custom" @click="isOpenCountryHelpPopup = !isOpenCountryHelpPopup">？
-                <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenCountryHelpPopup ? 'block' : 'none', }">
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/52.html" target="_blank" @click="isOpenCountryHelpPopup = false">首都</a>
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/65.html" target="_blank" @click="isOpenCountryHelpPopup = false">収入</a>
-                  <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank" @click="isOpenCountryHelpPopup = false">政務官</a>
-                </div>
-              </button>
-            </div>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
@@ -1542,8 +1524,6 @@ export default class StatusPage extends Vue {
   public isOpenWelcomeDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
-  public isOpenTownHelpPopup: boolean = false;
-  public isOpenCountryHelpPopup: boolean = false;
   public isOpenCharacterHelpPopup: boolean = false;
 
   public soldierNumber: number = 1;
