@@ -721,10 +721,13 @@
                        :lastWar="model.characterCountryLastTownWar"
                        :status="model.characterCountryTownWarStatus"
                        :town="model.town"
+                       :towns="model.store.towns"
                        :country="model.country"
+                       :myCountryId="model.character.countryId"
                        :isSending="model.isSendingTownWar"
                        :canEdit="model.canDiplomacy"
                        :isShow="isOpenTownWarDialog"
+                       :wars="model.store.wars"
                        @can-apply="canTownWar = $event"
                        style="flex:1"/>
         </div>

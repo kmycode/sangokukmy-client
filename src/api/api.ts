@@ -595,6 +595,14 @@ export abstract class TownBase implements IIdentitiedEntity {
     return Math.floor((2 - TownBase.getRiceTrend(town)) * money);
   }
 
+  public static isNextToTown(a: TownBase, b: TownBase): boolean {
+    return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && !(a.y === b.x && a.y === b.y);
+  }
+
+  public static getAroundTowns(towns: TownBase[], town: TownBase): TownBase[] {
+    return towns.filter((t) => this.isNextToTown(town, t));
+  }
+
   public constructor(public id: number = 0,
                      public type: number = 0,
                      public countryId: number = 0,
