@@ -20,6 +20,7 @@
           <div id="current-display">
             <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
             <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
+            <span class="month-timer">{{ model.monthTimer }}</span>
           </div>
           <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 1 || model.characterCountryWarWorstStatus.id === 2">戦争中</div>
           <div id="current-war-status" class="in-ready" v-if="model.characterCountryWarWorstStatus.id === 4">戦争準備中</div>
@@ -1978,6 +1979,11 @@ ul.nav {
       font-weight: bold;
       color: #080;
       padding: 0 8px;
+    }
+    .month-timer {
+      font-size: 0.7em;
+      margin-left: 16px;
+      color: #e07be0;
     }
   }
 

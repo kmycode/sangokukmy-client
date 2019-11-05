@@ -81,6 +81,8 @@ export default class StatusModel {
   public isMapLogTabOpenPrivate: boolean = false;
   public isMapLogTabUnread: boolean = false;
 
+  public monthTimer: number = 0;
+
   private $router?: () => any;
 
   // #region Store and Compat Properties
@@ -677,6 +679,8 @@ export default class StatusModel {
         api.Api.setPrivateChatMessageRead();
       }
     };
+
+    setInterval(() => this.monthTimer--, 1000);
   }
 
   public onDestroy() {
@@ -773,6 +777,10 @@ export default class StatusModel {
   private updateSystemData(data: api.SystemData) {
     this.store.systemData = data;
     this.updateGameDate(data.gameDateTime);
+
+    this.monthTimer =
+      api.DateTime.toDate(data.currentMonthStartDateTime).getTime() + def.UPDATE_TIME
+      - new Date().getTime();
   }
 
   // #endregion
