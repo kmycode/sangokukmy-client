@@ -1518,7 +1518,17 @@ export default class StatusModel {
         NotificationService.warSent.notify();
       })
       .catch((ex) => {
-        NotificationService.warFailed.notify();
+        if (ex.data.code === api.ErrorCode.invalidParameterError) {
+          NotificationService.warFailedBecauseOfStartDate.notify();
+        } else if (ex.data.code === api.ErrorCode.meaninglessOperationError) {
+          NotificationService.warFailedBecauseSameStatus.notify();
+        } else if (ex.data.code === api.ErrorCode.notPermissionError) {
+          NotificationService.warFailedBecauseNotPermission.notify();
+        } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.warFailedBecauseInvalidOperation.notify();
+        } else {
+          NotificationService.warFailed.notify();
+        }
       })
       .finally(() => {
         this.isSendingWar = false;

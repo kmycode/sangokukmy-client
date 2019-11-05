@@ -260,6 +260,18 @@ export default class NotificationService {
     '戦争手続き失敗',
     '何らかの理由で、戦争の手続きに失敗しました。',
     NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseOfStartDate = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '開戦が早すぎる、または遅すぎます。現在より 12 年先、24 年より前の開戦年月の指定が必要です',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseNotPermission = new NotificationServiceItem(
+    '戦争手続き失敗',
+    'あなたにその操作をする権限がないか、同盟国に布告することはできません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseInvalidOperation = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '隣接していない国に布告することはできません',
+    NotificationServiceItemDefaultType.error);
   public static readonly warFailedBecauseSameStatus = new NotificationServiceItem(
     '戦争手続き失敗',
     '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
