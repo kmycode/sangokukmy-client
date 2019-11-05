@@ -152,6 +152,9 @@ export class GameDateTime {
   }
 
   public static toNumber(date: GameDateTime): number {
+    if (!date) {
+      return 0;
+    }
     return date.year * 12 + date.month - 1;
   }
 

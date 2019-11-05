@@ -86,10 +86,10 @@
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
         <div class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</div>
-        <div v-if="chara.commands && chara.commands.length > 0" class="commands">
+        <div v-if="getCharacterCommands(chara).length > 0" class="commands">
           <div class="command"
-               v-for="command in chara.commands"
-               :key="getCommandUniqueKey(command)"><span v-if="command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+               v-for="command in getCharacterCommands(chara)"
+               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
         </div>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
@@ -143,6 +143,12 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: () => new api.Character(-1),
   }) public value!: api.Character;
+  @Prop({
+    default: () => undefined,
+  }) public commands?: api.CharacterCommand[];
+  @Prop({
+    default: () => undefined,
+  }) public otherCharacterCommands?: api.CharacterCommand[];
 
   private isOpenPostsPopup: boolean = false;
 
@@ -198,7 +204,11 @@ export default class SimpleCharacterList extends Vue {
   }
 
   private getCommandUniqueKey(cmd: api.CharacterCommand): number {
-    return api.GameDateTime.toNumber(cmd.gameDate);
+    if (cmd) {
+      return api.GameDateTime.toNumber(cmd.gameDate);
+    } else {
+      return Math.random() * 1000;
+    }
   }
 
   private getCharacterFormationName(chara: api.Character): string {
@@ -215,6 +225,27 @@ export default class SimpleCharacterList extends Vue {
       return formationType.type;
     }
     return '無';
+  }
+
+  private getCharacterCommands(chara: api.Character): (api.CharacterCommand | undefined)[] {
+    if (this.commands && this.otherCharacterCommands) {
+      const startNumber = api.GameDateTime.toNumber(chara.lastUpdatedGameDate) + 1;
+      const endNumber = startNumber + 4;
+      const cmds = Enumerable.from(this.otherCharacterCommands)
+        .concat(this.commands)
+        .where((c) => c.characterId === chara.id)
+        .where((c) => startNumber <= api.GameDateTime.toNumber(c.gameDate) &&
+          api.GameDateTime.toNumber(c.gameDate) < endNumber);
+      return [
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 1),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 2),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 3),
+      ];
+    } else if (chara.commands) {
+      return chara.commands;
+    }
+    return [];
   }
 
   private togglePostsPopup(chara: api.Character) {

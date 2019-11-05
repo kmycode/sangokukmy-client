@@ -17,6 +17,7 @@ export default class CommandList {
   private lastUpdatedForUpdate?: api.DateTime;
 
   public get commands(): api.CharacterCommand[] {
+    this.inputer.commands.forEach((c) => c.characterId = this.store.character.id);
     return this.inputer.commands;
   }
 

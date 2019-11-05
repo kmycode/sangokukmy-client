@@ -40,9 +40,7 @@ export default class StatusModel {
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
   public townCharacters: api.Character[] = [];
-  public townDefenders: api.Character[] = [];
   public loadedTownCharacters: api.Character[] = [];
-  public loadedTownDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
@@ -537,6 +535,25 @@ export default class StatusModel {
     }
   }
 
+  public get townDefenders(): api.Character[] {
+    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
+      return Enumerable
+        .from(this.store.defenders.filter((c) => c.townId === this.town.id))
+        .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
+        .where((c) => c !== undefined && c !== null)
+        .toArray();
+    } else {
+      const scoutedTown = ArrayUtil.find(this.scoutedTowns, this.town.id);
+      if (this.town.id !== this.character.townId) {
+        // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
+        if (scoutedTown) {
+          return scoutedTown.defenders;
+        }
+      }
+    }
+    return [];
+  }
+
   // #endregion
 
   // #region Streaming
@@ -594,9 +611,6 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterLog>(
       api.CharacterLog.typeId,
       (obj) => this.addCharacterLog(obj));
-    ApiStreaming.status.on<api.CharacterCommand>(
-      api.CharacterCommand.typeId,
-      (obj) => this.commands.updateCommand(obj));
     ApiStreaming.status.on<api.ApiSignal>(
       api.ApiSignal.typeId,
       (obj) => this.onReceiveSignal(obj));
@@ -630,6 +644,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CommandComment>(
       api.CommandComment.typeId,
       (obj) => this.onCommandCommentReceived(obj));
+    ApiStreaming.status.on<api.CharacterCommand>(
+      api.CharacterCommand.typeId,
+      (obj) => this.onReceiveOtherCharacterCommand(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -796,9 +813,7 @@ export default class StatusModel {
           // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
           if (scoutedTown) {
             this.townCharacters = scoutedTown.characters;
-            this.townDefenders = scoutedTown.defenders;
             this.loadedTownCharacters = scoutedTown.characters;
-            this.loadedTownDefenders = scoutedTown.defenders;
             scoutedTown.countryId = town.countryId;
             if (scoutedTown.subBuildings) {
               scoutedTown.subBuildings.forEach((s) => {
@@ -838,14 +853,8 @@ export default class StatusModel {
   private updateTownCharacterAndDefenders() {
     if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
       this.townCharacters = this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
-      this.townDefenders = Enumerable
-        .from(this.store.defenders.filter((c) => c.townId === this.town.id))
-        .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
-        .where((c) => c !== undefined && c !== null)
-        .toArray();
     } else {
       this.townCharacters = [];
-      this.townDefenders = [];
     }
   }
 
@@ -933,20 +942,6 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isUpdatingTownCharacters = false;
-      });
-  }
-
-  public updateTownDefenders() {
-    this.isUpdatingTownDefenders = true;
-    api.Api.getAllDefendersAtTown(this.town.id)
-      .then((characters) => {
-        this.loadedTownDefenders = characters;
-      })
-      .catch(() => {
-        NotificationService.getTownCharactersFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingTownDefenders = false;
       });
   }
 
@@ -2110,6 +2105,16 @@ export default class StatusModel {
 
   private onCommandCommentReceived(item: api.CommandComment) {
     ArrayUtil.addItemUniquely(this.store.commandComments, item, (obj) => api.GameDateTime.toNumber(obj.gameDate));
+  }
+
+  private onReceiveOtherCharacterCommand(item: api.CharacterCommand) {
+    this.commands.inputer.updateCommandName(item);
+    if (item.characterId !== this.character.id && item.characterId) {
+      this.store.otherCharacterCommands =
+        this.store.otherCharacterCommands.filter((c) => item.characterId !== c.characterId ||
+          api.GameDateTime.toNumber(item.gameDate) !== api.GameDateTime.toNumber(c.gameDate));
+      this.store.otherCharacterCommands.push(item);
+    }
   }
 
   // #endregion
