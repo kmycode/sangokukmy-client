@@ -82,6 +82,7 @@ export default class StatusModel {
   public isMapLogTabUnread: boolean = false;
 
   public monthTimer: number = 0;
+  private monthTimerDate: Date = new Date();
 
   private $router?: () => any;
 
@@ -680,7 +681,9 @@ export default class StatusModel {
       }
     };
 
-    setInterval(() => this.monthTimer--, 1000);
+    setInterval(() =>
+      this.monthTimer = Math.floor((this.monthTimerDate.getTime() - new Date().getTime()) / 1000),
+      1000);
   }
 
   public onDestroy() {
@@ -778,9 +781,8 @@ export default class StatusModel {
     this.store.systemData = data;
     this.updateGameDate(data.gameDateTime);
 
-    this.monthTimer =
-      api.DateTime.toDate(data.currentMonthStartDateTime).getTime() + def.UPDATE_TIME
-      - new Date().getTime();
+    this.monthTimerDate = api.DateTime.toDate(data.currentMonthStartDateTime);
+    this.monthTimerDate.setSeconds(this.monthTimerDate.getSeconds() + def.UPDATE_TIME);
   }
 
   // #endregion

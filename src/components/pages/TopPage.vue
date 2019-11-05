@@ -180,6 +180,7 @@ export default class TopPage extends Vue {
   private countryMessages: api.CountryMessage[] = [];
   private towns: api.Town[] = [];
   private nextMonthSeconds = 0;
+  private nextMonthTimerDate: Date = new Date();
   private isLoadingSystem = true;
   private onlines = new OnlineModel();
 
@@ -227,7 +228,9 @@ export default class TopPage extends Vue {
     if (this.nextMonthSecondsTimer > 0) {
       clearInterval(this.nextMonthSecondsTimer);
     }
-    this.nextMonthSecondsTimer = setInterval(() => this.nextMonthSeconds--, 1000);
+    this.nextMonthSecondsTimer = setInterval(() =>
+      this.nextMonthSeconds = Math.floor((this.nextMonthTimerDate.getTime() - new Date().getTime()) / 1000),
+      1000);
 
     // ログイン中の武将をロード
     const tokenLimit = new Date();
@@ -251,7 +254,8 @@ export default class TopPage extends Vue {
 
       const systemMonthDate = api.DateTime.toDate(log.currentMonthStartDateTime);
       systemMonthDate.setSeconds(systemMonthDate.getSeconds() + def.UPDATE_TIME);
-      this.nextMonthSeconds = Math.floor((systemMonthDate.getTime() - new Date().getTime()) / 1000);
+      this.nextMonthTimerDate = new Date();
+      this.nextMonthTimerDate.setTime(this.nextMonthTimerDate.getTime() + Math.floor(systemMonthDate.getTime() - new Date().getTime()));
 
       this.isLoadingSystem = false;
     });
