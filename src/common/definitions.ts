@@ -973,5 +973,6 @@ export class TownSubBuildingType {
                      public description: string = '') {}
 }
 export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
-  new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500、収入 +20%'),
+  new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500'),
+  new TownSubBuildingType(2, '市場', 1, 10000, '商業最大 +500'),
 ];
