@@ -906,7 +906,7 @@
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
         </h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 2 ポイント )</button><br>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官 ( 1 ポイント )</button><br>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官 ( 1 ポイント )</button><br>
           <span v-if="model.canSecretaryUnitLeader"><button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button><br></span>
