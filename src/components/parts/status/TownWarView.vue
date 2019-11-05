@@ -136,6 +136,11 @@ export default class WarView extends Vue {
   private onIsOpenChanged() {
     this.$emit('can-apply', this.isOpen);
   }
+
+  private created() {
+    this.onIsShowChanged();
+    this.onIsOpenChanged();
+  }
 }
 </script>
 
