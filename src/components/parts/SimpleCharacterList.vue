@@ -229,7 +229,9 @@ export default class SimpleCharacterList extends Vue {
 
   private getCharacterCommands(chara: api.Character): (api.CharacterCommand | undefined)[] {
     if (this.commands && this.otherCharacterCommands) {
-      const startNumber = api.GameDateTime.toNumber(chara.lastUpdatedGameDate) + 1;
+      const startNumber = chara.lastUpdatedGameDate.year >= def.UPDATE_START_YEAR ?
+        api.GameDateTime.toNumber(chara.lastUpdatedGameDate) + 1 :
+        api.GameDateTime.toNumber(new api.GameDateTime(def.UPDATE_START_YEAR, 1));
       const endNumber = startNumber + 4;
       const cmds = Enumerable.from(this.otherCharacterCommands)
         .concat(this.commands)
