@@ -799,7 +799,7 @@ export default class StatusModel {
       .where((d) => d.characterId !== defender.characterId)
       .toArray();
     if (defender.status === api.TownDefender.statusAvailable) {
-      ArrayUtil.addItem(this.store.defenders, defender);
+      ArrayUtil.addLog(this.store.defenders, defender);
     }
     this.setTown(this.store.town);
   }
