@@ -61,7 +61,7 @@
               <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
               <button type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
               <button type="button" class="btn btn-info" @click="isOpenCharacterItemDialog = true">アイテム</button>
-              <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+              <button type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
                     v-for="rein in model.store.reinforcements"
                     :key="rein.id">
@@ -147,7 +147,7 @@
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
             <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
@@ -605,7 +605,7 @@
       <div v-show="isOpenCountryCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の武将</h2>
         <div class="dialog-content loading-container">
-          <div class="alert alert-warning">一部の情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
+          <div class="alert alert-warning">一部の情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.updateCountryCharacters()">更新</button></div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.countryCharacters"
@@ -632,7 +632,7 @@
       <div v-if="isOpenOppositionCharactersDialog" class="dialog-body">
         <h2 class="dialog-title country-color-0">無所属 の武将</h2>
         <div class="dialog-content loading-container">
-          <div class="alert alert-warning">情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
+          <div class="alert alert-warning">情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.updateOppositionCharacters()">更新</button></div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.oppositionCharacters"
@@ -758,7 +758,7 @@
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/83.html" target="_blank">？</a></div>
         </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
-          <div class="alert alert-warning">情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
+          <div class="alert alert-warning">情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.unitModel.updateUnits()">更新</button></div>
           <UnitListView :model="model.unitModel"
                         :isShow="isOpenUnitsDialog"
                         style="flex:1"/>
