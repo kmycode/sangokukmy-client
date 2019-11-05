@@ -490,7 +490,7 @@
         </div>
       </div>
       <!-- 兵種研究 -->
-      <div v-show="isOpenResearchSoldierDialog" class="dialog-body">
+      <div v-if="isOpenResearchSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">兵種研究</h2>
         <div class="dialog-content">
           <div class="dropdown">
@@ -526,7 +526,7 @@
         </div>
       </div>
       <!-- 登用 -->
-      <div v-show="isOpenPromotionDialog" class="dialog-body">
+      <div v-if="isOpenPromotionDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">登用</h2>
         <div class="dialog-content dialog-content-promotion loading-container">
           <div class="dialog-content-promotion-main">
@@ -622,7 +622,7 @@
         </div>
       </div>
       <!-- 無所属武将 -->
-      <div v-show="isOpenOppositionCharactersDialog" class="dialog-body">
+      <div v-if="isOpenOppositionCharactersDialog" class="dialog-body">
         <h2 class="dialog-title country-color-0">無所属 の武将</h2>
         <div class="dialog-content loading-container">
           <SimpleCharacterList
@@ -669,7 +669,7 @@
         </div>
       </div>
       <!-- 同盟 -->
-      <div v-show="isOpenAllianceDialog" class="dialog-body">
+      <div v-if="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <AllianceView :diplomacy="model.countryAlliance"
@@ -691,7 +691,7 @@
         </div>
       </div>
       <!-- 戦争 -->
-      <div v-show="isOpenWarDialog" class="dialog-body">
+      <div v-if="isOpenWarDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">戦争：{{ model.country.name }}</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <WarView :diplomacy="model.countryWar"
@@ -713,7 +713,7 @@
         </div>
       </div>
       <!-- 攻略 -->
-      <div v-show="isOpenTownWarDialog" class="dialog-body">
+      <div v-if="isOpenTownWarDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">攻略：{{ model.town.name }}</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/69.html" target="_blank">？</a></div>
@@ -744,7 +744,7 @@
         </div>
       </div>
       <!-- 部隊 -->
-      <div v-show="isOpenUnitsDialog" class="dialog-body">
+      <div v-if="isOpenUnitsDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">{{ model.characterCountry.name }} の部隊</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/83.html" target="_blank">？</a></div>
@@ -776,7 +776,7 @@
         </div>
       </div>
       <!-- 指令 -->
-      <div v-show="isOpenCommandersDialog" class="dialog-body">
+      <div v-if="isOpenCommandersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} 指令</h2>
         <div class="dialog-content dialog-content-directive">
           <div class="directive">
@@ -795,7 +795,7 @@
         </div>
       </div>
       <!-- 米売買 -->
-      <div v-show="isOpenRiceDialog" class="dialog-body">
+      <div v-if="isOpenRiceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">米売買</h2>
         <div class="dialog-content dialog-content-rice">
           <div class="content">
@@ -834,7 +834,7 @@
         </div>
       </div>
       <!-- 国庫 -->
-      <div v-show="isOpenSafeDialog" class="dialog-body">
+      <div v-if="isOpenSafeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">国庫納入</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/54.html" target="_blank">？</a></div>
@@ -864,7 +864,7 @@
         </div>
       </div>
       <!-- 国庫搬出 -->
-      <div v-show="isOpenSafeOutDialog" class="dialog-body">
+      <div v-if="isOpenSafeOutDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">国庫搬出</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/54.html" target="_blank">？</a></div>
@@ -902,7 +902,7 @@
         </div>
       </div>
       <!-- 政務官募集 -->
-      <div v-show="isOpenAddSecretaryDialog" class="dialog-body">
+      <div v-if="isOpenAddSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">政務官募集</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
@@ -922,7 +922,7 @@
         </div>
       </div>
       <!-- 政務官 -->
-      <div v-show="isOpenSecretaryDialog" class="dialog-body">
+      <div v-if="isOpenSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">政務官配属（部隊）</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
@@ -954,7 +954,7 @@
         </div>
       </div>
       <!-- 政務官 -->
-      <div v-show="isOpenSecretaryTownDialog" class="dialog-body">
+      <div v-if="isOpenSecretaryTownDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">政務官配属（都市）</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
@@ -991,7 +991,7 @@
         </div>
       </div>
       <!-- 政務官解任 -->
-      <div v-show="isOpenRemoveSecretaryDialog" class="dialog-body">
+      <div v-if="isOpenRemoveSecretaryDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">政務官解任</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
@@ -1022,7 +1022,7 @@
         </div>
       </div>
       <!-- 武将アイコン追加 -->
-      <div v-show="isOpenCharacterIconPickerDialog" class="dialog-body">
+      <div v-if="isOpenCharacterIconPickerDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">新規アイコン追加</h2>
         <div class="dialog-content">
           <CharacterIconPicker v-model="newIcon" :canUseFile="true"/>
@@ -1037,7 +1037,7 @@
         </div>
       </div>
       <!-- 陣形 -->
-      <div v-show="isOpenFormationDialog" class="dialog-body">
+      <div v-if="isOpenFormationDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">陣形</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
@@ -1062,7 +1062,7 @@
         </div>
       </div>
       <!-- 陣形追加 -->
-      <div v-show="isOpenFormationAddDialog" class="dialog-body">
+      <div v-if="isOpenFormationAddDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">陣形追加</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
@@ -1085,7 +1085,7 @@
         </div>
       </div>
       <!-- 陣形変更 -->
-      <div v-show="isOpenFormationChangeDialog" class="dialog-body">
+      <div v-if="isOpenFormationChangeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">陣形変更</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
@@ -1135,7 +1135,7 @@
         </div>
       </div>
       <!-- アイテム購入 -->
-      <div v-show="isOpenCharacterItemBuyDialog" class="dialog-body">
+      <div v-if="isOpenCharacterItemBuyDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">アイテム購入</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
@@ -1159,7 +1159,7 @@
         </div>
       </div>
       <!-- アイテム売却 -->
-      <div v-show="isOpenCharacterItemSellDialog" class="dialog-body">
+      <div v-if="isOpenCharacterItemSellDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">アイテム売却</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
@@ -1184,7 +1184,7 @@
         </div>
       </div>
       <!-- アイテム譲渡 -->
-      <div v-show="isOpenCharacterItemHandOverDialog" class="dialog-body">
+      <div v-if="isOpenCharacterItemHandOverDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">アイテム譲渡</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
@@ -1220,7 +1220,7 @@
         </div>
       </div>
       <!-- アイテム使用 -->
-      <div v-show="isOpenCharacterItemUseDialog" class="dialog-body">
+      <div v-if="isOpenCharacterItemUseDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">アイテム使用</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
@@ -1243,7 +1243,7 @@
         </div>
       </div>
       <!-- アイテム生成 -->
-      <div v-show="isOpenGenerateItemUseDialog" class="dialog-body">
+      <div v-if="isOpenGenerateItemUseDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">アイテム生産</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/82.html" target="_blank">？</a></div>
@@ -1263,7 +1263,7 @@
         </div>
       </div>
       <!-- 技能 -->
-      <div v-show="isOpenSkillDialog" class="dialog-body">
+      <div v-if="isOpenSkillDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">技能</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/19.html" target="_blank">？</a></div>
@@ -1285,7 +1285,7 @@
         </div>
       </div>
       <!-- コマンドコメント -->
-      <div v-show="isOpenCommandCommentDialog" class="dialog-body">
+      <div v-if="isOpenCommandCommentDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">コメント</h2>
         <div class="dialog-content dialog-content-promotion">
           <div class="dialog-content-promotion-main">
@@ -1305,7 +1305,7 @@
         </div>
       </div>
       <!-- 建築物建築 -->
-      <div v-show="isOpenBuildTownSubBuildingDialog" class="dialog-body">
+      <div v-if="isOpenBuildTownSubBuildingDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">建築物の建築</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/104.html" target="_blank">？</a></div>
@@ -1324,7 +1324,7 @@
         </div>
       </div>
       <!-- 建築物撤去 -->
-      <div v-show="isOpenRemoveTownSubBuildingDialog" class="dialog-body">
+      <div v-if="isOpenRemoveTownSubBuildingDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
           <div class="header">建築物の撤去</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/104.html" target="_blank">？</a></div>
@@ -1367,7 +1367,7 @@
         </div>
       </div>
       <!-- ようこそ -->
-      <div v-show="isOpenWelcomeDialog" class="dialog-body">
+      <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
         <div class="dialog-content dialog-content-welcome">
           <div class="dialog-content-welcome-main">

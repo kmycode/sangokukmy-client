@@ -62,6 +62,10 @@ export default class AllianceView extends Vue {
       this.newData.status = -1;
     }
   }
+
+  private created() {
+    this.onIsShowChanged();
+  }
 }
 </script>
 
