@@ -117,7 +117,7 @@
               :characters="model.townCharacters"/>
           </div>
           <div class="commands">
-            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">滞在</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">滞在</button>
             <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備</button>
             <button v-show="model.town.id === model.character.townId && model.town.countryId !== model.character.countryId" type="button" class="btn btn-secondary loading-container" :style="{ 'pointer-events': model.isScouting ? 'none' : 'all' }" @click="model.scoutTown()">諜報<div v-show="model.isScouting" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">諜報時点滞在</button>
@@ -557,12 +557,16 @@
       <div v-show="isOpenTownCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の武将</h2>
         <div class="dialog-content loading-container">
-          <div v-if="model.loadedTownCharacters.length === 0" class="alert alert-info">武将はいません</div>
+          <div v-if="model.townCharacters.length === 0" class="alert alert-info">武将はいません</div>
           <SimpleCharacterList
             :countries="model.countries"
-            :characters="model.loadedTownCharacters"
+            :characters="model.townCharacters"
+            :myCountryId="model.character.countryId"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
+            :commands="model.commands.commands"
+            :otherCharacterCommands="model.store.otherCharacterCommands"
+            isSortByTime="true"
             @private-chat="readyPrivateChat($event); isOpenTownCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
@@ -582,6 +586,7 @@
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.townDefenders"
+            :myCountryId="model.character.countryId"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
             :commands="model.commands.commands"
@@ -600,6 +605,7 @@
       <div v-show="isOpenCountryCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の武将</h2>
         <div class="dialog-content loading-container">
+          <div class="alert alert-warning">一部の情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.countryCharacters"
@@ -608,6 +614,7 @@
             :canEdit="model.canAppoint"
             :canReinforcement="model.canDiplomacy && (model.countryAllianceStatus.id === 3 || model.countryAllianceStatus.id === 6 || model.countryAllianceStatus.id === 106)"
             canPrivateChat="true"
+            isSortByTime="true"
             @reinforcement-request="model.setReinforcementStatus($event, 1)"
             @reinforcement-cancel="model.setReinforcementStatus($event, 3)"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
@@ -625,6 +632,7 @@
       <div v-if="isOpenOppositionCharactersDialog" class="dialog-body">
         <h2 class="dialog-title country-color-0">無所属 の武将</h2>
         <div class="dialog-content loading-container">
+          <div class="alert alert-warning">情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.oppositionCharacters"
@@ -750,6 +758,7 @@
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/83.html" target="_blank">？</a></div>
         </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
+          <div class="alert alert-warning">情報は自動更新されません。最新の情報を取得する場合、画面を開き直して下さい</div>
           <UnitListView :model="model.unitModel"
                         :isShow="isOpenUnitsDialog"
                         style="flex:1"/>

@@ -2,7 +2,7 @@
   <div class="simple-character-list">
     <div
       :class="'item country-color-' + getCountryColorId(chara.countryId) + (canSelect ? ' selectable' : '') + (value.id === chara.id ? ' selected' : '')"
-      v-for="chara in characters"
+      v-for="chara in orderedCharacters"
       :key="chara.id">
       <div class="item-character-info">
         <div class="icon">
@@ -149,8 +149,20 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: () => undefined,
   }) public otherCharacterCommands?: api.CharacterCommand[];
+  @Prop({
+    default: false,
+  }) public isSortByTime!: boolean;
 
   private isOpenPostsPopup: boolean = false;
+
+  private get orderedCharacters(): api.Character[] {
+    if (this.isSortByTime) {
+      return Enumerable.from(this.characters)
+        .orderBy((c) => api.DateTime.toDate(c.lastUpdated).getTime())
+        .toArray();
+    }
+    return this.characters;
+  }
 
   private getCountryColorId(countryId: number): number {
     const country = ArrayUtil.find(this.countries, countryId);
@@ -228,6 +240,9 @@ export default class SimpleCharacterList extends Vue {
   }
 
   private getCharacterCommands(chara: api.Character): (api.CharacterCommand | undefined)[] {
+    if (chara.countryId !== this.myCountryId) {
+      return [];
+    }
     if (this.commands && this.otherCharacterCommands) {
       const startNumber = chara.lastUpdatedGameDate.year >= def.UPDATE_START_YEAR ?
         api.GameDateTime.toNumber(chara.lastUpdatedGameDate) + 1 :

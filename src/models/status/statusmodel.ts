@@ -39,8 +39,6 @@ export default class StatusModel {
   public characterIcons: api.CharacterIcon[] = [];
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
-  public townCharacters: api.Character[] = [];
-  public loadedTownCharacters: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
@@ -535,6 +533,21 @@ export default class StatusModel {
     }
   }
 
+  public get townCharacters(): api.Character[] {
+    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
+      return this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
+    } else {
+      const scoutedTown = ArrayUtil.find(this.scoutedTowns, this.town.id);
+      if (this.town.id !== this.character.townId) {
+        // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
+        if (scoutedTown) {
+          return scoutedTown.characters;
+        }
+      }
+    }
+    return [];
+  }
+
   public get townDefenders(): api.Character[] {
     if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
       return Enumerable
@@ -812,8 +825,6 @@ export default class StatusModel {
         if (town.id !== this.character.townId) {
           // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
           if (scoutedTown) {
-            this.townCharacters = scoutedTown.characters;
-            this.loadedTownCharacters = scoutedTown.characters;
             scoutedTown.countryId = town.countryId;
             if (scoutedTown.subBuildings) {
               scoutedTown.subBuildings.forEach((s) => {
@@ -843,19 +854,8 @@ export default class StatusModel {
 
   private setTown(town: api.Town) {
     this.store.town = town;
-    if (!api.Town.isScouted(town)) {
-      this.updateTownCharacterAndDefenders();
-    }
     this.townParameters = this.getTownParameters(town);
     Vue.set(this.town, 'scoutedGameDateTime', (this.town as any).scoutedGameDateTime);
-  }
-
-  private updateTownCharacterAndDefenders() {
-    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
-      this.townCharacters = this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
-    } else {
-      this.townCharacters = [];
-    }
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
@@ -922,27 +922,6 @@ export default class StatusModel {
       return town;
     }
     return api.Town.default;
-  }
-
-  public updateTownCharacters() {
-    this.isUpdatingTownCharacters = true;
-    api.Api.getAllCharactersAtTown(this.town.id)
-      .then((characters) => {
-        characters.forEach((c) => {
-          if (c.commands) {
-            c.commands.forEach((cc) => {
-              this.commands.inputer.updateCommandName(cc);
-            });
-          }
-        });
-        this.loadedTownCharacters = characters;
-      })
-      .catch(() => {
-        NotificationService.getTownCharactersFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingTownCharacters = false;
-      });
   }
 
   public scoutTown() {
