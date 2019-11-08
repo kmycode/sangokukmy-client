@@ -377,6 +377,11 @@ export default class StatusModel {
         .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
       if (war) {
         status = war.status;
+        if (war.status === api.CountryWar.statusStopRequesting) {
+          if (war.requestedStopCountryId !== myCountry.id) {
+            status = 102;
+          }
+        }
       } else {
         status = 0;
       }
@@ -1394,6 +1399,10 @@ export default class StatusModel {
         NotificationService.warInReady.notifyWithParameter(
           targetCountry.name,
           api.GameDateTime.toFormatedString(war.startGameDate));
+      } else if (war.status === api.CountryWar.statusStoped) {
+        NotificationService.warStopped.notifyWithParameter(targetCountry.name);
+      } else if (war.status === api.CountryWar.statusStopRequesting) {
+        NotificationService.warStopRequested.notifyWithParameter(targetCountry.name);
       }
       this.commands.updateCommandListInformations();
     }

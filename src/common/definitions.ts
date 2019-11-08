@@ -526,6 +526,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(31, '削除', 'black'),
   new EventType(32, '政策', '#2a4'),
   new EventType(33, '蛮族', '#088'),
+  new EventType(34, '停戦', 'purple'),
 ];
 
 /**
@@ -579,7 +580,8 @@ export class CountryWarStatus {
 export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
   new CountryWarStatus(0, '戦争関係なし'),
   new CountryWarStatus(1, '交戦中'),
-  new CountryWarStatus(2, '停戦協議中'),
+  new CountryWarStatus(2, '停戦請願中'),
+  new CountryWarStatus(102, '停戦協議中'),
   new CountryWarStatus(3, '停戦'),
   new CountryWarStatus(4, '開戦前'),
 ];

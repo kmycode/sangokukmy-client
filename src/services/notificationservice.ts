@@ -246,19 +246,27 @@ export default class NotificationService {
     NotificationServiceItemDefaultType.warning);
   public static readonly warInReady = new NotificationServiceItem(
     '宣戦布告',
-    '{0} と {1} に開戦します。',
+    '{0} と {1} に開戦します',
     NotificationServiceItemDefaultType.warning);
   public static readonly warStart = new NotificationServiceItem(
     '開戦',
-    '{0} との戦争が始まりました。',
+    '{0} との戦争が始まりました',
     NotificationServiceItemDefaultType.warning);
+  public static readonly warStopRequested = new NotificationServiceItem(
+    '停戦協議開始',
+    '{0} との戦争の停戦協議が開始されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly warStopped = new NotificationServiceItem(
+    '停戦',
+    '{0} との戦争は停戦しました',
+    NotificationServiceItemDefaultType.information);
   public static readonly warSent = new NotificationServiceItem(
     '戦争手続き成功',
-    '戦争の手続きは、無事相手に送信されました。',
+    '戦争の手続きは、無事相手に送信されました',
     NotificationServiceItemDefaultType.succeed);
   public static readonly warFailed = new NotificationServiceItem(
     '戦争手続き失敗',
-    '何らかの理由で、戦争の手続きに失敗しました。',
+    '何らかの理由で、戦争の手続きに失敗しました',
     NotificationServiceItemDefaultType.error);
   public static readonly warFailedBecauseOfStartDate = new NotificationServiceItem(
     '戦争手続き失敗',
