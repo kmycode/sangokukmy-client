@@ -129,12 +129,12 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
-            <button v-show="model.country.id !== model.character.countryId && !model.country.aiType" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
-            <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
-            <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
+            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
+            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && !model.country.aiType" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
         </div>
         <!-- データ -->
