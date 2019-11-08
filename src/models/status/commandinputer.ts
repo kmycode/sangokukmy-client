@@ -11,6 +11,7 @@ import StatusStore from './statusstore';
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
   public isInputing = false;
+  private lastClickedCommand?: api.CharacterCommand;
 
   public get canInput(): boolean {
     return Enumerable.from(this.commands).any((c) => c.isSelected === true);
@@ -239,18 +240,35 @@ export default class CommandInputer {
     }
 
     Vue.set(command, 'isSelected', !command.isSelected);
+
+    if (command.isSelected) {
+      this.lastClickedCommand = command;
+    } else {
+      this.lastClickedCommand = undefined;
+    }
   }
 
   public selectMultipleCommand(lastCommand: api.CharacterCommand) {
     if (!lastCommand.canSelect) {
       return;
     }
-    const selected = Enumerable.from(this.commands)
-      .where((c) => c.canSelect === true)
-      .reverse()
-      .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
-      .takeWhile((c) => c.isSelected !== true)
-      .toArray();
+    let selected: api.CharacterCommand[];
+    if (this.lastClickedCommand && this.lastClickedCommand.commandNumber > lastCommand.commandNumber) {
+      // 下から上へ
+      selected = Enumerable.from(this.commands)
+        .where((c) => c.canSelect === true)
+        .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
+        .takeWhile((c) => c.isSelected !== true)
+        .toArray();
+    } else {
+      // 上から下へ
+      selected = Enumerable.from(this.commands)
+        .where((c) => c.canSelect === true)
+        .reverse()
+        .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
+        .takeWhile((c) => c.isSelected !== true)
+        .toArray();
+    }
     selected.filter((c) => c.canSelect).forEach((c) => Vue.set(c, 'isSelected', true));
   }
 
@@ -325,6 +343,7 @@ export default class CommandInputer {
       .forEach((c) => {
         c.isSelected = false;
       });
+    this.lastClickedCommand = undefined;
   }
 
   public insertCommands() {
