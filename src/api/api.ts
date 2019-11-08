@@ -557,6 +557,7 @@ export class CountryAlliance extends CountryDipromacy {
 
   public isPublic: boolean = false;
   public breakingDelay: number = 0;
+  public memo: string = '';
 }
 
 /**

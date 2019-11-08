@@ -4,12 +4,14 @@
     <div v-if="diplomacy !== undefined && status.id !== 0 && status.id !== 2 && status.id !== 5" class="content-section current-diplomacy">
       <h3>同盟条件</h3>
       破棄猶予：{{ diplomacy.breakingDelay }}ヶ月<br>
-      公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}
+      公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}<br>
+      <span style="white-space:pre-line">{{ diplomacy.memo }}</span>
     </div>
     <div v-if="changingValue !== undefined && (status.id === 6 || status.id === 106)" class="content-section current-diplomacy">
       <h3>同盟条件修正案</h3>
       破棄猶予：{{ changingValue.breakingDelay }}ヶ月<br>
-      公表：{{ changingValue.isPublic ? 'する' : 'しない' }}
+      公表：{{ changingValue.isPublic ? 'する' : 'しない' }}<br>
+      <span style="white-space:pre-line">{{ changingValue.memo }}</span>
     </div>
     <div v-if="canEdit" class="editor">
       <button v-show="status.id ===   1" :class="{ 'btn': true, 'btn-secondary': newData.status === 0, 'btn-outline-secondary': newData.status !== 0 }" @click="newData.status = 0" href="#">撤回</button>
@@ -42,24 +44,20 @@
       <div v-show="newData.status === 4" class="content-section">
         <h3>同盟破棄</h3>
       </div>
-      <div v-show="newData.status === 1" class="content-section">
-        <h3>同盟申入</h3>
+      <div v-show="newData.status === 1 || newData.status === 6" class="content-section">
+        <h3 v-show="newData.status === 1">同盟申入</h3>
+        <h3 v-show="newData.status === 6">同盟内容修正申請</h3>
         <div class="form-group">
           <label for="allianceOption2">破棄猶予（ヶ月）</label>
-          <input type="number" max="48" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
+          <input type="number" max="96" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
         </div>
         <div class="form-check">
+          <button type="button" class="btn btn-toggle selected">相互不可侵</button>
           <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟関係を公表する</button>
         </div>
-      </div>
-      <div v-show="newData.status === 6" class="content-section">
-        <h3>同盟内容修正申請</h3>
         <div class="form-group">
-          <label for="allianceOption2">破棄猶予（ヶ月）</label>
-          <input type="number" max="48" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
-        </div>
-        <div class="form-check">
-          <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟関係を公表する</button>
+          <label for="allianceOption3">備考</label>
+          <textarea id="allianceOption3" class="form-control" style="height:8em" v-model="newData.memo"></textarea>
         </div>
       </div>
     </div>
@@ -97,6 +95,7 @@ export default class AllianceView extends Vue {
     if (this.isShow && this.diplomacy) {
       this.newData.isPublic = this.diplomacy.isPublic;
       this.newData.breakingDelay = this.diplomacy.breakingDelay;
+      this.newData.memo = this.diplomacy.memo;
     }
   }
 

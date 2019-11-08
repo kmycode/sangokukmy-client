@@ -1496,9 +1496,11 @@ export default class StatusModel {
       status === api.CountryAlliance.statusChangeRequesting) {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
+      alliance.memo = this.newAllianceData.memo;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
+      alliance.memo = old.memo;
     }
 
     this.isSendingAlliance = true;
