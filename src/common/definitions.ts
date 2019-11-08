@@ -527,6 +527,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(32, '政策', '#2a4'),
   new EventType(33, '蛮族', '#088'),
   new EventType(34, '停戦', 'purple'),
+  new EventType(35, '割譲', 'blue'),
+  new EventType(36, '降伏', 'red'),
 ];
 
 /**

@@ -133,6 +133,7 @@
             <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
+            <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
             <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
         </div>
@@ -1348,6 +1349,22 @@
               :store="model.store"
               @selected="onMapDialogSelected($event)"
               style="height:400px;min-height:50vh"/>
+            <div v-if="mapDialogMode === 6">
+              <div class="alert alert-warning">
+                割譲先と隣接した都市しか割譲できません<br>
+                AI国家に割譲することはできません<br>
+                <strong>すべての都市を割譲すると降伏になります</strong><br>
+              </div>
+              <div class="alert alert-info">
+                割譲先: <strong>{{ model.country.name }}</strong>
+              </div>
+              <div class="alert alert-danger" v-show="mapDialogSelectedTown.countryId !== model.characterCountry.id">
+                自分の国の都市ではありません
+              </div>
+              <div class="alert alert-danger" v-show="!model.isNextToCountry(mapDialogSelectedTown.id, model.country.id)">
+                割譲先と隣接していません
+              </div>
+            </div>
           </div>
         </div>
         <div class="dialog-footer">
@@ -1699,6 +1716,8 @@ export default class StatusPage extends Vue {
       this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 5) {
       this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 6) {
+      this.model.giveTownToCountry(this.mapDialogSelectedTown.id);
     }
     this.isOpenMapDialog = false;
   }

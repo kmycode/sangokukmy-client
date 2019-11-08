@@ -505,6 +505,7 @@ export class Country {
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public policyPoint: number = 0,
+                     public aiType: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public safeMoney?: number) {}
@@ -1322,6 +1323,15 @@ export class Api {
     try {
       await axios.put
         (def.API_HOST + 'town/' + townId + '/war', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async giveTown(countryId: number, townId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/' + countryId + '/give/' + townId, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

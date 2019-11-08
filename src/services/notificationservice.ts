@@ -604,6 +604,14 @@ export default class NotificationService {
     '兵種追加',
     '兵種 {0} を追加しました',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly townGave = new NotificationServiceItem(
+    '割譲',
+    '{0} の {1} への割譲に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townGiveFailed = new NotificationServiceItem(
+    '割譲失敗',
+    '{0} の {1} への割譲に失敗しました。都市が相手国に隣接していないか、その他の要件を満たしていません',
+    NotificationServiceItemDefaultType.error);
   public static readonly soldierTypeAddFailed = new NotificationServiceItem(
     '兵種追加失敗',
     '兵種 {0} の追加に失敗しました',

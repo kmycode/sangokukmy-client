@@ -591,6 +591,15 @@ export default class StatusModel {
     return [];
   }
 
+  public isNextToCountry(townId: number, countryId: number): boolean {
+    const town = ArrayUtil.find(this.store.towns, townId);
+    if (town) {
+      const arounds = api.TownBase.getAroundTowns(this.store.towns, town);
+      return arounds.some((t) => t.countryId === countryId);
+    }
+    return false;
+  }
+
   // #endregion
 
   // #region Streaming
@@ -1575,6 +1584,21 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isSendingTownWar = false;
+      });
+  }
+
+  public giveTownToCountry(townId: number) {
+    const town = this.store.towns.find((t) => t.id === townId);
+    if (!town) {
+      return;
+    }
+
+    api.Api.giveTown(this.country.id, townId)
+      .then(() => {
+        NotificationService.townGave.notifyWithParameter(town.name, this.country.name);
+      })
+      .catch(() => {
+        NotificationService.townGiveFailed.notifyWithParameter(town.name, this.country.name);
       });
   }
 
