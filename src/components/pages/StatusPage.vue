@@ -664,6 +664,7 @@
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <AllianceView :diplomacy="model.countryAlliance"
+                        :changingValue="model.countryAllianceChangingValue"
                         :status="model.countryAllianceStatus"
                         :newData="model.newAllianceData"
                         :isSending="model.isSendingAlliance"

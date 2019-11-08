@@ -324,7 +324,16 @@ export default class StatusModel {
     // 現在選択中の国と自分の国の同盟
     return Enumerable
       .from(this.store.alliances)
-      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId) &&
+                              ca.status !== api.CountryAlliance.statusChangingValue);
+  }
+
+  public get countryAllianceChangingValue(): api.CountryAlliance | undefined {
+    // 現在選択中の国と自分の国の同盟
+    return Enumerable
+      .from(this.store.alliances)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId) &&
+                              ca.status === api.CountryAlliance.statusChangingValue);
   }
 
   public get countryWar(): api.CountryWar | undefined {
@@ -343,11 +352,18 @@ export default class StatusModel {
     } else {
       const alliance = Enumerable
         .from(this.store.alliances)
-        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id) &&
+                                ca.status !== api.CountryAlliance.statusChangingValue);
+      const changing = Enumerable
+        .from(this.store.alliances)
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id) &&
+                                ca.status === api.CountryAlliance.statusChangingValue);
       if (alliance) {
         if (alliance.status === api.CountryAlliance.statusRequesting) {
           // 自分が打診したか、されてるかでデータを変える
           status = alliance.requestedCountryId === this.characterCountry.id ? 1 : 101;
+        } else if (alliance.status === api.CountryAlliance.statusChangeRequesting && changing) {
+          status = changing.requestedCountryId === this.characterCountry.id ? 6 : 106;
         } else {
           status = alliance.status;
         }
@@ -1364,7 +1380,20 @@ export default class StatusModel {
   // #region CountryDiplomacies
 
   private updateCountryAlliance(alliance: api.CountryAlliance) {
-    this.updateCountryDiplomacies(alliance, this.store.alliances, (val) => this.store.alliances = val);
+
+    // 変更協議中のデータはupdateCountryDiplomaciesの呼び出しで削除されてしまうので
+    // いったん取得して呼び出し後に追加し直す
+    const changingValues = this.store.alliances.filter((a) =>
+      a.status === api.CountryAlliance.statusChangingValue &&
+      (!api.CountryDipromacy.isEqualCountry(a, alliance.requestedCountryId, alliance.insistedCountryId) ||
+       alliance.status !== api.CountryAlliance.statusChangingValue));
+    this.store.alliances = this.store.alliances.filter((a) => a.status !== api.CountryAlliance.statusChangingValue);
+    if (alliance.status === api.CountryAlliance.statusChangingValue) {
+      changingValues.push(alliance);
+    } else {
+      this.updateCountryDiplomacies(alliance, this.store.alliances, (val) => this.store.alliances = val);
+    }
+    changingValues.forEach((a) => this.store.alliances.push(a));
 
     // 自国に関係することなら通知する
     if (this.store.hasInitialized &&
@@ -1463,7 +1492,8 @@ export default class StatusModel {
     if (!old ||
       old.status === api.CountryAlliance.statusNone ||
       old.status === api.CountryAlliance.statusBroken ||
-      old.status === api.CountryAlliance.statusDismissed) {
+      old.status === api.CountryAlliance.statusDismissed ||
+      status === api.CountryAlliance.statusChangeRequesting) {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
     } else {

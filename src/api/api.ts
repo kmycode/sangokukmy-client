@@ -552,6 +552,8 @@ export class CountryAlliance extends CountryDipromacy {
   public static readonly statusAvailable = 3;
   public static readonly statusInBreaking = 4;
   public static readonly statusBroken = 5;
+  public static readonly statusChangeRequesting = 6;
+  public static readonly statusChangingValue = 7;
 
   public isPublic: boolean = false;
   public breakingDelay: number = 0;
