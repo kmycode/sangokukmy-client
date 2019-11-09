@@ -101,11 +101,29 @@
     </div>
     <!-- 選択ツール -->
     <div class="command-input-options">
-      <button type="button" class="btn btn-light" @click="list.inputer.clearAllCommandSelections()">消去</button>
-      <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全て</button>
-      <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶数</button>
-      <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇数</button>
+      <button type="button" class="btn btn-light" @click="list.inputer.clearAllCommandSelections()">消<span class="redundant-text">去</span></button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectAllCommands()">全<span class="redundant-text">て</span></button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectOddCommands()">偶<span class="redundant-text">数</span></button>
+      <button type="button" class="btn btn-light" @click="list.inputer.selectEvenCommands()">奇<span class="redundant-text">数</span></button>
       <button type="button" :class="{'btn': true, 'btn-light': !isOpenAxb, 'btn-primary': isOpenAxb}" @click="isOpenAxb = !isOpenAxb">ax+b</button>
+      <button class="btn btn-light dropdown-toggle dropdown-toggle-custom" @click="isOpenMonthPopup = !isOpenMonthPopup">月
+        <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMonthPopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', }">
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(1)">1月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(2)">2月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(3)">3月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(4)">4月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(5)">5月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(6)">6月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(7)">7月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(8)">8月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(9)">9月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(10)">10月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(11)">11月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectMonthCommands(12)">12月</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectEvenMonthCommands()">偶数</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMonthPopup = false; list.inputer.selectOddMonthCommands()">奇数</a>
+        </div>
+      </button>
     </div>
     <div v-show="isOpenAxb" class="command-input-axb">
       <input type="number" v-model.number="axbA" min="1"> の倍数＋ <input type="number" v-model.number="axbB" min="0">
@@ -183,6 +201,7 @@ export default class CommandListView extends Vue {
   private isOpenItemPopup: boolean = false;
   private isOpenTrainingPopup: boolean = false;
   private isOpenSubBuildingPopup: boolean = false;
+  private isOpenMonthPopup: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -246,6 +265,13 @@ $color-navigation-commands: #e0e0e0;
       }
     }
   }
+  .dropdown-toggle-custom {
+    position: relative;
+  }
+  .droptown-menu-custom {
+    position: absolute;
+    top: 100%;
+  }
   .commands {
     display: flex;
     flex-flow: row wrap;
@@ -257,13 +283,6 @@ $color-navigation-commands: #e0e0e0;
           background-color: #bbb;
         }
       }
-    }
-    .dropdown-toggle-custom {
-      position: relative;
-    }
-    .droptown-menu-custom {
-      position: absolute;
-      top: 100%;
     }
   }
   .command-input-options {

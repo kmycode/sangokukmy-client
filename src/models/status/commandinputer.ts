@@ -319,6 +319,25 @@ export default class CommandInputer {
     });
   }
 
+  public selectMonthCommands(month: number) {
+    const first = this.commands.find((c) => c.canSelect && c.gameDate.month === month);
+    if (first) {
+      this.selectAxbCommands(12, first.commandNumber);
+    }
+  }
+
+  public selectEvenMonthCommands() {
+    for (let i = 2; i <= 12; i += 2) {
+      this.selectMonthCommands(i);
+    }
+  }
+
+  public selectOddMonthCommands() {
+    for (let i = 1; i <= 12; i += 2) {
+      this.selectMonthCommands(i);
+    }
+  }
+
   public setRanged(isRanged: boolean) {
     this.commands.forEach((c) => {
       const selected = c.isSelected;
