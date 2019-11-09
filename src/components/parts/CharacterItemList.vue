@@ -213,7 +213,6 @@ export default class CharacterItemList extends Vue {
       }
 
       .params {
-        padding-left: 12px;
         .value-name {
           color: #969;
           padding-left: 12px;
