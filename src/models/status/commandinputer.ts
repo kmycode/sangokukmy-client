@@ -151,13 +151,18 @@ export default class CommandInputer {
     });
   }
 
-  public inputHandOverItemCommand(commandType: number, id: number, itemId: number, target: number) {
+  public inputHandOverItemCommand(commandType: number, id: number, resourceSize: number, target: number) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
+
+    if (info.isResource && !resourceSize) {
+      resourceSize = info.defaultResource;
+    }
+
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
       c.parameters.push(new api.CharacterCommandParameter(2, target));
       if (info && info.isResource) {
-        c.parameters.push(new api.CharacterCommandParameter(3, itemId));
+        c.parameters.push(new api.CharacterCommandParameter(4, resourceSize));
       }
     });
   }

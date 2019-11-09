@@ -1209,7 +1209,7 @@
             <button class="btn btn-light" @click="isOpenCharacterItemHandOverDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="targetCharacter.id > 0 && selectedCharacterItemType.type.id > 0" @click="model.commands.inputer.inputHandOverItemCommand(52, selectedCharacterItemType.type.id, selectedCharacterItemType.id, targetCharacter.id); isOpenCharacterItemHandOverDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="targetCharacter.id > 0 && selectedCharacterItemType.type.id > 0" @click="model.commands.inputer.inputHandOverItemCommand(52, selectedCharacterItemType.type.id, 0, targetCharacter.id); isOpenCharacterItemHandOverDialog = false">承認</button>
           </div>
         </div>
       </div>

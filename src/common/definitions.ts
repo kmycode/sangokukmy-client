@@ -391,7 +391,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
-      const itemId = p.firstOrDefault((pp) => pp.type === 3);
+      const resourceSize = p.firstOrDefault((pp) => pp.type === 4);
       if (!itemType) {
         return 'エラー (52:2)';
       }
@@ -399,7 +399,13 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (52:3)';
       }
-      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
+      if (!type.isResource) {
+        return format.replace('{0}', type.name);
+      } else if (resourceSize) {
+        return format.replace('{0}', type.name + ' ' + resourceSize.numberValue);
+      } else {
+        return 'エラー (52:4)';
+      }
     } else {
       return 'エラー (52:1)';
     }
