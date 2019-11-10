@@ -124,7 +124,13 @@ export default class CharacterItemList extends Vue {
 
     const items = types.where((i) => !i.type.isResource);
     const resources = types.where((i) => i.type.isResource)
-      .selectMany((i) => Enumerable.from(i.data).select((d) => new CharacterItemListItem(i.type, [d])));
+      .groupBy((i) => i.type.id)
+      .select((i) =>
+        new CharacterItemListItem(i.first().type, [
+          new api.CharacterItem(i.first().data[0].id,
+                                api.CharacterItem.statusTownOnSale,
+                                i.first().type.id, 0, 0, i.sum((j) => Enumerable.from(j.data).sum((k) => k.resource))),
+        ]));
 
     return items
       .concat(resources)
