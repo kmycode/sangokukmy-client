@@ -1148,7 +1148,7 @@
             <button class="btn btn-light" @click="isOpenCharacterItemBuyDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(50, selectedCharacterItemType.type.id, selectedCharacterItemType.id); isOpenCharacterItemBuyDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(50, selectedCharacterItemType.type.id, 0); isOpenCharacterItemBuyDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1173,7 +1173,7 @@
             <button class="btn btn-light" @click="isOpenCharacterItemSellDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(51, selectedCharacterItemType.type.id, selectedCharacterItemType.id); isOpenCharacterItemSellDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(51, selectedCharacterItemType.type.id, 0); isOpenCharacterItemSellDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1232,7 +1232,7 @@
             <button class="btn btn-light" @click="isOpenCharacterItemUseDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(56, selectedCharacterItemType.type.id, selectedCharacterItemType.id); isOpenCharacterItemUseDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.commands.inputer.inputItemCommand(56, selectedCharacterItemType.type.id, 0); isOpenCharacterItemUseDialog = false">承認</button>
           </div>
         </div>
       </div>
