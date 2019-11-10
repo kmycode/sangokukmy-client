@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-      <div class="row">
+      <div class="row" v-if="!isUsingMSIE">
         <div v-if="isLoadingCurrentCharacter || currentCharacter.id" class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
           <div v-if="currentCharacter.id" style="text-align:center">
             <div class="login-form">
@@ -75,11 +75,20 @@
           <button type="button" class="btn btn-primary" @click="entry">新規登録</button>
         </div>
       </div>
+      <div class="row" v-else>
+        <div class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
+          <div class="alert alert-danger" style="margin-top:8px">
+            Internet ExplorerまたはMicrosoft Edgeの使用が検出されました。このブラウザでは、三国志NET KMY Versionを正常にお楽しみいただけません。<br>
+            恐れ入りますが、<a href="https://www.google.com/intl/ja_jp/chrome/">Google Chrome</a>など別のブラウザをご利用下さい。
+          </div>
+        </div>
+      </div>
       <div v-show="selectedTab === 1">
         <EntryPage :system="system"
                    :countries="countries"
                    :countryMessages="countryMessages"
                    :towns="towns"
+                   :isOpened="selectedTab === 1"
                    @entry-succeed="$emit('entry-succeed')"/>
       </div>
       <div v-show="selectedTab !== 1" class="row">
@@ -171,6 +180,7 @@ export default class TopPage extends Vue {
   private countryMessages: api.CountryMessage[] = [];
   private towns: api.Town[] = [];
   private nextMonthSeconds = 0;
+  private nextMonthTimerDate: Date = new Date();
   private isLoadingSystem = true;
   private onlines = new OnlineModel();
 
@@ -190,6 +200,11 @@ export default class TopPage extends Vue {
 
   public get topM2logs(): api.MapLog[] {
     return Enumerable.from(this.m2logs).take(5).toArray();
+  }
+
+  public get isUsingMSIE(): boolean {
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    return userAgent.indexOf('msie') >= 0 || userAgent.indexOf('trident') >= 0 || userAgent.indexOf('edge') >= 0;
   }
 
   public login() {
@@ -213,7 +228,9 @@ export default class TopPage extends Vue {
     if (this.nextMonthSecondsTimer > 0) {
       clearInterval(this.nextMonthSecondsTimer);
     }
-    this.nextMonthSecondsTimer = setInterval(() => this.nextMonthSeconds--, 1000);
+    this.nextMonthSecondsTimer = setInterval(() =>
+      this.nextMonthSeconds = Math.floor((this.nextMonthTimerDate.getTime() - new Date().getTime()) / 1000),
+      1000);
 
     // ログイン中の武将をロード
     const tokenLimit = new Date();
@@ -237,7 +254,8 @@ export default class TopPage extends Vue {
 
       const systemMonthDate = api.DateTime.toDate(log.currentMonthStartDateTime);
       systemMonthDate.setSeconds(systemMonthDate.getSeconds() + def.UPDATE_TIME);
-      this.nextMonthSeconds = Math.floor((systemMonthDate.getTime() - new Date().getTime()) / 1000);
+      this.nextMonthTimerDate = new Date();
+      this.nextMonthTimerDate.setTime(this.nextMonthTimerDate.getTime() + Math.floor(systemMonthDate.getTime() - new Date().getTime()));
 
       this.isLoadingSystem = false;
     });
@@ -269,6 +287,9 @@ export default class TopPage extends Vue {
       (obj) => this.onlines.onOnlineDataReceived(obj));
     ApiStreaming.top.start();
 
+    ApiStreaming.top.onBeforeReconnect = () => {
+      this.onlines.reset();
+    };
     window.onscroll = (ev: any) => this.onPageScrolled(ev);
   }
 

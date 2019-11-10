@@ -106,6 +106,11 @@ export default class OnlineModel {
     clearInterval(this.timer2);
   }
 
+  public reset() {
+    this.actives = [];
+    this.inactives = [];
+  }
+
   private activeInMomentListener = () => {
     this.activeInMoment = true;
   }

@@ -152,6 +152,9 @@ export class GameDateTime {
   }
 
   public static toNumber(date: GameDateTime): number {
+    if (!date) {
+      return 0;
+    }
     return date.year * 12 + date.month - 1;
   }
 
@@ -391,6 +394,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryUnitGather = 9;
   public static readonly aiSecretaryPioneer = 11;
   public static readonly aiSecretaryUnitLeader = 27;
+  public static readonly aiSecretaryScouter = 29;
 
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
@@ -470,15 +474,6 @@ export class CountryPolicy {
                      public status: number = 0) {}
 }
 
-export class CountryScouter {
-  public static readonly typeId = 33;
-
-  public constructor(public id: number = 0,
-                     public countryId: number = 0,
-                     public townId: number = 0,
-                     public isRemoved: boolean = false) {}
-}
-
 export class CountryMessage {
   public static readonly typeId = 29;
 
@@ -510,6 +505,7 @@ export class Country {
                      public hasOverthrown: boolean = false,
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public policyPoint: number = 0,
+                     public aiType: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public safeMoney?: number) {}
@@ -557,9 +553,12 @@ export class CountryAlliance extends CountryDipromacy {
   public static readonly statusAvailable = 3;
   public static readonly statusInBreaking = 4;
   public static readonly statusBroken = 5;
+  public static readonly statusChangeRequesting = 6;
+  public static readonly statusChangingValue = 7;
 
   public isPublic: boolean = false;
   public breakingDelay: number = 0;
+  public memo: string = '';
 }
 
 /**
@@ -601,6 +600,14 @@ export abstract class TownBase implements IIdentitiedEntity {
 
   public static getMoneyToRicePrice(town: TownBase, money: number): number {
     return Math.floor((2 - TownBase.getRiceTrend(town)) * money);
+  }
+
+  public static isNextToTown(a: TownBase, b: TownBase): boolean {
+    return Math.abs(a.x - b.x) <= 1 && Math.abs(a.y - b.y) <= 1 && !(a.y === b.x && a.y === b.y);
+  }
+
+  public static getAroundTowns(towns: TownBase[], town: TownBase): TownBase[] {
+    return towns.filter((t) => this.isNextToTown(town, t));
   }
 
   public constructor(public id: number = 0,
@@ -660,6 +667,23 @@ export class TownDefender {
 }
 
 /**
+ * 建築物
+ */
+export class TownSubBuilding {
+  public static readonly typeId = 39;
+
+  public static readonly statusUnknown = 0;
+  public static readonly statusAvailable = 1;
+  public static readonly statusUnderConstruction = 2;
+  public static readonly statusRemoving = 3;
+
+  public constructor(public id: number = 0,
+                     public townId: number = 0,
+                     public status: number = 0,
+                     public type: number = 0) {}
+}
+
+/**
  * 諜報された都市
  */
 export class ScoutedTown extends TownBase implements IIdentitiedEntity {
@@ -672,6 +696,7 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 
   public characters: Character[] = [];
   public defenders: Character[] = [];
+  public subBuildings: TownSubBuilding[] = [];
 }
 
 /**
@@ -866,6 +891,7 @@ export class ChatMessage implements IIdentitiedEntity {
                      public message: string,
                      public posted: DateTime,
                      public receiverName: string,
+                     public isRead: boolean,
                      public character?: CharacterChatData,
                      public characterIcon?: CharacterIcon,
                      public typeData?: number,
@@ -1302,6 +1328,15 @@ export class Api {
     }
   }
 
+  public static async giveTown(countryId: number, townId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/' + countryId + '/give/' + townId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async getCountryChatMessage(sinceId?: number, count?: number): Promise<ChatMessage[]> {
     try {
       const result = await axios.get<ApiArrayData<ChatMessage>>(def.API_HOST + 'chat/country?' +
@@ -1326,21 +1361,22 @@ export class Api {
     }
   }
 
-  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
+  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/global', {
         message: mes,
         characterIconId: icon.id,
+        typeData: type,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
   }
 
-  public static async getGlobalChatMessage(since: number, count: number): Promise<ChatMessage[]> {
+  public static async getGlobalChatMessage(since: number, count: number, type: number): Promise<ChatMessage[]> {
     try {
       const result = await axios.get<ApiArrayData<ChatMessage>>(
-        def.API_HOST + 'chat/global?sinceId=' + since + '&count=' + count,
+        def.API_HOST + 'chat/global?sinceId=' + since + '&count=' + count + '&type=' + type,
         this.authHeader);
       return result.data.data;
     } catch (ex) {
@@ -1365,6 +1401,14 @@ export class Api {
         def.API_HOST + 'chat/character?sinceId=' + since + '&count=' + count,
         this.authHeader);
       return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setPrivateChatMessageRead(): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'chat/character/read', {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1703,6 +1747,14 @@ export class Api {
         id: itemId,
         status,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addAllCharacterItems(): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'items/all', {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

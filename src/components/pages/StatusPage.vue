@@ -13,13 +13,14 @@
                 <a :class="{'nav-link': true, 'active': mapShowType === 1}" href="#" @click.prevent.stop="mapShowType = 1">ON</a>
               </li>
               <li class="nav-item">
-                <a :class="{'nav-link': true, 'active': mapShowType === 2}" href="#" @click.prevent.stop="mapShowType = 2">武将</a>
+                <a :class="{'nav-link': true, 'active': mapShowType === 2}" href="#" @click.prevent.stop="mapShowType = 2"><span class="tab-text">武将<span class="tab-notify" v-show="model.hasPendingItems || model.character.countryId === 0"></span></span></a>
               </li>
             </ul>
           </div>
           <div id="current-display">
             <span class="number">{{ model.gameDate.year }}</span><span class="unit">年</span>
             <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
+            <span class="month-timer">{{ model.monthTimer }}</span>
           </div>
           <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 1 || model.characterCountryWarWorstStatus.id === 2">戦争中</div>
           <div id="current-war-status" class="in-ready" v-if="model.characterCountryWarWorstStatus.id === 4">戦争準備中</div>
@@ -55,11 +56,13 @@
           </div>
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
+            <div class="alert alert-warning" v-show="model.hasPendingItems">保留中のアイテムがあります</div>
+            <div class="alert alert-warning" v-if="model.character.countryId === 0">現在 無所属 です。どこかの国に仕官しましょう</div>
             <div class="commands">
               <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
               <button type="button" class="btn btn-info" @click="isOpenFormationDialog = true">陣形</button>
               <button type="button" class="btn btn-info" @click="isOpenCharacterItemDialog = true">アイテム</button>
-              <button type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
+              <button type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
               <span v-show="model.readyForReinforcement"
                     v-for="rein in model.store.reinforcements"
                     :key="rein.id">
@@ -84,19 +87,20 @@
         </div>
         <div id="information-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0" href="#">都市</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0" href="#">国</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 4 }" @click.prevent.stop="selectedInformationTab = 4; mapShowType = 0" href="#">データ</a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3" href="#">情勢</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 0 }" @click.prevent.stop="selectedInformationTab = 0; mapShowType = 0; model.isMapLogTabOpen = false" href="#">都市</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 2 }" @click.prevent.stop="selectedInformationTab = 2; mapShowType = 0; model.isMapLogTabOpen = false" href="#">国</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 4 }" @click.prevent.stop="selectedInformationTab = 4; mapShowType = 0; model.isMapLogTabOpen = false" href="#">データ</a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedInformationTab === 3 }" @click.prevent.stop="selectedInformationTab = 3; model.isMapLogTabOpen = true" href="#"><span class="tab-text">情勢<span class="tab-notify" v-show="model.isMapLogTabUnread"></span></span></a></li>
           </ul>
         </div>
         <!-- 都市情報 -->
         <div v-show="selectedInformationTab === 0" :class="'information-content information-town country-color-' + model.townCountryColor + (mapMode === 9 ? ' mini-mode' : '')">
           <h4 :class="'country-color-' + model.townCountryColor">
-            {{ model.town.name }}
-            <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
-            <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
-            <span v-if="model.characterTownHasScouter">【斥候】</span>
+            <div class="header">
+              {{ model.town.name }}
+              <span v-if="model.town.scoutedGameDateTime && model.town.id !== model.character.townId">（{{ model.town.scoutedGameDateTime | gamedate }} 時点）</span>
+              <span v-if="model.town.scoutedGameDateTime && model.town.id === model.character.townId">（最終諜報：{{ model.town.scoutedGameDateTime | gamedate }}）</span>
+            </div>
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.townParameters"/>
@@ -105,8 +109,8 @@
               :characters="model.townCharacters"/>
           </div>
           <div class="commands">
-            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownCharacters(); isOpenTownCharactersDialog = true">滞在</button>
-            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="model.updateTownDefenders(); isOpenTownDefendersDialog = true">守備</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">滞在</button>
+            <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">守備</button>
             <button v-show="model.town.id === model.character.townId && model.town.countryId !== model.character.countryId" type="button" class="btn btn-secondary loading-container" :style="{ 'pointer-events': model.isScouting ? 'none' : 'all' }" @click="model.scoutTown()">諜報<div v-show="model.isScouting" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">諜報時点滞在</button>
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">諜報時点守備</button>
@@ -117,30 +121,35 @@
         </div>
         <!-- 国情報 -->
         <div v-show="selectedInformationTab === 2" :class="'information-content information-country country-color-' + model.country.colorId + (mapMode === 9 ? ' mini-mode' : '')">
-          <h4 :class="'country-color-' + model.country.colorId">{{ model.country.name }}</h4>
+          <h4 :class="'country-color-' + model.country.colorId">
+            <div class="header">{{ model.country.name }}</div>
+          </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
-            <button v-show="model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenUnitsDialog = true">部隊</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
-            <button v-show="model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
-            <button v-show="model.country.id !== model.character.countryId && model.canDiplomacy" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
+            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
+            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && !model.country.aiType" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
+            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
         </div>
         <!-- データ -->
         <div v-show="selectedInformationTab === 4" :class="'information-content information-data country-color-' + model.characterCountryColor + (mapMode === 9 ? ' mini-mode' : '')">
-          <h4 :class="'country-color-' + model.characterCountryColor">データ
-            <span v-show="mapMode === 1">【滞在】</span>
-            <span v-show="mapMode === 2">【守備】</span>
-            <span v-show="mapMode === 3">【滞在】</span>
-            <span v-show="mapMode === 4">【守備】</span>
-            <span v-show="mapMode === 5">【農・商】</span>
-            <span v-show="mapMode === 6">【技・壁】</span>
-            <span v-show="mapMode === 7">【人・技】</span>
-            <span v-show="mapMode === 8">【人・忠・技】</span>
+          <h4 :class="'country-color-' + model.characterCountryColor">
+            <div class="header">データ
+              <span v-show="mapMode === 1">【滞在】</span>
+              <span v-show="mapMode === 2">【守備】</span>
+              <span v-show="mapMode === 3">【滞在】</span>
+              <span v-show="mapMode === 4">【守備】</span>
+              <span v-show="mapMode === 5">【農・商】</span>
+              <span v-show="mapMode === 6">【技・壁】</span>
+              <span v-show="mapMode === 7">【人・技】</span>
+              <span v-show="mapMode === 8">【人・忠・技】</span>
+            </div>
           </h4>
           <div class="content-main">
             <div class="buttons">
@@ -169,7 +178,7 @@
         </div>
         <!-- 報告 -->
         <div v-show="selectedInformationTab === 3" :class="'information-content information-logs country-color-' + model.country.colorId + (mapMode === 9 ? ' mini-mode' : '')">
-          <h4>情勢</h4>
+          <h4><div class="header">情勢</div></h4>
           <div class="content-main" @scroll="onMapLogScrolled($event)">
             <MapLogList :logs="model.mapLogs" type="normal" isShowBattleLog="true" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
             <div v-show="model.isLoadingMoreMapLogs" class="loading-container load-more">
@@ -183,7 +192,7 @@
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread || model.global2Chat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
                 <span class="tab-text">
@@ -223,8 +232,8 @@
                            :characterDeleteTurn="model.character.deleteTurn"
                            :canSafeOut="model.canSafeOut"
                            :canSecretary="model.canSecretary"
-                           :canScouter="model.canScouter"
                            :canCommandComment="model.canCommandComment"
+                           :canSubBuilding="model.canSubBuilding"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"/>
         </div>
@@ -234,7 +243,8 @@
           <ul v-show="selectedActionTab === 1" class="nav nav-pills nav-fill">
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 0 }" @click.prevent.stop="selectedChatCategory = 0" href="#"><span class="tab-text">自国<span class="tab-notify" v-show="model.countryChat.isUnread"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 1 }" @click.prevent.stop="selectedChatCategory = 1" href="#"><span class="tab-text">個人<span class="tab-notify" v-show="model.privateChat.isUnread"></span></span></a></li>
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#"><span class="tab-text">全国<span class="tab-notify" v-show="model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 5 }" @click.prevent.stop="selectedChatCategory = 5" href="#"><span class="tab-text">全国1<span class="tab-notify" v-show="model.globalChat.isUnread"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 6 }" @click.prevent.stop="selectedChatCategory = 6" href="#"><span class="tab-text">全国2<span class="tab-notify" v-show="model.global2Chat.isUnread"></span></span></a></li>
             <!-- <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 2 }" @click.prevent.stop="selectedChatCategory = 2" href="#">都市</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 3 }" @click.prevent.stop="selectedChatCategory = 3" href="#">部隊</a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedChatCategory === 4 }" @click.prevent.stop="selectedChatCategory = 4" href="#">登用</a></li> -->
@@ -261,6 +271,12 @@
           </div>
           <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.globalChat"
+                              :countries="model.countries"
+                              :countryColor="model.characterCountryColor"
+                              :icons="model.characterIcons"/>
+          </div>
+          <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
+            <ChatMessagePanel :model="model.global2Chat"
                               :countries="model.countries"
                               :countryColor="model.characterCountryColor"
                               :icons="model.characterIcons"/>
@@ -417,7 +433,10 @@
       <div class="dialog-background" @click="closeDialogs()"></div>
       <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">徴兵</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">徴兵</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/68.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-soldier">
           <div class="dialog-content-soldier-main">
             <div class="row">
@@ -455,7 +474,7 @@
         </div>
       </div>
       <!-- 兵種研究 -->
-      <div v-show="isOpenResearchSoldierDialog" class="dialog-body">
+      <div v-if="isOpenResearchSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">兵種研究</h2>
         <div class="dialog-content">
           <div class="dropdown">
@@ -491,7 +510,7 @@
         </div>
       </div>
       <!-- 登用 -->
-      <div v-show="isOpenPromotionDialog" class="dialog-body">
+      <div v-if="isOpenPromotionDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">登用</h2>
         <div class="dialog-content dialog-content-promotion loading-container">
           <div class="dialog-content-promotion-main">
@@ -522,11 +541,16 @@
       <div v-show="isOpenTownCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の武将</h2>
         <div class="dialog-content loading-container">
+          <div v-if="model.townCharacters.length === 0" class="alert alert-info">武将はいません</div>
           <SimpleCharacterList
             :countries="model.countries"
-            :characters="model.loadedTownCharacters"
+            :characters="model.townCharacters"
+            :myCountryId="model.character.countryId"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
+            :commands="model.commands.commands"
+            :otherCharacterCommands="model.store.otherCharacterCommands"
+            isSortByTime="true"
             @private-chat="readyPrivateChat($event); isOpenTownCharactersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownCharacters"><div class="loading-icon"></div></div>
         </div>
@@ -541,13 +565,16 @@
       <div v-show="isOpenTownDefendersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">{{ model.town.name }} の守備</h2>
         <div class="dialog-content loading-container">
-          <div v-if="model.loadedTownDefenders.length > 0" class="alert alert-info">次回の攻撃相手と対戦するのは <strong>{{ model.loadedTownDefenders[0].name }}</strong> です</div>
+          <div v-if="model.townDefenders.length > 0" class="alert alert-info">次回の攻撃相手と対戦するのは <strong>{{ model.townDefenders[0].name }}</strong> です</div>
           <div v-else class="alert alert-info">守備はありません</div>
           <SimpleCharacterList
             :countries="model.countries"
-            :characters="model.loadedTownDefenders"
+            :characters="model.townDefenders"
+            :myCountryId="model.character.countryId"
             canPrivateChat="true"
             :myCharacterId="model.character.id"
+            :commands="model.commands.commands"
+            :otherCharacterCommands="model.store.otherCharacterCommands"
             @private-chat="readyPrivateChat($event); isOpenTownDefendersDialog = false"/>
           <div class="loading" v-show="model.isUpdatingTownDefenders"><div class="loading-icon"></div></div>
         </div>
@@ -562,6 +589,7 @@
       <div v-show="isOpenCountryCharactersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の武将</h2>
         <div class="dialog-content loading-container">
+          <div class="alert alert-warning">一部の情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.updateCountryCharacters()">更新</button></div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.countryCharacters"
@@ -570,6 +598,7 @@
             :canEdit="model.canAppoint"
             :canReinforcement="model.canDiplomacy && (model.countryAllianceStatus.id === 3 || model.countryAllianceStatus.id === 6 || model.countryAllianceStatus.id === 106)"
             canPrivateChat="true"
+            isSortByTime="true"
             @reinforcement-request="model.setReinforcementStatus($event, 1)"
             @reinforcement-cancel="model.setReinforcementStatus($event, 3)"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
@@ -584,9 +613,10 @@
         </div>
       </div>
       <!-- 無所属武将 -->
-      <div v-show="isOpenOppositionCharactersDialog" class="dialog-body">
+      <div v-if="isOpenOppositionCharactersDialog" class="dialog-body">
         <h2 class="dialog-title country-color-0">無所属 の武将</h2>
         <div class="dialog-content loading-container">
+          <div class="alert alert-warning">情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.updateOppositionCharacters()">更新</button></div>
           <SimpleCharacterList
             :countries="model.countries"
             :characters="model.oppositionCharacters"
@@ -605,7 +635,10 @@
       </div>
       <!-- 政策 -->
       <div v-show="isOpenPoliciesDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.countryColor">{{ model.country.name }} の政策</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">{{ model.country.name }} の政策</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/29.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content loading-container">
           <div style="display:flex;flex-direction:column;overflow:auto;height:100%">
             <CountryPolicyList :country="model.country"
@@ -628,10 +661,11 @@
         </div>
       </div>
       <!-- 同盟 -->
-      <div v-show="isOpenAllianceDialog" class="dialog-body">
+      <div v-if="isOpenAllianceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">同盟：{{ model.country.name }}</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <AllianceView :diplomacy="model.countryAlliance"
+                        :changingValue="model.countryAllianceChangingValue"
                         :status="model.countryAllianceStatus"
                         :newData="model.newAllianceData"
                         :isSending="model.isSendingAlliance"
@@ -650,7 +684,7 @@
         </div>
       </div>
       <!-- 戦争 -->
-      <div v-show="isOpenWarDialog" class="dialog-body">
+      <div v-if="isOpenWarDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.townCountryColor">戦争：{{ model.country.name }}</h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <WarView :diplomacy="model.countryWar"
@@ -672,17 +706,23 @@
         </div>
       </div>
       <!-- 攻略 -->
-      <div v-show="isOpenTownWarDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.townCountryColor">攻略：{{ model.town.name }}</h2>
+      <div v-if="isOpenTownWarDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">攻略：{{ model.town.name }}</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/69.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <TownWarView :current="model.gameDate"
                        :lastWar="model.characterCountryLastTownWar"
                        :status="model.characterCountryTownWarStatus"
                        :town="model.town"
+                       :towns="model.store.towns"
                        :country="model.country"
+                       :myCountryId="model.character.countryId"
                        :isSending="model.isSendingTownWar"
                        :canEdit="model.canDiplomacy"
                        :isShow="isOpenTownWarDialog"
+                       :wars="model.store.wars"
                        @can-apply="canTownWar = $event"
                        style="flex:1"/>
         </div>
@@ -697,9 +737,13 @@
         </div>
       </div>
       <!-- 部隊 -->
-      <div v-show="isOpenUnitsDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} の部隊</h2>
+      <div v-if="isOpenUnitsDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">{{ model.characterCountry.name }} の部隊</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/83.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
+          <div class="alert alert-warning">情報は自動更新されません <button class="btn btn-secondary btn-sm" @click="model.unitModel.updateUnits()">更新</button></div>
           <UnitListView :model="model.unitModel"
                         :isShow="isOpenUnitsDialog"
                         style="flex:1"/>
@@ -726,7 +770,7 @@
         </div>
       </div>
       <!-- 指令 -->
-      <div v-show="isOpenCommandersDialog" class="dialog-body">
+      <div v-if="isOpenCommandersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} 指令</h2>
         <div class="dialog-content dialog-content-directive">
           <div class="directive">
@@ -745,7 +789,7 @@
         </div>
       </div>
       <!-- 米売買 -->
-      <div v-show="isOpenRiceDialog" class="dialog-body">
+      <div v-if="isOpenRiceDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">米売買</h2>
         <div class="dialog-content dialog-content-rice">
           <div class="content">
@@ -784,8 +828,11 @@
         </div>
       </div>
       <!-- 国庫 -->
-      <div v-show="isOpenSafeDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">国庫納入</h2>
+      <div v-if="isOpenSafeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">国庫納入</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/54.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-rice">
           <div class="content">
             <div class="row">
@@ -811,8 +858,11 @@
         </div>
       </div>
       <!-- 国庫搬出 -->
-      <div v-show="isOpenSafeOutDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">国庫搬出</h2>
+      <div v-if="isOpenSafeOutDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">国庫搬出</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/54.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-rice dialog-content-safe-out loading-container">
           <div class="content dialog-content-safe-out-main">
             <div class="row">
@@ -846,13 +896,17 @@
         </div>
       </div>
       <!-- 政務官募集 -->
-      <div v-show="isOpenAddSecretaryDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官募集</h2>
+      <div v-if="isOpenAddSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">政務官募集</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 1 ポイント )</button><br>
+          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 2 ポイント )</button><br>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官 ( 1 ポイント )</button><br>
           <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官 ( 1 ポイント )</button><br>
-          <button v-if="model.canSecretaryUnitLeader" class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button>
+          <span v-if="model.canSecretaryUnitLeader"><button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button><br></span>
+          <span v-if="model.canSecretaryScouter"><button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 29)">斥候 ( 1 ポイント )</button><br></span>
           <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
         </div>
         <div class="dialog-footer">
@@ -862,8 +916,11 @@
         </div>
       </div>
       <!-- 政務官 -->
-      <div v-show="isOpenSecretaryDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（部隊）</h2>
+      <div v-if="isOpenSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">政務官配属（部隊）</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list">
@@ -891,8 +948,11 @@
         </div>
       </div>
       <!-- 政務官 -->
-      <div v-show="isOpenSecretaryTownDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官配属（都市）</h2>
+      <div v-if="isOpenSecretaryTownDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">政務官配属（都市）</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list-top-of-map">
@@ -925,8 +985,11 @@
         </div>
       </div>
       <!-- 政務官解任 -->
-      <div v-show="isOpenRemoveSecretaryDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">政務官解任</h2>
+      <div v-if="isOpenRemoveSecretaryDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">政務官解任</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list">
@@ -953,7 +1016,7 @@
         </div>
       </div>
       <!-- 武将アイコン追加 -->
-      <div v-show="isOpenCharacterIconPickerDialog" class="dialog-body">
+      <div v-if="isOpenCharacterIconPickerDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">新規アイコン追加</h2>
         <div class="dialog-content">
           <CharacterIconPicker v-model="newIcon" :canUseFile="true"/>
@@ -968,8 +1031,11 @@
         </div>
       </div>
       <!-- 陣形 -->
-      <div v-show="isOpenFormationDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形</h2>
+      <div v-if="isOpenFormationDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">陣形</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -990,8 +1056,11 @@
         </div>
       </div>
       <!-- 陣形追加 -->
-      <div v-show="isOpenFormationAddDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形追加</h2>
+      <div v-if="isOpenFormationAddDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">陣形追加</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -1010,8 +1079,11 @@
         </div>
       </div>
       <!-- 陣形変更 -->
-      <div v-show="isOpenFormationChangeDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">陣形変更</h2>
+      <div v-if="isOpenFormationChangeDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">陣形変更</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/50.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
@@ -1032,7 +1104,10 @@
       </div>
       <!-- アイテム一覧 -->
       <div v-show="isOpenCharacterItemDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム</h2>
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
                              :skills="model.characterSkills"
@@ -1048,13 +1123,17 @@
             <button class="btn btn-danger" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 1)">拒否</button>
           </div>
           <div class="right-side">
+            <button class="btn btn-secondary" v-show="model.hasPendingItems" @click="model.receiveAllItems()">一括受取</button>
             <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 3)">承認</button>
           </div>
         </div>
       </div>
       <!-- アイテム購入 -->
-      <div v-show="isOpenCharacterItemBuyDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム購入</h2>
+      <div v-if="isOpenCharacterItemBuyDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム購入</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <div class="alert alert-warning">次に都市ごとのアイテムがシャッフルされるのは <span style="font-weight:bold">{{ model.nextItemShuffleYear }}</span> 年 1 月 です。先行入力のときはこれを超えないよう注意してください</div>
           <CharacterItemList :items="model.characterTownItems"
@@ -1074,8 +1153,11 @@
         </div>
       </div>
       <!-- アイテム売却 -->
-      <div v-show="isOpenCharacterItemSellDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム売却</h2>
+      <div v-if="isOpenCharacterItemSellDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム売却</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
                              :skills="model.characterSkills"
@@ -1096,8 +1178,11 @@
         </div>
       </div>
       <!-- アイテム譲渡 -->
-      <div v-show="isOpenCharacterItemHandOverDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム譲渡</h2>
+      <div v-if="isOpenCharacterItemHandOverDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム譲渡</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content dialog-content-secretary loading-container">
           <div class="dialog-content-secretary-main">
             <div class="character-list">
@@ -1124,13 +1209,16 @@
             <button class="btn btn-light" @click="isOpenCharacterItemHandOverDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="targetCharacter.id > 0 && selectedCharacterItemType.type.id > 0" @click="model.commands.inputer.inputHandOverItemCommand(52, selectedCharacterItemType.type.id, selectedCharacterItemType.id, targetCharacter.id); isOpenCharacterItemHandOverDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="targetCharacter.id > 0 && selectedCharacterItemType.type.id > 0" @click="model.commands.inputer.inputHandOverItemCommand(52, selectedCharacterItemType.type.id, 0, targetCharacter.id); isOpenCharacterItemHandOverDialog = false">承認</button>
           </div>
         </div>
       </div>
       <!-- アイテム使用 -->
-      <div v-show="isOpenCharacterItemUseDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム使用</h2>
+      <div v-if="isOpenCharacterItemUseDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム使用</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/12.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <CharacterItemList :items="model.characterItems"
                              :skills="model.characterSkills"
@@ -1149,8 +1237,11 @@
         </div>
       </div>
       <!-- アイテム生成 -->
-      <div v-show="isOpenGenerateItemUseDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">アイテム生産</h2>
+      <div v-if="isOpenGenerateItemUseDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">アイテム生産</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/82.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <GenerateItemTypePicker :skills="model.characterSkills"
                                   v-model="selectedGenerateItemType"
@@ -1166,8 +1257,11 @@
         </div>
       </div>
       <!-- 技能 -->
-      <div v-show="isOpenSkillDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">技能</h2>
+      <div v-if="isOpenSkillDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">技能</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/19.html" target="_blank">？</a></div>
+        </h2>
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
             <SkillList :skills="model.characterSkills"
                        :skillPoint="model.character.skillPoint"
@@ -1185,7 +1279,7 @@
         </div>
       </div>
       <!-- コマンドコメント -->
-      <div v-show="isOpenCommandCommentDialog" class="dialog-body">
+      <div v-if="isOpenCommandCommentDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">コメント</h2>
         <div class="dialog-content dialog-content-promotion">
           <div class="dialog-content-promotion-main">
@@ -1204,6 +1298,44 @@
           </div>
         </div>
       </div>
+      <!-- 建築物建築 -->
+      <div v-if="isOpenBuildTownSubBuildingDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">建築物の建築</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/104.html" target="_blank">？</a></div>
+        </h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenBuildTownSubBuildingDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedTownSubBuilding.id >= 0" @click="model.commands.inputer.inputTownSubBuildingCommand(63, selectedTownSubBuilding.id); isOpenBuildTownSubBuildingDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 建築物撤去 -->
+      <div v-if="isOpenRemoveTownSubBuildingDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">建築物の撤去</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/104.html" target="_blank">？</a></div>
+        </h2>
+        <div class="dialog-content" style="display:flex;flex-direction:column">
+          <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenRemoveTownSubBuildingDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedTownSubBuilding.id >= 0" @click="model.commands.inputer.inputTownSubBuildingCommand(64, selectedTownSubBuilding.id); isOpenRemoveTownSubBuildingDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 地図での都市選択 -->
       <div v-show="isOpenMapDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">都市選択</h2>
@@ -1217,6 +1349,22 @@
               :store="model.store"
               @selected="onMapDialogSelected($event)"
               style="height:400px;min-height:50vh"/>
+            <div v-if="mapDialogMode === 6">
+              <div class="alert alert-warning">
+                割譲先と隣接した都市しか割譲できません<br>
+                AI国家に割譲することはできません<br>
+                <strong>すべての都市を割譲すると降伏になります</strong><br>
+              </div>
+              <div class="alert alert-info">
+                割譲先: <strong>{{ model.country.name }}</strong>
+              </div>
+              <div class="alert alert-danger" v-show="mapDialogSelectedTown.countryId !== model.characterCountry.id">
+                自分の国の都市ではありません
+              </div>
+              <div class="alert alert-danger" v-show="!model.isNextToCountry(mapDialogSelectedTown.id, model.country.id)">
+                割譲先と隣接していません
+              </div>
+            </div>
           </div>
         </div>
         <div class="dialog-footer">
@@ -1229,19 +1377,21 @@
         </div>
       </div>
       <!-- ようこそ -->
-      <div v-show="isOpenWelcomeDialog" class="dialog-body">
+      <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
         <div class="dialog-content dialog-content-welcome">
           <div class="dialog-content-welcome-main">
             <h3>三国志NETは初めてですか？</h3>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-primary">初心者向け解説</a>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/39.html" target="_blank" class="btn btn-secondary" style="margin-left:8px">チュートリアル</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-light">初心者向け解説</a>
             <div class="alert alert-info" style="margin-top:16px">
               初心者向け解説は、このダイアログを閉じた後も、いつでも「メニュー」から表示することができます。<br>
+              スライド解説は、初心者向け解説ページから移動することができます。<br>
               このダイアログは、「承認」をクリックまたはタップすることで、閉じることができます。
             </div>
             <h3>三国志NETは経験者で、KMY Versionは初めてですか？</h3>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-primary">画面の見方</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/45.html" target="_blank" class="btn btn-secondary">画面の見方</a>
             <a href="https://w.atwiki.jp/sangokukmy9/pages/81.html" target="_blank" class="btn btn-light" style="margin-left:8px">他の三国志NETとの違い</a>
             <div style="margin-top:16px">
               画面は他の三国志NETと大きく異なりますが、ゲームシステムは三国志NETを踏襲したものです。<br>
@@ -1291,6 +1441,7 @@ import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import FormationList from '@/components/parts/FormationList.vue';
 import SkillList from '@/components/parts/SkillList.vue';
+import TownSubBuildingList from '@/components/parts/TownSubBuildingList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import GenerateItemTypePicker from '@/components/parts/GenerateItemTypePicker.vue';
 import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
@@ -1334,6 +1485,7 @@ import EventObject from '@/models/common/EventObject';
     CharacterItemList,
     GenerateItemTypePicker,
     SkillList,
+    TownSubBuildingList,
     RiceSimulatorView,
   },
 })
@@ -1384,10 +1536,13 @@ export default class StatusPage extends Vue {
   public isOpenSkillDialog: boolean = false;
   public isOpenGenerateItemUseDialog: boolean = false;
   public isOpenCommandCommentDialog: boolean = false;
+  public isOpenBuildTownSubBuildingDialog: boolean = false;
+  public isOpenRemoveTownSubBuildingDialog: boolean = false;
   public isOpenMapDialog: boolean = false;
   public isOpenWelcomeDialog: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
+  public isOpenCharacterHelpPopup: boolean = false;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
@@ -1416,6 +1571,7 @@ export default class StatusPage extends Vue {
     { type: new def.CharacterItemType(-1), id: -1 };
   public selectedGenerateItemType: def.CharacterItemType = new def.CharacterItemType(-1);
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
+  public selectedTownSubBuilding: def.TownSubBuildingType = new def.TownSubBuildingType(-1);
   public commandCommentMessage: string = '';
 
   public callCountryChatFocus?: EventObject;
@@ -1434,7 +1590,8 @@ export default class StatusPage extends Vue {
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
-      || this.isOpenMapDialog || this.isOpenWelcomeDialog;
+      || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
+      || this.isOpenRemoveTownSubBuildingDialog;
   }
 
   public openCommandDialog(event: string) {
@@ -1520,18 +1677,16 @@ export default class StatusPage extends Vue {
       this.mapDialogMode = 1;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenMapDialog = true;
-    } else if (event === 'town-scouter-set') {
-      this.mapDialogMode = 3;
-      this.mapDialogSelectedTown = this.model.town;
-      this.isOpenMapDialog = true;
-    } else if (event === 'town-scouter-unset') {
-      this.mapDialogMode = 4;
-      this.mapDialogSelectedTown = this.model.town;
-      this.isOpenMapDialog = true;
     } else if (event === 'town-spy') {
       this.mapDialogMode = 5;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenMapDialog = true;
+    } else if (event === 'subbuilding-build') {
+      this.selectedTownSubBuilding = new def.TownSubBuildingType(-1);
+      this.isOpenBuildTownSubBuildingDialog = true;
+    } else if (event === 'subbuilding-remove') {
+      this.selectedTownSubBuilding = new def.TownSubBuildingType(-1);
+      this.isOpenRemoveTownSubBuildingDialog = true;
     }
   }
 
@@ -1548,7 +1703,8 @@ export default class StatusPage extends Vue {
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
-      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog = false;
+      this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
+      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = false;
   }
 
   public closeMapDialog() {
@@ -1558,12 +1714,10 @@ export default class StatusPage extends Vue {
       this.model.commands.inputer.inputMoveCommand(13, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 2) {
       this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
-    } else if (this.mapDialogMode === 3) {
-      this.model.commands.inputer.inputMoveCommand(45, this.mapDialogSelectedTown.id);
-    } else if (this.mapDialogMode === 4) {
-      this.model.commands.inputer.inputMoveCommand(46, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 5) {
       this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 6) {
+      this.model.giveTownToCountry(this.mapDialogSelectedTown.id);
     }
     this.isOpenMapDialog = false;
   }
@@ -1606,6 +1760,8 @@ export default class StatusPage extends Vue {
         return this.model.privateChat;
       } else if (this.selectedChatCategory === 5) {
         return this.model.globalChat;
+      } else if (this.selectedChatCategory === 6) {
+        return this.model.global2Chat;
       }
     }
     return undefined;
@@ -1618,6 +1774,7 @@ export default class StatusPage extends Vue {
     this.model.countryChat.isOpen =
       this.model.privateChat.isOpen =
       this.model.globalChat.isOpen =
+      this.model.global2Chat.isOpen =
       this.model.promotions.isOpen =
       this.model.countryThreadBbs.isOpen =
       this.model.globalThreadBbs.isOpen = false;
@@ -1790,6 +1947,15 @@ ul.nav {
   }
 }
 
+// ドロップダウン
+.dropdown-toggle-custom {
+  position: relative;
+}
+.dropdown-menu-custom {
+  right: 0;
+  left: auto;
+}
+
 // 現在年月
 #current-display-wrapper {
   display: flex;
@@ -1813,6 +1979,11 @@ ul.nav {
       font-weight: bold;
       color: #080;
       padding: 0 8px;
+    }
+    .month-timer {
+      font-size: 0.7em;
+      margin-left: 16px;
+      color: #e07be0;
     }
   }
 
@@ -1950,6 +2121,7 @@ ul.nav {
   @include country-color-light('background-color');
   transition: border-color .1s, background-color .1s;
   h4 {
+    display: flex;
     margin: 0;
     font-size: 1.4rem;
     height: 2rem;
@@ -1959,6 +2131,9 @@ ul.nav {
     @include country-color-deep('background-color');
     @include country-color-light('color');
     transition: color .1s, background-color .1s;
+    .header {
+      flex: 1;
+    }
   }
   .content-main {
     height: calc(100% - 2rem - 44px);
@@ -2192,6 +2367,8 @@ ul.nav {
     }
 
     .dialog-title {
+      display: flex;
+      justify-content: center;
       text-align: center;
       padding: 8px 0 4px;
       border-bottom-width: 2px;
@@ -2199,6 +2376,13 @@ ul.nav {
       @include country-color-deep('color');
       @include country-color-deep('border-bottom-color');
       @include country-color-light('background-color');
+      .header {
+        flex: 1;
+      }
+      .help {
+        margin-right: 8px;
+        margin-top: -4px;
+      }
     }
 
     .dialog-content {

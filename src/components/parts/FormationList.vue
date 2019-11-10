@@ -128,6 +128,10 @@ export default class FormationList extends Vue {
       this.currentFormationTypeInfo = Enumerable.from(def.FORMATION_TYPES).first((f) => f.id === 0);
     }
   }
+
+  private created() {
+    this.onFormationChanged();
+  }
 }
 </script>
 

@@ -39,10 +39,6 @@ export default class StatusModel {
   public characterIcons: api.CharacterIcon[] = [];
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
-  public townCharacters: api.Character[] = [];
-  public townDefenders: api.Character[] = [];
-  public loadedTownCharacters: api.Character[] = [];
-  public loadedTownDefenders: api.Character[] = [];
   public countryCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
@@ -82,6 +78,11 @@ export default class StatusModel {
   public hasLoadAllMapLogs: boolean = false;
   public isLoadingMoreCharacterLogs: boolean = false;
   public hasLoadAllCharacterLogs: boolean = false;
+  public isMapLogTabOpenPrivate: boolean = false;
+  public isMapLogTabUnread: boolean = false;
+
+  public monthTimer: number = 0;
+  private monthTimerDate: Date = new Date();
 
   private $router?: () => any;
 
@@ -238,6 +239,11 @@ export default class StatusModel {
     return max;
   }
 
+  public get hasPendingItems(): boolean {
+    return this.store.items.some((i) => i.status === api.CharacterItem.statusCharacterPending &&
+                                        i.characterId === this.character.id);
+  }
+
   public get nextItemShuffleYear(): number {
     const year = this.gameDate.year - (this.gameDate.year % 12) + 4;
     if (year > this.gameDate.year) {
@@ -270,7 +276,8 @@ export default class StatusModel {
       .where((c) => c.aiType === api.Character.aiSecretaryPatroller ||
                     c.aiType === api.Character.aiSecretaryUnitGather ||
                     c.aiType === api.Character.aiSecretaryPioneer ||
-                    c.aiType === api.Character.aiSecretaryUnitLeader)
+                    c.aiType === api.Character.aiSecretaryUnitLeader ||
+                    c.aiType === api.Character.aiSecretaryScouter)
       .toArray();
   }
 
@@ -317,7 +324,16 @@ export default class StatusModel {
     // 現在選択中の国と自分の国の同盟
     return Enumerable
       .from(this.store.alliances)
-      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId));
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId) &&
+                              ca.status !== api.CountryAlliance.statusChangingValue);
+  }
+
+  public get countryAllianceChangingValue(): api.CountryAlliance | undefined {
+    // 現在選択中の国と自分の国の同盟
+    return Enumerable
+      .from(this.store.alliances)
+      .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, this.character.countryId) &&
+                              ca.status === api.CountryAlliance.statusChangingValue);
   }
 
   public get countryWar(): api.CountryWar | undefined {
@@ -336,11 +352,18 @@ export default class StatusModel {
     } else {
       const alliance = Enumerable
         .from(this.store.alliances)
-        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id) &&
+                                ca.status !== api.CountryAlliance.statusChangingValue);
+      const changing = Enumerable
+        .from(this.store.alliances)
+        .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id) &&
+                                ca.status === api.CountryAlliance.statusChangingValue);
       if (alliance) {
         if (alliance.status === api.CountryAlliance.statusRequesting) {
           // 自分が打診したか、されてるかでデータを変える
           status = alliance.requestedCountryId === this.characterCountry.id ? 1 : 101;
+        } else if (alliance.status === api.CountryAlliance.statusChangeRequesting && changing) {
+          status = changing.requestedCountryId === this.characterCountry.id ? 6 : 106;
         } else {
           status = alliance.status;
         }
@@ -370,6 +393,11 @@ export default class StatusModel {
         .firstOrDefault((ca) => api.CountryDipromacy.isEqualCountry(ca, this.country.id, myCountry.id));
       if (war) {
         status = war.status;
+        if (war.status === api.CountryWar.statusStopRequesting) {
+          if (war.requestedStopCountryId !== myCountry.id) {
+            status = 102;
+          }
+        }
       } else {
         status = 0;
       }
@@ -401,31 +429,35 @@ export default class StatusModel {
     return api.Town.getMoneyToRicePrice(this.characterTown, assets);
   }
 
-  public get characterTownHasScouter(): boolean {
-    return Enumerable.from(this.store.scouters)
-      .any((s) => s.townId === this.town.id);
-  }
-
   public get secretaryMaxValue(): number {
     // 自国の政務官の最大
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
-      .count((p) => p.type === 4 || p.type === 34);
+      .sum((p) => p.type === 4 ? 2 :
+                  p.type === 2 ? 1 :
+                  p.type === 34 ? 1 : 0);
   }
 
   public get currentSecretaryPoint(): number {
     return Enumerable.from(this.store.characters)
       .where((c) => c.countryId === this.character.countryId)
-      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 1 :
+      .sum((c) => c.aiType === api.Character.aiSecretaryPatroller ? 2 :
                   c.aiType === api.Character.aiSecretaryPioneer ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
-                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 : 0);
+                  c.aiType === api.Character.aiSecretaryUnitLeader ? 1 :
+                  c.aiType === api.Character.aiSecretaryScouter ? 1 : 0);
   }
 
   public get canSecretaryUnitLeader(): boolean {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
       .any((p) => p.type === 33 && p.status === api.CountryPolicy.statusAvailable);
+  }
+
+  public get canSecretaryScouter(): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .any((p) => p.type === 2 && p.status === api.CountryPolicy.statusAvailable);
   }
 
   public get safeMaxValue(): number {
@@ -514,6 +546,60 @@ export default class StatusModel {
     return types;
   }
 
+  public get isMapLogTabOpen(): boolean {
+    return this.isMapLogTabOpenPrivate;
+  }
+
+  public set isMapLogTabOpen(value: boolean) {
+    this.isMapLogTabOpenPrivate = value;
+    if (value) {
+      this.isMapLogTabUnread = false;
+    }
+  }
+
+  public get townCharacters(): api.Character[] {
+    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
+      return this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
+    } else {
+      const scoutedTown = ArrayUtil.find(this.scoutedTowns, this.town.id);
+      if (this.town.id !== this.character.townId) {
+        // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
+        if (scoutedTown) {
+          return scoutedTown.characters;
+        }
+      }
+    }
+    return [];
+  }
+
+  public get townDefenders(): api.Character[] {
+    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
+      return Enumerable
+        .from(this.store.defenders.filter((c) => c.townId === this.town.id))
+        .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
+        .where((c) => c !== undefined && c !== null)
+        .toArray();
+    } else {
+      const scoutedTown = ArrayUtil.find(this.scoutedTowns, this.town.id);
+      if (this.town.id !== this.character.townId) {
+        // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
+        if (scoutedTown) {
+          return scoutedTown.defenders;
+        }
+      }
+    }
+    return [];
+  }
+
+  public isNextToCountry(townId: number, countryId: number): boolean {
+    const town = ArrayUtil.find(this.store.towns, townId);
+    if (town) {
+      const arounds = api.TownBase.getAroundTowns(this.store.towns, town);
+      return arounds.some((t) => t.countryId === countryId);
+    }
+    return false;
+  }
+
   // #endregion
 
   // #region Streaming
@@ -541,6 +627,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.TownDefender>(
       api.TownDefender.typeId,
       (obj) => this.onTownDefenderReceived(obj));
+    ApiStreaming.status.on<api.TownSubBuilding>(
+      api.TownSubBuilding.typeId,
+      (obj) => this.onTownSubBuildingReceived(obj));
     ApiStreaming.status.on<api.ScoutedTown>(
       api.ScoutedTown.typeId,
       (obj) => this.updateScoutedTown(obj));
@@ -568,9 +657,6 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterLog>(
       api.CharacterLog.typeId,
       (obj) => this.addCharacterLog(obj));
-    ApiStreaming.status.on<api.CharacterCommand>(
-      api.CharacterCommand.typeId,
-      (obj) => this.commands.updateCommand(obj));
     ApiStreaming.status.on<api.ApiSignal>(
       api.ApiSignal.typeId,
       (obj) => this.onReceiveSignal(obj));
@@ -604,18 +690,30 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CommandComment>(
       api.CommandComment.typeId,
       (obj) => this.onCommandCommentReceived(obj));
+    ApiStreaming.status.on<api.CharacterCommand>(
+      api.CharacterCommand.typeId,
+      (obj) => this.onReceiveOtherCharacterCommand(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
-    ApiStreaming.status.on<api.CountryScouter>(
-      api.CountryScouter.typeId,
-      (obj) => this.onCountryScouterReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.hasInitialized = false;
       this.commands.reset();
+      this.onlines.reset();
     };
     ApiStreaming.status.start();
+
+    this.privateChat.onOpened = () => {
+      // 個人宛タブを開いたら既読つける
+      if (this.privateChat.messages.some((m) => m.typeData2 === this.character.id && !m.isRead)) {
+        api.Api.setPrivateChatMessageRead();
+      }
+    };
+
+    setInterval(() =>
+      this.monthTimer = Math.floor((this.monthTimerDate.getTime() - new Date().getTime()) / 1000),
+      1000);
   }
 
   public onDestroy() {
@@ -657,11 +755,13 @@ export default class StatusModel {
       this.countryThreadBbs.sortThreads();
       this.globalThreadBbs.sortThreads();
       this.countryChat.isUnread =
-        this.privateChat.isUnread =
+        // this.privateChat.isUnread =      // 既読機能と同時に設定する
         this.globalChat.isUnread =
+        this.global2Chat.isUnread =
         this.promotions.isUnread =
         this.countryThreadBbs.isUnread =
         this.globalThreadBbs.isUnread = false;
+      this.isMapLogTabUnread = false;
       this.updateCharacter(this.character);
       this.commands.initialize(this.character.lastUpdatedGameDate, this.character.lastUpdated);
     } else if (signal.type === 5) {
@@ -710,6 +810,9 @@ export default class StatusModel {
   private updateSystemData(data: api.SystemData) {
     this.store.systemData = data;
     this.updateGameDate(data.gameDateTime);
+
+    this.monthTimerDate = api.DateTime.toDate(data.currentMonthStartDateTime);
+    this.monthTimerDate.setSeconds(this.monthTimerDate.getSeconds() + def.UPDATE_TIME);
   }
 
   // #endregion
@@ -749,7 +852,7 @@ export default class StatusModel {
       .where((d) => d.characterId !== defender.characterId)
       .toArray();
     if (defender.status === api.TownDefender.statusAvailable) {
-      ArrayUtil.addItem(this.store.defenders, defender);
+      ArrayUtil.addLog(this.store.defenders, defender);
     }
     this.setTown(this.store.town);
   }
@@ -762,11 +865,13 @@ export default class StatusModel {
         if (town.id !== this.character.townId) {
           // 他国で、かつ自分がいる都市でなければ、諜報データがあるか確認
           if (scoutedTown) {
-            this.townCharacters = scoutedTown.characters;
-            this.townDefenders = scoutedTown.defenders;
-            this.loadedTownCharacters = scoutedTown.characters;
-            this.loadedTownDefenders = scoutedTown.defenders;
             scoutedTown.countryId = town.countryId;
+            if (scoutedTown.subBuildings) {
+              scoutedTown.subBuildings.forEach((s) => {
+                s.townId = townId;
+                ArrayUtil.addItem(this.store.subBuildings, s);
+              });
+            }
             this.setTown(scoutedTown);
           } else {
             this.setTown(town);
@@ -789,25 +894,8 @@ export default class StatusModel {
 
   private setTown(town: api.Town) {
     this.store.town = town;
-    if (!api.Town.isScouted(town)) {
-      this.updateTownCharacterAndDefenders();
-    }
     this.townParameters = this.getTownParameters(town);
     Vue.set(this.town, 'scoutedGameDateTime', (this.town as any).scoutedGameDateTime);
-  }
-
-  private updateTownCharacterAndDefenders() {
-    if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
-      this.townCharacters = this.store.characters.filter((c) => c.townId === this.town.id && c.id >= 0);
-      this.townDefenders = Enumerable
-        .from(this.store.defenders.filter((c) => c.townId === this.town.id))
-        .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
-        .where((c) => c !== undefined && c !== null)
-        .toArray();
-    } else {
-      this.townCharacters = [];
-      this.townDefenders = [];
-    }
   }
 
   private getTownParameters(town: api.Town): StatusParameter[] {
@@ -838,6 +926,27 @@ export default class StatusModel {
       }
     }
 
+    if (town.ricePrice !== undefined) {
+      let subBuildingSize = 0;
+      const subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+      const buffer: StatusParameter[] = [];
+      this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
+        const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
+        if (info) {
+          if (s.status === api.TownSubBuilding.statusUnderConstruction) {
+            buffer.push(new TextStatusParameter('建設中', info.name, 'information'));
+          } else if (s.status === api.TownSubBuilding.statusRemoving) {
+            buffer.push(new TextStatusParameter('撤去中', info.name, 'warning'));
+          } else if (s.status === api.TownSubBuilding.statusAvailable) {
+            buffer.push(new TextStatusParameter('建築物', info.name));
+          }
+          subBuildingSize += info.size;
+        }
+      });
+      ps.push(new RangedStatusParameter('敷地', subBuildingSize, subBuildingSizeMax));
+      buffer.forEach((b) => ps.push(b));
+    }
+
     if (town.countryId === this.character.countryId ||
         town.id === this.character.townId ||
         isScouted) {
@@ -855,41 +964,6 @@ export default class StatusModel {
     return api.Town.default;
   }
 
-  public updateTownCharacters() {
-    this.isUpdatingTownCharacters = true;
-    api.Api.getAllCharactersAtTown(this.town.id)
-      .then((characters) => {
-        characters.forEach((c) => {
-          if (c.commands) {
-            c.commands.forEach((cc) => {
-              this.commands.inputer.updateCommandName(cc);
-            });
-          }
-        });
-        this.loadedTownCharacters = characters;
-      })
-      .catch(() => {
-        NotificationService.getTownCharactersFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingTownCharacters = false;
-      });
-  }
-
-  public updateTownDefenders() {
-    this.isUpdatingTownDefenders = true;
-    api.Api.getAllDefendersAtTown(this.town.id)
-      .then((characters) => {
-        this.loadedTownDefenders = characters;
-      })
-      .catch(() => {
-        NotificationService.getTownCharactersFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingTownDefenders = false;
-      });
-  }
-
   public scoutTown() {
     this.isScouting = true;
     api.Api.scoutTown()
@@ -902,6 +976,13 @@ export default class StatusModel {
       .finally(() => {
         this.isScouting = false;
       });
+  }
+
+  private onTownSubBuildingReceived(item: api.TownSubBuilding) {
+    ArrayUtil.addItem(this.store.subBuildings, item);
+    if (this.town.id === item.townId) {
+      this.setTown(this.town);
+    }
   }
 
   // #endregion
@@ -984,6 +1065,7 @@ export default class StatusModel {
         country.lastRiceIncomes !== undefined &&
         country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('政策ポイント', country.policyPoint));
+      ps.push(new RangedStatusParameter('使用中の政務官', this.currentSecretaryPoint, this.secretaryMaxValue));
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
@@ -1081,10 +1163,6 @@ export default class StatusModel {
 
   private onCountryChanged() {
     this.countryChat.clear();
-    this.store.scouters = Enumerable
-      .from(this.store.scouters)
-      .where((s) => s.countryId === this.character.countryId)
-      .toArray();
     api.Api.getCountryChatMessage()
       .then((messages) => {
         messages.forEach((message) => {
@@ -1257,16 +1335,17 @@ export default class StatusModel {
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
   }
 
-  public get canScouter(): boolean {
-    // 自分が諜報府権限を持つか
-    return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
-  }
-
   public get canCommandComment(): boolean {
     // 自分がコマンドコメント権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canSubBuilding(): boolean {
+    // 自分が建築物権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 ||
+                                                          p.type === 3 || p.type === 9));
   }
 
   public get canDiplomacy(): boolean {
@@ -1310,7 +1389,20 @@ export default class StatusModel {
   // #region CountryDiplomacies
 
   private updateCountryAlliance(alliance: api.CountryAlliance) {
-    this.updateCountryDiplomacies(alliance, this.store.alliances, (val) => this.store.alliances = val);
+
+    // 変更協議中のデータはupdateCountryDiplomaciesの呼び出しで削除されてしまうので
+    // いったん取得して呼び出し後に追加し直す
+    const changingValues = this.store.alliances.filter((a) =>
+      a.status === api.CountryAlliance.statusChangingValue &&
+      (!api.CountryDipromacy.isEqualCountry(a, alliance.requestedCountryId, alliance.insistedCountryId) ||
+       alliance.status !== api.CountryAlliance.statusChangingValue));
+    this.store.alliances = this.store.alliances.filter((a) => a.status !== api.CountryAlliance.statusChangingValue);
+    if (alliance.status === api.CountryAlliance.statusChangingValue) {
+      changingValues.push(alliance);
+    } else {
+      this.updateCountryDiplomacies(alliance, this.store.alliances, (val) => this.store.alliances = val);
+    }
+    changingValues.forEach((a) => this.store.alliances.push(a));
 
     // 自国に関係することなら通知する
     if (this.store.hasInitialized &&
@@ -1345,6 +1437,10 @@ export default class StatusModel {
         NotificationService.warInReady.notifyWithParameter(
           targetCountry.name,
           api.GameDateTime.toFormatedString(war.startGameDate));
+      } else if (war.status === api.CountryWar.statusStoped) {
+        NotificationService.warStopped.notifyWithParameter(targetCountry.name);
+      } else if (war.status === api.CountryWar.statusStopRequesting) {
+        NotificationService.warStopRequested.notifyWithParameter(targetCountry.name);
       }
       this.commands.updateCommandListInformations();
     }
@@ -1405,12 +1501,15 @@ export default class StatusModel {
     if (!old ||
       old.status === api.CountryAlliance.statusNone ||
       old.status === api.CountryAlliance.statusBroken ||
-      old.status === api.CountryAlliance.statusDismissed) {
+      old.status === api.CountryAlliance.statusDismissed ||
+      status === api.CountryAlliance.statusChangeRequesting) {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
+      alliance.memo = this.newAllianceData.memo;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
+      alliance.memo = old.memo;
     }
 
     this.isSendingAlliance = true;
@@ -1455,7 +1554,17 @@ export default class StatusModel {
         NotificationService.warSent.notify();
       })
       .catch((ex) => {
-        NotificationService.warFailed.notify();
+        if (ex.data.code === api.ErrorCode.invalidParameterError) {
+          NotificationService.warFailedBecauseOfStartDate.notify();
+        } else if (ex.data.code === api.ErrorCode.meaninglessOperationError) {
+          NotificationService.warFailedBecauseSameStatus.notify();
+        } else if (ex.data.code === api.ErrorCode.notPermissionError) {
+          NotificationService.warFailedBecauseNotPermission.notify();
+        } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.warFailedBecauseInvalidOperation.notify();
+        } else {
+          NotificationService.warFailed.notify();
+        }
       })
       .finally(() => {
         this.isSendingWar = false;
@@ -1475,6 +1584,21 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isSendingTownWar = false;
+      });
+  }
+
+  public giveTownToCountry(townId: number) {
+    const town = this.store.towns.find((t) => t.id === townId);
+    if (!town) {
+      return;
+    }
+
+    api.Api.giveTown(this.country.id, townId)
+      .then(() => {
+        NotificationService.townGave.notifyWithParameter(town.name, this.country.name);
+      })
+      .catch(() => {
+        NotificationService.townGiveFailed.notifyWithParameter(town.name, this.country.name);
       });
   }
 
@@ -1631,28 +1755,6 @@ export default class StatusModel {
 
   // #endregion
 
-  // #region CountryScouters
-
-  private onCountryScouterReceived(scouter: api.CountryScouter) {
-    const town = this.getTown(scouter.townId);
-
-    if (!scouter.isRemoved) {
-      ArrayUtil.addItem(this.store.scouters, scouter);
-      if (this.store.hasInitialized) {
-        NotificationService.scouterAdded.notifyWithParameter(town.name);
-      }
-    } else {
-      this.store.scouters = Enumerable.from(this.store.scouters)
-        .where((s) => s.id !== scouter.id)
-        .toArray();
-      if (this.store.hasInitialized) {
-        NotificationService.scouterRemoved.notifyWithParameter(town.name);
-      }
-    }
-  }
-
-  // #endregion
-
   // #region Character
 
   private initializeCharacter(character: api.Character) {
@@ -1679,6 +1781,14 @@ export default class StatusModel {
     }
 
     if (!character.hasRemoved) {
+      // アイコンデータがなくなることがある（原因不明）ので、古いデータにアイコンがあればそれを設定する
+      if (!character.mainIcon || !character.mainIcon.id) {
+        const old = ArrayUtil.find(this.store.characters, character.id);
+        if (old) {
+          character.mainIcon = old.mainIcon;
+        }
+      }
+
       ArrayUtil.addItem(this.store.characters, character);
     } else {
       this.store.characters = this.store.characters.filter((c) => c.id !== character.id);
@@ -1988,6 +2098,22 @@ export default class StatusModel {
     }
   }
 
+  public receiveAllItems() {
+    if (!this.isUpdatingItems) {
+      this.isUpdatingItems = true;
+      api.Api.addAllCharacterItems()
+        .then(() => {
+          NotificationService.itemGetAll.notify();
+        })
+        .catch(() => {
+          NotificationService.itemGetFailedByPending.notify();
+        })
+        .finally(() => {
+          this.isUpdatingItems = false;
+        });
+    }
+  }
+
   // #endregion
 
   // #region CharacterSkill
@@ -2035,6 +2161,16 @@ export default class StatusModel {
     ArrayUtil.addItemUniquely(this.store.commandComments, item, (obj) => api.GameDateTime.toNumber(obj.gameDate));
   }
 
+  private onReceiveOtherCharacterCommand(item: api.CharacterCommand) {
+    this.commands.inputer.updateCommandName(item);
+    if (item.characterId !== this.character.id && item.characterId) {
+      this.store.otherCharacterCommands =
+        this.store.otherCharacterCommands.filter((c) => item.characterId !== c.characterId ||
+          api.GameDateTime.toNumber(item.gameDate) !== api.GameDateTime.toNumber(c.gameDate));
+      this.store.otherCharacterCommands.push(item);
+    }
+  }
+
   // #endregion
 
   // #region Unit
@@ -2047,6 +2183,9 @@ export default class StatusModel {
 
   private addMapLog(log: api.MapLog) {
     ArrayUtil.addLog(this.mapLogs, log);
+    if (!this.isMapLogTabOpen) {
+      this.isMapLogTabUnread = true;
+    }
   }
 
   public loadOldMapLogs() {
@@ -2120,8 +2259,14 @@ export default class StatusModel {
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon),
-      (id) => api.Api.getGlobalChatMessage(id, 50));
+      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 0),
+      (id) => api.Api.getGlobalChatMessage(id, 50, 0));
+
+  public global2Chat: ChatMessageContainer<any>
+    = new ChatMessageContainer(
+      this.store,
+      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 1),
+      (id) => api.Api.getGlobalChatMessage(id, 50, 1));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
@@ -2150,12 +2295,26 @@ export default class StatusModel {
       this.countryChat.append(message);
     } else if (message.type === api.ChatMessage.typeGlobal) {
       // 全国宛
-      this.globalChat.append(message);
+      if (message.typeData === 0) {
+        this.globalChat.append(message);
+      } else if (message.typeData === 1) {
+        this.global2Chat.append(message);
+      }
     } else if (message.type === api.ChatMessage.typePrivate) {
       // 個宛
+      const oldIsUnRead = this.privateChat.isUnread;
       this.privateChat.append(message);
       if (message.character && message.character.id !== this.character.id && this.store.hasInitialized) {
         NotificationService.chatPrivateReceived.notifyWithParameter(message.character.name);
+      }
+
+      // 既読チェック（hasInitializedは確認しない）
+      if (this.privateChat.isOpen) {
+        api.Api.setPrivateChatMessageRead();
+      } else if (!message.isRead && message.typeData2 === this.character.id) {
+        this.privateChat.isUnread = true;
+      } else {
+        this.privateChat.isUnread = oldIsUnRead;
       }
     } else if (message.type === api.ChatMessage.typePromotion ||
                message.type === api.ChatMessage.typePromotionAccepted ||

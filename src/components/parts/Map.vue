@@ -147,7 +147,9 @@ export default class Map extends Vue {
         const chara = Enumerable
           .from(this.store.characters)
           .firstOrDefault((c) => c.id === monarch.characterId);
-        return chara.mainIcon;
+        if (chara) {
+          return chara.mainIcon;
+        }
       }
     }
     return undefined;

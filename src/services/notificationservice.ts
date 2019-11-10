@@ -246,19 +246,39 @@ export default class NotificationService {
     NotificationServiceItemDefaultType.warning);
   public static readonly warInReady = new NotificationServiceItem(
     '宣戦布告',
-    '{0} と {1} に開戦します。',
+    '{0} と {1} に開戦します',
     NotificationServiceItemDefaultType.warning);
   public static readonly warStart = new NotificationServiceItem(
     '開戦',
-    '{0} との戦争が始まりました。',
+    '{0} との戦争が始まりました',
     NotificationServiceItemDefaultType.warning);
+  public static readonly warStopRequested = new NotificationServiceItem(
+    '停戦協議開始',
+    '{0} との戦争の停戦協議が開始されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly warStopped = new NotificationServiceItem(
+    '停戦',
+    '{0} との戦争は停戦しました',
+    NotificationServiceItemDefaultType.information);
   public static readonly warSent = new NotificationServiceItem(
     '戦争手続き成功',
-    '戦争の手続きは、無事相手に送信されました。',
+    '戦争の手続きは、無事相手に送信されました',
     NotificationServiceItemDefaultType.succeed);
   public static readonly warFailed = new NotificationServiceItem(
     '戦争手続き失敗',
-    '何らかの理由で、戦争の手続きに失敗しました。',
+    '何らかの理由で、戦争の手続きに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseOfStartDate = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '開戦が早すぎる、または遅すぎます。現在より 12 年先、24 年より前の開戦年月の指定が必要です',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseNotPermission = new NotificationServiceItem(
+    '戦争手続き失敗',
+    'あなたにその操作をする権限がないか、同盟国に布告することはできません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseInvalidOperation = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '隣接していない国に布告することはできません',
     NotificationServiceItemDefaultType.error);
   public static readonly warFailedBecauseSameStatus = new NotificationServiceItem(
     '戦争手続き失敗',
@@ -584,6 +604,14 @@ export default class NotificationService {
     '兵種追加',
     '兵種 {0} を追加しました',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly townGave = new NotificationServiceItem(
+    '割譲',
+    '{0} の {1} への割譲に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townGiveFailed = new NotificationServiceItem(
+    '割譲失敗',
+    '{0} の {1} への割譲に失敗しました。都市が相手国に隣接していないか、その他の要件を満たしていません',
+    NotificationServiceItemDefaultType.error);
   public static readonly soldierTypeAddFailed = new NotificationServiceItem(
     '兵種追加失敗',
     '兵種 {0} の追加に失敗しました',
@@ -652,14 +680,6 @@ export default class NotificationService {
     '政策ブースト',
     '所属国の政策 {0} がブーストされました',
     NotificationServiceItemDefaultType.information);
-  public static readonly scouterAdded = new NotificationServiceItem(
-    '斥候派遣',
-    '{0} に斥候が派遣されました',
-    NotificationServiceItemDefaultType.information);
-  public static readonly scouterRemoved = new NotificationServiceItem(
-    '斥候解雇',
-    '{0} の斥候が解雇されました',
-    NotificationServiceItemDefaultType.information);
   public static readonly reseted = new NotificationServiceItem(
     'リセット',
     'ゲームはリセットされました。新しいドラマが始まります',
@@ -704,6 +724,10 @@ export default class NotificationService {
     'アイテム手放し',
     'アイテム {0} を手放しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly itemGetAll = new NotificationServiceItem(
+    'アイテム一括入手',
+    '入手できるだけのアイテムを入手しました',
+    NotificationServiceItemDefaultType.succeed);
   public static readonly skillGetSucceed = new NotificationServiceItem(
     '技能獲得成功',
     '技能の獲得に成功しました',

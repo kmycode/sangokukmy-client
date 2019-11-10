@@ -7,23 +7,10 @@
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
       </div>
       <div class="alert alert-warning">
-        <h3>初心者向けの注意点</h3>
-        本ゲームは、一般的なスマホゲームなどと、以下の点において異なります。あらかじめご留意ください。
-        <ul>
-          <li><strong>5日以上ログインしていないとアカウントが削除されるようになっています。毎日3〜5分程度（慣れれば1分程度）のプレイが推奨されます。</strong></li>
-          <li>自分の国が滅亡したら、他の国に仕官することでゲームを続行できます。</li>
-          <li>どこかの国が統一するとすべてのゲームデータが初期化され、また最初から登録し直しになります。</li>
-          <li>全員が１つになって競い合うゲームです。自分１人や一部の集団ではなく、みなさんが楽しめる思い出作りをしていきましょう。戦争に勝つこと、全国を統一することも大切ですが、ゲームを楽しむことを目標にしましょう。</li>
-        </ul>
-        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
-      </div>
-      <div class="alert alert-info">
-        <h3>説明書</h3>
-        <ul>
-          <li><a href="https://sangoku-doc.kmycode.net/">説明書目次</a></li>
-          <li><a href="https://sangoku-doc.kmycode.net/bas-g-entry.html">初心者向けガイド</a></li>
-          <li><a href="https://sangoku-doc.kmycode.net/bas-ui.html">画面の見方</a></li>
-        </ul>
+        <h3>初心者向け</h3>
+        登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
+        <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a><br>
+¥        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
       </div>
       <div class="section">
         <h3>基本情報</h3>
@@ -256,14 +243,14 @@
       <button v-show="false" type="button" class="btn btn-primary" onclick="grecaptcha.execute()">送信</button>
       <button v-show="canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
       <span v-show="!canEntry" style="color:red">上の記述項目の赤いところをすべて入力するか、修正してください</span>
-      <span v-show="canEntry">送信した時点で、<a href="https://w.atwiki.jp/sangokukmy9/pages/72.html" target="_blank">利用規約</a>に同意したものとみなします</span>
+      <span v-show="canEntry">送信した時点で、<a href="https://w.atwiki.jp/sangokukmy9/pages/72.html" target="_blank">利用規約</a>、<a href="https://w.atwiki.jp/sangokukmy9/pages/80.html" target="_blank">プライバシーポリシー</a>に同意したものとみなします</span>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import Map from '@/components/parts/Map.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
@@ -308,9 +295,13 @@ export default class EntryPage extends Vue {
   @Prop() private countryMessages!: api.CountryMessage[];
   private extraData: api.EntryExtraData = api.EntryExtraData.default;
   @Prop() private towns!: api.Town[];
+  @Prop({
+    default: true,
+  }) private isOpened!: boolean;
   private nextMonthSeconds = 0;
 
   private isLoadingExtraData = true;
+  private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
 
   private get sumOfAttributes(): number {
@@ -438,6 +429,13 @@ export default class EntryPage extends Vue {
     return '未選択';
   }
 
+  @Watch('isOpened')
+  public onIsOpenedChanged() {
+    if (this.isOpened) {
+      this.updateExtraData();
+    }
+  }
+
   private initializeRecaptcha() {
     // https://stackoverflow.com/questions/43890035/vue-js-google-recaptcha-callback
     setTimeout(() => {
@@ -484,11 +482,10 @@ export default class EntryPage extends Vue {
 
     // ストリーミングを開始
     ApiStreaming.top.on<api.SystemData>(api.SystemData.typeId, (log) => {
-      this.updateExtraData();
+      this.updateExtraData(true);
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
-      if (log.eventType === 12 ||
-          log.eventType === 15 ||
+      if (log.eventType === 15 ||
           log.eventType === 16 ||
           log.eventType === 17 ||
           log.eventType === 18 ||
@@ -496,19 +493,23 @@ export default class EntryPage extends Vue {
           log.eventType === 20 ||
           log.eventType === 21 ||
           log.eventType === 22) {
-        this.updateExtraData();
+        this.updateExtraData(true);
       }
     });
 
     this.updateExtraData();
   }
 
-  private updateExtraData() {
-    const requested = Enumerable.from(this.countries)
-      .any((c) => api.GameDateTime.toNumber(c.established) + def.BATTLE_STOP_TURN >
-          api.GameDateTime.toNumber(this.system.gameDateTime));
-    if (requested || this.isLoadingExtraData) {
-      this.isLoadingExtraData = true;
+  private updateExtraData(isHidden: boolean = false) {
+    if (!this.isOpened) {
+      return;
+    }
+
+    if (this.isLoadingExtraData || (!this.isLoadingExtraDataPrivate && isHidden)) {
+      if (!isHidden) {
+        this.isLoadingExtraData = true;
+      }
+      this.isLoadingExtraDataPrivate = true;
       api.Api.getEntryExtraData()
         .then((data) => {
           this.extraData = data;
@@ -517,7 +518,10 @@ export default class EntryPage extends Vue {
           NotificationService.entryExtraDataFailed.notify();
         })
         .finally(() => {
-          this.isLoadingExtraData = false;
+          if (!isHidden) {
+            this.isLoadingExtraData = false;
+          }
+          this.isLoadingExtraDataPrivate = false;
         });
     }
   }

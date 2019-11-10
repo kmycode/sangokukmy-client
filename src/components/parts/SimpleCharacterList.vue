@@ -2,7 +2,7 @@
   <div class="simple-character-list">
     <div
       :class="'item country-color-' + getCountryColorId(chara.countryId) + (canSelect ? ' selectable' : '') + (value.id === chara.id ? ' selected' : '')"
-      v-for="chara in characters"
+      v-for="chara in orderedCharacters"
       :key="chara.id">
       <div class="item-character-info">
         <div class="icon">
@@ -27,6 +27,7 @@
               <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
                 <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 6, 'characterId': chara.id })">護衛将軍</a>
@@ -85,10 +86,10 @@
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
         <div class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</div>
-        <div v-if="chara.commands && chara.commands.length > 0" class="commands">
+        <div v-if="getCharacterCommands(chara).length > 0" class="commands">
           <div class="command"
-               v-for="command in chara.commands"
-               :key="getCommandUniqueKey(command)"><span v-if="command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+               v-for="command in getCharacterCommands(chara)"
+               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
         </div>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
@@ -142,8 +143,26 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: () => new api.Character(-1),
   }) public value!: api.Character;
+  @Prop({
+    default: () => undefined,
+  }) public commands?: api.CharacterCommand[];
+  @Prop({
+    default: () => undefined,
+  }) public otherCharacterCommands?: api.CharacterCommand[];
+  @Prop({
+    default: false,
+  }) public isSortByTime!: boolean;
 
   private isOpenPostsPopup: boolean = false;
+
+  private get orderedCharacters(): api.Character[] {
+    if (this.isSortByTime) {
+      return Enumerable.from(this.characters)
+        .orderBy((c) => api.DateTime.toDate(c.lastUpdated).getTime())
+        .toArray();
+    }
+    return this.characters;
+  }
 
   private getCountryColorId(countryId: number): number {
     const country = ArrayUtil.find(this.countries, countryId);
@@ -197,7 +216,11 @@ export default class SimpleCharacterList extends Vue {
   }
 
   private getCommandUniqueKey(cmd: api.CharacterCommand): number {
-    return api.GameDateTime.toNumber(cmd.gameDate);
+    if (cmd) {
+      return api.GameDateTime.toNumber(cmd.gameDate);
+    } else {
+      return Math.random() * 1000;
+    }
   }
 
   private getCharacterFormationName(chara: api.Character): string {
@@ -214,6 +237,32 @@ export default class SimpleCharacterList extends Vue {
       return formationType.type;
     }
     return '無';
+  }
+
+  private getCharacterCommands(chara: api.Character): (api.CharacterCommand | undefined)[] {
+    if (chara.countryId !== this.myCountryId) {
+      return [];
+    }
+    if (this.commands && this.otherCharacterCommands) {
+      const startNumber = chara.lastUpdatedGameDate.year >= def.UPDATE_START_YEAR ?
+        api.GameDateTime.toNumber(chara.lastUpdatedGameDate) + 1 :
+        api.GameDateTime.toNumber(new api.GameDateTime(def.UPDATE_START_YEAR, 1));
+      const endNumber = startNumber + 4;
+      const cmds = Enumerable.from(this.otherCharacterCommands)
+        .concat(this.commands)
+        .where((c) => c.characterId === chara.id)
+        .where((c) => startNumber <= api.GameDateTime.toNumber(c.gameDate) &&
+          api.GameDateTime.toNumber(c.gameDate) < endNumber);
+      return [
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 1),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 2),
+        cmds.firstOrDefault((c) => api.GameDateTime.toNumber(c.gameDate) === startNumber + 3),
+      ];
+    } else if (chara.commands) {
+      return chara.commands;
+    }
+    return [];
   }
 
   private togglePostsPopup(chara: api.Character) {

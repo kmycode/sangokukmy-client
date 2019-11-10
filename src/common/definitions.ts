@@ -97,9 +97,9 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(10, 0, '智攻兵', 17, 32767, '知力x0.8', '知力x0.4', '攻撃力、防御力、ともに知力が補正として加算される'),
   new SoldierType(11, 0, '連弩兵', 16, 800, '90', '40', '連弩を持った兵士', undefined, true, 63),
   new SoldierType(26, 0, '青洲兵', 19, 900, '90', '70', '青洲出身の強力な兵士', undefined, true, 64),
-  new SoldierType(27, 0, '象兵', 12, 999, '0', '0', '象に乗った兵士。突撃に秀でる', undefined, true, 67),
-  new SoldierType(28, 0, '藤甲兵', 14, 999, '0', '140', '藤で作った強力な鎧を装備した兵士', undefined, true, 68),
-  new SoldierType(12, 0, '壁守兵', 14, 999, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
+  new SoldierType(27, 0, '象兵', 12, 1000, '0', '0', '象に乗った兵士。突撃に秀でる', undefined, true, 67),
+  new SoldierType(28, 0, '藤甲兵', 14, 1000, '0', '140', '藤で作った強力な鎧を装備した兵士', undefined, true, 68),
+  new SoldierType(12, 0, '壁守兵', 14, 1000, '0', '知力', '堅く守ることに特化した兵士。防御力に知力が補正として加算される'),
   new SoldierType(14, 2, '井闌', 30, 500, '0 / 壁200', '0 / 壁100', '対城壁・壁守兵の場合に限り補正を得る'),
   new SoldierType(15, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
   new SoldierType(17, 0, '異民族兵A', 32767, 32767, '0', '0', ''),
@@ -309,7 +309,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return format.replace('{1}', type.numberValue === api.Character.aiSecretaryPatroller ? '仁官' :
                                    type.numberValue === api.Character.aiSecretaryUnitGather ? '集合官' :
                                    type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' :
-                                   type.numberValue === api.Character.aiSecretaryUnitLeader ? '部隊長' : '不明');
+                                   type.numberValue === api.Character.aiSecretaryUnitLeader ? '部隊長' :
+                                   type.numberValue === api.Character.aiSecretaryScouter ? '斥候' : '不明');
     } else {
       return 'エラー (39:1)';
     }
@@ -390,7 +391,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
-      const itemId = p.firstOrDefault((pp) => pp.type === 3);
+      const resourceSize = p.firstOrDefault((pp) => pp.type === 4);
       if (!itemType) {
         return 'エラー (52:2)';
       }
@@ -398,7 +399,13 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (52:3)';
       }
-      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
+      if (!type.isResource) {
+        return format.replace('{0}', type.name);
+      } else if (resourceSize) {
+        return format.replace('{0}', type.name + ' ' + resourceSize.numberValue);
+      } else {
+        return 'エラー (52:4)';
+      }
     } else {
       return 'エラー (52:1)';
     }
@@ -442,6 +449,39 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(59, '農民避難'),
   new CommandNameResolver(60, '合同訓練'),
   new CommandNameResolver(61, '%0% を偵察'),
+  new CommandNameResolver(62, '探索'),
+  new CommandNameResolver(63, '{0} を建設', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (63:2)';
+      }
+      const type = Enumerable.from(TOWN_SUB_BUILDING_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (63:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (63:1)';
+    }
+  }),
+  new CommandNameResolver(64, '{0} を撤去', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const itemType = p.firstOrDefault((pp) => pp.type === 1);
+      if (!itemType) {
+        return 'エラー (64:2)';
+      }
+      const type = Enumerable.from(TOWN_SUB_BUILDING_TYPES).firstOrDefault((f) => f.id === itemType.numberValue);
+      if (!type) {
+        return 'エラー (64:3)';
+      }
+      return format.replace('{0}', type.name);
+    } else {
+      return 'エラー (64:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -477,8 +517,8 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(16, '建国', '#008'),
   new EventType(17, '仕官', '#008'),
   new EventType(18, '放置', 'black'),
-  new EventType(19, '派遣', '#9400D3'),
-  new EventType(20, '帰還', '#9400D3'),
+  new EventType(19, '派遣', '#800'),
+  new EventType(20, '帰還', '#800'),
   new EventType(21, '帰順', '#008'),
   new EventType(22, '仕官', '#008'),
   new EventType(23, '異民族', '#088'),
@@ -486,12 +526,15 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(25, '攻略', '#080'),
   new EventType(26, '焼討', '#2a4'),
   new EventType(27, '扇動', '#2a4'),
-  new EventType(28, '雇用', '#800'),
-  new EventType(29, '解任', '#800'),
-  new EventType(30, '解雇', '#800'),
+  new EventType(28, '雇用', '#9400D3'),
+  new EventType(29, '解任', '#9400D3'),
+  new EventType(30, '解雇', '#9400D3'),
   new EventType(31, '削除', 'black'),
   new EventType(32, '政策', '#2a4'),
   new EventType(33, '蛮族', '#088'),
+  new EventType(34, '停戦', 'purple'),
+  new EventType(35, '割譲', 'blue'),
+  new EventType(36, '降伏', 'red'),
 ];
 
 /**
@@ -511,6 +554,7 @@ export const COUNTRY_POSTS: CountryPostType[] = [
   new CountryPostType(6, '護衛将軍'),
   new CountryPostType(7, '将軍'),
   new CountryPostType(8, '君主（不在）'),
+  new CountryPostType(9, '建築官'),
 ];
 
 /**
@@ -544,7 +588,8 @@ export class CountryWarStatus {
 export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
   new CountryWarStatus(0, '戦争関係なし'),
   new CountryWarStatus(1, '交戦中'),
-  new CountryWarStatus(2, '停戦協議中'),
+  new CountryWarStatus(2, '停戦請願中'),
+  new CountryWarStatus(102, '停戦協議中'),
   new CountryWarStatus(3, '停戦'),
   new CountryWarStatus(4, '開戦前'),
 ];
@@ -598,6 +643,7 @@ export const TOWN_BUILDINGS: BuildingType[] = [
   new BuildingType(20, '陣'),
   new BuildingType(21, '増築拠点'),
   new BuildingType(22, '数寄屋'),
+  new BuildingType(23, '小学'),
 ];
 /**
  * 国家施設
@@ -661,12 +707,12 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
     1, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
 
-  new CountryPolicyType(4, 3000, '人材開発', '政務官ポイント +1', 2),
+  new CountryPolicyType(4, 3000, '人材開発', '政務官ポイント +2', 2),
   new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
   new CountryPolicyType(15, 2000, '文官国家', '文官数につき毎ターン政策ポイント +4',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14)),
-  new CountryPolicyType(2, 3000, '密偵', '斥候 +2',
+  new CountryPolicyType(2, 3000, '密偵', '政務官斥候が雇用可能、政務官ポイント +1',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 15)),
   new CountryPolicyType(33, 3000, '号令', '政務官部隊長が雇用可能',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 2)),
@@ -767,8 +813,8 @@ export const FORMATION_TYPES: FormationType[] = [
   new FormationType(9, 500, '長蛇', ['攻撃力 +8',
                                     '攻撃力 +16',
                                     '攻撃力 +16、防御力 +16、属性攻撃力 +16',
-                                    '攻撃力 +16、防御力 +16、属性攻撃力 +16、属性防御力 +16、突撃確率 +8%、突撃攻撃力 +40、連戦確率 +4%',
-                                    '攻撃力 +16、防御力 +16、属性攻撃力 +32、属性防御力 +32、突撃確率 +16%、突撃攻撃力 +40、連戦確率 +12%'],
+                                    '攻撃力 +16、防御力 +16、属性攻撃力 +16、属性防御力 +16、突撃確率 +3%、突撃攻撃力 +40、連戦確率 +12%',
+                                    '攻撃力 +16、防御力 +16、属性攻撃力 +32、属性防御力 +32、突撃確率 +4%、突撃攻撃力 +40、連戦確率 +20%'],
                         '土', undefined, true, [1000, 2000, 5000, 8000]),
   new FormationType(10, 500, '攻城', ['攻撃力 +8',
                                      '攻撃力 +16',
@@ -851,18 +897,18 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(56, 50000, '九錫', '使用で金 +500k', false, true, true),
   new CharacterItemType(57, 200000, '和氏の璧', '使用で金 +2M', false, true, true),
   new CharacterItemType(58, 500000, '中行説の霊', '使用で全ての中立異民族が敵対化。異民族なければ出現', false, false, true),
-  new CharacterItemType(59, 18, '装備戟', '（資源）重戟兵徴兵費 -30%', true, true, false, true, 1000),
-  new CharacterItemType(60, 18, '装備馬', '（資源）重騎兵／梓馬兵徴兵費 -30%', true, true, false, true, 1000),
+  new CharacterItemType(59, 18, '装備戟', '重戟兵徴兵費 -30%', true, true, false, true, 1000),
+  new CharacterItemType(60, 18, '装備馬', '重騎兵／梓馬兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
   new CharacterItemType(62, 100000, '論語', '人望 +20', false),
-  new CharacterItemType(63, 20, '装備連弩', '（資源）連弩兵徴兵可能', true, true, false, true, 1000),
-  new CharacterItemType(64, 24, '青洲槍', '（資源）青洲兵徴兵可能', true, true, false, true, 1000),
-  new CharacterItemType(65, 22, '装備良戟', '（資源）重戟兵徴兵費 -60%', true, true, false, true, 1000),
-  new CharacterItemType(66, 22, '装備良馬', '（資源）重騎兵／梓馬兵徴兵費 -60%', true, true, false, true, 1000),
-  new CharacterItemType(67, 22, '象', '（資源）象兵徴兵可能', true, true, false, true, 1000),
-  new CharacterItemType(68, 22, '藤甲', '（資源）藤甲兵徴兵可能', true, true, false, true, 1000),
-  new CharacterItemType(69, 8, '練兵', '（資源）徴兵時訓練値下限 60', true, true, false, true, 1000),
-  new CharacterItemType(70, 11, '精鋭兵', '（資源）徴兵時訓練値下限 100', true, true, false, true, 1000),
+  new CharacterItemType(63, 20, '装備連弩', '連弩兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(64, 24, '青洲槍', '青洲兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(65, 22, '装備良戟', '重戟兵徴兵費 -60%', true, true, false, true, 1000),
+  new CharacterItemType(66, 22, '装備良馬', '重騎兵／梓馬兵徴兵費 -60%', true, true, false, true, 1000),
+  new CharacterItemType(67, 22, '象', '象兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(68, 22, '藤甲', '藤甲兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(69, 8, '練兵', '徴兵時訓練値下限 60', true, true, false, true, 1000),
+  new CharacterItemType(70, 11, '精鋭兵', '徴兵時訓練値下限 100', true, true, false, true, 1000),
   new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
   new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
   new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
@@ -890,7 +936,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(8, '官吏 Lv.3', '内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 8, (skills) => skills.some((s) => s.type === 7)),
   new CharacterSkillType(9, '官吏 Lv.4', '護衛属性含む兵種使用時、攻撃力 +20、防御力 +50', 9, (skills) => skills.some((s) => s.type === 8)),
   new CharacterSkillType(10, '官吏 Lv.5', '兵種 梓叡兵、毎月知力Ex +11', 10, (skills) => skills.some((s) => s.type === 9)),
-  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2', 0, (_) => false),
+  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、毎ターン金 +67', 0, (_) => false),
   new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000、貢献 +15', 7, (skills) => skills.some((s) => s.type === 11)),
   new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 9, (skills) => skills.some((s) => s.type === 12)),
   new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 10, (skills) => skills.some((s) => s.type === 13)),
@@ -925,4 +971,19 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(48, '参謀 Lv.3', '兵種 梓叡兵、突撃防御力 +20', 10, (skills) => skills.some((s) => s.type === 47)),
   new CharacterSkillType(49, '参謀 Lv.4', '突撃確率 +2%、突撃攻撃力 +60', 8, (skills) => skills.some((s) => s.type === 48)),
   new CharacterSkillType(50, '参謀 Lv.5', '兵種 梓琴兵、戦闘が１ターンで終了時の連戦確率 +50%', 9, (skills) => skills.some((s) => s.type === 49)),
+];
+
+/**
+ * 建築物
+ */
+export class TownSubBuildingType {
+  public constructor(public id: number = 0,
+                     public name: string = '',
+                     public size: number = 0,
+                     public money: number = 0,
+                     public description: string = '') {}
+}
+export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
+  new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500'),
+  new TownSubBuildingType(2, '市場', 1, 10000, '商業最大 +500'),
 ];

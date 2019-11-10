@@ -13,21 +13,18 @@ export default class CommandList {
   public secondsOfNextCommand: number = 0;
   private isInitialized: boolean = false;
   private timer: number = 0;
+  private timerDate: Date = new Date();
   private lastUpdatedGameDateForUpdate?: api.GameDateTime;
   private lastUpdatedForUpdate?: api.DateTime;
 
   public get commands(): api.CharacterCommand[] {
+    this.inputer.commands.forEach((c) => c.characterId = this.store.character.id);
     return this.inputer.commands;
   }
 
   public get canUseCountrySafe(): boolean {
     // 国庫を使えるか
     return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
-  }
-
-  public get canUseCountryScouter(): boolean {
-    // 諜報府を使えるか
-    return this.isPolicyEnabled(api.CountryPolicy.typeScouter);
   }
 
   public get canUseCountrySoldier(): boolean {
@@ -115,7 +112,9 @@ export default class CommandList {
   }
 
   public constructor(private store: StatusStore) {
-    this.timer = setInterval(() => { this.secondsOfNextCommand--; }, 1000);
+    this.timer = setInterval(() =>
+      this.secondsOfNextCommand = Math.floor((this.timerDate.getTime() - new Date().getTime()) / 1000)
+      , 1000);
   }
 
   public reset() {
@@ -257,7 +256,9 @@ export default class CommandList {
       const newMonth = new api.GameDateTime(def.UPDATE_START_YEAR, 1);
       skipMonthCount = api.GameDateTime.toNumber(newMonth) - api.GameDateTime.toNumber(nextMonth);
     }
-    this.secondsOfNextCommand = secondsNextCommand + skipMonthCount * def.UPDATE_TIME;
+    this.timerDate = new Date();
+    this.timerDate.setSeconds(
+      this.timerDate.getSeconds() + secondsNextCommand + skipMonthCount * def.UPDATE_TIME);
   }
 
   private updateCommandTimeAndNumber(lastUpdatedGameDate: api.GameDateTime, lastUpdated: api.DateTime) {

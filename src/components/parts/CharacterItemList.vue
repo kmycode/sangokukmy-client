@@ -6,11 +6,12 @@
       :key="item.data[0].id">
       <div class="item-info">
         <div class="standard">
-          <div class="name responsive-header">{{ item.type.name }}<span v-if="item.type.isResource" class="resource-no">No.{{ item.data[0].id }}</span></div>
+          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
           <div class="params">
             <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span v-if="item.type.isResource">
               <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
+              <span class="value-name" v-show="isHandOver">一度の譲渡量</span> <span class="value" v-show="isHandOver">{{ item.type.defaultResource }}</span>
             </span>
             <span v-else>
               <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
@@ -29,11 +30,12 @@
         :key="item.data[0].id">
         <div class="item-info">
           <div class="standard">
-            <div class="name responsive-header">{{ item.type.name }}<span v-if="item.type.isResource" class="resource-no">No.{{ item.data[0].id }}</span></div>
+          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
             <div class="params">
               <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span v-if="item.type.isResource">
                 <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
+              <span class="value-name" v-show="isHandOver">一度の譲渡量</span> <span class="value" v-show="isHandOver">{{ item.type.defaultResource }}</span>
               </span>
               <span v-else>
                 <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
@@ -186,10 +188,22 @@ export default class CharacterItemList extends Vue {
     .item-info {
       .name {
         flex: 1;
-        .resource-no {
-          font-size: 0.8em;
-          margin-left: 0.8em;
-          color: #666;
+
+        .kind {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+          color: white;
+          border-radius: 50%;
+          font-size: 14px;
+          font-weight: bold;
+          text-align: center;
+          margin-right: 8px;
+        }
+
+        .kind-resource {
+          background: #37d;
         }
       }
 
@@ -199,13 +213,13 @@ export default class CharacterItemList extends Vue {
       }
 
       .params {
-        padding-left: 12px;
         .value-name {
           color: #969;
+          padding-left: 12px;
         }
         .value {
           font-weight: bold;
-          padding-left: 12px;
+          padding-left: 8px;
         }
       }
     }

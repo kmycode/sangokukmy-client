@@ -20,6 +20,8 @@ export default class KmyLogTagText extends Vue {
       .replace(/<\/num>/g, '</span>')
       .replace(/<character>/g, '<span class="kmy-format-character">')
       .replace(/<\/character>/g, '</span>')
+      .replace(/<wall>/g, '<span class="kmy-format-wall">')
+      .replace(/<\/wall>/g, '</span>')
       .replace(/<town>/g, '<span class="kmy-format-town">')
       .replace(/<\/town>/g, '</span>')
       .replace(/<country>/g, '<span class="kmy-format-country">')
@@ -36,6 +38,9 @@ export default class KmyLogTagText extends Vue {
 }
 .kmy-format-character {
   color: #a00;
+}
+.kmy-format-wall {
+  color: #d40eee;
 }
 .kmy-format-town {
   color: #080;

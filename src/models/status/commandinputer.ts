@@ -11,6 +11,7 @@ import StatusStore from './statusstore';
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
   public isInputing = false;
+  private lastClickedCommand?: api.CharacterCommand;
 
   public get canInput(): boolean {
     return Enumerable.from(this.commands).any((c) => c.isSelected === true);
@@ -69,6 +70,12 @@ export default class CommandInputer {
   public inputTrainingCommand(commandType: number, trainingType: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, trainingType));
+    });
+  }
+
+  public inputTownSubBuildingCommand(commandType: number, type: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, type));
     });
   }
 
@@ -144,13 +151,18 @@ export default class CommandInputer {
     });
   }
 
-  public inputHandOverItemCommand(commandType: number, id: number, itemId: number, target: number) {
+  public inputHandOverItemCommand(commandType: number, id: number, resourceSize: number, target: number) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
+
+    if (info.isResource && !resourceSize) {
+      resourceSize = info.defaultResource;
+    }
+
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
       c.parameters.push(new api.CharacterCommandParameter(2, target));
       if (info && info.isResource) {
-        c.parameters.push(new api.CharacterCommandParameter(3, itemId));
+        c.parameters.push(new api.CharacterCommandParameter(4, resourceSize));
       }
     });
   }
@@ -233,18 +245,35 @@ export default class CommandInputer {
     }
 
     Vue.set(command, 'isSelected', !command.isSelected);
+
+    if (command.isSelected) {
+      this.lastClickedCommand = command;
+    } else {
+      this.lastClickedCommand = undefined;
+    }
   }
 
   public selectMultipleCommand(lastCommand: api.CharacterCommand) {
     if (!lastCommand.canSelect) {
       return;
     }
-    const selected = Enumerable.from(this.commands)
-      .where((c) => c.canSelect === true)
-      .reverse()
-      .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
-      .takeWhile((c) => c.isSelected !== true)
-      .toArray();
+    let selected: api.CharacterCommand[];
+    if (this.lastClickedCommand && this.lastClickedCommand.commandNumber > lastCommand.commandNumber) {
+      // 下から上へ
+      selected = Enumerable.from(this.commands)
+        .where((c) => c.canSelect === true)
+        .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
+        .takeWhile((c) => c.isSelected !== true)
+        .toArray();
+    } else {
+      // 上から下へ
+      selected = Enumerable.from(this.commands)
+        .where((c) => c.canSelect === true)
+        .reverse()
+        .skipWhile((c) => c.commandNumber !== lastCommand.commandNumber)
+        .takeWhile((c) => c.isSelected !== true)
+        .toArray();
+    }
     selected.filter((c) => c.canSelect).forEach((c) => Vue.set(c, 'isSelected', true));
   }
 
@@ -290,6 +319,25 @@ export default class CommandInputer {
     });
   }
 
+  public selectMonthCommands(month: number) {
+    const first = this.commands.find((c) => c.canSelect && c.gameDate.month === month);
+    if (first) {
+      this.selectAxbCommands(12, first.commandNumber);
+    }
+  }
+
+  public selectEvenMonthCommands() {
+    for (let i = 2; i <= 12; i += 2) {
+      this.selectMonthCommands(i);
+    }
+  }
+
+  public selectOddMonthCommands() {
+    for (let i = 1; i <= 12; i += 2) {
+      this.selectMonthCommands(i);
+    }
+  }
+
   public setRanged(isRanged: boolean) {
     this.commands.forEach((c) => {
       const selected = c.isSelected;
@@ -319,6 +367,7 @@ export default class CommandInputer {
       .forEach((c) => {
         c.isSelected = false;
       });
+    this.lastClickedCommand = undefined;
   }
 
   public insertCommands() {
@@ -432,8 +481,7 @@ export default class CommandInputer {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13 || command.type === 45 || command.type === 46 ||
-        command.type === 47 || command.type === 61) {
+    if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61) {
       // 都市データ（移動、戦争、偵察）
       const paramTypeId = command.type === 47 ? 2 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
