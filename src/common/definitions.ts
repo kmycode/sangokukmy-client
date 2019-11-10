@@ -357,7 +357,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
-      const itemId = p.firstOrDefault((pp) => pp.type === 3);
+      const resourceSize = p.firstOrDefault((pp) => pp.type === 4);
       if (!itemType) {
         return 'エラー (50:2)';
       }
@@ -365,7 +365,14 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (50:3)';
       }
-      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
+      if (type.isResource && !resourceSize) {
+        return 'エラー (50:4)';
+      }
+      if (!type.isResource) {
+        return format.replace('{0}', type.name);
+      } else {
+        return format.replace('{0}', type.name + ' ' + resourceSize.numberValue);
+      }
     } else {
       return 'エラー (50:1)';
     }
@@ -374,7 +381,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
-      const itemId = p.firstOrDefault((pp) => pp.type === 2);
+      const resourceSize = p.firstOrDefault((pp) => pp.type === 3);
       if (!itemType) {
         return 'エラー (51:2)';
       }
@@ -382,7 +389,14 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       if (!type) {
         return 'エラー (51:3)';
       }
-      return format.replace('{0}', type.name + (type.isResource && itemId ? ' No.' + itemId.numberValue : ''));
+      if (type.isResource && !resourceSize) {
+        return 'エラー (51:4)';
+      }
+      if (!type.isResource) {
+        return format.replace('{0}', type.name);
+      } else {
+        return format.replace('{0}', type.name + ' ' + resourceSize.numberValue);
+      }
     } else {
       return 'エラー (51:1)';
     }
