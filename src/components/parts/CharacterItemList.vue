@@ -11,7 +11,7 @@
             <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span v-if="item.type.isResource">
               <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
-              <span class="value-name" v-show="isHandOver || isSell || isBuy">標準量</span> <span class="value" v-show="isHandOver">{{ item.type.defaultResource }}</span>
+              <span class="value-name" v-show="isHandOver || isSell || isBuy">標準量</span> <span class="value" v-show="isHandOver || isSell || isBuy">{{ item.type.defaultResource }}</span>
             </span>
             <span v-else>
               <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
