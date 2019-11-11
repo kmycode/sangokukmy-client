@@ -239,7 +239,7 @@ export default class SimpleCharacterList extends Vue {
     return '無';
   }
 
-  private getCharacterCommands(chara: api.Character): (api.CharacterCommand | undefined)[] {
+  private getCharacterCommands(chara: api.Character): Array<(api.CharacterCommand | undefined)> {
     if (chara.countryId !== this.myCountryId) {
       return [];
     }

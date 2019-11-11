@@ -143,11 +143,11 @@ export default class CommandInputer {
 
   public inputItemCommand(commandType: number, id: number, resourceSize: number) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
-    
+
     if (info.isResource && !resourceSize) {
       resourceSize = info.defaultResource;
     }
-    
+
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
       if (info && info.isResource) {

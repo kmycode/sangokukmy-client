@@ -8,12 +8,13 @@
         <div class="standard">
           <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
           <div class="params">
-            <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             <span v-if="item.type.isResource">
-              <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
-              <span class="value-name" v-show="isHandOver || isSell || isBuy">標準量</span> <span class="value" v-show="isHandOver || isSell || isBuy">{{ item.type.defaultResource }}</span>
+              <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
+              <span class="value-name">標準量</span> <span class="value">{{ item.type.defaultResource }}</span>
+              <span class="value-name">標準価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             </span>
             <span v-else>
+              <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
             </span>
           </div>
@@ -32,12 +33,13 @@
           <div class="standard">
           <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
             <div class="params">
-              <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span v-if="item.type.isResource">
-                <span class="value-name">資源残量</span> <span class="value">{{ item.data[0].resource }}</span>
-              <span class="value-name" v-show="isHandOver">標準量</span> <span class="value" v-show="isHandOver">{{ item.type.defaultResource }}</span>
+                <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
+                <span class="value-name">標準量</span> <span class="value">{{ item.type.defaultResource }}</span>
+                <span class="value-name">標準価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               </span>
               <span v-else>
+                <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
                 <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
               </span>
             </div>
@@ -141,7 +143,7 @@ export default class CharacterItemList extends Vue {
   }
 
   private getItemMoney(item: CharacterItemListItem): number {
-    const m = !item.type.isResource ? item.type.money : item.data[0].resource * item.type.money;
+    const m = !item.type.isResource ? item.type.money : item.type.defaultResource * item.type.money;
 
     if (this.isSell) {
       return m / 2;

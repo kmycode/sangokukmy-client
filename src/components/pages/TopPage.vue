@@ -255,7 +255,8 @@ export default class TopPage extends Vue {
       const systemMonthDate = api.DateTime.toDate(log.currentMonthStartDateTime);
       systemMonthDate.setSeconds(systemMonthDate.getSeconds() + def.UPDATE_TIME);
       this.nextMonthTimerDate = new Date();
-      this.nextMonthTimerDate.setTime(this.nextMonthTimerDate.getTime() + Math.floor(systemMonthDate.getTime() - new Date().getTime()));
+      this.nextMonthTimerDate.setTime(
+        this.nextMonthTimerDate.getTime() + Math.floor(systemMonthDate.getTime() - new Date().getTime()));
 
       this.isLoadingSystem = false;
     });
