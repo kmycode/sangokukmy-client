@@ -413,11 +413,6 @@
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false"/>
         </div>
-        <!-- 兵種設定 -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 4" class="right-side-content content-soldier">
-          <CustomSoldierTypeView :model="model.soldierTypes"
-                                 :buildingSize="model.soldierLaboratorySize"/>
-        </div>
         <!-- 戦闘シミュレータ -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
           <BattleSimulatorView/>
@@ -469,43 +464,7 @@
             <button class="btn btn-light" @click="isOpenSoldierDialog = false">キャンセル</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, (selectedSoldierType.isCustom ? selectedSoldierType.customId : selectedSoldierType.id), soldierNumber, selectedSoldierType.isCustom)">承認</button>
-          </div>
-        </div>
-      </div>
-      <!-- 兵種研究 -->
-      <div v-if="isOpenResearchSoldierDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">兵種研究</h2>
-        <div class="dialog-content">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" @click="isOpenSoliderDropdown = !isOpenSoliderDropdown">兵種を選択</button>
-            <div class="dropdown-menu" :style="{ 'display': isOpenSoliderDropdown ? 'block' : 'none' }">
-              <a v-for="type in model.soldierTypes.types"
-                 :key="type.id"
-                 v-show="type.status === 0 || type.status === 1"
-                 class="dropdown-item"
-                 href="#"
-                 @click.prevent.stop="isOpenSoliderDropdown = false; selectedCustomSoliderType = type">{{ type.name }}
-              </a>
-            </div>
-          </div>
-          <div v-if="selectedCustomSoliderType.id" class="soltype-detail">
-            <div class="title">{{ soliderDetail.name }}</div>
-            <div class="status">
-              <span class="item-head">兵1あたりの金</span>
-              <span class="item-value">{{ customSoldierTypeMoney }}</span>
-            </div>
-            <div class="text">
-              <span>{{ customSoldierTypeDescription }}</span>
-            </div>
-          </div>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-            <button class="btn btn-light" @click="isOpenResearchSoldierDialog = false">キャンセル</button>
-          </div>
-          <div class="right-side">
-            <button v-show="selectedCustomSoliderType.id" class="btn btn-primary" @click="isOpenResearchSoldierDialog = false; model.commands.inputer.inputSoldierResearchCommand(38, selectedCustomSoliderType.id)">承認</button>
+            <button class="btn btn-primary" @click="isOpenSoldierDialog = false; model.commands.inputer.inputSoldierCommand(10, selectedSoldierType.id, soldierNumber)">承認</button>
           </div>
         </div>
       </div>
@@ -1444,7 +1403,6 @@ import SkillList from '@/components/parts/SkillList.vue';
 import TownSubBuildingList from '@/components/parts/TownSubBuildingList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import GenerateItemTypePicker from '@/components/parts/GenerateItemTypePicker.vue';
-import CustomSoldierTypeView from '@/components/parts/status/CustomSoldierTypeView.vue';
 import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
 import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
@@ -1478,7 +1436,6 @@ import EventObject from '@/models/common/EventObject';
     TownWarView,
     UnitListView,
     KmyChatTagText,
-    CustomSoldierTypeView,
     BattleSimulatorView,
     CountryPolicyList,
     FormationList,
@@ -1500,10 +1457,7 @@ export default class StatusPage extends Vue {
   public selectedChatCategory: number = 0;
   public selectedSoldierType: def.SoldierType = Enumerable.from(def.SOLDIER_TYPES).first((t) => t.id === 500);
   public selectedSoldierNumberType: number = 0;
-  public selectedCustomSoliderType: api.CharacterSoldierType = new api.CharacterSoldierType();
-  public isCustomSoldierTypeSelected: boolean = false;
   public isOpenSoldierDialog: boolean = false;
-  public isOpenResearchSoldierDialog: boolean = false;
   public isOpenTownCharactersDialog: boolean = false;
   public isOpenTownDefendersDialog: boolean = false;
   public isOpenCountryCharactersDialog: boolean = false;
@@ -1584,7 +1538,7 @@ export default class StatusPage extends Vue {
       || this.isOpenBattleLogDialog || this.isOpenPromotionDialog
       || this.isOpenCommandersDialog || this.isOpenRiceDialog || this.isOpenTownWarDialog
       || this.isOpenOppositionCharactersDialog || this.isOpenSafeDialog || this.isOpenSafeOutDialog
-      || this.isOpenResearchSoldierDialog || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
+      || this.isOpenSecretaryDialog || this.isOpenAddSecretaryDialog
       || this.isOpenRemoveSecretaryDialog || this.isOpenCharacterIconPickerDialog || this.isOpenPoliciesDialog
       || this.isOpenSecretaryTownDialog || this.isOpenFormationDialog || this.isOpenFormationAddDialog
       || this.isOpenFormationChangeDialog || this.isOpenCharacterItemHandOverDialog || this.isOpenCharacterItemDialog
@@ -1596,10 +1550,6 @@ export default class StatusPage extends Vue {
 
   public openCommandDialog(event: string) {
     if (event === 'soldier') {
-      if (this.isCustomSoldierTypeSelected &&
-          this.selectedCustomSoliderType.status !== api.CharacterSoldierType.statusAvailable) {
-        this.isCustomSoldierTypeSelected = false;
-      }
       this.setSelectedSoldierNumberType(this.selectedSoldierNumberType);
       this.isOpenSoldierDialog = true;
     } else if (event === 'promotion') {
@@ -1621,10 +1571,6 @@ export default class StatusPage extends Vue {
       this.paySafeMoney = def.PAY_SAFE_MAX;
       this.paySafeTarget.id = -1;
       this.isOpenSafeOutDialog = true;
-    } else if (event === 'soldier-research') {
-      this.isCustomSoldierTypeSelected = true;
-      this.isOpenResearchSoldierDialog = true;
-      this.selectedCustomSoliderType = new api.CharacterSoldierType();
     } else if (event === 'secretary') {
       this.targetSecretary.id = -1;
       this.targetUnit.id = -1;
@@ -1697,7 +1643,7 @@ export default class StatusPage extends Vue {
       this.isOpenBattleLogDialog = this.isOpenPromotionDialog =
       this.isOpenCommandersDialog = this.isOpenRiceDialog = this.isOpenTownWarDialog =
       this.isOpenOppositionCharactersDialog = this.isOpenSafeDialog = this.isOpenSafeOutDialog =
-      this.isOpenResearchSoldierDialog = this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
+      this.isOpenSecretaryDialog = this.isOpenAddSecretaryDialog =
       this.isOpenRemoveSecretaryDialog = this.isOpenCharacterIconPickerDialog = this.isOpenPoliciesDialog =
       this.isOpenSecretaryTownDialog = this.isOpenFormationDialog = this.isOpenFormationAddDialog =
       this.isOpenFormationChangeDialog = this.isOpenCharacterItemHandOverDialog =
@@ -1720,36 +1666,6 @@ export default class StatusPage extends Vue {
       this.model.giveTownToCountry(this.mapDialogSelectedTown.id);
     }
     this.isOpenMapDialog = false;
-  }
-
-  public get soliderDetail(): def.SoldierType {
-    if (!this.isCustomSoldierTypeSelected && !this.selectedSoldierType.isCustom) {
-      if (this.selectedSoldierType.id === 1) {
-        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === 500);
-      } else {
-        return Enumerable.from(def.SOLDIER_TYPES).first((st) => st.id === this.selectedSoldierType.id);
-      }
-    } else {
-      const parts = api.CharacterSoldierType.getParts(this.selectedCustomSoliderType);
-      return new def.SoldierType(
-        this.selectedCustomSoliderType.id,
-        0,
-        this.selectedCustomSoliderType.name,
-        api.CharacterSoldierType.getMoney(this.selectedCustomSoliderType),
-        api.CharacterSoldierType.getTechnology(this.selectedCustomSoliderType),
-        Enumerable.from(parts).select((p) => p.attackPower).toArray().join('+'),
-        Enumerable.from(parts).select((p) => p.defencePower).toArray().join('+'),
-        'ユーザ定義のカスタム兵種',
-      );
-    }
-  }
-
-  public get customSoldierTypeDescription(): string {
-    return api.CharacterSoldierType.getDescription(this.selectedCustomSoliderType);
-  }
-
-  public get customSoldierTypeMoney(): number {
-    return api.CharacterSoldierType.getMoney(this.selectedCustomSoliderType);
   }
 
   public get chatObj(): IChatMessageContainer | undefined {
@@ -1792,10 +1708,6 @@ export default class StatusPage extends Vue {
     } else if (this.selectedActionTab === 2) {
       this.model.countryThreadBbs.isOpen = true;
     }
-  }
-
-  public getCustomSoldierTypeTechnology(type: api.CharacterSoldierType): number {
-    return api.CharacterSoldierType.getTechnology(type);
   }
 
   public getPolicyPoint(type: def.CountryPolicyType): number {

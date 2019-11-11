@@ -298,7 +298,6 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (35:1)';
     }
   }),
-  new CommandNameResolver(38, '兵種 %0% を研究'),
   new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);

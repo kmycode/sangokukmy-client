@@ -125,7 +125,6 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
-import SoldierTypeModel from '@/models/status/soldiertypemodel';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import * as def from '@/common/definitions';
