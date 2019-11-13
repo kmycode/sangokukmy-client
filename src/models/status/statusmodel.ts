@@ -432,7 +432,7 @@ export default class StatusModel {
   public get secretaryMaxValue(): number {
     // 自国の政務官の最大
     return Enumerable.from(this.store.policies)
-      .where((p) => p.countryId === this.character.countryId)
+      .where((p) => p.countryId === this.character.countryId && p.status === api.CountryPolicy.statusAvailable)
       .sum((p) => p.type === 4 ? 2 :
                   p.type === 2 ? 1 :
                   p.type === 34 ? 1 : 0);
