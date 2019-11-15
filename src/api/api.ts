@@ -612,6 +612,7 @@ export abstract class TownBase implements IIdentitiedEntity {
 
   public constructor(public id: number = 0,
                      public type: number = 0,
+                     public subType: number = 0,
                      public countryId: number = 0,
                      public name: string = '',
                      public x: number = 0,
