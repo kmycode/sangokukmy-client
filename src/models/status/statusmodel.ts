@@ -1017,11 +1017,13 @@ export default class StatusModel {
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
+        country.lastRequestedIncomes !== undefined &&
         country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('政策ポイント', country.policyPoint));
       ps.push(new RangedStatusParameter('使用中の政務官', this.currentSecretaryPoint, this.secretaryMaxValue));
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+      ps.push(new NoRangeStatusParameter('必要収入', country.lastRequestedIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
     Enumerable

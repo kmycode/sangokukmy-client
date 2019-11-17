@@ -397,6 +397,7 @@ export class Country {
                      public aiType: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
+                     public lastRequestedIncomes?: number,
                      public safeMoney?: number) {}
 }
 
