@@ -488,6 +488,28 @@ export default class StatusModel {
               if (can || can2) {
                 types.push(t);
               }
+            } else if (t.requestedSubBuildingType) {
+              const arr = this.store.subBuildings
+                .filter((s) => s.townId === this.store.character.townId &&
+                               s.type === api.TownSubBuilding.statusAvailable)
+                .some((s) => !Array.isArray(t.requestedSubBuildingType) ?
+                  s.type === t.requestedSubBuildingType :
+                  t.requestedSubBuildingType.some((k) => k === s.type));
+              if (arr) {
+                types.push(t);
+              }
+            } else if (t.requestedTownType) {
+              if (!Array.isArray(t.requestedTownType)) {
+                if (this.characterTown.type === t.requestedTownType ||
+                    this.characterTown.subType === t.requestedTownType) {
+                  types.push(t);
+                }
+              } else {
+                if (t.requestedTownType.some((tt) => this.characterTown.type === tt ||
+                                                     this.characterTown.subType === tt)) {
+                  types.push(t);
+                }
+              }
             } else {
               types.push(t);
             }

@@ -6,7 +6,16 @@
       :key="soldier.type.id">
       <div class="soldier-info">
         <div class="standard">
-          <div class="name responsive-header"><span class="kind kind-wall" v-if="soldier.type.kind === 2">壁</span><span class="kind kind-needresource" v-if="soldier.type.isNeedResource">資</span>{{ soldier.type.name }}<span v-if="soldier.isLackOfResources" class="soldier-resource-lack">資源がありません</span><span v-else-if="soldier.resource > 0" class="soldier-resource-number">資源残り {{ soldier.resource }}</span></div>
+          <div class="name responsive-header">
+            <span class="kind kind-wall" v-if="soldier.type.attribute === 2">兵</span>
+            <span class="kind kind-infantry" v-if="soldier.type.attribute === 4">歩</span>
+            <span class="kind kind-cavalry" v-if="soldier.type.attribute === 5">騎</span>
+            <span class="kind kind-crossbow" v-if="soldier.type.attribute === 6">弩</span>
+            <span class="kind kind-wall2" v-if="soldier.type.attribute === 7">壁</span>
+            <span class="kind kind-needresource" v-if="soldier.type.isNeedResource">資</span>
+            {{ soldier.type.name }}
+            <span v-if="soldier.isLackOfResources" class="soldier-resource-lack">資源がありません</span>
+            <span v-else-if="soldier.resource > 0" class="soldier-resource-number">資源残り {{ soldier.resource }}</span></div>
           <div class="detail">
             <span class="value-name">金</span><span class="value">{{ getSoldierMoney(soldier.type) }}<span v-if="!soldier.type.isCustom">0</span></span>
             <span v-if="!soldier.type.isCustom" class="value-name">攻撃力</span><span class="kind kind-strong" v-if="soldier.type.kind === 0 || soldier.type.kind === 2">武力</span><span class="kind kind-intellect" v-if="soldier.type.kind === 1">知力</span><span class="kind kind-popularity" v-if="soldier.type.kind === 3">人望</span><span class="kind-plus">+</span><span v-if="!soldier.type.isCustom" class="value">{{ soldier.type.attackPower }}</span>
@@ -27,6 +36,7 @@ import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
+import StatusStore from '../../models/status/statusstore';
 
 class SoldierTypePickerItem {
   constructor(public type: def.SoldierType,
@@ -153,6 +163,22 @@ export default class SoldierTypePicker extends Vue {
         }
 
         .kind-wall {
+          background: #ca0;
+        }
+
+        .kind-infantry {
+          background: #88d;
+        }
+
+        .kind-cavalry {
+          background: #c7c;
+        }
+
+        .kind-crossbow {
+          background: #5a8;
+        }
+
+        .kind-wall2 {
           background: #ca0;
         }
         
