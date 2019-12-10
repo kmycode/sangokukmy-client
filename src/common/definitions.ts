@@ -935,7 +935,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(60, 18, '装備馬', '重騎兵／梓馬兵徴兵費 -30%', true, true, false, true, 1000),
   new CharacterItemType(61, 100000, '四民月令', '統率 +20', false),
   new CharacterItemType(62, 100000, '論語', '人望 +20', false),
-  new CharacterItemType(63, 20, '装備連弩', '連弩兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(63, 20, '連弩装備', '連弩兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(64, 24, '青洲槍', '青洲兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(65, 22, '装備良戟', '重戟兵徴兵費 -60%', true, true, false, true, 1000),
   new CharacterItemType(66, 22, '装備良馬', '重騎兵／梓馬兵徴兵費 -60%', true, true, false, true, 1000),
@@ -947,9 +947,12 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
   new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
   new CharacterItemType(74, 500000, '胡人の証', '所持した状態で経営国家、異民族に仕官可能。仕官で消費', false, true, false),
-  new CharacterItemType(75, 20, '重戟装備'),
-  new CharacterItemType(76, 20, '重騎装備'),
-  new CharacterItemType(77, 20, '戦車'),
+  new CharacterItemType(75, 20, '重戟装備', '重戟兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(76, 20, '重騎装備', '重騎兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(77, 22, '戦車', '戦車兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(78, 18, '歩兵装備', '歩兵徴兵費用 -30%', true, true, false, true, 1000),
+  new CharacterItemType(79, 18, '騎兵装備', '騎兵徴兵費用 -30%', true, true, false, true, 1000),
+  new CharacterItemType(80, 18, '弩', '弩兵徴兵費用 -30%', true, true, false, true, 1000),
 ];
 
 /**
