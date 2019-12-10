@@ -25,7 +25,7 @@
           <div class="standard">
             <div class="name responsive-header">{{ formation.type.name }}</div>
             <div v-show="isShowChangePoint" class="point">
-              <span class="value-name">ポイント</span> <span class="value">50</span>
+              <span class="value-name">ポイント</span> <span class="value">0</span>
               <span class="value-name">属性</span> <span class="value">{{ formation.type.type }}</span>
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
