@@ -953,6 +953,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(78, 18, '歩兵装備', '歩兵徴兵費用 -30%', true, true, false, true, 1000),
   new CharacterItemType(79, 18, '騎兵装備', '騎兵徴兵費用 -30%', true, true, false, true, 1000),
   new CharacterItemType(80, 18, '弩', '弩兵徴兵費用 -30%', true, true, false, true, 1000),
+  new CharacterItemType(81, 80000, '技能書', '使用で技能ポイント +12', true, true, true),
 ];
 
 /**
