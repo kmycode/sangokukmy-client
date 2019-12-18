@@ -903,7 +903,8 @@ export default class StatusModel {
     const country = this.getCountry(town.countryId);
     const ps: StatusParameter[] = [];
     ps.push(new TextStatusParameter('国', country.name));
-    ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type - 1]));
+    ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type]));
+    ps.push(new TextStatusParameter('下地', def.TOWN_TYPES[town.subType]));
     if (town.ricePrice !== undefined) {
       ps.push(new NoRangeStatusParameter('相場', Math.round(town.ricePrice * 1000) / 1000));
       ps.push(new NoRangeStatusParameter('農民', town.people));

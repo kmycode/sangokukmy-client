@@ -149,6 +149,7 @@ export const CLASS_NAMES: string[] = [
  * 都市の特化
  */
 export const TOWN_TYPES: string[] = [
+  'なし',
   '農業都市',
   '商業都市',
   '城塞都市',

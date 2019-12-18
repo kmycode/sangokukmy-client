@@ -424,7 +424,7 @@ export default class EntryPage extends Vue {
 
   public get townType(): string {
     if (this.town.id > 0) {
-      return def.TOWN_TYPES[this.town.type - 1];
+      return def.TOWN_TYPES[this.town.type];
     }
     return '未選択';
   }
