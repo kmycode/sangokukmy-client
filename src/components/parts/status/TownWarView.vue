@@ -54,7 +54,7 @@ export default class WarView extends Vue {
 
   private get canWar(): boolean {
     let result = false;
-    if (this.status.id === 0) {
+    if (this.status.id === 0 || this.status.id === 3) {
       result = true;
     }
 
