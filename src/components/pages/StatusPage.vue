@@ -1224,6 +1224,7 @@
                              :skills="model.characterSkills"
                               canEdit="true"
                               isUse="true"
+                              isShowPendings="true"
                               v-model="selectedCharacterItemType"
                               style="flex:1"/>
         </div>
