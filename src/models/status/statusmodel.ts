@@ -673,6 +673,7 @@ export default class StatusModel {
       (obj) => this.onCountryPolicyReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
+      this.store.defenders = [];
       this.store.hasInitialized = false;
       this.commands.reset();
       this.onlines.reset();
@@ -823,13 +824,14 @@ export default class StatusModel {
   }
 
   private onTownDefenderReceived(defender: api.TownDefender) {
-    this.store.defenders = Enumerable.from(this.store.defenders)
-      .where((d) => d.characterId !== defender.characterId)
-      .toArray();
+    this.store.defenders = this.store.defenders
+      .filter((d) => d.characterId !== defender.characterId);
     if (defender.status === api.TownDefender.statusAvailable) {
       ArrayUtil.addLog(this.store.defenders, defender);
     }
-    this.setTown(this.store.town);
+    if (defender.townId === this.store.town.id) {
+      this.setTown(this.store.town);
+    }
   }
 
   public selectTown(townId: number) {

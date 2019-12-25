@@ -54,7 +54,7 @@ export default class WarView extends Vue {
 
   private get canWar(): boolean {
     let result = false;
-    if (this.status.id === 0) {
+    if (this.status.id === 0 || this.status.id === 3) {
       result = true;
     }
 
@@ -80,7 +80,8 @@ export default class WarView extends Vue {
   }
 
   private get canWarWithNear(): boolean {
-    return api.TownBase.getAroundTowns(this.towns, this.town).some((t) => t.countryId === this.myCountryId);
+    // return api.TownBase.getAroundTowns(this.towns, this.town).some((t) => t.countryId === this.myCountryId);
+    return true;
   }
 
   private get canWarWithNotSingleTown(): boolean {
