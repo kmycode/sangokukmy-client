@@ -854,7 +854,9 @@ export default class StatusModel {
     if (defender.status === api.TownDefender.statusAvailable) {
       ArrayUtil.addLog(this.store.defenders, defender);
     }
-    this.setTown(this.store.town);
+    if (defender.townId === this.store.town.id) {
+      this.setTown(this.store.town);
+    }
   }
 
   public selectTown(townId: number) {
