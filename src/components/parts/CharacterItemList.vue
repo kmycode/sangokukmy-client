@@ -42,6 +42,7 @@
                 <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
                 <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
               </span>
+              <span class="value-name">保留期限</span> <span class="value">{{ item.data[0].lastStatusChangedGameDate.year + 12 }} 年 {{ item.data[0].lastStatusChangedGameDate.month }} 月</span>
             </div>
             <div class="description">{{ item.type.description }}</div>
           </div>
@@ -131,7 +132,10 @@ export default class CharacterItemList extends Vue {
         new CharacterItemListItem(i.first().type, [
           new api.CharacterItem(i.first().data[0].id,
                                 api.CharacterItem.statusTownOnSale,
-                                i.first().type.id, 0, 0, i.sum((j) => Enumerable.from(j.data).sum((k) => k.resource))),
+                                i.first().type.id, 0, 0, i.sum((j) => Enumerable.from(j.data).sum((k) => k.resource)),
+                                i.selectMany((j) => j.data)
+                                 .orderBy((k) => api.GameDateTime.toNumber(k.lastStatusChangedGameDate))
+                                 .first().lastStatusChangedGameDate),
         ]));
 
     return items

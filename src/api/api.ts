@@ -929,7 +929,8 @@ export class CharacterItem {
                      public type: number,
                      public townId: number,
                      public characterId: number,
-                     public resource: number) {}
+                     public resource: number,
+                     public lastStatusChangedGameDate: GameDateTime) {}
 }
 
 export class CharacterSkill {
