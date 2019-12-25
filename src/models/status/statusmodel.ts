@@ -698,6 +698,7 @@ export default class StatusModel {
       (obj) => this.onCountryPolicyReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
+      this.store.defenders = [];
       this.store.hasInitialized = false;
       this.commands.reset();
       this.onlines.reset();
