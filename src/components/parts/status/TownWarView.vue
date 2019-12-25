@@ -80,7 +80,8 @@ export default class WarView extends Vue {
   }
 
   private get canWarWithNear(): boolean {
-    return api.TownBase.getAroundTowns(this.towns, this.town).some((t) => t.countryId === this.myCountryId);
+    // return api.TownBase.getAroundTowns(this.towns, this.town).some((t) => t.countryId === this.myCountryId);
+    return true;
   }
 
   private get canWarWithNotSingleTown(): boolean {
