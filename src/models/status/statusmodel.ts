@@ -848,9 +848,8 @@ export default class StatusModel {
   }
 
   private onTownDefenderReceived(defender: api.TownDefender) {
-    this.store.defenders = Enumerable.from(this.store.defenders)
-      .where((d) => d.characterId !== defender.characterId)
-      .toArray();
+    this.store.defenders = this.store.defenders
+      .filter((d) => d.characterId !== defender.characterId);
     if (defender.status === api.TownDefender.statusAvailable) {
       ArrayUtil.addLog(this.store.defenders, defender);
     }
