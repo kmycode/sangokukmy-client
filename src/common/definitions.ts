@@ -205,24 +205,15 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       const p = Enumerable.from(params);
       const soldierType = p.firstOrDefault((pp) => pp.type === 1);
       const soldierNumber = p.firstOrDefault((pp) => pp.type === 2);
-      const isCustom = p.firstOrDefault((pp) => pp.type === 3);
-      if (!soldierType || !soldierNumber || !isCustom) {
+      if (!soldierType || !soldierNumber) {
         return 'エラー (10:2)';
       }
 
-      if (isCustom.numberValue === 0) {
-        const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
-        if (type && soldierNumber.numberValue !== undefined) {
-          return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
-        } else {
-          return 'エラー (10:3)';
-        }
+      const type = Enumerable.from(SOLDIER_TYPES).firstOrDefault((st) => st.id === soldierType.numberValue);
+      if (type && soldierNumber.numberValue !== undefined) {
+        return format.replace('{0}', type.name).replace('{1}', soldierNumber.numberValue.toString());
       } else {
-        if (soldierNumber.numberValue) {
-          return format.replace('{0}', '%0%').replace('{1}', soldierNumber.numberValue.toString());
-        } else {
-          return 'エラー (10:4)';
-        }
+        return 'エラー (10:3)';
       }
     } else {
       return 'エラー (10:1)';
