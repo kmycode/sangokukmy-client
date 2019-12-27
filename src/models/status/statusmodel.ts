@@ -27,7 +27,6 @@ import OnlineModel from '@/models/status/onlinemodel';
 import StatusStore from '@/models/status/statusstore';
 import UnitModel from '@/models/status/unitmodel';
 import ValueUtil from '@/models/common/ValueUtil';
-import SoldierTypeModel from '@/models/status/soldiertypemodel';
 import VueRouter from 'vue-router';
 
 export default class StatusModel {
@@ -489,6 +488,28 @@ export default class StatusModel {
               if (can || can2) {
                 types.push(t);
               }
+            } else if (t.requestedSubBuildingType) {
+              const arr = this.store.subBuildings
+                .filter((s) => s.townId === this.store.character.townId &&
+                               s.type === api.TownSubBuilding.statusAvailable)
+                .some((s) => !Array.isArray(t.requestedSubBuildingType) ?
+                  s.type === t.requestedSubBuildingType :
+                  t.requestedSubBuildingType.some((k) => k === s.type));
+              if (arr) {
+                types.push(t);
+              }
+            } else if (t.requestedTownType) {
+              if (!Array.isArray(t.requestedTownType)) {
+                if (this.characterTown.type === t.requestedTownType ||
+                    this.characterTown.subType === t.requestedTownType) {
+                  types.push(t);
+                }
+              } else {
+                if (t.requestedTownType.some((tt) => this.characterTown.type === tt ||
+                                                     this.characterTown.subType === tt)) {
+                  types.push(t);
+                }
+              }
             } else {
               types.push(t);
             }
@@ -500,49 +521,6 @@ export default class StatusModel {
         }
       }
     });
-    Enumerable
-      .from(this.store.soldierTypes)
-      .where((t) => t.status === api.CharacterSoldierType.statusAvailable)
-      .orderBy((t) => api.CharacterSoldierType.getTechnology(t))
-      .forEach((t) => {
-        if (this.characterTown.countryId === this.character.countryId) {
-          const technology = api.CharacterSoldierType.getTechnology(t);
-          if (technology <= this.characterTown.technology) {
-            const type = new def.SoldierType(
-              10000 + t.id,
-              0,
-              t.name,
-              api.CharacterSoldierType.getMoney(t),
-              technology);
-            type.description = api.CharacterSoldierType.getDescription(t);
-            type.isCustom = true;
-            type.customId = t.id;
-            types.push(type);
-          }
-        }
-      });
-    return types;
-  }
-
-  public get selectableResearchSoldierTypes(): def.SoldierType[] {
-    const types: def.SoldierType[] = [];
-    Enumerable
-      .from(this.store.soldierTypes)
-      .where((t) => t.status === api.CharacterSoldierType.statusInDraft ||
-                    t.status === api.CharacterSoldierType.statusResearching)
-      .orderBy((t) => api.CharacterSoldierType.getTechnology(t))
-      .forEach((t) => {
-        const type = new def.SoldierType(
-          10000 + t.id,
-          0,
-          t.name,
-          api.CharacterSoldierType.getMoney(t),
-          api.CharacterSoldierType.getTechnology(t));
-        type.description = api.CharacterSoldierType.getDescription(t);
-        type.isCustom = true;
-        type.customId = t.id;
-        types.push(type);
-      });
     return types;
   }
 
@@ -675,9 +653,6 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryMessage>(
       api.CountryMessage.typeId,
       (obj) => this.onCountryMessageReceived(obj));
-    ApiStreaming.status.on<api.CharacterSoldierType>(
-      api.CharacterSoldierType.typeId,
-      (obj) => this.soldierTypes.onItemReceived(obj));
     ApiStreaming.status.on<api.Formation>(
       api.Formation.typeId,
       (obj) => this.onFormationReceived(obj));
@@ -698,6 +673,7 @@ export default class StatusModel {
       (obj) => this.onCountryPolicyReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
+      this.store.defenders = [];
       this.store.hasInitialized = false;
       this.commands.reset();
       this.onlines.reset();
@@ -848,13 +824,14 @@ export default class StatusModel {
   }
 
   private onTownDefenderReceived(defender: api.TownDefender) {
-    this.store.defenders = Enumerable.from(this.store.defenders)
-      .where((d) => d.characterId !== defender.characterId)
-      .toArray();
+    this.store.defenders = this.store.defenders
+      .filter((d) => d.characterId !== defender.characterId);
     if (defender.status === api.TownDefender.statusAvailable) {
       ArrayUtil.addLog(this.store.defenders, defender);
     }
-    this.setTown(this.store.town);
+    if (defender.townId === this.store.town.id) {
+      this.setTown(this.store.town);
+    }
   }
 
   public selectTown(townId: number) {
@@ -1064,11 +1041,13 @@ export default class StatusModel {
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
+        country.lastRequestedIncomes !== undefined &&
         country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('政策ポイント', country.policyPoint));
       ps.push(new RangedStatusParameter('使用中の政務官', this.currentSecretaryPoint, this.secretaryMaxValue));
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
+      ps.push(new NoRangeStatusParameter('必要収入', country.lastRequestedIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
     Enumerable
@@ -1859,23 +1838,14 @@ export default class StatusModel {
     ps.push(new NoRangeStatusParameter('貢献', character.contribution));
     ps.push(new NoRangeStatusParameter('階級値', character.classValue));
     ps.push(new TextStatusParameter('階級', api.Character.getClassName(character)));
-    if (character.soldierType !== 15) {
-      const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
-      if (soldierType) {
-        ps.push(new TextStatusParameter('兵種', soldierType.name));
-      } else {
-        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
-      }
+
+    const soldierType = Enumerable.from(def.SOLDIER_TYPES).firstOrDefault((st) => st.id === character.soldierType);
+    if (soldierType) {
+      ps.push(new TextStatusParameter('兵種', soldierType.name));
     } else {
-      const soldierType = Enumerable
-        .from(this.store.soldierTypes)
-        .firstOrDefault((st) => st.id === character.characterSoldierTypeId);
-      if (soldierType) {
-        ps.push(new TextStatusParameter('兵種', soldierType.name));
-      } else {
-        ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
-      }
+      ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
     }
+
     ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     const formation = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === character.formationType);
@@ -1994,12 +1964,6 @@ export default class StatusModel {
         this.isUpdatingPrivateSettings = false;
       });
   }
-
-  // #endregion
-
-  // #region CharacterSoldierType
-
-  public soldierTypes = new SoldierTypeModel(this.store);
 
   // #endregion
 

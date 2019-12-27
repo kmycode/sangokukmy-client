@@ -47,11 +47,10 @@ export default class CommandInputer {
     this.inputCommandPrivate(commandType);
   }
 
-  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number, isCustom: boolean) {
+  public inputSoldierCommand(commandType: number, soldierType: number, soldierNumber: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, soldierType === 500 ? 1 : soldierType),
-                        new api.CharacterCommandParameter(2, soldierNumber),
-                        new api.CharacterCommandParameter(3, isCustom ? 1 : 0));
+                        new api.CharacterCommandParameter(2, soldierNumber));
     });
   }
 
@@ -495,39 +494,6 @@ export default class CommandInputer {
         command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
       } else {
         command.name = 'エラー (' + command.type + ':A)';
-      }
-    }
-    if (command.type === 10 || command.type === 38) {
-      // カスタム兵種（徴兵、兵種研究）
-      const isCustom = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 3);
-      if (command.type === 38 || (isCustom && isCustom.numberValue === 1)) {
-        const typeId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === 1);
-        if (typeId && typeId.numberValue) {
-          const type = Enumerable
-            .from(this.store.soldierTypes)
-            .concat(this.store.soldierTypeCaches)
-            .firstOrDefault((t) => t.id === typeId.numberValue);
-          if (type) {
-            command.name = command.name.replace('%0%', type.name);
-          } else {
-            if (command.type === 10) {
-              // 徴兵
-              api.Api.getSoldierType(typeId.numberValue)
-                .then((t) => {
-                  command.name = command.name.replace('%0%', t.name);
-                  this.store.soldierTypeCaches.push(t);
-                })
-                .catch(() => {
-                  command.name = 'エラー (' + command.type + ':C)';   // Bは欠番
-                });
-            } else {
-              // 自分のじゃない研究中の兵種は常に取得できない
-              command.name = '兵種研究';
-            }
-          }
-        } else {
-          command.name = 'エラー (' + command.type + ':A)';
-        }
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
