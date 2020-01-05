@@ -42,7 +42,7 @@
                 <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
                 <span class="value-name">数量</span> <span class="value">{{ item.count }}</span>
               </span>
-              <span class="value-name">保留期限</span> <span class="value">{{ item.data[0].lastStatusChangedGameDate.year + 12 }} 年 {{ item.data[0].lastStatusChangedGameDate.month }} 月</span>
+              <span class="value-name">保留期限</span> <span class="value">{{ item.data[0].lastStatusChangedGameDate.year + 24 }} 年 {{ item.data[0].lastStatusChangedGameDate.month }} 月</span>
             </div>
             <div class="description">{{ item.type.description }}</div>
           </div>
