@@ -117,7 +117,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(41, 3, 2, '投擲器', 40, 700, '80', '-40', '仁官向けの兵種。防御を犠牲に、城壁攻撃に特化', undefined, undefined, undefined, 53, 1),
   new SoldierType(23, 1, 4, '梓叡兵', 8, 300, '0', '0', '文官向けの最弱の兵種', undefined, undefined, undefined, [48, 10]),
   new SoldierType(7, 1, 4, '梓神兵',  15, 400, '30', '10', '文官向けの兵種。相手を混乱させることができる'),
-  new SoldierType(42, 1, 6, '梓弓兵', 30, 500, '20', '20', '文官向けの兵種。相手を混乱させることができる', undefined, undefined, undefined, undefined, 2),
+  new SoldierType(42, 1, 6, '梓弓兵', 15, 500, '20', '20', '文官向けの兵種。相手を混乱させることができる', undefined, undefined, undefined, undefined, 2),
   new SoldierType(24, 1, 5, '梓馬兵', 15, 700, '40', '0', '文官向けの兵種。相手を混乱させることができる。突撃に補正', undefined, undefined, undefined, undefined, 1),
   new SoldierType(29, 1, 6, '梓琴兵', 22, 700, '40', '20', '文官向けの兵種。歩兵に強い。同士討ちを誘う', undefined, undefined, undefined, 50),
   new SoldierType(43, 1, 6, '梓弩兵', 22, 1000, '30', '30', '文官向けの兵種。陣形の相性により攻撃力を得る', undefined, undefined, undefined, 50, 2),
