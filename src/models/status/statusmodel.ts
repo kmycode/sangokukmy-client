@@ -1979,7 +1979,7 @@ export default class StatusModel {
 
   public changeFormation(formation: number) {
     if (formation === this.character.formationType ||
-        !Enumerable.from(this.store.formations).any((f) => f.type === formation)) {
+        !Enumerable.from(this.formations).any((f) => f.type === formation)) {
       return;
     }
 
