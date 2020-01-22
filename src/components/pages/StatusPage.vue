@@ -1011,7 +1011,7 @@
             <button class="btn btn-light" @click="isOpenFormationDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="selectedFormationType.id >= 0 && selectedFormationType.id !== model.character.formationType && 50 <= model.character.formationPoint" @click="model.changeFormation(selectedFormationType.id)">承認</button>
+            <button class="btn btn-primary" v-show="selectedFormationType.id >= 0 && selectedFormationType.id !== model.character.formationType" @click="model.changeFormation(selectedFormationType.id)">承認</button>
           </div>
         </div>
       </div>
