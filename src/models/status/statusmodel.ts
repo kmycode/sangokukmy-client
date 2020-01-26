@@ -491,7 +491,7 @@ export default class StatusModel {
             } else if (t.requestedSubBuildingType) {
               const arr = this.store.subBuildings
                 .filter((s) => s.townId === this.store.character.townId &&
-                               s.type === api.TownSubBuilding.statusAvailable)
+                               s.status === api.TownSubBuilding.statusAvailable)
                 .some((s) => !Array.isArray(t.requestedSubBuildingType) ?
                   s.type === t.requestedSubBuildingType :
                   t.requestedSubBuildingType.some((k) => k === s.type));
