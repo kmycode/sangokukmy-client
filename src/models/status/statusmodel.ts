@@ -229,7 +229,7 @@ export default class StatusModel {
       max += 2;
     }
     if (skills.some((s) => s.type === 19)) {
-      max += 3;
+      max += 2;
     }
     if (skills.some((s) => s.type === 44)) {
       max += 1;
