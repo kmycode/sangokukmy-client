@@ -455,8 +455,7 @@
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 1, 'btn-secondary': selectedSoldierNumberType === 1}" @click="setSelectedSoldierNumberType(1)">1人</button>
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 2, 'btn-secondary': selectedSoldierNumberType === 2}" @click="setSelectedSoldierNumberType(2)">9人</button>
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 3, 'btn-secondary': selectedSoldierNumberType === 3}" @click="setSelectedSoldierNumberType(3)">末尾9</button>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 4, 'btn-secondary': selectedSoldierNumberType === 4}" @click="setSelectedSoldierNumberType(4)">任意</button>
-              <input :disabled="selectedSoldierNumberType !== 4" type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber">人徴兵
+              <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber" @input="selectedSoldierNumberType = 4">人徴兵
             </div>
           </div>
         </div>
