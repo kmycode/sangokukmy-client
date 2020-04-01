@@ -98,6 +98,7 @@
             <li class="nav-item"><a class="nav-link" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank">説明書</a></li>
             <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 2}" href="#" @click.prevent.stop="selectedTab = 2">勢力図</a></li>
             <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
+            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('ranking')">ランキング</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li> -->
             <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('histories')">統一記録</a></li>
           </ul>

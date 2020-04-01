@@ -37,5 +37,10 @@ export default new Router({
       name: 'histories',
       component: () => import('./components/pages/UnifiedCountryPage.vue'),
     },
+    {
+      path: '/ranking',
+      name: 'ranking',
+      component: () => import('./components/pages/RankingPage.vue'),
+    },
   ],
 });
