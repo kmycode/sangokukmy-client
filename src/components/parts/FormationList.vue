@@ -10,7 +10,9 @@
               <span class="value-name">レベル</span> <span class="value">{{ currentFormation.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ currentFormation.experience }}</span>
             </div>
-          <div class="description">{{ currentFormationTypeInfo.descriptions[currentFormation.level - 1] }}</div>
+          <div :class="{ 'description': true, 'current': currentFormation.level - 1 === index }"
+               v-for="(description, index) in currentFormationTypeInfo.descriptions"
+               :key="description"><span v-if="currentFormation.level - 1 === index">現在の効果 ＞ </span>{{ currentFormationTypeInfo.descriptions[index] }}</div>
         </div>
       </div>
     </div>
@@ -30,7 +32,9 @@
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
             </div>
-            <div class="description">{{ formation.type.descriptions[formation.data.level - 1] }}</div>
+            <div :class="{ 'description': true, 'current': formation.data.level - 1 === index }"
+                v-for="(description, index) in formation.type.descriptions"
+                :key="description"><span v-if="formation.data.level - 1 === index">現在の効果 ＞ </span>{{ formation.type.descriptions[index] }}</div>
           </div>
         </div>
         <div class="select-cover" @click="$emit('input', formation.type)"></div>
@@ -47,7 +51,9 @@
           <div class="standard">
             <div class="name responsive-header">{{ formation.name }}</div>
             <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div>
-            <div class="description">{{ formation.descriptions[0] }}</div>
+            <div :class="{ 'description': true, 'current': 0 === index }"
+                v-for="(description, index) in formation.descriptions"
+                :key="description"><span v-if="0 === index">現在の効果 ＞ </span>{{ formation.descriptions[index] }}</div>
           </div>
         </div>
         <div class="select-cover" @click="$emit('input', formation)"></div>
@@ -177,8 +183,14 @@ export default class FormationList extends Vue {
       }
 
       .description {
-        color: #666;
-        padding-left: 12px;
+        color: #999;
+        padding-left: 24px;
+
+        &.current {
+          color: #666;
+          font-weight: bold;
+          padding-left: 12px;
+        }
       }
 
       .point {

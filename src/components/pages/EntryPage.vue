@@ -157,6 +157,15 @@
       <div class="section">
         <h3>所属</h3>
         <div :class="{ 'form-row': true, 'error': !isOkTown, }">
+          <div class="label">ランダム仕官</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': !isTownSelected, }" @click="resetTown()">ランダム仕官</button>
+          </div>
+          <div class="detail">
+            （上級者向け）仕官先をランダムで決定する場合は、ボタンをONにしてください
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkTown, }">
           <div class="label">初期都市</div>
           <div class="field" style="height:500px">
             <Map
@@ -341,13 +350,23 @@ export default class EntryPage extends Vue {
       const extraData = this.getExtraData(this.town.countryId);
       return !extraData.isJoinLimited;
     } else {
-      return false;
+      return this.canBelongCountry;
     }
   }
 
+  private get isTownSelected(): boolean {
+    return this.town.id !== 0;
+  }
+
+  private get canBelongCountry(): boolean {
+    return this.extraData.countryData.some((c) => !c.isJoinLimited);
+  }
+
   private get isOkEstablishSelection(): boolean {
-    return (this.town.countryId !== 0 && !this.isPublish) ||
-      (this.town.countryId === 0 && this.isPublish);
+    return (!this.isTownSelected && !this.isPublish) ||
+      (this.isTownSelected &&
+       ((this.town.countryId !== 0 && !this.isPublish) ||
+        (this.town.countryId === 0 && this.isPublish)));
   }
 
   private get isOkCountryName(): boolean {
@@ -640,9 +659,34 @@ export default class EntryPage extends Vue {
     this.character.popularity = popularity;
   }
 
+  private resetTown() {
+    this.town = new api.Town();
+  }
+
   private entry() {
     if (this.canEntry || true) {
       this.isEntrying = true;
+      if (!this.isTownSelected) {
+        this.character.townId = 0;
+        const countries = this.extraData.countryData.filter((c) => !c.isJoinLimited);
+        const countryId = countries[Math.floor(Math.random() * countries.length)].countryId;
+        const country = this.countries.find((c) => c.id === countryId);
+        if (country) {
+          const town = this.towns.find((t) => t.id === country.capitalTownId);
+          if (town) {
+            if (town.countryId === countryId) {
+              this.character.townId = town.id;
+              this.town = town;
+            } else {
+              const town2 = this.towns.find((t) => t.countryId === countryId);
+              if (town2) {
+                this.town = town2;
+                this.character.townId = town2.id;
+              }
+            }
+          }
+        }
+      }
       api.Api.entry(this.character,
                     this.icon,
                     this.password,
