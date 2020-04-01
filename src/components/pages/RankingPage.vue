@@ -50,7 +50,7 @@ class RankingData {
   public constructor(public name: string,
                      public property: string,
                      charas: api.Character[],
-                     isContainsAi: boolean = true) {
+                     isContainsAi: boolean = false) {
     const ranking = Enumerable.from(charas)
       .where((c) => (c as any)[property] !== 0 && (isContainsAi || c.aiType === api.Character.aiHuman))
       .orderByDescending((c) => (c as any)[property])
@@ -101,8 +101,8 @@ export default class RankingPage extends Vue {
     this.rankings.push(new RankingData('統率', 'leadership', charas));
     this.rankings.push(new RankingData('人望', 'popularity', charas));
     this.rankings.push(new RankingData('階級', 'classValue', charas));
-    this.rankings.push(new RankingData('金', 'money', charas, false));
-    this.rankings.push(new RankingData('米', 'rice', charas, false));
+    this.rankings.push(new RankingData('金', 'money', charas));
+    this.rankings.push(new RankingData('米', 'rice', charas));
     this.rankings.push(new RankingData('戦闘勝利数', 'battleWonCount', charas));
     this.rankings.push(new RankingData('戦闘敗北数', 'battleLostCount', charas));
     this.rankings.push(new RankingData('勝率', 'winRate', charas));
