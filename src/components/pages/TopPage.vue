@@ -10,6 +10,7 @@
           <div v-if="system.gameDateTime.year < 24">更新開始: <span class="number">24</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year >= 24 && system.gameDateTime.year < 48">主要国戦闘解除: <span class="number">48</span>年<span class="number">01</span>月より</div>
           <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
+          <div v-if="system.isBattleRoyaleMode" class="battle-royale-mode">全国戦争中</div>
           <div class="onlines">
             <MiniCharacterList
               class="online-list"
@@ -357,6 +358,7 @@ export default class TopPage extends Vue {
 
 <style lang="scss" scoped>
 span.number { font-weight: bold; }
+.battle-royale-mode { color: #c00; font-weight: bold; }
 
 h1 { color: #420; }
 

@@ -217,7 +217,8 @@ export class SystemData {
                      public currentMonthStartDateTime: DateTime = new DateTime(0, 0, 0, 0, 0, 0),
                      public isWaitingReset: boolean = false,
                      public resetGameDateTime: GameDateTime = new GameDateTime(0, 0),
-                     public invitationCodeRequestedAtEntry: boolean = false) {}
+                     public invitationCodeRequestedAtEntry: boolean = false,
+                     public isBattleRoyaleMode: boolean = false) {}
 }
 
 /**

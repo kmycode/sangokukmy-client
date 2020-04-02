@@ -612,7 +612,8 @@ export class CountryWarStatus {
                      public name: string) {}
 }
 export const COUNTRY_WAR_STATUSES: CountryWarStatus[] = [
-  new CountryWarStatus(0, '戦争関係なし'),
+  new CountryWarStatus(0, '戦争関係なし'),        // 配列内インデクス固定
+  new CountryWarStatus(999, 'バトルロワイヤル'),  // 配列内インデクス固定
   new CountryWarStatus(1, '交戦中'),
   new CountryWarStatus(2, '停戦請願中'),
   new CountryWarStatus(102, '停戦協議中'),
