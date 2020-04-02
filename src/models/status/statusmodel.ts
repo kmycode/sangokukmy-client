@@ -303,6 +303,10 @@ export default class StatusModel {
   }
 
   public get characterCountryWarWorstStatus(): def.CountryWarStatus {
+    if (this.systemData.isBattleRoyaleMode) {
+      return def.COUNTRY_WAR_STATUSES[1];
+    }
+
     const war = Enumerable
       .from(this.store.wars)
       .where((w) => w.requestedCountryId === this.character.countryId ||

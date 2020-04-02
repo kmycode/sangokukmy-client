@@ -22,6 +22,7 @@
             <span class="number">{{ model.gameDate.month }}</span><span class="unit">月</span>
             <span class="month-timer">{{ model.monthTimer }}</span>
           </div>
+          <div id="current-war-status" class="in-battle-royal" v-if="model.characterCountryWarWorstStatus.id === 999">全国戦争中</div>
           <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 1">戦争中</div>
           <div id="current-war-status" class="in-war" v-if="model.characterCountryWarWorstStatus.id === 2">停戦協議中</div>
           <div id="current-war-status" class="in-ready" v-if="model.characterCountryWarWorstStatus.id === 4">戦争準備中</div>
@@ -1912,6 +1913,10 @@ ul.nav {
     border-radius: 12px;
     &.in-war {
       background-color: #e00;
+    }
+    &.in-battle-royal {
+      background-color: #d0c;
+      border-color: #d0c;
     }
     &.in-ready {
       color: #e00;
