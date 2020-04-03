@@ -1054,41 +1054,43 @@ export default class StatusModel {
       ps.push(new NoRangeStatusParameter('必要収入', country.lastRequestedIncomes));
       ps.push(new LargeTextStatusParameter('国庫残高', ValueUtil.getNumberWithUnit(country.safeMoney)));
     }
-    Enumerable
-      .from(this.store.alliances)
-      .where((ca) => ca.insistedCountryId === country.id || ca.requestedCountryId === country.id)
-      .forEach((ca) => {
-        const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
-        if (status) {
-          const targetCountryId = ca.requestedCountryId === country.id ? ca.insistedCountryId : ca.requestedCountryId;
-          const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
-          if (targetCountry) {
-            const type = ca.status === api.CountryAlliance.statusAvailable ? 'succeed' :
-              ca.status === api.CountryAlliance.statusInBreaking ? 'warning' :
-              ca.status === api.CountryAlliance.statusBroken ? 'warning' :
-              ca.status === api.CountryAlliance.statusRequesting ? 'primary' :
-              'information';
-            ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+    if (!this.systemData.isBattleRoyaleMode) {
+      Enumerable
+        .from(this.store.alliances)
+        .where((ca) => ca.insistedCountryId === country.id || ca.requestedCountryId === country.id)
+        .forEach((ca) => {
+          const status = Enumerable.from(def.COUNTRY_ALLIANCE_STATUSES).firstOrDefault((cat) => cat.id === ca.status);
+          if (status) {
+            const targetCountryId = ca.requestedCountryId === country.id ? ca.insistedCountryId : ca.requestedCountryId;
+            const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
+            if (targetCountry) {
+              const type = ca.status === api.CountryAlliance.statusAvailable ? 'succeed' :
+                ca.status === api.CountryAlliance.statusInBreaking ? 'warning' :
+                ca.status === api.CountryAlliance.statusBroken ? 'warning' :
+                ca.status === api.CountryAlliance.statusRequesting ? 'primary' :
+                'information';
+              ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+            }
           }
-        }
-      });
-    Enumerable
-      .from(this.store.wars)
-      .where((cw) => cw.insistedCountryId === country.id || cw.requestedCountryId === country.id)
-      .forEach((cw) => {
-        const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
-        if (status) {
-          const targetCountryId = cw.requestedCountryId === country.id ? cw.insistedCountryId : cw.requestedCountryId;
-          const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
-          if (targetCountry) {
-            const type = cw.status === api.CountryWar.statusAvailable ? 'danger' :
-                        cw.status === api.CountryWar.statusInReady ? 'warning' :
-                        cw.status === api.CountryWar.statusStopRequesting ? 'primary' :
-                        'information';
-            ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+        });
+      Enumerable
+        .from(this.store.wars)
+        .where((cw) => cw.insistedCountryId === country.id || cw.requestedCountryId === country.id)
+        .forEach((cw) => {
+          const status = Enumerable.from(def.COUNTRY_WAR_STATUSES).firstOrDefault((cwt) => cwt.id === cw.status);
+          if (status) {
+            const targetCountryId = cw.requestedCountryId === country.id ? cw.insistedCountryId : cw.requestedCountryId;
+            const targetCountry = ArrayUtil.find(this.store.countries, targetCountryId);
+            if (targetCountry) {
+              const type = cw.status === api.CountryWar.statusAvailable ? 'danger' :
+                          cw.status === api.CountryWar.statusInReady ? 'warning' :
+                          cw.status === api.CountryWar.statusStopRequesting ? 'primary' :
+                          'information';
+              ps.push(new TextStatusParameter(status.name, targetCountry.name, type));
+            }
           }
-        }
-      });
+        });
+    }
 
     // 役職
     if (country.id > 0 && country.posts) {
