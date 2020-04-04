@@ -106,7 +106,7 @@ export default class ChatMessageItem extends Vue {
 
     .message {
       flex: 1;
-      word-break: break-all;
+      word-break: break-word;
 
       .commands {
         text-align: right;
