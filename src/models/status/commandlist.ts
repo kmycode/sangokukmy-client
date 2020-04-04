@@ -308,7 +308,7 @@ export default class CommandList {
       const numMonth = api.GameDateTime.toNumber(month);
       let event = api.CharacterCommand.eventNone;
       let eventMessage = '';
-      if (numMonth > firstWarStart) {
+      if (numMonth > firstWarStart || this.store.systemData.isBattleRoyaleMode) {
         event = api.CharacterCommand.eventWaring;
       }
       const startWars = myWars.filter((w) => api.GameDateTime.toNumber(w.startGameDate) === numMonth);
