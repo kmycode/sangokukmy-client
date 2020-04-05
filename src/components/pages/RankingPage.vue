@@ -90,7 +90,7 @@ export default class RankingPage extends Vue {
     charas.forEach((c) => {
       const cdata = c as any;
       cdata.attributeSum = c.strong + c.intellect + c.leadership + c.popularity;
-      cdata.winRate = (cdata.battleWonCount + cdata.battleLostCount > 0) ?
+      cdata.winRate = (cdata.battleWonCount + cdata.battleLostCount >= 10) ?
         Math.round((cdata.battleWonCount / (cdata.battleWonCount + cdata.battleLostCount)) * 1000) / 10 :
         0;
     });
@@ -102,8 +102,8 @@ export default class RankingPage extends Vue {
     this.rankings.push(new RankingData('人望', 'popularity', charas));
     this.rankings.push(new RankingData('階級', 'classValue', charas));
     this.rankings.push(new RankingData('資産', 'money', charas));
-    this.rankings.push(new RankingData('戦闘勝利数', 'battleWonCount', charas, true));
-    this.rankings.push(new RankingData('戦闘敗北数', 'battleLostCount', charas, true));
+    this.rankings.push(new RankingData('対人戦闘勝利数', 'battleWonCount', charas, true));
+    this.rankings.push(new RankingData('対人戦闘敗北数', 'battleLostCount', charas, true));
     this.rankings.push(new RankingData('勝率', 'winRate', charas, true));
     this.rankings.push(new RankingData('城壁破壊量', 'battleBrokeWallSize', charas, true));
     this.rankings.push(new RankingData('支配数', 'battleDominateCount', charas, true));
