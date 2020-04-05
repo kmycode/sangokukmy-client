@@ -93,6 +93,9 @@ export default class RankingPage extends Vue {
       cdata.winRate = (cdata.battleWonCount + cdata.battleLostCount >= 10) ?
         Math.round((cdata.battleWonCount / (cdata.battleWonCount + cdata.battleLostCount)) * 1000) / 10 :
         0;
+      cdata.battleKillRate = (cdata.battleKilledCount + cdata.battleBeingKilledCount > 0) ?
+        Math.round((cdata.battleKilledCount / (cdata.battleKilledCount + cdata.battleBeingKilledCount)) * 1000) / 10 :
+        0;
     });
 
     this.rankings.push(new RankingData('総合力', 'attributeSum', charas));
@@ -111,6 +114,7 @@ export default class RankingPage extends Vue {
     this.rankings.push(new RankingData('計略使用回数', 'battleSchemeCount', charas, true));
     this.rankings.push(new RankingData('倒した兵士数', 'battleKilledCount', charas, true));
     this.rankings.push(new RankingData('失った兵士数', 'battleBeingKilledCount', charas, true));
+    this.rankings.push(new RankingData('殺人効率', 'battleKillRate', charas, true));
   }
 
   private getCountryColorId(countryId: number): number {
