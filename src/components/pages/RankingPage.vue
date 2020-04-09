@@ -104,7 +104,6 @@ export default class RankingPage extends Vue {
     this.rankings.push(new RankingData('統率', 'leadership', charas));
     this.rankings.push(new RankingData('人望', 'popularity', charas));
     this.rankings.push(new RankingData('階級', 'classValue', charas));
-    this.rankings.push(new RankingData('資産', 'money', charas));
     this.rankings.push(new RankingData('対人戦闘勝利数', 'battleWonCount', charas, true));
     this.rankings.push(new RankingData('対人戦闘敗北数', 'battleLostCount', charas, true));
     this.rankings.push(new RankingData('勝率', 'winRate', charas, true));
