@@ -1831,6 +1831,7 @@ export default class StatusPage extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import '@/scss/common.scss';
 @import '@/scss/bootstrap-helper.scss';
 @import '@/scss/country-color.scss';
 @import '@/scss/global-colors.scss';

@@ -10,7 +10,7 @@
       <div class="information">
         <div class="standard">
           <div class="left-block">
-            <div class="name">{{ chara.name }}</div>
+            <div class="name"><span v-if="chara.isBeginner" class="beginner">🔰</span>{{ chara.name }}</div>
           </div>
           <div class="right-block">
             <div v-if="chara.deleteTurn > 0" class="delete-turn">放置削除まで {{ getDeleteTurn(chara) }} ターン</div>
@@ -129,6 +129,14 @@ export default class CharacterList extends Vue {
             @include media-query-lower(sm) {
               font-size: 1.2rem;
             }
+          }
+
+          .beginner {
+            background: #74dac9;
+            padding: 4px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-size: 0.5em;
           }
         }
 

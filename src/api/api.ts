@@ -324,6 +324,7 @@ export class Character implements IIdentitiedEntity {
                      public formationPoint: number = 0,
                      public skillPoint: number = 0,
                      public postType: number = 0,   // 統一記録のみで有効
+                     public isBeginner: boolean = false,
                      public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
@@ -1482,6 +1483,7 @@ export class Api {
           townId: chara.townId,
           message: chara.message,
           from: chara.from,
+          isBeginner: chara.isBeginner,
         },
         icon: {
           type: icon.type,

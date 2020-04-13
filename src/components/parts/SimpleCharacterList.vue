@@ -10,7 +10,7 @@
         </div>
         <div class="information">
           <div class="standard">
-            <div class="name responsive-header">{{ chara.name }}</div>
+            <div class="name responsive-header"><span v-if="chara.isBeginner" class="beginner">🔰</span>{{ chara.name }}</div>
             <div class="commands">
             </div>
             <div class="commands">
@@ -313,6 +313,14 @@ export default class SimpleCharacterList extends Vue {
           .name {
             flex: 1;
             white-space: nowrap;
+          }
+
+          .beginner {
+            background: #74dac9;
+            padding: 4px;
+            border-radius: 12px;
+            margin-right: 8px;
+            font-size: 0.5em;
           }
 
           .commands {
