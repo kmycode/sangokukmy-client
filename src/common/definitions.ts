@@ -772,6 +772,11 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(44, 250000, '城壁作業員総動員／弐', '取得と同時に全都市の技術、城壁がMAX',
     3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 43),
     undefined, undefined, 576),
+  new CountryPolicyType(45, 50000, '緊縮財政', '取得と同時に全武将の金 +200k',
+    3, undefined, undefined, undefined, 288),
+  new CountryPolicyType(46, 150000, '緊縮財政／弐', '取得と同時に全武将の金 +200k',
+    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 45),
+    undefined, undefined, 288),
 
   new CountryPolicyType(7, 3000, '賊の監視', '賊の被害を未然に防ぐ', 4),
   new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',
