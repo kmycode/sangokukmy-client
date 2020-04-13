@@ -767,9 +767,9 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(42, 180000, '国民総動員／弐', '取得と同時に全武将の兵士数、訓練がMAX、陣形経験値 +5000',
     3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 41),
     undefined, undefined, 288),
-  new CountryPolicyType(43, 100000, '城壁作業員総動員', '取得と同時に全武将の技術、城壁がMAX',
+  new CountryPolicyType(43, 100000, '城壁作業員総動員', '取得と同時に全都市の技術、城壁がMAX',
     3, undefined, undefined, undefined, 576),
-  new CountryPolicyType(44, 250000, '城壁作業員総動員／弐', '取得と同時に全武将の技術、城壁がMAX',
+  new CountryPolicyType(44, 250000, '城壁作業員総動員／弐', '取得と同時に全都市の技術、城壁がMAX',
     3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 43),
     undefined, undefined, 576),
 
