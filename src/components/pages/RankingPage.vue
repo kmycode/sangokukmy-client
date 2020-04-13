@@ -113,7 +113,7 @@ export default class RankingPage extends Vue {
     this.rankings.push(new RankingData('計略使用回数', 'battleSchemeCount', charas, true));
     this.rankings.push(new RankingData('倒した兵士数', 'battleKilledCount', charas, true));
     this.rankings.push(new RankingData('失った兵士数', 'battleBeingKilledCount', charas, true));
-    this.rankings.push(new RankingData('殺人効率', 'battleKillRate', charas, true));
+    this.rankings.push(new RankingData('戦闘効率', 'battleKillRate', charas, true));
   }
 
   private getCountryColorId(countryId: number): number {

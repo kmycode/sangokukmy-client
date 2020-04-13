@@ -6,6 +6,7 @@ import * as def from '@/common/definitions';
 import StatusStore from './statusstore';
 import Vue from 'vue';
 import NotificationService from '@/services/notificationservice';
+import CommandList from './commandlist';
 
 export default class UnitModel {
 
@@ -26,7 +27,15 @@ export default class UnitModel {
     return this.store.countries;
   }
 
-  public constructor(private store: StatusStore) {}
+  public get characters(): api.Character[] {
+    return this.store.characters;
+  }
+
+  public get otherCharacterCommands(): api.CharacterCommand[] {
+    return this.store.otherCharacterCommands;
+  }
+
+  public constructor(private store: StatusStore, public commands: CommandList) {}
 
   public updateUnits(cb?: () => void) {
     this.isUpdatingUnit = true;

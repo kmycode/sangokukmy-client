@@ -33,6 +33,9 @@
         <UnitPicker :units="model.units"
                     :value="selectedUnit"
                     :countries="model.countries"
+                    :characters="model.characters"
+                    :commands="model.commands"
+                    :otherCharacterCommands="model.otherCharacterCommands"
                     @input="model.toggleUnit($event)"/>
       </div>
       <div v-show="mode === 3" style="display:flex;flex-direction:column;height:100%">

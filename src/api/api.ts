@@ -324,6 +324,7 @@ export class Character implements IIdentitiedEntity {
                      public formationPoint: number = 0,
                      public skillPoint: number = 0,
                      public postType: number = 0,   // 統一記録のみで有効
+                     public isBeginner: boolean = false,
                      public commands?: CharacterCommand[],
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
@@ -357,11 +358,13 @@ export class CountryPolicy {
   public static readonly statusAvailable = 1;
   public static readonly statusBoosting = 2;
   public static readonly statusBoosted = 3;
+  public static readonly statusAvailabling = 4;
 
   public constructor(public id: number = 0,
                      public countryId: number = 0,
                      public type: number = 0,
-                     public status: number = 0) {}
+                     public status: number = 0,
+                     public gameDate: GameDateTime = new GameDateTime()) {}
 }
 
 export class CountryMessage {
@@ -1480,6 +1483,7 @@ export class Api {
           townId: chara.townId,
           message: chara.message,
           from: chara.from,
+          isBeginner: chara.isBeginner,
         },
         icon: {
           type: icon.type,

@@ -6,11 +6,23 @@
         本ゲームは、以下のブラウザでは<strong>正常に操作できない場合がございます</strong>。なるべくご利用くださらないよう、お願い申し上げます。<br>
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
       </div>
-      <div class="alert alert-warning">
+      <div class="section">
+        <h3>初心者向け</h3>
+        <div :class="{ 'form-row': true, 'warning': true, }">
+          <div class="label">あなたは初心者ですか？</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': character.isBeginner, }" @click="character.isBeginner ^= true">私はKMY初心者です</button>
+          </div>
+          <div class="detail">
+            初心者であることが各所に表示され、周囲のサポートを受けやすくなります
+          </div>
+        </div>
+      </div>
+      <div class="alert alert-warning" v-if="character.isBeginner">
         <h3>初心者向け</h3>
         登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
         <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a><br>
-¥        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。自分が初登録である旨もその時に書いていただけますと大変助かります。</strong>
+¥        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。</strong>
       </div>
       <div class="section">
         <h3>基本情報</h3>
@@ -694,7 +706,11 @@ export default class EntryPage extends Vue {
                     this.invitationCode)
         .then((auth) => {
           LoginService.setAccessToken(auth);
-          this.$router.push({ path: 'status', query: { first: '1' }});
+          if (this.character.isBeginner) {
+            this.$router.push({ path: 'status', query: { first: '1' }});
+          } else {
+            this.$router.push('status');
+          }
         })
         .catch((ex) => {
           if (ex.data.code === api.ErrorCode.duplicateCharacterNameOrAliasIdError) {

@@ -25,6 +25,7 @@
           <span class="character-name">{{ message.character.name }}</span> ({{ countryName }}) から <span class="character-name">{{ message.receiverName }}</span> ヘ
         </span>
         <span v-else class="character-name-group">
+          <span class="beginner" v-if="message.character.isBeginner">🔰</span>
           <span class="character-name">{{ message.character.name }}</span>
         </span>
         <span class="posted">{{ message.posted | realdate }}</span>
@@ -120,6 +121,14 @@ export default class ChatMessageItem extends Vue {
       .character-name-group {
         font-size: 0.8rem;
         padding-right: 12px;
+
+        .beginner {
+          background: #74dac9;
+          padding: 4px;
+          border-radius: 12px;
+          margin-right: 8px;
+          font-weight: bold;
+        }
 
         .character-name {
           font-weight: bold;
