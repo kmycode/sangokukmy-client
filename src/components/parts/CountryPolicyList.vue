@@ -16,6 +16,7 @@
         <div class="policy-info">
           <div class="standard">
             <div class="name responsive-header">{{ policy.type.name }}</div>
+            <div v-if="policy.type.availableDuring > 0 && policy.data.status === 4" class="point"><span class="value-name">期限</span> <span class="value">{{ getPolicyLimit(policy).year }} 年 {{ getPolicyLimit(policy).month }} 月</span></div>
             <div class="description">{{ policy.type.description }}</div>
           </div>
         </div>
@@ -111,7 +112,8 @@ export default class CountryPolicyList extends Vue {
 
   @Watch('policies')
   public onTypesChanged() {
-    const policiesAvailable = this.policies.filter((p) => p.status === api.CountryPolicy.statusAvailable);
+    const policiesAvailable = this.policies.filter((p) => p.status === api.CountryPolicy.statusAvailable ||
+                                                          p.status === api.CountryPolicy.statusAvailabling);
     const policiesNotAvailable = this.policies.filter((p) => p.status !== api.CountryPolicy.statusAvailable);
 
     this.availablePolicies = Enumerable.from(def.COUNTRY_POLICY_TYPES)
@@ -141,6 +143,14 @@ export default class CountryPolicyList extends Vue {
     this.currentAvailablePolicies = this.availablePolicies.filter((p) => p.type.category === this.category);
     this.currentSelectablePolicies = this.selectablePolicies.filter((p) => p.type.category === this.category);
     this.currentAfterPolicies = this.afterPolicies.filter((p) => p.type.category === this.category);
+  }
+
+  private getPolicyLimit(policy: CountryPolicyListItem): api.GameDateTime {
+    if (policy.data && policy.data.status === api.CountryPolicy.statusAvailabling) {
+      return api.GameDateTime.fromNumber(
+        api.GameDateTime.toNumber(policy.data.gameDate) + policy.type.availableDuring);
+    }
+    return new api.GameDateTime();
   }
 }
 </script>

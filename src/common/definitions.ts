@@ -701,7 +701,8 @@ export class CountryPolicyType {
                      public category: number = 0,
                      public subjectAppear?: (exists: api.CountryPolicy[]) => boolean,
                      public specialGetSubject: string = '',
-                     public canGet: boolean = true) {}
+                     public canGet: boolean = true,
+                     public availableDuring: number = 0) {}
 }
 export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(20, 2000, '郡県制', '大都市につき政策ポイント +5', 0),
@@ -751,13 +752,16 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 24)),
   new CountryPolicyType(35, 1000, '武官の肇', '取得から 144 ターン武力と知力の高い方を内政に使用。文官国家をブースト',
     3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 14),
-    '武官国家 を取得'),
+    '武官国家 を取得', undefined, 144),
   new CountryPolicyType(38, 5000, '武官の肇／弐', '取得から 144 ターン武力と知力の高い方を内政に使用',
-    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 35)),
+    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 35),
+    undefined, undefined, 144),
   new CountryPolicyType(39, 25000, '武官の肇／参', '取得から 144 ターン武力と知力の高い方を内政に使用',
-    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 38)),
+    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 38),
+    undefined, undefined, 144),
   new CountryPolicyType(40, 125000, '武官の肇／肆', '取得から 144 ターン武力と知力の高い方を内政に使用',
-    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 39)),
+    3, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 39),
+    undefined, undefined, 144),
 
   new CountryPolicyType(7, 3000, '賊の監視', '賊の被害を未然に防ぐ', 4),
   new CountryPolicyType(13, 2000, '賊の殲滅', '賊発生時、都市につき政策ポイント +30',

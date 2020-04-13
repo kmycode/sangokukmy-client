@@ -357,11 +357,13 @@ export class CountryPolicy {
   public static readonly statusAvailable = 1;
   public static readonly statusBoosting = 2;
   public static readonly statusBoosted = 3;
+  public static readonly statusAvailabling = 4;
 
   public constructor(public id: number = 0,
                      public countryId: number = 0,
                      public type: number = 0,
-                     public status: number = 0) {}
+                     public status: number = 0,
+                     public gameDate: GameDateTime = new GameDateTime()) {}
 }
 
 export class CountryMessage {
