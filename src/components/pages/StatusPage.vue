@@ -893,6 +893,9 @@
             <div class="unit-list">
               <UnitPicker :units="model.unitModel.units"
                           :countries="model.countries"
+                          :characters="model.countryCharacters"
+                          :commands="model.commands"
+                          :otherCharacterCommands="model.store.otherCharacterCommands"
                           v-model="targetUnit"/>
             </div>
           </div>
@@ -961,7 +964,10 @@
             </div>
             <div class="unit-list">
               <UnitPicker :units="model.unitModel.units"
-                          :countries="model.countries"/>
+                          :countries="model.countries"
+                          :characters="model.countryCharacters"
+                          :commands="model.commands"
+                          :otherCharacterCommands="model.store.otherCharacterCommands"/>
             </div>
           </div>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || this.model.unitModel.isUpdating"><div class="loading-icon"></div></div>

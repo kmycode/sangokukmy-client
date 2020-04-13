@@ -2146,7 +2146,7 @@ export default class StatusModel {
 
   // #region Unit
 
-  public unitModel = new UnitModel(this.store);
+  public unitModel = new UnitModel(this.store, this.commands);
 
   // #endregion
 
