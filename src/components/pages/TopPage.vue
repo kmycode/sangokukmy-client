@@ -241,6 +241,7 @@ export default class TopPage extends Vue {
       api.Api.getMyCharacter()
         .then((c) => {
           this.currentCharacter = c;
+          (window as any).sangokukmy_charaId = c.id;
         })
         .finally(() => {
           this.isLoadingCurrentCharacter = false;
