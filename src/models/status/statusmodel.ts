@@ -1745,6 +1745,7 @@ export default class StatusModel {
 
   private initializeCharacter(character: api.Character) {
     this.store.character = character;
+    (window as any).sangokukmy_charaId = character.id;
 
     // アイコンを初期化
     api.Api.getAllIcons()
