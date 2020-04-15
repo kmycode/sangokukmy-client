@@ -2,7 +2,8 @@
   <div id="all-characters-page" class="loading-container">
     <div class="col-xg-6 offset-xg-3 col-md-8 offset-md-2 col-sm-10 offset-sm-1">
       <div class="cancel">
-        <button type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button v-if="!isApp" type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button v-else type="button" class="btn btn-secondary" @click="reloadPage()">更新</button>
       </div>
       <div v-for="ranking in rankings"
            :key="ranking.name"
@@ -28,7 +29,8 @@
         </div>
       </div>
       <div class="cancel">
-        <button type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button v-if="!isApp" type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
+        <button v-else type="button" class="btn btn-secondary" @click="reloadPage()">更新</button>
       </div>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>
@@ -70,8 +72,12 @@ export default class RankingPage extends Vue {
   public countries: api.Country[] = [];
   public rankings: RankingData[] = [];
   private isLoading: boolean = true;
+  private isApp: boolean = false;
 
   private created() {
+    if (this.$route.query.app) {
+      this.isApp = true;
+    }
     this.initializeAsync()
       .catch(() => {
         NotificationService.getAllCharactersFailed.notify();
@@ -132,6 +138,10 @@ export default class RankingPage extends Vue {
     } else {
       return '無所属';
     }
+  }
+
+  private reloadPage() {
+    window.location.reload();
   }
 }
 </script>
