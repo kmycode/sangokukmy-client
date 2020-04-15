@@ -222,7 +222,7 @@
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
-                <a v-if="isApp" class="dropdown-item" href="#" @click="reloadPage()">画面更新</a>
+                <a v-if="isApp" class="dropdown-item" href="#?app=ios" @click="reloadPage()">画面更新</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
               </div>
