@@ -21,8 +21,9 @@
       <div class="alert alert-warning" v-if="character.isBeginner">
         <h3>初心者向け</h3>
         登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
-        <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a><br>
-¥        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。</strong>
+        <span v-if="!isApp"><a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a></span>
+        <span v-else>スライド解説は、情報タブから確認できます。</span><br>
+        <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。</strong>
       </div>
       <div class="section">
         <h3>基本情報</h3>
@@ -324,6 +325,7 @@ export default class EntryPage extends Vue {
   private isLoadingExtraData = true;
   private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
+  private isApp = false;
 
   private get sumOfAttributes(): number {
     return parseInt(this.character.strong.toString(), 10) +
@@ -506,6 +508,10 @@ export default class EntryPage extends Vue {
   }
 
   private created() {
+    if ((window as any).sangokukmy_app) {
+      this.isApp = true;
+    }
+
     this.character.strong = 5;
     this.character.intellect = 5;
     this.character.leadership = 5;
