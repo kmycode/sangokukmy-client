@@ -67,7 +67,7 @@
               <div><span class="name">{{ currentCharacter.name }}</span> でログイン中</div>
               <button type="button" class="btn btn-primary" @click="goStatus">GO</button>
             </div>
-            <button type="button" class="btn btn-light btn-sm" @click="entry">新規登録画面を確認</button>
+            <button v-if="!isApp" type="button" class="btn btn-light btn-sm" @click="entry">新規登録画面を確認</button>
           </div>
           <div class="loading" v-if="isLoadingCurrentCharacter"><div class="loading-icon"></div></div>
         </div>
@@ -96,12 +96,12 @@
         <div class="top-content col-sm-12">
           <ul class="nav nav-tabs nav-fill">
             <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 0}" href="#" @click.prevent.stop="selectedTab = 0">トップページ</a></li>
-            <li class="nav-item"><a class="nav-link" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank">説明書</a></li>
+            <li class="nav-item" v-if="!isApp"><a class="nav-link" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank">説明書</a></li>
             <li class="nav-item"><a :class="{'nav-link': true, 'active': selectedTab === 2}" href="#" @click.prevent.stop="selectedTab = 2">勢力図</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('ranking')">ランキング</a></li>
+            <li class="nav-item" v-if="!isApp"><a class="nav-link" href="#" @click.prevent.stop="$router.push('characters')">武将一覧</a></li>
+            <li class="nav-item" v-if="!isApp"><a class="nav-link" href="#" @click.prevent.stop="$router.push('ranking')">ランキング</a></li>
             <!-- <li class="nav-item"><a class="nav-link" href="#">名将一覧</a></li> -->
-            <li class="nav-item"><a class="nav-link" href="#" @click.prevent.stop="$router.push('histories')">統一記録</a></li>
+            <li class="nav-item" v-if="!isApp"><a class="nav-link" href="#" @click.prevent.stop="$router.push('histories')">統一記録</a></li>
           </ul>
         </div>
       </div>
@@ -116,7 +116,7 @@
             <MapLogList :logs="topM2logs" :type="'important'"/>
           </div>
           <!-- 武将更新ログ -->
-          <div class="top-table-flat">
+          <div class="top-table-flat" v-if="!isApp">
             <MapLogList :logs="updateLogs" :type="'character-update-log'"/>
           </div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
@@ -195,6 +195,7 @@ export default class TopPage extends Vue {
   private isNoMoreMapLogs = false;
   private isLoadingMoreMapLogs = false;
   private isImportantMapLogs = false;
+  private isApp = false;
 
   public get topMlogs(): api.MapLog[] {
     return Enumerable.from(this.mlogs).take(5).toArray();
@@ -226,6 +227,11 @@ export default class TopPage extends Vue {
   }
 
   private created() {
+    if (this.$route.query.app) {
+      (window as any).sangokukmy_app = this.$route.query.app;
+      this.isApp = true;
+    }
+
     // 次の月までの秒数を進めるタイマーを開始
     if (this.nextMonthSecondsTimer > 0) {
       clearInterval(this.nextMonthSecondsTimer);

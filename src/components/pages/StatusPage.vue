@@ -219,9 +219,10 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
-                <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
-                <a class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
+                <a v-if="isApp" class="dropdown-item" href="#" @click="reloadPage()">画面更新</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
               </div>
@@ -1348,7 +1349,7 @@
       <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
         <div class="dialog-content dialog-content-welcome">
-          <div class="dialog-content-welcome-main">
+          <div v-if="!isApp" class="dialog-content-welcome-main">
             <h3>三国志NETは初めてですか？</h3>
             <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
             <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-light">初心者向け解説</a>
@@ -1372,6 +1373,16 @@
             「手紙」→「全国」から、みんなに挨拶しましょう。<br>
             わからないことを質問したり、雑談したりして楽しみましょう。
           </div>
+          <div v-else class="dialog-content-welcome-main">
+            <h3>三国志NETは初めてですか？</h3>
+            初心者向けの解説は、「情報」タブからいつでも確認することができます。ぜひ見てみましょう！
+            <h3>コマンドを入力しましょう</h3>
+            三国志NET KMY Versionは、コマンドを入力して進行します。<br>
+            長時間コマンドを入力していないと、自動で削除されます。ゲームを続けるためには、毎日のログインが必要になります。
+            <h3>みんなの輪に入りましょう</h3>
+            「手紙」→「全国」から、みんなに挨拶しましょう。<br>
+            わからないことを質問したり、雑談したりして楽しみましょう。
+          </div>
         </div>
         <div class="dialog-footer">
           <div class="left-side"></div>
@@ -1381,7 +1392,14 @@
         </div>
       </div>
     </div>
-    <div v-if="!model.store.hasInitialized" class="loading"><div class="loading-icon"></div></div>
+    <div v-if="!model.store.hasInitialized" class="loading">
+      <div class="loading-icon"></div>
+      <div v-if="isApp" class="alert alert-warning" style="position:fixed;bottom:10vh;left:10vw;width:80vw;text-align:center">
+        情報を更新中です。しばらくお待ち下さい...<br>
+        <span v-show="model.isLoadingTooLong">この画面が長時間表示され続ける場合は、サーバーが落ちている可能性があります。時間をおいて再度お試しください</span>
+        <div style="margin-top:12px"><button v-if="isApp" class="btn btn-secondary" @click="reloadPage()">再読み込み</button></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -1457,6 +1475,7 @@ import EventObject from '@/models/common/EventObject';
 })
 export default class StatusPage extends Vue {
   public model: StatusModel = new StatusModel();
+  public isApp: boolean = false;
   public isOpenRightSidePopupMenu: boolean = false;
   public isOpenSoliderDropdown: boolean = false;
   public mapMode: number = 0;
@@ -1735,6 +1754,12 @@ export default class StatusPage extends Vue {
     if (this.$route.query.first) {
       this.isOpenWelcomeDialog = true;
     }
+    if (this.$route.query.app) {
+      (window as any).sangokukmy_app = this.$route.query.app;
+    }
+    if ((window as any).sangokukmy_app) {
+      this.isApp = true;
+    }
   }
 
   public destroyed() {
@@ -1826,6 +1851,10 @@ export default class StatusPage extends Vue {
         this.soldierNumber = Math.floor(this.model.character.leadership / 10) * 10 - 10 + 9;
       }
     }
+  }
+
+  private reloadPage() {
+    window.location.reload();
   }
 }
 </script>

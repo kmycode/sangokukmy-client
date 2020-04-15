@@ -98,7 +98,9 @@ export default class ApiStreaming {
   private onReceiveObject(obj: any) {
     if (this.isLastError) {
       this.isLastError = false;
-      NotificationService.serverReconnectionSucceed.notify();
+      if (!(window as any).sangokukmy_app) {
+        NotificationService.serverReconnectionSucceed.notify();
+      }
     }
 
     this.fire(obj.type, obj.data);
@@ -120,7 +122,9 @@ export default class ApiStreaming {
       case 0:
       case 404:
         if (this.isStreaming) {
-          NotificationService.serverConnectionFailed.notify();
+          if (!(window as any).sangokukmy_app) {
+            NotificationService.serverConnectionFailed.notify();
+          }
           this.isLastError = true;
         }
         break;

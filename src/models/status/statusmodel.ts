@@ -42,6 +42,9 @@ export default class StatusModel {
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
 
+  public isLoadingTooLong: boolean = false;
+  public loadingTooLongTimer: number = 0;
+
   public newAllianceData: api.CountryAlliance = new api.CountryAlliance();
   public newWarData: api.CountryWar = new api.CountryWar();
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
@@ -120,6 +123,27 @@ export default class StatusModel {
   // #endregion
 
   // #region Properties
+
+  public get hasInitialized(): boolean {
+    return this.store.hasInitialized;
+  }
+
+  public set hasInitialized(value: boolean) {
+    this.store.hasInitialized = value;
+
+    if (!value && !this.loadingTooLongTimer) {
+      this.loadingTooLongTimer = window.setTimeout(() => {
+        this.isLoadingTooLong = true;
+        this.loadingTooLongTimer = 0;
+      }, 10000);
+    } else if (value) {
+      if (this.loadingTooLongTimer) {
+        window.clearTimeout(this.loadingTooLongTimer);
+        this.loadingTooLongTimer = 0;
+      }
+      this.isLoadingTooLong = false;
+    }
+  }
 
   private get characterIcon(): api.CharacterIcon {
     const icon = api.CharacterIcon.getMainOrFirst(this.characterIcons);
@@ -589,6 +613,7 @@ export default class StatusModel {
   public onCreate($router: () => any) {
     this.onlines.beginWatch();
     this.$router = $router;
+    this.hasInitialized = false;
 
     ApiStreaming.status.onAuthenticationFailed = () => {
       if (this.$router) {
@@ -678,7 +703,7 @@ export default class StatusModel {
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
-      this.store.hasInitialized = false;
+      this.hasInitialized = false;
       this.commands.reset();
       this.onlines.reset();
     };
@@ -731,7 +756,7 @@ export default class StatusModel {
       }
     } else if (signal.type === 4) {
       // 初期データを送信し終えた
-      this.store.hasInitialized = true;
+      this.hasInitialized = true;
       this.countryThreadBbs.sortThreads();
       this.globalThreadBbs.sortThreads();
       this.countryChat.isUnread =
