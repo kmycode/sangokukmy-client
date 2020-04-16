@@ -1,7 +1,7 @@
 ﻿<template>
   <div id="entry-page" class="loading-container">
     <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-      <div class="alert alert-primary">
+      <div v-if="!isApp" class="alert alert-primary">
         <h3>重要なお知らせ</h3>
         本ゲームは、以下のブラウザでは<strong>正常に操作できない場合がございます</strong>。なるべくご利用くださらないよう、お願い申し上げます。<br>
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
