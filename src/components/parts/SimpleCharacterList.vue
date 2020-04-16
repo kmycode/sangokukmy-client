@@ -82,7 +82,7 @@
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
         <div class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(chara.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(chara.lastUpdated).seconds }}</span> 秒</div>
-        <div v-if="!chara.aiType && getCharacterCommands(chara).length > 0" class="commands">
+        <div v-if="(!chara.aiType || chara.aiType === 28) && getCharacterCommands(chara).length > 0" class="commands">
           <div class="command"
                v-for="command in getCharacterCommands(chara)"
                :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
