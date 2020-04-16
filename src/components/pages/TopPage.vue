@@ -30,7 +30,7 @@
             <h2>読込に通常より時間がかかっています...</h2>
             <h3>ページのリロードで解決しますか？</h3>
             <div>
-              このページを何度かリロードすることで解決することがあります。パソコンの場合は<code>Shift+F5</code>または<code>Shift+Cmd+R</code>、スマホの場合はデスクトップモード（iOSのSafariの場合は更新ボタン長押し）もお試しください
+              このページを何度かリロードすることで解決することがあります。<span v-if="!isApp">パソコンの場合は<code>Shift+F5</code>または<code>Shift+Cmd+R</code>、スマホの場合はデスクトップモード（iOSのSafariの場合は更新ボタン長押し）もお試しください</span><span v-else>この画面を下にスクロールすると出てくる「画面更新」ボタンをお試しください</span>
             </div>
             <h3>お使いのネットワーク回線は通常より混雑していませんか？</h3>
             <div>
@@ -121,6 +121,10 @@
           </div>
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
+      </div>
+      <div style="margin-top:24px;text-align:center;color:gray" v-if="isApp">
+        ログイン、GOボタンがうまく動作しない場合は、このボタンを押して再試行すると解決する場合があります<br>
+        <button type="button" class="btn btn-secondary" @click="reloadPage()">画面更新</button>
       </div>
       <div v-show="selectedTab === 2" class="row">
         <div class="col-sm-12 loading-container">
