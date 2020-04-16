@@ -38,20 +38,47 @@
         <div v-for="child in thread.children"
             :key="child.id"
             :class="'child country-color-' + getItemCountry(child).colorId">
-          <div class="child-row">
-            <div class="child-icon">
-              <CharacterIcon :icon="child.character.mainIcon"/>
+          <div v-if="(!isCharacterMuted(child) && !isMessageMuted(child)) || isShowForce(child)">
+            <div class="child-row">
+              <div class="child-icon">
+                <CharacterIcon :icon="child.character.mainIcon"/>
+              </div>
+              <div class="child-message">
+                <KmyChatTagText :text="child.text"/>
+              </div>
             </div>
-            <div class="child-message">
-              <KmyChatTagText :text="child.text"/>
+            <div class="item-footer">
+              <span class="character-name">{{ child.character.name }}</span>
+              <span class="country-name">{{ getItemCountry(child).name }}</span>
+              <span class="item-date">{{ child.written | realdate }}</span>
+              <button v-show="canRemove && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">操作</button>
+              <button v-show="getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-danger" @click="remove(child)">削除</button>
+              <div v-show="characterId !== child.character.id">
+                <a v-if="!isCharacterMuted(child)" class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="muteCharacter(child, true)">武将をミュート</a>
+                <a v-if="!isReported(child)" class="btn btn-sm btn-warning" style="height:20px;line-height:16px;margin-left:8px" @click="reportMessage(child, true)">発言を報告</a>
+              </div>
             </div>
           </div>
-          <div class="item-footer">
-            <span class="character-name">{{ child.character.name }}</span>
-            <span class="country-name">{{ getItemCountry(child).name }}</span>
-            <span class="item-date">{{ child.written | realdate }}</span>
-            <button v-show="canRemove && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-light" @click="getThreadReply(thread).isOpenExtraOperations ^= true">操作</button>
-            <button v-show="getThreadReply(thread).isOpenExtraOperations && (canRemoveAll || characterId === child.character.id)" type="button" class="btn btn-danger" @click="remove(child)">削除</button>
+          <div v-if="isCharacterMuted(child)" style="display:flex">
+            この武将をミュートしました
+            <div>
+              <a class="btn btn-sm btn-warning" style="height:20px;line-height:16px;margin-left:8px" @click="muteCharacter(child, false)">ミュートを解除</a>
+              <a v-if="!child.isShowForce" class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="child.isShowForce = true">発言を見る</a>
+              <a v-else class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="child.isShowForce = false">発言を隠す</a>
+            </div>
+          </div>
+          <div v-else-if="isMessageMuted(child)" style="display:flex">
+            この発言には特定のキーワードが含まれるためミュートしました
+            <div>
+              <a v-if="!child.isShowForce" class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="child.isShowForce = true">発言を見る</a>
+              <a v-else class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="child.isShowForce = false">発言を隠す</a>
+            </div>
+          </div>
+          <div v-if="isReported(child)" style="display:flex">
+            この発言を報告しました。補足説明がある場合は、管理人へ個宛してください。（個人タブに案内があります）
+            <div>
+              <a class="btn btn-sm btn-warning" style="height:20px;line-height:16px;margin-left:8px" @click="reportMessage(child, false)">報告を解除</a>
+            </div>
           </div>
         </div>
       </transition-group>
@@ -84,6 +111,8 @@ export default class ThreadBbs extends Vue {
   @Prop() public countries!: api.Country[];
   @Prop() public threads!: api.ThreadBbsItem[];
   @Prop() public bbsType!: number;
+  @Prop() public mutes!: api.Mute[];
+  @Prop() public muteKeyword!: api.MuteKeyword;
   @Prop({
     default: 0,
   }) public characterId!: number;
@@ -189,6 +218,59 @@ export default class ThreadBbs extends Vue {
           this.isUpdating = false;
         });
     }
+  }
+
+  private isCharacterMuted(item: api.ThreadBbsItem): boolean {
+    if (item.character) {
+      const chara = item.character;
+      return this.mutes.some((m) => m.targetCharacterId === chara.id);
+    }
+    return false;
+  }
+
+  private isMessageMuted(item: api.ThreadBbsItem): boolean {
+    return api.MuteKeyword.isMute(this.muteKeyword, item.text);
+  }
+
+  private isReported(item: api.ThreadBbsItem): boolean {
+    return this.mutes.some((m) => m.threadBbsItemId === item.id && m.type === api.Mute.typeReported);
+  }
+
+  private isShowForce(item: api.ThreadBbsItem) {
+    const val = (item as any).isShowForce;
+    if (val === undefined) {
+      Vue.set(item, 'isShowForce', false);
+    }
+    return val;
+  }
+
+  private setShowForce(item: api.ThreadBbsItem, value: boolean) {
+    Vue.set(item, 'isShowForce', value);
+  }
+
+  private muteCharacter(item: api.ThreadBbsItem, status: boolean) {
+    if (item.character) {
+      const chara = item.character;
+      this.isUpdating = true;
+      api.Api.muteCharacter(status ? api.Mute.typeMuted : api.Mute.typeNone, chara.id)
+        .then(() => {
+          NotificationService.muted.notify();
+          (item as any).isShowForce = false;
+        })
+        .catch(() => NotificationService.muteFailed.notify())
+        .finally(() => this.isUpdating = false);
+    }
+  }
+
+  private reportMessage(item: api.ThreadBbsItem, status: boolean) {
+    this.isUpdating = true;
+    api.Api.reportThreadBbsItem(status ? api.Mute.typeReported : api.Mute.typeNone, item.id)
+      .then(() => {
+        NotificationService.reported.notify();
+        (item as any).isShowForce = false;
+      })
+      .catch(() => NotificationService.reportFailed.notify())
+      .finally(() => this.isUpdating = false);
   }
 }
 </script>

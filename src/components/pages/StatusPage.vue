@@ -258,7 +258,10 @@
                               :countryColor="model.characterCountryColor"
                               :icons="model.characterIcons"
                               :canSendOtherCountry="model.canDiplomacy"
+                              :myCharacterId="model.character.id"
                               :myCountryId="model.character.countryId"
+                              :mutes="model.store.mutes"
+                              :muteKeyword="model.store.muteKeyword"
                               @chat-other-country="readyOtherCountryChatById($event)"
                               @call-focus="callCountryChatFocus = $event"/>
           </div>
@@ -269,6 +272,8 @@
                               :icons="model.characterIcons"
                               canSendPrivate="true"
                               :myCharacterId="model.character.id"
+                              :mutes="model.store.mutes"
+                              :muteKeyword="model.store.muteKeyword"
                               @chat-private="readyPrivateChatById($event)"
                               @call-focus="callPrivateChatFocus = $event"/>
           </div>
@@ -276,18 +281,24 @@
             <ChatMessagePanel :model="model.globalChat"
                               :countries="model.countries"
                               :countryColor="model.characterCountryColor"
-                              :icons="model.characterIcons"/>
+                              :icons="model.characterIcons"
+                              :myCharacterId="model.character.id"
+                              :mutes="model.store.mutes"
+                              :muteKeyword="model.store.muteKeyword"/>
           </div>
           <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.global2Chat"
                               :countries="model.countries"
                               :countryColor="model.characterCountryColor"
-                              :icons="model.characterIcons"/>
+                              :icons="model.characterIcons"
+                              :myCharacterId="model.character.id"
+                              :mutes="model.store.mutes"
+                              :muteKeyword="model.store.muteKeyword"/>
           </div>
         </div>
         <!-- 会議室 -->
         <div v-show="selectedActionTab === 2" class="right-side-content content-meeting">
-          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" :bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems"/>
+          <ThreadBbs :countries="model.countries" :threads="model.countryThreadBbs.threads" :bbsType="1" :characterId="model.character.id" :canRemoveAll="model.canRemoveAllCountryBbsItems" :mutes="model.store.mutes" :muteKeyword="model.store.muteKeyword"/>
         </div>
         <!-- 登用 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 0" class="right-side-content content-chat" style="display:flex;flex-direction:column">
@@ -298,6 +309,8 @@
                               :icons="model.characterIcons"
                               :myCountryId="model.character.countryId"
                               :myCharacterId="model.character.id"
+                              :mutes="model.store.mutes"
+                              :muteKeyword="model.store.muteKeyword"
                               :canPost="false"/>
           </div>
         </div>
@@ -409,12 +422,27 @@
                 <button type="button" class="btn btn-primary" @click="model.updatePrivateMessage(newPrivateMessage)">承認</button>
               </div>
               <div v-show="model.isUpdatingPrivateSettings" class="loading"><div class="loading-icon"></div></div>
+              <h3 :class="'country-color-' + model.characterCountryColor">ミュートするキーワード</h3>
+              <div class="current-message">
+                <h4>現在のキーワード</h4>
+                <div :class="'current-message-content country-color-' + model.characterCountryColor">
+                  <KmyChatTagText v-if="model.store.muteKeyword.keywords" :text="model.store.muteKeyword.keywords"/>
+                  <span v-if="!model.store.muteKeyword.keywords" class="message-empty">なし</span>
+                </div>
+              </div>
+              改行で区切って入力します
+              <textarea v-model="newMuteKeywords"></textarea>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="newMuteKeywords = model.store.muteKeyword.keywords">リセット</button>
+                <button type="button" class="btn btn-primary" @click="model.updateMuteKeywords(newMuteKeywords)">承認</button>
+              </div>
+              <div v-show="model.isUpdatingPrivateSettings" class="loading"><div class="loading-icon"></div></div>
             </div>
           </div>
         </div>
         <!-- 全国会議室 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2" class="right-side-content content-meeting">
-          <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false"/>
+          <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false" :mutes="model.store.mutes" :muteKeyword="model.store.muteKeyword"/>
         </div>
         <!-- 戦闘シミュレータ -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
@@ -1540,6 +1568,7 @@ export default class StatusPage extends Vue {
   public newCountrySolicitationMessage: string = '';
   public newCountryUnifiedMessage: string = '';
   public newPrivateMessage: string = '';
+  public newMuteKeywords: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
   public paySafeTarget: api.Character = new api.Character(-1);

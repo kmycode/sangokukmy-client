@@ -700,6 +700,12 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
+    ApiStreaming.status.on<api.Mute>(
+      api.Mute.typeId,
+      (obj) => this.onMuteReceived(obj));
+    ApiStreaming.status.on<api.MuteKeyword>(
+      api.MuteKeyword.typeId,
+      (obj) => this.onMuteKeywordReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -2359,6 +2365,36 @@ export default class StatusModel {
   public logout() {
     api.Api.logout();
     current.setAuthorizationToken(new api.AuthenticationData('', 0, new api.DateTime()));
+  }
+
+  // #endregion
+
+  // #region Mute
+
+  public onMuteReceived(item: api.Mute) {
+    if (item.type !== api.Mute.typeNone) {
+      ArrayUtil.addItem(this.store.mutes, item);
+    } else {
+      this.store.mutes = this.store.mutes.filter((m) => m.id !== item.id);
+    }
+  }
+
+  public onMuteKeywordReceived(item: api.MuteKeyword) {
+    this.store.muteKeyword = item;
+  }
+
+  public updateMuteKeywords(message: string) {
+    this.isUpdatingPrivateSettings = true;
+    api.Api.setMuteKeywords(message)
+      .then(() => {
+        NotificationService.keywordMuted.notify();
+      })
+      .catch((ex) => {
+        NotificationService.keywordMuteFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingPrivateSettings = false;
+      });
   }
 
   // #endregion
