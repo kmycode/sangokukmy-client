@@ -1,7 +1,7 @@
 ﻿<template>
   <div id="entry-page" class="loading-container">
     <div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-      <div class="alert alert-primary">
+      <div v-if="!isApp" class="alert alert-primary">
         <h3>重要なお知らせ</h3>
         本ゲームは、以下のブラウザでは<strong>正常に操作できない場合がございます</strong>。なるべくご利用くださらないよう、お願い申し上げます。<br>
         Internet Explorer / Microsoft Edge / Android標準ブラウザ（Chromeではないほう）
@@ -254,6 +254,21 @@
           </div>
         </div>
       </div>
+      <div class="section">
+        <h3>規約への同意</h3>
+        <div :class="{ 'form-row': true, 'error': !isOkEula, }">
+          <div class="label"><a href="https://w.atwiki.jp/sangokukmy9/pages/72.html" target="_blank">利用規約</a>に同意しますか？</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isOkEula, }" @click="isOkEula ^= true">利用規約に同意します</button>
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkPrivacyPolicy, }">
+          <div class="label"><a href="https://w.atwiki.jp/sangokukmy9/pages/80.html" target="_blank">プライバシーポリシー</a>に同意しますか？</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isOkPrivacyPolicy, }" @click="isOkPrivacyPolicy ^= true">プライバシーポリシーに同意します</button>
+          </div>
+        </div>
+      </div>
 
 <!-- https://developers.google.com/recaptcha/docs/invisible#js_api
      https://syncer.jp/how-to-introduction-recaptcha -->
@@ -265,7 +280,6 @@
       <button v-show="false" type="button" class="btn btn-primary" onclick="grecaptcha.execute()">送信</button>
       <button v-show="canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
       <span v-show="!canEntry" style="color:red">上の記述項目の赤いところをすべて入力するか、修正してください</span>
-      <span v-show="canEntry">送信した時点で、<a href="https://w.atwiki.jp/sangokukmy9/pages/72.html" target="_blank">利用規約</a>、<a href="https://w.atwiki.jp/sangokukmy9/pages/80.html" target="_blank">プライバシーポリシー</a>に同意したものとみなします</span>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -311,6 +325,8 @@ export default class EntryPage extends Vue {
   private isPublish: boolean = false;
   private invitationCode: string = '';
   private isEditAttributes: boolean = false;
+  private isOkEula: boolean = false;
+  private isOkPrivacyPolicy: boolean = false;
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -440,7 +456,9 @@ export default class EntryPage extends Vue {
       this.isOkLeadership &&
       this.isOkPopularity &&
       this.isOkSumOfAttributes &&
-      this.isOkInvitationCode
+      this.isOkInvitationCode &&
+      this.isOkEula &&
+      this.isOkPrivacyPolicy
       ;
   }
 

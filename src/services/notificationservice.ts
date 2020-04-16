@@ -776,6 +776,30 @@ export default class NotificationService {
     'メッセージ更新失敗',
     'メッセージ更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
+  public static readonly muted = new NotificationServiceItem(
+    'ミュート',
+    '対象のミュートの操作に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly muteFailed = new NotificationServiceItem(
+    'ミュート失敗',
+    '対象のミュートに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly keywordMuted = new NotificationServiceItem(
+    'ミュートキーワード設定',
+    '対象のミュートの操作に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly keywordMuteFailed = new NotificationServiceItem(
+    'ミュートキーワード設定失敗',
+    '対象のミュートに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly reported = new NotificationServiceItem(
+    '報告',
+    '対象の報告の操作に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly reportFailed = new NotificationServiceItem(
+    '報告失敗',
+    '対象の報告に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',

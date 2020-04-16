@@ -49,6 +49,8 @@
             :myCharacterId="myCharacterId"
             :myCountryId="myCountryId"
             :isLoading="model.isLoading"
+            :mutes="mutes"
+            :muteKeyword="muteKeyword"
             @chat-private="$emit('chat-private', $event)"
             @chat-other-country="$emit('chat-other-country', $event)"
             @promotion-refuse="model.setPromotionStatusAsync($event, 10)"
@@ -82,6 +84,8 @@ export default class ChatMessagePanel extends Vue {
   @Prop() public countries!: api.Country[];
   @Prop() public countryColor!: number;
   @Prop() public icons!: api.CharacterIcon[];
+  @Prop() public mutes!: api.Mute[];
+  @Prop() public muteKeyword!: api.MuteKeyword;
   @Prop({
     default: false,
   }) public canSendPrivate!: boolean;

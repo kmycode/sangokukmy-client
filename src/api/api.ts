@@ -966,6 +966,35 @@ export class CommandComment {
                      public message: string) {}
 }
 
+export class Mute {
+  public static readonly typeId: number = 40;
+
+  public static readonly typeNone: number = 0;
+  public static readonly typeMuted: number = 1;
+  public static readonly typeReported: number = 2;
+
+  public constructor(public id: number,
+                     public type: number,
+                     public targetCharacterId: number,
+                     public chatMessageId: number,
+                     public threadBbsItemId: number) {}
+}
+
+export class MuteKeyword {
+  public static readonly typeId: number = 41;
+
+  public constructor(public keywords: string) {}
+
+  public static isMute(obj: MuteKeyword, text: string): boolean {
+    if (!obj) {
+      return false;
+    }
+    const words = obj.keywords.replace('\r', '').split('\n');
+    console.dir(words);
+    return words.some((w) => text.indexOf(w) >= 0);
+  }
+}
+
 export class Api {
 
   /**
@@ -1631,6 +1660,49 @@ export class Api {
     try {
       await axios.post(def.API_HOST + 'skills', {
         type: skill,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async muteCharacter(type: number, charaId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'mutes', {
+        targetCharacterId: charaId,
+        type,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async reportChatMessage(type: number, messageId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'mutes', {
+        chatMessageId: messageId,
+        type,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setMuteKeywords(keywords: string): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'mutes/keywords', {
+        keywords,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async reportThreadBbsItem(type: number, messageId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'mutes', {
+        threadBbsItemId: messageId,
+        type,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
