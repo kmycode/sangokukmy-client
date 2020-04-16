@@ -30,9 +30,9 @@
             <span class="character-name">{{ message.character.name }}</span>
           </span>
           <span class="posted">{{ message.posted | realdate }}</span>
-          <span v-if="!message.receiverName && !isShowForce && myCharacterId !== message.character.id">
+          <span v-if="!isShowForce && myCharacterId !== message.character.id">
             <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="isOpenReports ^= true">...</a>
-            <div v-if="isOpenReports" class="loading-container">
+            <div v-if="isOpenReports" class="loading-container" style="margin-top:8px">
               <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="muteCharacter(true)">武将をミュート</a>
               <a class="btn btn-sm btn-warning" style="height:20px;line-height:16px;margin-left:8px" @click="reportMessage(true)">発言を報告</a>
               <div v-if="isMuting" class="loading"><div class="loading-icon"></div></div>

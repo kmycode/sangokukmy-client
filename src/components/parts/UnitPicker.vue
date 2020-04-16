@@ -13,7 +13,7 @@
         <div class="unit-leader">隊長: {{ unit.leader.character.name }}
           <div v-if="getCharacterCommands(unit.leader.character).length > 0" class="commands">
             <div class="next-update">次回更新: <span class="num">{{ getCharacterNextTime(unit.leader.character.lastUpdated).minutes }}</span> 分 <span class="num">{{ getCharacterNextTime(unit.leader.character.lastUpdated).seconds }}</span> 秒</div>
-            <div v-show="!unit.leader.character.aiType"
+            <div v-show="!unit.leader.character.aiType || unit.leader.character.aiType === 28"
                 class="command"
                 v-for="command in getCharacterCommands(unit.leader.character)"
                 :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
