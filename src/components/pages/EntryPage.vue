@@ -8,13 +8,16 @@
       </div>
       <div class="section">
         <h3>初心者向け</h3>
-        <div :class="{ 'form-row': true, 'warning': true, }">
-          <div class="label">あなたは初心者ですか？</div>
+        <div :class="{ 'form-row': true, 'error': !isOkBeginner, }">
+          <div class="label">このゲームは初めてですか？</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': character.isBeginner, }" @click="character.isBeginner ^= true">私はKMY初心者です</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true">初めてです</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.isBeginner || !isSelectedBeginner, 'btn-secondary': isSelectedBeginner && !character.isBeginner, }" @click="character.isBeginner = false; isSelectedBeginner = true">経験者です</button>
           </div>
           <div class="detail">
-            初心者であることが各所に表示され、周囲のサポートを受けやすくなります
+            初心者であることが各所に表示され、周囲のサポートを受けやすくなります。<br>
+            2〜3期程度しか経験していない場合も、初心者を選択して構いません。<br>
+            明らかに熟練者と思われる方が初心者を名乗った場合、管理人から連絡することがあります
           </div>
         </div>
       </div>
@@ -327,6 +330,7 @@ export default class EntryPage extends Vue {
   private isEditAttributes: boolean = false;
   private isOkEula: boolean = false;
   private isOkPrivacyPolicy: boolean = false;
+  private isSelectedBeginner: boolean = false;
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -440,6 +444,10 @@ export default class EntryPage extends Vue {
       this.invitationCode.length > 0;
   }
 
+  private get isOkBeginner(): boolean {
+    return this.isSelectedBeginner;
+  }
+
   private get canEntry(): boolean {
     return this.isOkName &&
       this.isOkAliasId &&
@@ -458,7 +466,8 @@ export default class EntryPage extends Vue {
       this.isOkSumOfAttributes &&
       this.isOkInvitationCode &&
       this.isOkEula &&
-      this.isOkPrivacyPolicy
+      this.isOkPrivacyPolicy &&
+      this.isOkBeginner
       ;
   }
 
