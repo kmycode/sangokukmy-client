@@ -990,7 +990,6 @@ export class MuteKeyword {
       return false;
     }
     const words = obj.keywords.replace('\r', '').split('\n').filter((k) => k !== '');
-    console.dir(words);
     return words.some((w) => text.indexOf(w) >= 0);
   }
 }
