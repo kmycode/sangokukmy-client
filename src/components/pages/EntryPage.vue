@@ -257,13 +257,13 @@
       <div class="section">
         <h3>規約への同意</h3>
         <div :class="{ 'form-row': true, 'error': !isOkEula, }">
-          <div class="label"><a href="https://w.atwiki.jp/sangokukmy9/pages/72.html" target="_blank">利用規約</a>に同意しますか？</div>
+          <div class="label"><a href="https://sangoku-doc.kmycode.net/oth-termsofservice.html" target="_blank">利用規約</a>に同意しますか？</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isOkEula, }" @click="isOkEula ^= true">利用規約に同意します</button>
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkPrivacyPolicy, }">
-          <div class="label"><a href="https://w.atwiki.jp/sangokukmy9/pages/80.html" target="_blank">プライバシーポリシー</a>に同意しますか？</div>
+          <div class="label"><a href="https://sangoku-doc.kmycode.net/oth-privacypolicy.html" target="_blank">プライバシーポリシー</a>に同意しますか？</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isOkPrivacyPolicy, }" @click="isOkPrivacyPolicy ^= true">プライバシーポリシーに同意します</button>
           </div>
