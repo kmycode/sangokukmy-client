@@ -28,6 +28,11 @@
         <span v-else>スライド解説は、情報タブから確認できます。</span><br>
         <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。</strong>
       </div>
+      <div class="alert alert-success" v-if="character.isBeginner && isApp">
+        <h3>プッシュ通知をONにしましょう</h3>
+        このゲームは、あなたが寝ている時も仕事している間も、リアルタイムで進行します。プッシュ通知をONにして、ゲームの最新情報を素早くキャッチしましょう。初心者には特に強くおすすめします。<br>
+        アプリ初回起動時に「許可しない」を選択してしまった場合は、設定アプリよりONにできます。
+      </div>
       <div class="section">
         <h3>基本情報</h3>
         <div v-if="system.invitationCodeRequestedAtEntry" :class="{ 'form-row': true, 'error': !isOkInvitationCode, }">
