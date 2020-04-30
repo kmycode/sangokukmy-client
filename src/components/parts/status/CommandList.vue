@@ -398,7 +398,7 @@ $color-navigation-commands: #e0e0e0;
       background: #999;
     }
     &.background-layer-custom-message {
-      background: rgb(196, 169, 13);
+      background: #54ff42;
     }
     &.background-layer-previewed {
       background: #eb2;
