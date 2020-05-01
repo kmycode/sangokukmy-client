@@ -458,10 +458,10 @@ export default class CommandInputer {
         .concat(this.commands.filter((c) => !commands.some((cc) => cc.commandNumber === c.commandNumber)))
         .orderBy((c) => c.commandNumber)
         .distinct((c) => c.commandNumber)
-        .take(200)
+        .take(300)
         .toArray();
-      if (newCommands.length < 200) {
-        for (let i = newCommands.length; i < 200; i++) {
+      if (newCommands.length < 300) {
+        for (let i = newCommands.length; i < 300; i++) {
           const cmd = api.CharacterCommand.clone(this.commands[i]);
           cmd.type = 0;
           cmd.parameters = [];
