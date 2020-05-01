@@ -125,7 +125,7 @@ export default class CommandList {
   public preInitialize(gamedate: api.GameDateTime) {
     // 武将データ入手前のコマンド一覧初期化
     this.inputer.commands = [];
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < 300; i++) {
       this.inputer.commands.push({
         commandNumber: i + 1,
         name: '取得中...',
