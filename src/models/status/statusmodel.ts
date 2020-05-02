@@ -606,6 +606,17 @@ export default class StatusModel {
     return false;
   }
 
+  public get selectableSkillCount(): number {
+    const skillTypes = Enumerable
+      .from(this.store.skills);
+    const newSkillTypes = Enumerable
+      .from(def.CHARACTER_SKILL_TYPES)
+      .where((s) => !skillTypes.any((ss) => ss.type === s.id))
+      .where((s) => s.subjectAppear === undefined || s.subjectAppear(this.store.skills))
+      .where((s) => s.point <= this.character.skillPoint);
+    return newSkillTypes.count();
+  }
+
   // #endregion
 
   // #region Streaming
