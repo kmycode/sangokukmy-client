@@ -100,7 +100,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(38, 0, 5, '戦車兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 77),
   new SoldierType(4, 0, 6, '弓兵', 8, 200, '30', '30', '低級兵種'),
   new SoldierType(45, 0, 6, '長弓兵', 14, 500, '60', '60', '中級兵種'),
-  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種'),
+  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種', undefined, true, 83),
   new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 63),
   new SoldierType(13, 0, 2, '衝車', 20, 500, '0', '0', '対城壁に特化'),
   new SoldierType(14, 0, 2, '井闌', 30, 600, '0', '0', '対城壁に特化。衝車より強い'),
