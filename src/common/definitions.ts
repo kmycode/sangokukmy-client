@@ -100,7 +100,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(38, 0, 5, '戦車兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 77),
   new SoldierType(4, 0, 6, '弓兵', 8, 200, '30', '30', '低級兵種'),
   new SoldierType(45, 0, 6, '長弓兵', 14, 500, '60', '60', '中級兵種'),
-  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種'),
+  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種', undefined, true, 83),
   new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 63),
   new SoldierType(13, 0, 2, '衝車', 20, 500, '0', '0', '対城壁に特化'),
   new SoldierType(14, 0, 2, '井闌', 30, 600, '0', '0', '対城壁に特化。衝車より強い'),
@@ -973,6 +973,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(80, 18, '弩', '弩兵徴兵費用 -30%', true, true, false, true, 1000),
   new CharacterItemType(81, 80000, '技能書', '使用で技能ポイント +72', true, true, true),
   new CharacterItemType(82, 500000, '黄巾の旗', '使用で即時黄巾出現、全面戦争開始', false, false, true),
+  new CharacterItemType(83, 20, '強弩装備', '強弩兵徴兵可能', true, true, false, true, 1000),
 ];
 
 /**
@@ -1004,9 +1005,9 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(15, '商人 Lv.5', '米売買上限 +8000', 360, (skills) => skills.some((s) => s.type === 14)),
   new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
   new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、歩兵装備、騎兵装備、弩生産可能', 360, (skills) => skills.some((s) => s.type === 16)),
-  new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、連弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),
+  new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、強弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),
   new CharacterSkillType(19, '技師 Lv.4', 'アイテム上限 +2', 360, (skills) => skills.some((s) => s.type === 18)),
-  new CharacterSkillType(20, '技師 Lv.5', '青洲槍、戦車生産可能', 320, (skills) => skills.some((s) => s.type === 19)),
+  new CharacterSkillType(20, '技師 Lv.5', '青洲槍、戦車、連弩装備生産可能', 320, (skills) => skills.some((s) => s.type === 19)),
   new CharacterSkillType(26, '胡人 Lv.1', '毎月武力Ex +7', 0, (_) => false),
   new CharacterSkillType(27, '胡人 Lv.2', '騎兵属性使用時に限り攻撃力 +30', 240, (skills) => skills.some((s) => s.type === 26)),
   new CharacterSkillType(28, '胡人 Lv.3', '城壁攻撃力60、城壁防御力30', 360, (skills) => skills.some((s) => s.type === 27)),
