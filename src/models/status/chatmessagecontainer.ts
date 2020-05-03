@@ -124,6 +124,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
           } else if (ex.data.code === api.ErrorCode.numberRangeError) {
             NotificationService.postChatFailedBecauseTooLong
               .notifyWithParameter(ex.data.data.current, ex.data.data.max);
+          } else if (ex.data.code === api.ErrorCode.blockedActionError) {
+            NotificationService.actionBlocked.notify();
           } else {
             NotificationService.postChatFailed.notify();
           }

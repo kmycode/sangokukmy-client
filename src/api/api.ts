@@ -52,6 +52,7 @@ export enum ErrorCode {
   invitationCodeRequestedError = 41,
   invalidSecretKeyError = 43,
   notMoreItemsError = 45,
+  blockedActionError = 50,
 }
 
 /**

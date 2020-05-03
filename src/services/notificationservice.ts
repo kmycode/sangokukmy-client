@@ -800,6 +800,10 @@ export default class NotificationService {
     '報告失敗',
     '対象の報告に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly actionBlocked = new NotificationServiceItem(
+    '管理人により制限された操作',
+    '該当の操作は管理人により制限されています。「手紙」→「個人」などで制限の理由など詳細をご確認ください。健全な運営のため、ご協力をよろしくお願いいたします',
+    NotificationServiceItemDefaultType.error);
   public static readonly invalidStatus = new NotificationServiceItem(
     '異常な状態',
     '異常な状態が発生しました。開発者ツールなどを用いて、データに間違った値を埋め込んだときにこのエラーが発生します。もし、何もしていないのにこのエラーが発生した場合は、管理者に連絡してください。情報：{0}',
