@@ -9,7 +9,7 @@
       <div class="section">
         <h3>初心者向け</h3>
         <div :class="{ 'form-row': true, 'error': !isOkBeginner, }">
-          <div class="label">このゲームは初めてですか？</div>
+          <div class="label">このゲームは初めてですか？<br>（あなたはこのゲームの内政、戦争を一通り経験済で、周囲の補助がなくても行動できますか？）</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true">初めてです</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.isBeginner || !isSelectedBeginner, 'btn-secondary': isSelectedBeginner && !character.isBeginner, }" @click="character.isBeginner = false; isSelectedBeginner = true">経験者です</button>
@@ -243,6 +243,18 @@
           <div class="detail">
           </div>
         </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkKingCheck1, }">
+          <div class="label">あなたはこのゲームの内政、戦争を一通り経験済で、他の人を指導できますか？</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isKingCheck1, }" @click="isKingCheck1 ^= true">指導できるので建国できます</button>
+          </div>
+        </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkKingCheck2, }">
+          <div class="label">あなたは同盟締結、宣戦布告、政策についてある程度理解していますか？</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isKingCheck2, }" @click="isKingCheck2 ^= true">理解しているので建国できます</button>
+          </div>
+        </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryName, }">
           <div class="label">国名</div>
           <div class="field">
@@ -336,6 +348,8 @@ export default class EntryPage extends Vue {
   private isOkEula: boolean = false;
   private isOkPrivacyPolicy: boolean = false;
   private isSelectedBeginner: boolean = false;
+  private isKingCheck1: boolean = false;
+  private isKingCheck2: boolean = false;
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -408,6 +422,14 @@ export default class EntryPage extends Vue {
         (this.town.countryId === 0 && this.isPublish)));
   }
 
+  private get isOkKingCheck1(): boolean {
+    return !this.isPublish || this.isKingCheck1;
+  }
+
+  private get isOkKingCheck2(): boolean {
+    return !this.isPublish || this.isKingCheck2;
+  }
+
   private get isOkCountryName(): boolean {
     return !this.isPublish ||
       (this.country.name !== '' && this.country.name.length >= 1 && this.country.name.length <= 8 &&
@@ -461,6 +483,8 @@ export default class EntryPage extends Vue {
       this.isOkIcon &&
       this.isOkTown &&
       this.isOkEstablishSelection &&
+      this.isOkKingCheck1 &&
+      this.isOkKingCheck2 &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
       this.isOkFrom &&
@@ -807,7 +831,7 @@ span.number { font-weight: bold; }
     }
 
     .label {
-      color: #999;
+      color: #666;
       font-weight: bold;
     }
 
