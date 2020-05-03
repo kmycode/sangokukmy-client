@@ -994,6 +994,15 @@ export class MuteKeyword {
   }
 }
 
+export class ChatMessageRead {
+  public static readonly typeId: number = 42;
+
+  public constructor(public lastCountryChatMessageId: number,
+                     public lastGlobalChatMessageId: number,
+                     public lastGlobal2ChatMessageId: number,
+                     public lastPromotionChatMessageId: number) {}
+}
+
 export class Api {
 
   /**
@@ -1333,6 +1342,30 @@ export class Api {
   public static async setPrivateChatMessageRead(): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'chat/character/read', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryChatMessageRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'chat/country/read/' + id, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setGlobalChatMessageRead(id: number, num: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'chat/global/' + num + '/read/' + id, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setPromotionChatMessageRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'chat/promotion/read/' + id, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
