@@ -1035,7 +1035,6 @@
         <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
-                         :formationPoint="model.character.formationPoint"
                          :canAddSelect="false"
                          :canAdd="false"
                          v-model="selectedFormationType"
@@ -1060,7 +1059,6 @@
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
-                         :formationPoint="model.character.formationPoint"
                          :canChange="false"
                          v-model="selectedFormationType"
                          style="flex:1"/>
@@ -1083,7 +1081,6 @@
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
-                         :formationPoint="model.character.formationPoint"
                          :canAdd="false"
                          :isShowChangePoint="false"
                          v-model="selectedFormationType"

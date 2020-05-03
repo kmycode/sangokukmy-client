@@ -18,7 +18,6 @@
     </div>
     <div v-show="canChange && selectableFormationTypes.length > 0" style="margin-top:48px">
       <h2>変更可能な陣形</h2>
-      <h3 v-show="isShowChangePoint">残りポイント: {{ formationPoint }}</h3>
       <div
         :class="{'item': true, 'selected': value.id === formation.type.id, 'selectable': true}"
         v-for="formation in selectableFormationTypes"
@@ -27,7 +26,6 @@
           <div class="standard">
             <div class="name responsive-header">{{ formation.type.name }}</div>
             <div v-show="isShowChangePoint" class="point">
-              <span class="value-name">ポイント</span> <span class="value">0</span>
               <span class="value-name">属性</span> <span class="value">{{ formation.type.type }}</span>
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
@@ -42,7 +40,6 @@
     </div>
     <div v-show="canAdd && newFormationTypes.length > 0" style="margin-top:48px">
       <h2>追加可能な陣形</h2>
-      <h3>残りポイント: {{ formationPoint }}</h3>
       <div
         :class="{'item': true, 'selected': canAddSelect && value.id === formation.id, 'selectable': canAddSelect}"
         v-for="formation in newFormationTypes"
@@ -81,7 +78,6 @@ class FormationListItem {
   },
 })
 export default class FormationList extends Vue {
-  @Prop() public formationPoint!: number;
   @Prop() public currentFormationType!: number;
   @Prop() public formations!: api.Formation[];
   public formationTypes: def.FormationType[] = [];

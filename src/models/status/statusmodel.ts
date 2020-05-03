@@ -1912,7 +1912,6 @@ export default class StatusModel {
         ps.push(new NoRangeStatusParameter('陣形レベル', formationData.level));
       }
     }
-    ps.push(new NoRangeStatusParameter('陣形ポイント', character.formationPoint));
     ps.push(new NoRangeStatusParameter('技能ポイント', character.skillPoint));
     ps.push(new RangedStatusParameter(
       'アイテム',

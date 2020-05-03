@@ -321,7 +321,6 @@ export class Character implements IIdentitiedEntity {
                      public message: string = '',
                      public lastUpdated: DateTime = new DateTime(),
                      public lastUpdatedGameDate: GameDateTime = new GameDateTime(),
-                     public formationPoint: number = 0,
                      public skillPoint: number = 0,
                      public postType: number = 0,   // 統一記録のみで有効
                      public isBeginner: boolean = false,
