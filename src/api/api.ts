@@ -282,6 +282,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly typeId = 9;
 
   public static readonly aiHuman = 0;
+  public static readonly aiAdministrator = 28;
   public static readonly aiSecretaryPatroller = 8;
   public static readonly aiSecretaryUnitGather = 9;
   public static readonly aiSecretaryPioneer = 11;

@@ -92,7 +92,8 @@ export default class AllCharactersPage extends Vue {
   private async initializeAsync() {
     const charas = await api.Api.getAllCharacters();
     const allCountries = await api.Api.getAllCountries();
-    this.count = Enumerable.from(charas).count((c) => c.aiType === api.Character.aiHuman);
+    this.count = Enumerable.from(charas).count((c) => c.aiType === api.Character.aiHuman ||
+                                                      c.aiType === api.Character.aiAdministrator);
     this.allCharacters = charas;
 
     const countries = Enumerable.from(allCountries)
