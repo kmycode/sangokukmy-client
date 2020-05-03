@@ -264,7 +264,8 @@
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
                               @chat-other-country="readyOtherCountryChatById($event)"
-                              @call-focus="callCountryChatFocus = $event"/>
+                              @call-focus="callCountryChatFocus = $event"
+                              @chat-private="readyPrivateChatById($event)"/>
           </div>
           <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.privateChat"
@@ -285,7 +286,8 @@
                               :icons="model.characterIcons"
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
-                              :muteKeyword="model.store.muteKeyword"/>
+                              :muteKeyword="model.store.muteKeyword"
+                              @chat-private="readyPrivateChatById($event)"/>
           </div>
           <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.global2Chat"
@@ -294,7 +296,8 @@
                               :icons="model.characterIcons"
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
-                              :muteKeyword="model.store.muteKeyword"/>
+                              :muteKeyword="model.store.muteKeyword"
+                              @chat-private="readyPrivateChatById($event)"/>
           </div>
         </div>
         <!-- 会議室 -->
@@ -312,7 +315,8 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
-                              :canPost="false"/>
+                              :canPost="false"
+                              @chat-private="readyPrivateChatById($event)"/>
           </div>
         </div>
         <!-- 国設定 -->

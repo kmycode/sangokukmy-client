@@ -31,10 +31,11 @@
           </span>
           <span class="posted">{{ message.posted | realdate }}</span>
           <span v-if="!isShowForce && myCharacterId !== message.character.id">
-            <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="isOpenReports ^= true">...</a>
+            <a class="btn btn-sm btn-light" style="width:20px;height:16px;line-height:12px;margin-left:8px;font-size:12px" @click="isOpenReports ^= true">...</a>
             <div v-if="isOpenReports" class="loading-container" style="margin-top:8px">
-              <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="muteCharacter(true)">武将をミュート</a>
               <a class="btn btn-sm btn-warning" style="height:20px;line-height:16px;margin-left:8px" @click="reportMessage(true)">発言を報告</a>
+              <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="muteCharacter(true)">武将をミュート</a>
+              <a class="btn btn-sm btn-light" style="height:20px;line-height:16px;margin-left:8px" @click="isOpenReports = false; $emit('chat-private', message.character.id)">個宛</a>
               <div v-if="isMuting" class="loading"><div class="loading-icon"></div></div>
             </div>
           </span>
