@@ -37,6 +37,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public onOpened: (() => void) | undefined;
   private hasLoadAll: boolean = false;
   private isOpenPrivate: boolean = false;
+  private isUnreadQueue = false;
+  private lastReadId: number = 0;
 
   public get canSend(): boolean {
     if (this.isNeedSendTo) {
@@ -52,6 +54,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
 
   public set isOpen(value: boolean) {
     if (value) {
+      this.isUnreadQueue = this.isUnread;
       this.isUnread = false;
     }
     this.isOpenPrivate = value;
@@ -64,7 +67,19 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   public constructor(private store: StatusStore,
                      private post: (message: string, icon?: api.CharacterIcon, sendTo?: number) => Promise<any>,
                      private load: (sinceId: number) => Promise<api.ChatMessage[]>,
-                     private isNeedSendTo: boolean = false) {}
+                     private isNeedSendTo: boolean = false,
+                     private setRead?: ((id: number) => any)) {
+    if (this.setRead) {
+      window.setInterval(() => {
+        if (this.setRead && this.messages.length > 0 &&
+            (this.isUnreadQueue || (this.isOpen && this.lastReadId != this.messages[0].id))) {
+          this.setRead(this.messages[0].id);
+          this.isUnreadQueue = this.isUnread;
+          this.lastReadId = this.messages[0].id;
+        }
+      }, 8000);
+    }
+  }
 
   public append(message: api.ChatMessage) {
     const old = ArrayUtil.find(this.messages, message.id);

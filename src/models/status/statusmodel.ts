@@ -717,6 +717,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.MuteKeyword>(
       api.MuteKeyword.typeId,
       (obj) => this.onMuteKeywordReceived(obj));
+    ApiStreaming.status.on<api.ChatMessageRead>(
+      api.ChatMessageRead.typeId,
+      (obj) => this.onReceiveChatMessageRead(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -2267,19 +2270,25 @@ export default class StatusModel {
         } else {
           return api.Api.postCountryChatMessage(mes, icon);
         }},
-      (id) => api.Api.getCountryChatMessage(id, 50));
+      (id) => api.Api.getCountryChatMessage(id, 50),
+      undefined,
+      (id) => api.Api.setCountryChatMessageRead(id));
 
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
       (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 0),
-      (id) => api.Api.getGlobalChatMessage(id, 50, 0));
+      (id) => api.Api.getGlobalChatMessage(id, 50, 0),
+      undefined,
+      (id) => api.Api.setGlobalChatMessageRead(id, 0));
 
   public global2Chat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
       (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 1),
-      (id) => api.Api.getGlobalChatMessage(id, 50, 1));
+      (id) => api.Api.getGlobalChatMessage(id, 50, 1),
+      undefined,
+      (id) => api.Api.setGlobalChatMessageRead(id, 1));
 
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
@@ -2299,7 +2308,8 @@ export default class StatusModel {
     = new ChatMessageContainer(
       this.store,
       () => { throw new Error(); },
-      async () => [], true);
+      async () => [], true,
+      (id) => api.Api.setPromotionChatMessageRead(id));
 
   private onReceiveChatMessage(message: api.ChatMessage) {
     if (message.type === api.ChatMessage.typeSelfCountry ||
@@ -2348,6 +2358,21 @@ export default class StatusModel {
           }
         }
       }
+    }
+  }
+
+  private onReceiveChatMessageRead(read: api.ChatMessageRead) {
+    if (this.countryChat.messages.length > 0 && !this.countryChat.isOpen) {
+      this.countryChat.isUnread = read.lastCountryChatMessageId < this.countryChat.messages[0].id;
+    }
+    if (this.globalChat.messages.length > 0 && !this.globalChat.isOpen) {
+      this.globalChat.isUnread = read.lastGlobalChatMessageId < this.globalChat.messages[0].id;
+    }
+    if (this.global2Chat.messages.length > 0 && !this.global2Chat.isOpen) {
+      this.global2Chat.isUnread = read.lastGlobal2ChatMessageId < this.global2Chat.messages[0].id;
+    }
+    if (this.promotions.messages.length > 0 && !this.promotions.isOpen) {
+      this.promotions.isUnread = read.lastPromotionChatMessageId < this.promotions.messages[0].id;
     }
   }
 
