@@ -162,7 +162,17 @@ export default class ChatMessageItem extends Vue {
         this.isShowForce = false;
         this.isOpenReports = false;
       })
-      .catch(() => NotificationService.reportFailed.notify())
+      .catch((ex) => {
+        if (ex.data) {
+          if (ex.data.code === api.ErrorCode.blockedActionError) {
+            NotificationService.actionBlocked.notify();
+          } else {
+            NotificationService.reportFailed.notify();
+          }
+        } else {
+          NotificationService.reportFailed.notify();
+        }
+      })
       .finally(() => this.isMuting = false);
   }
 }
