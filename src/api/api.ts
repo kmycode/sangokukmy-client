@@ -307,6 +307,7 @@ export class IssueBbsItem {
   public static readonly statusComposite = 9;
   public static readonly statusInvalid = 10;
   public static readonly statusWontfix = 11;
+  public static readonly statusPending = 12;
 
   public static readonly priorityUndefined = 0;
   public static readonly priorityNew = 1;
@@ -325,6 +326,7 @@ export class IssueBbsItem {
               public parentId: number = 0,
               public accountId: number = 0,
               public accountName: string = '',
+              public lastWriterAccountName: string = '',
               public title: string = '',
               public text: string = '',
               public written: DateTime = new DateTime(),
