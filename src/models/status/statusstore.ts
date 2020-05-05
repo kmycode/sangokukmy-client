@@ -38,4 +38,5 @@ export default class StatusStore {
   public otherCharacterCommands: api.CharacterCommand[] = [];
   public mutes: api.Mute[] = [];
   public muteKeyword: api.MuteKeyword = new api.MuteKeyword('');
+  public account: api.Account = new api.Account(-1);
 }

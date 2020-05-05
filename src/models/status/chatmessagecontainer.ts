@@ -72,7 +72,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
     if (this.setRead) {
       window.setInterval(() => {
         if (this.setRead && this.messages.length > 0 &&
-            (this.isUnreadQueue || (this.isOpen && this.lastReadId != this.messages[0].id))) {
+            (this.isUnreadQueue || (this.isOpen && this.lastReadId !== this.messages[0].id))) {
           this.setRead(this.messages[0].id);
           this.isUnreadQueue = this.isUnread;
           this.lastReadId = this.messages[0].id;

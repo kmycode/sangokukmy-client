@@ -71,6 +71,7 @@ export default class StatusModel {
   public isUpdatingFormations: boolean = false;
   public isUpdatingItems: boolean = false;
   public isUpdatingSkills: boolean = false;
+  public isUpdatingAccount: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -789,6 +790,7 @@ export default class StatusModel {
       this.isMapLogTabUnread = false;
       this.updateCharacter(this.character);
       this.commands.initialize(this.character.lastUpdatedGameDate, this.character.lastUpdated);
+      this.loadAccount();
     } else if (signal.type === 5) {
       // 部隊が解散された
       NotificationService.belongsUnitRemoved.notify();
@@ -2429,6 +2431,128 @@ export default class StatusModel {
       })
       .finally(() => {
         this.isUpdatingPrivateSettings = false;
+      });
+  }
+
+  // #endregion
+
+  // #region Account
+
+  private loadAccount() {
+    this.isUpdatingAccount = true;
+    api.Api.getMyAccount()
+      .then((account) => {
+        this.store.account = account;
+      })
+      .finally(() => {
+        this.isUpdatingAccount = false;
+      });
+  }
+
+  public createAccount(aliasId: string, name: string, password: string) {
+    if (this.isUpdatingAccount) {
+      return;
+    }
+    this.isUpdatingAccount = true;
+
+    api.Api.createAccount(aliasId, name, password)
+      .then((account) => {
+        this.store.account = account;
+        NotificationService.accountCreated.notify();
+      })
+      .catch((ex) => {
+        if (ex.data) {
+          if (ex.data.code === api.ErrorCode.stringLengthError) {
+            if (ex.data.data.name === 'aliasId') {
+              NotificationService.accountCreateFailedBecauseIncorrectAliasIdLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else if (ex.data.data.name === 'name') {
+              NotificationService.accountCreateFailedBecauseIncorrectNameLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else if (ex.data.data.name === 'password') {
+              NotificationService.accountCreateFailedBecauseIncorrectPasswordLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else {
+              NotificationService.accountCreateFailed.notify();
+            }
+          } else if (ex.data.code === api.ErrorCode.duplicateAccountNameOrAliasIdError) {
+            NotificationService.accountCreateFailedBecauseDuplicateNameOrAliasId.notify();
+          } else {
+            NotificationService.accountCreateFailed.notify();
+          }
+        } else {
+          NotificationService.accountCreateFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isUpdatingAccount = false;
+      });
+  }
+
+  public loginAccount(aliasId: string, password: string) {
+    if (this.isUpdatingAccount) {
+      return;
+    }
+    this.isUpdatingAccount = true;
+
+    api.Api.loginAccount(aliasId, password)
+      .then((account) => {
+        this.store.account = account;
+        NotificationService.accountLogined.notify();
+      })
+      .catch((ex) => {
+        if (ex.data) {
+          if (ex.data.code === api.ErrorCode.accountNotFoundError) {
+            NotificationService.accountLoginFailedBecauseAccountNotFound.notify();
+          } else {
+            NotificationService.accountLoginFailed.notify();
+          }
+        } else {
+          NotificationService.accountLoginFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isUpdatingAccount = false;
+      });
+  }
+
+  public updateAccount(name: string) {
+    if (this.isUpdatingAccount) {
+      return;
+    }
+    this.isUpdatingAccount = true;
+
+    api.Api.updateAccount('', name, '')
+      .then((account) => {
+        this.store.account = account;
+        NotificationService.accountCreated.notify();
+      })
+      .catch((ex) => {
+        if (ex.data) {
+          if (ex.data.code === api.ErrorCode.stringLengthError) {
+            if (ex.data.data.name === 'aliasId') {
+              NotificationService.accountCreateFailedBecauseIncorrectAliasIdLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else if (ex.data.data.name === 'name') {
+              NotificationService.accountCreateFailedBecauseIncorrectNameLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else if (ex.data.data.name === 'password') {
+              NotificationService.accountCreateFailedBecauseIncorrectPasswordLength
+                .notifyWithParameter(ex.data.data.min, ex.data.data.max, ex.data.data.current);
+            } else {
+              NotificationService.accountCreateFailed.notify();
+            }
+          } else if (ex.data.code === api.ErrorCode.duplicateAccountNameOrAliasIdError) {
+            NotificationService.accountCreateFailedBecauseDuplicateNameOrAliasId.notify();
+          } else {
+            NotificationService.accountCreateFailed.notify();
+          }
+        } else {
+          NotificationService.accountCreateFailed.notify();
+        }
+      })
+      .finally(() => {
+        this.isUpdatingAccount = false;
       });
   }
 

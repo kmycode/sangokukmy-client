@@ -53,6 +53,10 @@ export enum ErrorCode {
   invalidSecretKeyError = 43,
   notMoreItemsError = 45,
   blockedActionError = 50,
+  accountNotFoundError = 51,
+  accountLoginPasswordIncorrectError = 52,
+  duplicateAccountNameOrAliasIdError = 53,
+  duplicateAccountOfCharacterError = 54,
 }
 
 /**
@@ -273,6 +277,16 @@ export class AuthenticationData {
   constructor(public accessToken: string,
               public characterId: number,
               public expirationTime: DateTime) {}
+}
+
+/**
+ * アカウント
+ */
+export class Account {
+  constructor(public id: number,
+              public characterId: number = 0,
+              public aliasId: string = '',
+              public name: string = '') {}
 }
 
 /**
@@ -984,8 +998,6 @@ export class Mute {
 export class MuteKeyword {
   public static readonly typeId: number = 41;
 
-  public constructor(public keywords: string) {}
-
   public static isMute(obj: MuteKeyword, text: string): boolean {
     if (!obj || !obj.keywords) {
       return false;
@@ -993,6 +1005,8 @@ export class MuteKeyword {
     const words = obj.keywords.replace('\r', '').split('\n').filter((k) => k !== '');
     return words.some((w) => text.indexOf(w) >= 0);
   }
+
+  public constructor(public keywords: string) {}
 }
 
 export class ChatMessageRead {
@@ -1737,6 +1751,53 @@ export class Api {
         threadBbsItemId: messageId,
         type,
       }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async createAccount(aliasId: string, name: string, password: string): Promise<Account> {
+    try {
+      const result = await axios.post(def.API_HOST + 'account', {
+        aliasId,
+        name,
+        password,
+      }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async loginAccount(aliasId: string, password: string): Promise<Account> {
+    try {
+      const result = await axios.post(def.API_HOST + 'account/login', {
+        aliasId,
+        password,
+      }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getMyAccount(): Promise<Account> {
+    try {
+      const result = await axios.get(def.API_HOST + 'account', this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async updateAccount(aliasId: string, name: string, password: string): Promise<Account> {
+    try {
+      const result = await axios.put(def.API_HOST + 'account', {
+        aliasId,
+        name,
+        password,
+      }, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
