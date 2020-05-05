@@ -995,7 +995,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(6, '官吏 Lv.1', '毎月知力Ex +7', 0, (_) => false),
   new CharacterSkillType(7, '官吏 Lv.2', '内政効果 +50%、コマンド 都市巡回', 320, (skills) => skills.some((s) => s.type === 6)),
   new CharacterSkillType(8, '官吏 Lv.a3', '非戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 54)),
-  new CharacterSkillType(54,'官吏 Lv.b3', '戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 8)),
+  new CharacterSkillType(54, '官吏 Lv.b3', '戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 8)),
   new CharacterSkillType(9, '官吏 Lv.4', '歩兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
   new CharacterSkillType(10, '官吏 Lv.5', '兵種 梓叡兵、毎月知力Ex +11', 400, (skills) => skills.some((s) => s.type === 9)),
   new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、毎ターン金 +100', 0, (_) => false),

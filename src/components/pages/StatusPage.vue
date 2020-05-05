@@ -206,7 +206,9 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 5">個設定</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6">戦闘S</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
-                  <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 8">アカウント</span>
+                  <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 9">BBS</span>
+                  <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread || model.isIssueBbsUnread"></span>
                 </span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
@@ -216,6 +218,9 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 8; isOpenRightSidePopupMenu = false">アカウント</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 9; isOpenRightSidePopupMenu = false"><span class="tab-text">BBS<span class="tab-notify" v-show="model.isIssueBbsUnread"></span></span></a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
@@ -456,6 +461,56 @@
         <!-- 米施しシミュレータ -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
           <RiceSimulatorView/>
+        </div>
+        <!-- アカウント -->
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 8" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+          <div class="setting-list">
+            <div class="setting-row loading-container">
+              <h3 :class="'country-color-' + model.characterCountryColor">アカウント</h3>
+              <div class="alert alert-info">アカウントは、武将とは異なり、リセットされても情報を保持します。IDとパスワードの管理に注意してください。ログインすると、アカウント情報は武将に紐付けられます</div>
+              <div v-if="model.store.account.id > 0" class="setting-section">
+                <h4>現在のアカウント</h4>
+                <div style="background:#dedede;padding:8px;margin-bottom:16px">
+                  {{ model.store.account.name }} [{{ model.store.account.aliasId }}]
+                </div>
+                <div>
+                  新しい名前<br><input type="text" style="width:60%" v-model="temporaryAccount.name"/><br>
+                </div>
+              </div>
+              <div v-if="model.store.account.id > 0" class="buttons">
+                <button type="button" class="btn btn-light" @click="model.updateAccount(temporaryAccount.name)">情報変更</button>
+              </div>
+              <div v-if="model.store.account.id <= 0" class="setting-section">
+                <h4>ログイン</h4>
+                <div>
+                  ID<br><input type="text" style="width:60%" v-model="temporaryAccount.aliasId"/><br>
+                  PASSWORD<br><input type="password" style="width:60%" v-model="temporaryAccount.password"/><br>
+                </div>
+              </div>
+              <div v-if="model.store.account.id <= 0" class="buttons">
+                <button type="button" class="btn btn-primary" @click="model.loginAccount(temporaryAccount.aliasId, temporaryAccount.password)">ログイン</button>
+              </div>
+              <div v-if="model.store.account.id <= 0" class="setting-section">
+                <h4>新規作成</h4>
+                <div>
+                  名前<br><input type="text" style="width:60%" v-model="temporaryAccount.name"/><br>
+                  ID<br><input type="text" style="width:60%" v-model="temporaryAccount.aliasId"/><br>
+                  PASSWORD<br><input type="password" style="width:60%" v-model="temporaryAccount.password"/><br>
+                </div>
+              </div>
+              <div v-if="model.store.account.id <= 0" class="buttons">
+                <button type="button" class="btn btn-primary" @click="model.createAccount(temporaryAccount.aliasId, temporaryAccount.name, temporaryAccount.password)">新規作成</button>
+              </div>
+              <div v-show="model.isUpdatingAccount" class="loading"><div class="loading-icon"></div></div>
+            </div>
+          </div>
+        </div>
+        <!-- 専用BBS -->
+        <div v-if="selectedActionTab === 3 && selectedActionTabSubPanel === 9" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+          <IssueBbs :isAdministrator="model.character.aiType === 28"
+                    :account="model.store.account"
+                    :mutes="model.store.mutes"
+                    :onNewThreadReceived="model.issueBbsItemReceivedEventHandler"/>
         </div>
       </div>
     </div>
@@ -1449,6 +1504,7 @@ import UnitPicker from '@/components/parts/UnitPicker.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
 import ThreadBbs from '@/components/parts/ThreadBbs.vue';
+import IssueBbs from '@/components/parts/IssueBbs.vue';
 import CommandListView from '@/components/parts/status/CommandList.vue';
 import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
@@ -1487,6 +1543,7 @@ import EventObject from '@/models/common/EventObject';
     SoldierTypePicker,
     BattleLogView,
     ThreadBbs,
+    IssueBbs,
     CommandListView,
     AllianceView,
     WarView,
@@ -1586,6 +1643,7 @@ export default class StatusPage extends Vue {
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
   public selectedTownSubBuilding: def.TownSubBuildingType = new def.TownSubBuildingType(-1);
   public commandCommentMessage: string = '';
+  public temporaryAccount: api.Account = new api.Account(-1);
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
@@ -1752,7 +1810,8 @@ export default class StatusPage extends Vue {
       this.model.global2Chat.isOpen =
       this.model.promotions.isOpen =
       this.model.countryThreadBbs.isOpen =
-      this.model.globalThreadBbs.isOpen = false;
+      this.model.globalThreadBbs.isOpen =
+      this.model.isOpenIssueBbs = false;
     if (this.selectedActionTab === 1) {
       const obj = this.chatObj;
       if (obj) {
@@ -1763,6 +1822,9 @@ export default class StatusPage extends Vue {
         this.model.promotions.isOpen = true;
       } else if (this.selectedActionTabSubPanel === 2) {
         this.model.globalThreadBbs.isOpen = true;
+      } else if (this.selectedActionTabSubPanel === 9) {
+        this.model.isOpenIssueBbs = true;
+        this.model.isIssueBbsUnread = false;
       }
     } else if (this.selectedActionTab === 2) {
       this.model.countryThreadBbs.isOpen = true;
@@ -1885,7 +1947,7 @@ export default class StatusPage extends Vue {
   }
 
   private reloadPage() {
-    window.location.href = "/status?app=ios";
+    window.location.href = '/status?app=ios';
   }
 }
 </script>
