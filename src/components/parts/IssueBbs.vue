@@ -187,7 +187,7 @@ export default class IssueBbs extends Vue {
       }
 
       if (thread.parentId === 0) {
-        if (this.page === 1) {
+        if (this.page === 1 && !this.threads.some((t) => t.id === thread.id)) {
           this.threads.unshift(thread);
         }
       }
