@@ -31,6 +31,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 4)">実装待ち</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 7)">却下</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 8)">重複</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 9)">複合</a>
@@ -286,7 +287,8 @@ export default class IssueBbs extends Vue {
       val === api.IssueBbsItem.statusDuplicate ? '重複' :
       val === api.IssueBbsItem.statusComposite ? '複合' :
       val === api.IssueBbsItem.statusInvalid ? '無効' :
-      val === api.IssueBbsItem.statusWontfix ? '対応せず' : '不明';
+      val === api.IssueBbsItem.statusWontfix ? '対応せず' :
+      val === api.IssueBbsItem.statusPending ? '保留' : '不明';
   }
 
   private toggleStatusPopupOpen(obj: api.IssueBbsItem) {
@@ -471,6 +473,9 @@ div.current-thread {
   }
   .thread-status-11 {
     font-weight: bold;
+  }
+  .thread-status-12 {
+    color: #f39;
   }
 
   .thread-priority {

@@ -307,6 +307,7 @@ export class IssueBbsItem {
   public static readonly statusComposite = 9;
   public static readonly statusInvalid = 10;
   public static readonly statusWontfix = 11;
+  public static readonly statusPending = 12;
 
   public static readonly priorityUndefined = 0;
   public static readonly priorityNew = 1;
