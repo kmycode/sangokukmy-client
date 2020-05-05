@@ -179,6 +179,7 @@ export default class IssueBbs extends Vue {
         }
         if (t.id === thread.parentId) {
           t.lastModified = thread.lastModified;
+          t.lastWriterAccountName = thread.accountName;
           parent = t;
         }
       });
