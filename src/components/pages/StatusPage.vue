@@ -208,7 +208,7 @@
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7">米S</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 8">アカウント</span>
                   <span v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 9">BBS</span>
-                  <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread"></span>
+                  <span class="tab-notify" v-show="model.promotions.isUnread || model.globalThreadBbs.isUnread || model.isIssueBbsUnread"></span>
                 </span>
               </a>
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
@@ -220,7 +220,7 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 8; isOpenRightSidePopupMenu = false">アカウント</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 9; isOpenRightSidePopupMenu = false">BBS</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 9; isOpenRightSidePopupMenu = false"><span class="tab-text">BBS<span class="tab-notify" v-show="model.isIssueBbsUnread"></span></span></a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
@@ -1810,7 +1810,8 @@ export default class StatusPage extends Vue {
       this.model.global2Chat.isOpen =
       this.model.promotions.isOpen =
       this.model.countryThreadBbs.isOpen =
-      this.model.globalThreadBbs.isOpen = false;
+      this.model.globalThreadBbs.isOpen =
+      this.model.isOpenIssueBbs = false;
     if (this.selectedActionTab === 1) {
       const obj = this.chatObj;
       if (obj) {
@@ -1821,6 +1822,9 @@ export default class StatusPage extends Vue {
         this.model.promotions.isOpen = true;
       } else if (this.selectedActionTabSubPanel === 2) {
         this.model.globalThreadBbs.isOpen = true;
+      } else if (this.selectedActionTabSubPanel === 9) {
+        this.model.isOpenIssueBbs = true;
+        this.model.isIssueBbsUnread = false;
       }
     } else if (this.selectedActionTab === 2) {
       this.model.countryThreadBbs.isOpen = true;
