@@ -505,6 +505,13 @@
             </div>
           </div>
         </div>
+        <!-- 専用BBS -->
+        <div v-if="selectedActionTab === 3 && selectedActionTabSubPanel === 9" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+          <IssueBbs :isAdministrator="model.character.aiType === 28"
+                    :account="model.store.account"
+                    :mutes="model.store.mutes"
+                    :onNewThreadReceived="model.issueBbsItemReceivedEventHandler"/>
+        </div>
       </div>
     </div>
     <!-- ダイアログ -->
@@ -1497,6 +1504,7 @@ import UnitPicker from '@/components/parts/UnitPicker.vue';
 import CharacterIconPicker from '@/components/parts/CharacterIconPicker.vue';
 import BattleLogView from '@/components/parts/BattleLogView.vue';
 import ThreadBbs from '@/components/parts/ThreadBbs.vue';
+import IssueBbs from '@/components/parts/IssueBbs.vue';
 import CommandListView from '@/components/parts/status/CommandList.vue';
 import AllianceView from '@/components/parts/status/AllianceView.vue';
 import WarView from '@/components/parts/status/WarView.vue';
@@ -1535,6 +1543,7 @@ import EventObject from '@/models/common/EventObject';
     SoldierTypePicker,
     BattleLogView,
     ThreadBbs,
+    IssueBbs,
     CommandListView,
     AllianceView,
     WarView,

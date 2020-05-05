@@ -836,6 +836,26 @@ export default class NotificationService {
     'アカウントログイン失敗',
     'アカウントのログインに失敗しました。該当するIDを持ったアカウントは存在しません',
     NotificationServiceItemDefaultType.error);
+  public static readonly threadPropertyChanged = new NotificationServiceItem(
+    'スレッドのプロパティ変更',
+    'スレッドのプロパティ変更に成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly threadPropertyChangeFailed = new NotificationServiceItem(
+    'スレッドのプロパティ変更失敗',
+    'スレッドのプロパティ変更に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly loadThreadFailed = new NotificationServiceItem(
+    'スレッドのロード失敗',
+    'スレッドのロードに失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly writeThreadSucceed = new NotificationServiceItem(
+    'スレッド書き込み成功',
+    'スレッドの書き込みに成功しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly writeThreadFailed = new NotificationServiceItem(
+    'スレッド書き込み失敗',
+    'スレッドの書き込みに失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly actionBlocked = new NotificationServiceItem(
     '管理人により制限された操作',
     '該当の操作は管理人により制限されています。「手紙」→「個人」などで制限の理由など詳細をご確認ください。健全な運営のため、ご協力をよろしくお願いいたします',

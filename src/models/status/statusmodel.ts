@@ -28,6 +28,7 @@ import StatusStore from '@/models/status/statusstore';
 import UnitModel from '@/models/status/unitmodel';
 import ValueUtil from '@/models/common/ValueUtil';
 import VueRouter from 'vue-router';
+import EventObjectWithParam from '../common/EventObjectWithParam';
 
 export default class StatusModel {
   public gameDate: api.GameDateTime = new api.GameDateTime();
@@ -721,6 +722,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.ChatMessageRead>(
       api.ChatMessageRead.typeId,
       (obj) => this.onReceiveChatMessageRead(obj));
+    ApiStreaming.status.on<api.IssueBbsItem>(
+      api.IssueBbsItem.typeId,
+      (obj) => this.onIssueBbsItemReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -2554,6 +2558,12 @@ export default class StatusModel {
       .finally(() => {
         this.isUpdatingAccount = false;
       });
+  }
+
+  public issueBbsItemReceivedEventHandler: EventObjectWithParam<api.IssueBbsItem>
+    = new EventObjectWithParam<api.IssueBbsItem>(() => {});
+  private onIssueBbsItemReceived(item: api.IssueBbsItem) {
+    this.issueBbsItemReceivedEventHandler.fire(item);
   }
 
   // #endregion

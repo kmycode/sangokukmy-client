@@ -290,6 +290,51 @@ export class Account {
 }
 
 /**
+ * 専用BBSアイテム
+ */
+export class IssueBbsItem {
+  public static readonly typeId = 43;
+
+  public static readonly statusUndefined = 0;
+  public static readonly statusNew = 1;
+  public static readonly statusDiscussing = 2;
+  public static readonly statusInReady = 3;
+  public static readonly statusWaiting = 4;
+  public static readonly statusProcessing = 5;
+  public static readonly statusCompleted = 6;
+  public static readonly statusRejected = 7;
+  public static readonly statusDuplicate = 8;
+  public static readonly statusComposite = 9;
+  public static readonly statusInvalid = 10;
+  public static readonly statusWontfix = 11;
+
+  public static readonly priorityUndefined = 0;
+  public static readonly priorityNew = 1;
+  public static readonly priorityLow = 2;
+  public static readonly priorityNormal = 3;
+  public static readonly priorityHigh = 4;
+
+  public static readonly categoryUndefined = 0;
+  public static readonly categoryNew = 1;
+  public static readonly categoryEnhancement = 2;
+  public static readonly categoryBug = 3;
+  public static readonly categoryRule = 4;
+  public static readonly categoryOther = 5;
+
+  constructor(public id: number,
+              public parentId: number = 0,
+              public accountId: number = 0,
+              public accountName: string = '',
+              public title: string = '',
+              public text: string = '',
+              public written: DateTime = new DateTime(),
+              public lastModified: DateTime = new DateTime(),
+              public status: number = 0,
+              public priority: number = 0,
+              public category: number = 0) {}
+}
+
+/**
  * 武将
  */
 export class Character implements IIdentitiedEntity {
@@ -992,7 +1037,8 @@ export class Mute {
                      public type: number,
                      public targetCharacterId: number,
                      public chatMessageId: number,
-                     public threadBbsItemId: number) {}
+                     public threadBbsItemId: number,
+                     public issueBbsItemId: number) {}
 }
 
 export class MuteKeyword {
@@ -1756,6 +1802,17 @@ export class Api {
     }
   }
 
+  public static async reportIssueBbsItem(type: number, messageId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'mutes', {
+        issueBbsItemId: messageId,
+        type,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async createAccount(aliasId: string, name: string, password: string): Promise<Account> {
     try {
       const result = await axios.post(def.API_HOST + 'account', {
@@ -1798,6 +1855,51 @@ export class Api {
         password,
       }, this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getIssuePage(page: number): Promise<IssueBbsItem[]> {
+    try {
+      const result = await axios.get(def.API_HOST + 'issue/page/' + page, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getIssue(id: number): Promise<IssueBbsItem[]> {
+    try {
+      const result = await axios.get(def.API_HOST + 'issue/' + id, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async postIssue(parentId: number, title: string, text: string): Promise<IssueBbsItem> {
+    try {
+      const result = await axios.post(def.API_HOST + 'issue', {
+        parentId,
+        title,
+        text,
+      }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async updateThreadProperty(id: number, status: number, category: number, priority: number):
+          Promise<any> {
+    try {
+      await axios.patch(def.API_HOST + 'issue', {
+        id,
+        status,
+        category,
+        priority,
+      }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
