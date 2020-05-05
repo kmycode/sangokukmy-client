@@ -326,6 +326,7 @@ export class IssueBbsItem {
               public parentId: number = 0,
               public accountId: number = 0,
               public accountName: string = '',
+              public lastWriterAccountName: string = '',
               public title: string = '',
               public text: string = '',
               public written: DateTime = new DateTime(),

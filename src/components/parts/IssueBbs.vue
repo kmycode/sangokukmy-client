@@ -14,7 +14,7 @@
             :key="thread.id">
           <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a></h4>
           <div class="thread-info">
-            <div class="thread-writer">{{ thread.accountName }}</div>
+            <div class="thread-writer">{{ thread.lastWriterAccountName }}</div>
             <div class="thread-updated">{{ thread.lastModified | realdate }}</div>
           </div>
           <div class="thread-info">
