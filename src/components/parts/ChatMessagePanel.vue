@@ -298,7 +298,9 @@ export default class ChatMessagePanel extends Vue {
         
         .message-input, .message-input textarea {
           height: 72px;
+          max-height: 72px;
           width: 100%;
+          overflow: auto;
           border: 0;
           padding: 4px;
           font-size: 0.9rem;
