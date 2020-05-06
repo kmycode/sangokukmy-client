@@ -270,7 +270,8 @@
                               :muteKeyword="model.store.muteKeyword"
                               @chat-other-country="readyOtherCountryChatById($event)"
                               @call-focus="callCountryChatFocus = $event"
-                              @chat-private="readyPrivateChatById($event)"/>
+                              @chat-private="readyPrivateChatById($event)"
+                              @open-image="openImage"/>
           </div>
           <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.privateChat"
@@ -282,7 +283,8 @@
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
                               @chat-private="readyPrivateChatById($event)"
-                              @call-focus="callPrivateChatFocus = $event"/>
+                              @call-focus="callPrivateChatFocus = $event"
+                              @open-image="openImage"/>
           </div>
           <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.globalChat"
@@ -292,7 +294,8 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
-                              @chat-private="readyPrivateChatById($event)"/>
+                              @chat-private="readyPrivateChatById($event)"
+                              @open-image="openImage"/>
           </div>
           <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.global2Chat"
@@ -302,7 +305,8 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
-                              @chat-private="readyPrivateChatById($event)"/>
+                              @chat-private="readyPrivateChatById($event)"
+                              @open-image="openImage"/>
           </div>
         </div>
         <!-- 会議室 -->
@@ -517,6 +521,9 @@
     <!-- ダイアログ -->
     <div id="status-dialog" :class="{ 'show': isOpenDialog }">
       <div class="dialog-background" @click="closeDialogs()"></div>
+      <div v-show="isOpenImage" class="dialog-image" @click="isOpenImage = false">
+        <img :src="imageUrl"/>
+      </div>
       <!-- 徴兵 -->
       <div v-show="isOpenSoldierDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
@@ -1609,6 +1616,7 @@ export default class StatusPage extends Vue {
   public isOpenRemoveTownSubBuildingDialog: boolean = false;
   public isOpenMapDialog: boolean = false;
   public isOpenWelcomeDialog: boolean = false;
+  public isOpenImage: boolean = false;
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
@@ -1647,6 +1655,7 @@ export default class StatusPage extends Vue {
 
   public callCountryChatFocus?: EventObject;
   public callPrivateChatFocus?: EventObject;
+  public imageUrl: string = '';
 
   public get isOpenDialog(): boolean {
     return this.isOpenSoldierDialog || this.isOpenTownCharactersDialog
@@ -1662,7 +1671,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
-      || this.isOpenRemoveTownSubBuildingDialog;
+      || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage;
   }
 
   public openCommandDialog(event: string) {
@@ -1767,7 +1776,7 @@ export default class StatusPage extends Vue {
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
-      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = false;
+      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage = false;
   }
 
   public closeMapDialog() {
@@ -1944,6 +1953,11 @@ export default class StatusPage extends Vue {
         this.soldierNumber = Math.floor(this.model.character.leadership / 10) * 10 - 10 + 9;
       }
     }
+  }
+
+  private openImage(event: any) {
+    this.imageUrl = event;
+    this.isOpenImage = true;
   }
 
   private reloadPage() {
@@ -2389,6 +2403,18 @@ ul.nav {
     background: black;
     opacity: 0;
     transition: opacity .2s ease-in;
+  }
+
+  .dialog-image {
+    cursor: pointer;
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: auto;
+    text-align: center;
+    overflow: auto;
   }
 
   .dialog-body {

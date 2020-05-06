@@ -2267,14 +2267,14 @@ export default class StatusModel {
   public countryChat: ChatMessageContainer<api.Country>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon, sendTo) => {
+      (mes, icon, image, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
         }
         if (sendTo) {
-          return api.Api.postOtherCountryChatMessage(mes, icon, sendTo);
+          return api.Api.postOtherCountryChatMessage(mes, icon, sendTo, image);
         } else {
-          return api.Api.postCountryChatMessage(mes, icon);
+          return api.Api.postCountryChatMessage(mes, icon, image);
         }},
       (id) => api.Api.getCountryChatMessage(id, 50),
       undefined,
@@ -2283,7 +2283,7 @@ export default class StatusModel {
   public globalChat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 0),
+      (mes, icon, image) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 0, image),
       (id) => api.Api.getGlobalChatMessage(id, 50, 0),
       undefined,
       (id) => api.Api.setGlobalChatMessageRead(id, 0));
@@ -2291,7 +2291,7 @@ export default class StatusModel {
   public global2Chat: ChatMessageContainer<any>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 1),
+      (mes, icon, image) => api.Api.postGlobalChatMessage(mes, icon || this.characterIcon, 1, image),
       (id) => api.Api.getGlobalChatMessage(id, 50, 1),
       undefined,
       (id) => api.Api.setGlobalChatMessageRead(id, 1));
@@ -2299,12 +2299,12 @@ export default class StatusModel {
   public privateChat: ChatMessageContainer<api.Character>
     = new ChatMessageContainer(
       this.store,
-      (mes, icon, sendTo) => {
+      (mes, icon, image, sendTo) => {
         if (!icon) {
           icon = this.characterIcon;
         }
         if (sendTo) {
-          return api.Api.postPrivateChatMessage(mes, icon, sendTo);
+          return api.Api.postPrivateChatMessage(mes, icon, sendTo, image);
         } else {
           throw new Error();
         }},

@@ -849,6 +849,8 @@ export class ChatMessage implements IIdentitiedEntity {
                      public posted: DateTime,
                      public receiverName: string,
                      public isRead: boolean,
+                     public imageBase64: string,
+                     public imageKey: number,
                      public character?: CharacterChatData,
                      public characterIcon?: CharacterIcon,
                      public typeData?: number,
@@ -1346,23 +1348,25 @@ export class Api {
     }
   }
 
-  public static async postCountryChatMessage(mes: string, icon: CharacterIcon): Promise<any> {
+  public static async postCountryChatMessage(mes: string, icon: CharacterIcon, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/country', {
         message: mes,
         characterIconId: icon.id,
+        imageBase64: image,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
   }
 
-  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number): Promise<any> {
+  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/global', {
         message: mes,
         characterIconId: icon.id,
         typeData: type,
+        imageBase64: image,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1380,11 +1384,12 @@ export class Api {
     }
   }
 
-  public static async postPrivateChatMessage(mes: string, icon: CharacterIcon, toCharaId: number): Promise<any> {
+  public static async postPrivateChatMessage(mes: string, icon: CharacterIcon, toCharaId: number, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/character/' + toCharaId, {
         message: mes,
         characterIconId: icon.id,
+        imageBase64: image,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1434,11 +1439,12 @@ export class Api {
     }
   }
 
-  public static async postOtherCountryChatMessage(mes: string, icon: CharacterIcon, toCountryId: number): Promise<any> {
+  public static async postOtherCountryChatMessage(mes: string, icon: CharacterIcon, toCountryId: number, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/country/' + toCountryId, {
         message: mes,
         characterIconId: icon.id,
+        imageBase64: image,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

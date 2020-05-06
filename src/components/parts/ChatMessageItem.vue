@@ -4,7 +4,12 @@
       <CharacterIcon :icon="message.characterIcon"/>
       <div class="message-container">
         <div class="message">
-          <div class="text"><KmyChatTagText :text="message.message"/></div>
+          <div class="text">
+            <KmyChatTagText :text="message.message"/>
+            <div v-if="message.imageKey" class="image">
+              <img :src="iconBaseUri + 'c_' + message.id + '_' + message.imageKey + '.png'" @click.prevent.stop="$emit('open-image', iconBaseUri + 'c_' + message.id + '_' + message.imageKey + '.png')"/>
+            </div>
+          </div>
           <div class="commands">
             <button v-if="canSendPrivate && message.character.id !== myCharacterId" @click="$emit('chat-private', message.character.id)" type="button" class="btn btn-light btn-sm">個宛</button>
             <button v-if="canSendPrivate && message.character.id === myCharacterId" @click="$emit('chat-private', message.typeData2)" type="button" class="btn btn-outline-dark btn-sm">再送</button>
@@ -73,6 +78,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
+import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import NotificationService from '../../services/notificationservice';
 
@@ -105,6 +111,7 @@ export default class ChatMessageItem extends Vue {
   private isOpenReports: boolean = false;
   private isShowForce: boolean = false;
   private isMuting: boolean = false;
+  private iconBaseUri: string = def.UPLOADED_ICONS_HOST;
 
   private get countryColor(): number {
     const country = ArrayUtil.find(this.countries, this.message.characterCountryId);
@@ -204,6 +211,14 @@ export default class ChatMessageItem extends Vue {
     .message {
       flex: 1;
       word-break: break-word;
+
+      .text {
+        .image img {
+          max-width: 80%;
+          max-height: 180px;
+          cursor: pointer;
+        }
+      }
 
       .commands {
         text-align: right;
