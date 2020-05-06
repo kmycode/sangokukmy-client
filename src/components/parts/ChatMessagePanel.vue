@@ -14,19 +14,25 @@
           <CharacterIcon :icon="selectedIcon" :canClick="true" @onclick="isShowIcons ^= true"/>
           <div class="post-pair">
             <div class="message-input-wrapper">
-              <textarea ref="chatMessageInput"
-                        class="message-input"
-                        v-model="chatPostMessage"
-                        @keyup.ctrl.enter.prevent.stop="postChat()"
-                        @keyup.meta.enter="postChat()"></textarea>
+              <div ref="chatMessageInput"
+                   class="message-input"
+                   contenteditable="true"
+                   @keyup.ctrl.enter.prevent.stop="postChat()"
+                   @keyup.meta.enter="postChat()"></div>
             </div>
             <div v-if="model.sendTo && model.sendTo.id"
                 class="message-target"
                 @click="model.sendTo = undefined">
               <span class="target-text">{{ model.sendTo.name }} へ送信</span><span class="remove-mark">✕</span>
             </div>
+            <div v-show="isImageSet" class="message-image" @click="isImageSet = false">
+              <img ref="outputImage">
+              <div class="message-image-clicker"></div>
+              <span class="remove-mark">✕</span>
+            </div>
             <div class="buttons">
-              <button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button>
+              <div class="pick-image"><button class="btn btn-light" @click="$refs.pickImage.click()">画像</button><input type="file" ref="pickImage" @change="selectedImage" style="display:none"/></div>
+              <div><button class="btn btn-primary" @click="postChat()" :disabled="!canSendChat">投稿</button></div>
             </div>
           </div>
         </div>
@@ -54,7 +60,8 @@
             @chat-private="$emit('chat-private', $event)"
             @chat-other-country="$emit('chat-other-country', $event)"
             @promotion-refuse="model.setPromotionStatusAsync($event, 10)"
-            @promotion-apply="model.setPromotionStatusAsync($event, 9)"/>
+            @promotion-apply="model.setPromotionStatusAsync($event, 9)"
+            @open-image="$emit('open-image', $event)"/>
         </div>
       </transition-group>
       <div v-show="model.isLoading" class="loading-container load-more">
@@ -101,21 +108,114 @@ export default class ChatMessagePanel extends Vue {
   @Prop({
     default: 0,
   }) public myCountryId!: number;
-  private chatPostMessage: string = '';
   private callFocus: EventObject = new EventObject(() => {
     (this.$refs.chatMessageInput as HTMLTextAreaElement).focus();
   });
   private isShowIcons: boolean = false;
   private selectedIcon: api.CharacterIcon = new api.CharacterIcon(-1);
+  private isImageSet: boolean = false;
+  private canSendChat: boolean = false;
 
   private mounted() {
     this.$emit('call-focus', this.callFocus);
     this.onIconsChanged();
+    
+    // 画像のクリップボード貼り付け対応
+    // https://jsfiddle.net/2tkc99n2/1/
+    const element = this.$refs.chatMessageInput as any;
+    const pickImage = this.$refs.pickImage as any;
+    if (!element) {
+      return;
+    }
+    element.addEventListener('paste', (e: any) => {
+      if (!e.clipboardData 
+          || !e.clipboardData.types
+          || (e.clipboardData.types.length != 1)
+          || (e.clipboardData.types[0] != 'Files')) {
+        if (e.clipboardData.types[0] === 'text/html' || e.clipboardData.types[0] === 'text/plain') {
+          var temp = document.createElement('div');
+          temp.innerHTML = e.clipboardData.getData('text/html');
+          var pastedImage = temp.querySelector('img');
+      
+          // イメージタグがあればsrc属性からbase64が得られるので
+          // あとは煮るなり焼くなり
+          if (pastedImage) {
+            var base64 = pastedImage.src;
+            (this.$refs.outputImage as HTMLImageElement).src = base64;
+            this.isImageSet = true;
+          }
+          document.execCommand('insertHTML', false, temp.innerText);
+          e.preventDefault();
+          return false;
+        }
+        return true;
+      }
+	
+      const imageFile = e.clipboardData.items[0].getAsFile();
+      this.loadImageFromFile(imageFile);
+      element.innerHTML = element.innerText;
+
+      return false;
+    });
+    element.addEventListener('input', (e: any) => {
+      // 仮のエレメントを作り、張り付けた内容にimgタグがあるか探す
+      var temp = document.createElement('div');
+      temp.innerHTML = element.innerHTML;
+      var pastedImage = temp.querySelector('img');
+	
+      // イメージタグがあればsrc属性からbase64が得られるので
+      // あとは煮るなり焼くなり
+      if (pastedImage) {
+        var base64 = pastedImage.src;
+        (this.$refs.outputImage as HTMLImageElement).src = base64;
+        element.innerHTML = element.innerText;
+      }
+
+      this.updateCanSendChat();
+      return true;
+    });
+
+    // 画像ファイルのドロップ対応
+    // https://www.techscore.com/blog/2012/11/12/html5-%E3%81%AE-file-api-%E3%81%A7%E3%83%89%E3%83%A9%E3%83%83%E3%82%B0%EF%BC%86%E3%83%89%E3%83%AD%E3%83%83%E3%83%97%E3%81%99%E3%82%8B/
+    const cancelEvent = (event: any) => {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
+    element.addEventListener('dragenter', cancelEvent);
+    element.addEventListener('dragover', cancelEvent);
+    element.addEventListener('drop', (event: any) => {
+      cancelEvent(event);
+      const file = event.dataTransfer.files[0];
+      this.loadImageFromFile(file);
+      return false;
+    });
   }
 
-  private get canSendChat(): boolean {
-    return this.chatPostMessage.length !== 0 &&
-      this.model.canSend;
+  private selectedImage(ev: any) {
+    if (ev.target.files && ev.target.files.length > 0) {
+      this.loadImageFromFile(ev.target.files[0]);
+    }
+  }
+
+  private loadImageFromFile(imageFile: any) {
+    const fr = new FileReader();
+    fr.onload = (ev: any) => {
+      const base64 = ev.target.result;
+      (this.$refs.outputImage as HTMLImageElement).src = base64;
+    };
+    fr.readAsDataURL(imageFile);
+    this.isImageSet = true;
+  }
+
+  private updateCanSendChat() {
+    var element = this.$refs.chatMessageInput as any;
+    if (element) {
+      this.canSendChat = element.innerText.length !== 0 &&
+        this.model.canSend;
+      return;
+    }
+    this.canSendChat = false;
   }
 
   @Watch('icons')
@@ -127,9 +227,12 @@ export default class ChatMessagePanel extends Vue {
   }
 
   private postChat() {
-    this.model.postChatAsync(this.chatPostMessage, this.selectedIcon)
+    var element = this.$refs.chatMessageInput as any;
+    const image = this.isImageSet ? (this.$refs.outputImage as any).src : undefined;
+    this.model.postChatAsync(element.innerText, this.selectedIcon, image)
       .then(() => {
-        this.chatPostMessage = '';
+        element.innerHTML = '';
+        this.isImageSet = false;
       });
   }
 
@@ -199,12 +302,46 @@ export default class ChatMessagePanel extends Vue {
           border: 0;
           padding: 4px;
           font-size: 0.9rem;
+          background: rgba(255, 255, 255, 0.356);
+          margin-bottom: 4px;
+        }
+      }
+
+      .message-image {
+        cursor: pointer;
+        position: relative;
+        align-self: flex-start;
+        &:hover {
+          .message-image-clicker {
+            display: block;
+          }
+          .remove-mark {
+            visibility: visible;
+          }
+        }
+        img {
+          height: 128px;
+          max-width: 128px;
+        }
+        .remove-mark {
+          visibility: hidden;
+          font-weight: bold;
+          padding-left: 8px;
+        }
+        .message-image-clicker {
+          display: none;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.16);
         }
       }
 
       .message-target {
         padding: 4px 12px;
-          margin-top: -8px;
+        margin-top: -8px;
         cursor: pointer;
         transition: all .2s ease-in;
 
@@ -226,7 +363,10 @@ export default class ChatMessagePanel extends Vue {
       }
 
       .buttons {
-        text-align: right;
+        display: flex;
+        .pick-image {
+          flex: 1;
+        }
       }
     }
   }

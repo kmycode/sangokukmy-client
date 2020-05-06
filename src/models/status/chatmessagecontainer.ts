@@ -18,7 +18,7 @@ export interface IChatMessageContainer {
   canSend: boolean;
   isOpen: boolean;
 
-  postChatAsync(message: string, icon?: api.CharacterIcon): Promise<any>;
+  postChatAsync(message: string, icon?: api.CharacterIcon, image?: string): Promise<any>;
   loadOldChatsAsync(): Promise<any>;
 }
 
@@ -65,7 +65,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   }
 
   public constructor(private store: StatusStore,
-                     private post: (message: string, icon?: api.CharacterIcon, sendTo?: number) => Promise<any>,
+                     private post: (message: string, icon?: api.CharacterIcon, image?: string, sendTo?: number) => Promise<any>,
                      private load: (sinceId: number) => Promise<api.ChatMessage[]>,
                      private isNeedSendTo: boolean = false,
                      private setRead?: ((id: number) => any)) {
@@ -118,7 +118,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
     this.messages = [];
   }
 
-  public async postChatAsync(message: string, icon?: api.CharacterIcon): Promise<any> {
+  public async postChatAsync(message: string, icon?: api.CharacterIcon, image?: string): Promise<any> {
     if (message.length > 0) {
       this.isPosting = true;
 
@@ -128,7 +128,7 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
       }
 
       try {
-        await this.post(message, icon, sendToId);
+        await this.post(message, icon, image, sendToId);
       } catch (ex) {
         if (ex.data) {
           if (ex.data.code === api.ErrorCode.notPermissionError) {
