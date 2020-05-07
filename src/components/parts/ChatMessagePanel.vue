@@ -133,14 +133,14 @@ export default class ChatMessagePanel extends Vue {
           || (e.clipboardData.types.length != 1)
           || (e.clipboardData.types[0] != 'Files')) {
         if (e.clipboardData.types[0] === 'text/html') {
-          var temp = document.createElement('div');
+          const temp = document.createElement('div');
           temp.innerHTML = e.clipboardData.getData('text/html');
-          var pastedImage = temp.querySelector('img');
+          const pastedImage = temp.querySelector('img');
       
           // イメージタグがあればsrc属性からbase64が得られるので
           // あとは煮るなり焼くなり
           if (pastedImage) {
-            var base64 = pastedImage.src;
+            const base64 = pastedImage.src;
             (this.$refs.outputImage as HTMLImageElement).src = base64;
             this.isImageSet = true;
           }

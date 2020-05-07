@@ -3,6 +3,16 @@
     <div class="loading-container">
       <h3>スレッド一覧</h3>
       <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+      <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
+        <span v-show="filteringMilestone === 0">マイルストーン</span>
+        <span v-show="filteringMilestone === 1">今期</span>
+        <span v-show="filteringMilestone === 2">来期</span>
+        <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
+        </div>
+      </button>
       <div class="threads">
         <div class="paging">
           <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
@@ -20,11 +30,11 @@
           <div class="thread-info">
             <div :class="'thread-status thread-status-' + thread.status">{{ getThreadStatus(thread.status) }}</div>
             <div :class="'thread-category thread-category-' + thread.category">{{ getThreadCategory(thread.category) }}</div>
-            <div :class="'thread-priority thread-priority-' + thread.priority">{{ getThreadPriority(thread.priority) }}</div>
+            <div class="thread-milestone">{{ thread.period }}<span v-if="thread.betaVersion">.{{ thread.betaVersion }}</span></div>
           </div>
           <div v-if="isAdministrator" class="thread-info">
             <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステータス</button>
+              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステ</button>
               <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
@@ -40,7 +50,7 @@
               </div>
             </div>
             <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(thread)">カテゴリ</button>
+              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(thread)">カテ</button>
               <div class="dropdown-menu" :style="(thread.isCategoryPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 2)">開発</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 3)">バグ</a>
@@ -49,11 +59,11 @@
               </div>
             </div>
             <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePriorityPopupOpen(thread)">優先度</button>
-              <div class="dropdown-menu" :style="(thread.isPriorityPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePriorityPopupOpen(thread); updateThreadPriority(thread, 2)">低</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePriorityPopupOpen(thread); updateThreadPriority(thread, 3)">通常</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePriorityPopupOpen(thread); updateThreadPriority(thread, 4)">高</a>
+              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleMilestonePopupOpen(thread)">マイル</button>
+              <div class="dropdown-menu" :style="(thread.isMilestonePopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 1)">今期</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 2)">来期</a>
+                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 3)">リセット</a>
               </div>
             </div>
           </div>
@@ -69,7 +79,7 @@
         <div class="thread-info">
           <div :class="'thread-status thread-status-' + currentThread[0].status">{{ getThreadStatus(currentThread[0].status) }}</div>
           <div :class="'thread-category thread-category-' + currentThread[0].category">{{ getThreadCategory(currentThread[0].category) }}</div>
-          <div :class="'thread-priority thread-priority-' + currentThread[0].priority">{{ getThreadPriority(currentThread[0].priority) }}</div>
+          <div class="thread-milestone">{{ currentThread[0].period }}<span v-if="currentThread[0].betaVersion">.{{ currentThread[0].betaVersion }}</span></div>
         </div>
         <div class="thread-items">
           <div v-for="thread in currentThread"
@@ -157,6 +167,9 @@ export default class IssueBbs extends Vue {
   private currentThread: api.IssueBbsItem[] = [];
   private currentThreadReply: string = '';
   private page = 1;
+  private filteringMilestone = 0;
+  private filteringStatus = 0;
+  private isOpenMilestonePopup = false;
 
   private created() {
     this.loadPage(1);
@@ -170,12 +183,13 @@ export default class IssueBbs extends Vue {
         }
       }
 
-      let parent: api.IssueBbsItem | undefined = undefined;
+      let parent: api.IssueBbsItem | undefined;
       this.threads.forEach((t) => {
         if (t.id === thread.id) {
           t.status = thread.status;
-          t.priority = thread.priority;
           t.category = thread.category;
+          t.period = thread.period;
+          t.betaVersion = thread.betaVersion;
         }
         if (t.id === thread.parentId) {
           t.lastModified = thread.lastModified;
@@ -217,7 +231,7 @@ export default class IssueBbs extends Vue {
 
   private loadPage(num: number) {
     this.isUpdating = true;
-    api.Api.getIssuePage(num - 1)
+    api.Api.getIssuePage(num - 1, this.filteringMilestone, this.filteringStatus)
       .then((items) => {
         if (items.length > 0) {
           this.threads = items;
@@ -299,7 +313,7 @@ export default class IssueBbs extends Vue {
 
   private updateThreadStatus(item: api.IssueBbsItem, val: number) {
     this.isUpdating = true;
-    api.Api.updateThreadProperty(item.id, val, item.category, item.priority)
+    api.Api.updateThreadProperty(item.id, val, item.category, 0)
       .then(() => {
         item.status = val;
         NotificationService.threadPropertyChanged.notify();
@@ -310,23 +324,15 @@ export default class IssueBbs extends Vue {
       .finally(() => this.isUpdating = false);
   }
 
-  private getThreadPriority(val: number) {
-    return val === api.IssueBbsItem.priorityNew ? '確認中' :
-      val === api.IssueBbsItem.priorityLow ? '低' :
-      val === api.IssueBbsItem.priorityNormal ? '通常' :
-      val === api.IssueBbsItem.priorityHigh ? '高' : '不明';
+  private toggleMilestonePopupOpen(obj: api.IssueBbsItem) {
+    const a = obj as any as { isMilestonePopupOpen: boolean };
+    Vue.set(a, 'isMilestonePopupOpen', !a.isMilestonePopupOpen);
   }
 
-  private togglePriorityPopupOpen(obj: api.IssueBbsItem) {
-    const a = obj as any as { isPriorityPopupOpen: boolean };
-    Vue.set(a, 'isPriorityPopupOpen', !a.isPriorityPopupOpen);
-  }
-
-  private updateThreadPriority(item: api.IssueBbsItem, val: number) {
+  private updateThreadMilestone(item: api.IssueBbsItem, val: number) {
     this.isUpdating = true;
     api.Api.updateThreadProperty(item.id, item.status, item.category, val)
       .then(() => {
-        item.priority = val;
         NotificationService.threadPropertyChanged.notify();
       })
       .catch(() => {
@@ -350,7 +356,7 @@ export default class IssueBbs extends Vue {
 
   private updateThreadCategory(item: api.IssueBbsItem, val: number) {
     this.isUpdating = true;
-    api.Api.updateThreadProperty(item.id, item.status, val, item.priority)
+    api.Api.updateThreadProperty(item.id, item.status, val, 0)
       .then(() => {
         item.category = val;
         NotificationService.threadPropertyChanged.notify();
@@ -479,22 +485,8 @@ div.current-thread {
     color: #f39;
   }
 
-  .thread-priority {
+  .thread-milestone {
     border-color: green;
-  }
-  .thread-priority-1 {
-    font-weight: bold;
-    color: #39f;
-  }
-  .thread-priority-2 {
-    color: #5d5d85;
-  }
-  .thread-priority-3 {
-    color: #3a3a3a;
-  }
-  .thread-priority-4 {
-    font-weight: bold;
-    color: #f135c9;
   }
 
   .thread-category {
