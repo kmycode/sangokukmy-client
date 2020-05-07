@@ -57,6 +57,7 @@ export enum ErrorCode {
   accountLoginPasswordIncorrectError = 52,
   duplicateAccountNameOrAliasIdError = 53,
   duplicateAccountOfCharacterError = 54,
+  uploadImageFailedError = 55,
 }
 
 /**

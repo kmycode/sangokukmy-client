@@ -141,6 +141,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
               .notifyWithParameter(ex.data.data.current, ex.data.data.max);
           } else if (ex.data.code === api.ErrorCode.blockedActionError) {
             NotificationService.actionBlocked.notify();
+          } else if (ex.data.code === api.ErrorCode.uploadImageFailedError) {
+            NotificationService.postChatFailedBecauseUploadImageError.notify();
           } else {
             NotificationService.postChatFailed.notify();
           }

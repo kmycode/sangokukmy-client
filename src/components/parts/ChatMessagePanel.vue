@@ -132,7 +132,7 @@ export default class ChatMessagePanel extends Vue {
           || !e.clipboardData.types
           || (e.clipboardData.types.length != 1)
           || (e.clipboardData.types[0] != 'Files')) {
-        if (e.clipboardData.types[0] === 'text/html' || e.clipboardData.types[0] === 'text/plain') {
+        if (e.clipboardData.types[0] === 'text/html') {
           var temp = document.createElement('div');
           temp.innerHTML = e.clipboardData.getData('text/html');
           var pastedImage = temp.querySelector('img');

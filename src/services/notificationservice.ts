@@ -176,6 +176,10 @@ export default class NotificationService {
     '手紙送信失敗',
     '手紙の送信に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
+  public static readonly postChatFailedBecauseUploadImageError = new NotificationServiceItem(
+    '手紙送信失敗',
+    '手紙の送信に失敗しました。画像がアップロードできませんでした。pixivの画像の場合、お手数ですが一度ローカルに保存してからアップロードしてください',
+    NotificationServiceItemDefaultType.error);
   public static readonly attributeUp = new NotificationServiceItem(
     '能力上昇',
     '{0} が +{1} 上昇しました。',
