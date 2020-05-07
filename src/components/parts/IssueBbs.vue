@@ -3,6 +3,16 @@
     <div class="loading-container">
       <h3>スレッド一覧</h3>
       <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+      <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
+        <span v-show="filteringMilestone === 0">マイルストーン</span>
+        <span v-show="filteringMilestone === 1">今期</span>
+        <span v-show="filteringMilestone === 2">来期</span>
+        <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
+        </div>
+      </button>
       <div class="threads">
         <div class="paging">
           <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
@@ -157,6 +167,9 @@ export default class IssueBbs extends Vue {
   private currentThread: api.IssueBbsItem[] = [];
   private currentThreadReply: string = '';
   private page = 1;
+  private filteringMilestone = 0;
+  private filteringStatus = 0;
+  private isOpenMilestonePopup = false;
 
   private created() {
     this.loadPage(1);
@@ -218,7 +231,7 @@ export default class IssueBbs extends Vue {
 
   private loadPage(num: number) {
     this.isUpdating = true;
-    api.Api.getIssuePage(num - 1)
+    api.Api.getIssuePage(num - 1, this.filteringMilestone, this.filteringStatus)
       .then((items) => {
         if (items.length > 0) {
           this.threads = items;

@@ -1864,9 +1864,10 @@ export class Api {
     }
   }
 
-  public static async getIssuePage(page: number): Promise<IssueBbsItem[]> {
+  public static async getIssuePage(page: number, milestone: number, status: number): Promise<IssueBbsItem[]> {
     try {
-      const result = await axios.get(def.API_HOST + 'issue/page/' + page, this.authHeader);
+      const result = await axios.get(def.API_HOST + 'issue/page/' + page +
+        '?milestone=' + milestone + '&status=' + status, this.authHeader);
       return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
