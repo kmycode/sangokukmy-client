@@ -310,12 +310,6 @@ export class IssueBbsItem {
   public static readonly statusWontfix = 11;
   public static readonly statusPending = 12;
 
-  public static readonly priorityUndefined = 0;
-  public static readonly priorityNew = 1;
-  public static readonly priorityLow = 2;
-  public static readonly priorityNormal = 3;
-  public static readonly priorityHigh = 4;
-
   public static readonly categoryUndefined = 0;
   public static readonly categoryNew = 1;
   public static readonly categoryEnhancement = 2;
@@ -333,7 +327,8 @@ export class IssueBbsItem {
               public written: DateTime = new DateTime(),
               public lastModified: DateTime = new DateTime(),
               public status: number = 0,
-              public priority: number = 0,
+              public period: number = 0,
+              public betaVersion: number = 0,
               public category: number = 0) {}
 }
 
@@ -1900,14 +1895,14 @@ export class Api {
     }
   }
 
-  public static async updateThreadProperty(id: number, status: number, category: number, priority: number):
+  public static async updateThreadProperty(id: number, status: number, category: number, milestone: number):
           Promise<any> {
     try {
       await axios.patch(def.API_HOST + 'issue', {
         id,
         status,
         category,
-        priority,
+        milestone,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
