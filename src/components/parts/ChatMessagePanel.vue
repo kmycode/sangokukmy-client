@@ -147,6 +147,11 @@ export default class ChatMessagePanel extends Vue {
           document.execCommand('insertHTML', false, temp.innerText);
           e.preventDefault();
           return false;
+        } else if (e.clipboardData.types[0] === 'text/plain') {
+          const plain = e.clipboardData.getData('text/plain')
+          document.execCommand('insertHTML', false, plain);
+          e.preventDefault();
+          return false;
         }
         return true;
       }
