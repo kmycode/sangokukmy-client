@@ -510,7 +510,7 @@
           </div>
         </div>
         <!-- 専用BBS -->
-        <div v-if="selectedActionTab === 3 && selectedActionTabSubPanel === 9" class="right-side-content content-setting" style="display:flex;flex-direction:column">
+        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 9" class="right-side-content content-setting" style="display:flex;flex-direction:column">
           <IssueBbs :isAdministrator="model.character.aiType === 28"
                     :account="model.store.account"
                     :mutes="model.store.mutes"
