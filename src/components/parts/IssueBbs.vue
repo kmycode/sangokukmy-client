@@ -3,6 +3,33 @@
     <div class="loading-container">
       <h3>スレッド一覧</h3>
       <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+      <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenStatusPopup ^= true">
+        <span v-show="filteringStatus === 0">状態</span>
+        <span v-show="filteringStatus === 1">新規</span>
+        <span v-show="filteringStatus === 2">議論中</span>
+        <span v-show="filteringStatus === 3">採用</span>
+        <span v-show="filteringStatus === 5">実装中</span>
+        <span v-show="filteringStatus === 6">完了</span>
+        <span v-show="filteringStatus === 12">保留</span>
+        <span v-show="filteringStatus === 7">却下</span>
+        <span v-show="filteringStatus === 8">重複</span>
+        <span v-show="filteringStatus === 9">複合</span>
+        <span v-show="filteringStatus === 10">無効</span>
+        <span v-show="filteringStatus === 11">対応せず</span>
+        <div class="dropdown-menu" :style="(isOpenStatusPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 1; loadPage(1)">新規</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 2; loadPage(1)">議論中</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">採用</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 5; loadPage(1)">実装中</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 6; loadPage(1)">完了</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 12; loadPage(1)">保留</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 7; loadPage(1)">却下</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 8; loadPage(1)">重複</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 9; loadPage(1)">複合</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 10; loadPage(1)">無効</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 11; loadPage(1)">対応せず</a>
+        </div>
+      </button>
       <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
         <span v-show="filteringMilestone === 0">マイルストーン</span>
         <span v-show="filteringMilestone === 1">今期</span>
@@ -38,7 +65,6 @@
               <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 4)">実装待ち</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
@@ -170,6 +196,7 @@ export default class IssueBbs extends Vue {
   private filteringMilestone = 0;
   private filteringStatus = 0;
   private isOpenMilestonePopup = false;
+  private isOpenStatusPopup = false;
 
   private created() {
     this.loadPage(1);
@@ -233,10 +260,8 @@ export default class IssueBbs extends Vue {
     this.isUpdating = true;
     api.Api.getIssuePage(num - 1, this.filteringMilestone, this.filteringStatus)
       .then((items) => {
-        if (items.length > 0) {
-          this.threads = items;
-          this.page = num;
-        }
+        this.threads = items;
+        this.page = num;
       })
       .catch(() => {
         NotificationService.loadThreadFailed.notify();
