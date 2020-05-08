@@ -144,12 +144,12 @@ export default class ChatMessagePanel extends Vue {
             (this.$refs.outputImage as HTMLImageElement).src = base64;
             this.isImageSet = true;
           }
-          document.execCommand('insertHTML', false, temp.innerText);
+          document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
           e.preventDefault();
           return false;
         } else if (e.clipboardData.types[0] === 'text/plain') {
           const plain = e.clipboardData.getData('text/plain')
-          document.execCommand('insertHTML', false, plain);
+          document.execCommand('insertText', false, plain);
           e.preventDefault();
           return false;
         }
