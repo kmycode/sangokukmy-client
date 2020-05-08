@@ -1,106 +1,112 @@
 <template>
   <div style="height:100%;overflow:auto">
     <div class="loading-container">
-      <h3>スレッド一覧</h3>
-      <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
-      <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenStatusPopup ^= true">
-        <span v-show="filteringStatus === 0">状態</span>
-        <span v-show="filteringStatus === 1">新規</span>
-        <span v-show="filteringStatus === 2">議論中</span>
-        <span v-show="filteringStatus === 3">採用</span>
-        <span v-show="filteringStatus === 5">実装中</span>
-        <span v-show="filteringStatus === 6">完了</span>
-        <span v-show="filteringStatus === 12">保留</span>
-        <span v-show="filteringStatus === 7">却下</span>
-        <span v-show="filteringStatus === 8">重複</span>
-        <span v-show="filteringStatus === 9">複合</span>
-        <span v-show="filteringStatus === 10">無効</span>
-        <span v-show="filteringStatus === 11">対応せず</span>
-        <div class="dropdown-menu" :style="(isOpenStatusPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 1; loadPage(1)">新規</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 2; loadPage(1)">議論中</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">採用</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 5; loadPage(1)">実装中</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 6; loadPage(1)">完了</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 12; loadPage(1)">保留</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 7; loadPage(1)">却下</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 8; loadPage(1)">重複</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 9; loadPage(1)">複合</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 10; loadPage(1)">無効</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 11; loadPage(1)">対応せず</a>
-        </div>
-      </button>
-      <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
-        <span v-show="filteringMilestone === 0">マイルストーン</span>
-        <span v-show="filteringMilestone === 1">今期</span>
-        <span v-show="filteringMilestone === 2">来期</span>
-        <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
-          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
-        </div>
-      </button>
-      <div class="threads">
-        <div class="paging">
-          <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
-          <div class="paging-current"><span>{{ page }}</span></div>
-          <div class="paging-next"><button type="button" class="btn btn-light" @click="loadPage(page + 1)">次へ</button></div>
-        </div>
-        <div class="thread-list-item"
-            v-for="thread in threads"
-            :key="thread.id">
-          <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a></h4>
-          <div class="thread-info">
-            <div class="thread-writer">{{ thread.lastWriterAccountName }}</div>
-            <div class="thread-updated">{{ thread.lastModified | realdate }}</div>
+      <div v-show="currentThread.length <= 0">
+        <h3>スレッド一覧</h3>
+        <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+        <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenStatusPopup ^= true">
+          <span v-show="filteringStatus === 0">状態</span>
+          <span v-show="filteringStatus === 1">新規</span>
+          <span v-show="filteringStatus === 2">議論中</span>
+          <span v-show="filteringStatus === 3">採用</span>
+          <span v-show="filteringStatus === 5">実装中</span>
+          <span v-show="filteringStatus === 6">完了</span>
+          <span v-show="filteringStatus === 12">保留</span>
+          <span v-show="filteringStatus === 7">却下</span>
+          <span v-show="filteringStatus === 8">重複</span>
+          <span v-show="filteringStatus === 9">複合</span>
+          <span v-show="filteringStatus === 10">無効</span>
+          <span v-show="filteringStatus === 11">対応せず</span>
+          <div class="dropdown-menu" :style="(isOpenStatusPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 1; loadPage(1)">新規</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 2; loadPage(1)">議論中</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">採用</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 5; loadPage(1)">実装中</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 6; loadPage(1)">完了</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 12; loadPage(1)">保留</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 7; loadPage(1)">却下</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 8; loadPage(1)">重複</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 9; loadPage(1)">複合</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 10; loadPage(1)">無効</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 11; loadPage(1)">対応せず</a>
           </div>
-          <div class="thread-info">
-            <div :class="'thread-status thread-status-' + thread.status">{{ getThreadStatus(thread.status) }}</div>
-            <div :class="'thread-category thread-category-' + thread.category">{{ getThreadCategory(thread.category) }}</div>
-            <div class="thread-milestone">{{ thread.period }}<span v-if="thread.betaVersion">.{{ thread.betaVersion }}</span></div>
+        </button>
+        <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
+          <span v-show="filteringMilestone === 0">マイルストーン</span>
+          <span v-show="filteringMilestone === 1">今期</span>
+          <span v-show="filteringMilestone === 2">来期</span>
+          <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
           </div>
-          <div v-if="isAdministrator" class="thread-info">
-            <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステ</button>
-              <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 7)">却下</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 8)">重複</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 9)">複合</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 10)">無効</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 11)">対応せず</a>
+        </button>
+        <div v-show="isNeedUpdatePage" class="alert alert-warning">
+          スレッド一覧を更新してください
+        </div>
+        <div class="threads">
+          <div class="paging">
+            <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
+            <div class="paging-current"><span>{{ page }}</span></div>
+            <div class="paging-next"><button v-show="canNextPage" type="button" class="btn btn-light" @click="loadPage(page + 1)">次へ</button></div>
+          </div>
+          <div class="thread-list-item"
+              v-for="thread in threads"
+              :key="thread.id">
+            <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a></h4>
+            <div class="thread-info">
+              <div class="thread-writer">{{ thread.lastWriterAccountName }}</div>
+              <div class="thread-updated">{{ thread.lastModified | realdate }}</div>
+            </div>
+            <div class="thread-info">
+              <div :class="'thread-status thread-status-' + thread.status">{{ getThreadStatus(thread.status) }}</div>
+              <div :class="'thread-category thread-category-' + thread.category">{{ getThreadCategory(thread.category) }}</div>
+              <div class="thread-milestone">{{ thread.period }}<span v-if="thread.betaVersion">.{{ thread.betaVersion }}</span></div>
+            </div>
+            <div v-if="isAdministrator" class="thread-info">
+              <div>
+                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステ</button>
+                <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 7)">却下</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 8)">重複</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 9)">複合</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 10)">無効</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 11)">対応せず</a>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(thread)">カテ</button>
+                <div class="dropdown-menu" :style="(thread.isCategoryPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 2)">開発</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 3)">バグ</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 4)">ルール</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 5)">その他</a>
+                </div>
+              </div>
+              <div>
+                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleMilestonePopupOpen(thread)">マイル</button>
+                <div class="dropdown-menu" :style="(thread.isMilestonePopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 1)">今期</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 2)">来期</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 3)">リセット</a>
+                </div>
               </div>
             </div>
-            <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(thread)">カテ</button>
-              <div class="dropdown-menu" :style="(thread.isCategoryPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 2)">開発</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 3)">バグ</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 4)">ルール</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 5)">その他</a>
-              </div>
-            </div>
-            <div>
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleMilestonePopupOpen(thread)">マイル</button>
-              <div class="dropdown-menu" :style="(thread.isMilestonePopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 1)">今期</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 2)">来期</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 3)">リセット</a>
-              </div>
-            </div>
           </div>
-        </div>
-        <div class="paging">
-          <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
-          <div class="paging-current"><span>{{ page }}</span></div>
-          <div class="paging-next"><button type="button" class="btn btn-light" @click="loadPage(page + 1)">次へ</button></div>
+          <div class="paging">
+            <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
+            <div class="paging-current"><span>{{ page }}</span></div>
+            <div class="paging-next"><button v-show="canNextPage" type="button" class="btn btn-light" @click="loadPage(page + 1)">次へ</button></div>
+          </div>
         </div>
       </div>
       <div v-if="currentThread.length > 0" class="current-thread">
+        <button type="button" class="btn btn-secondary" @click="currentThread = []; loadPage(page)">スレッド一覧に戻る</button>
         <h3 class="current-thread">{{ currentThread[0].title }}</h3>
         <div class="thread-info">
           <div :class="'thread-status thread-status-' + currentThread[0].status">{{ getThreadStatus(currentThread[0].status) }}</div>
@@ -148,19 +154,21 @@
           </div>
         </div>
       </div>
-      <h3>新しいスレッド</h3>
-      <div v-if="account.id > 0" class="item-post-form new-thread">
-        <div class="label">名前</div>
-        <div class="label-text">{{ account.name }}</div>
-        <div class="label">タイトル</div>
-        <div class="title"><input type="text" v-model="newThread.title"></div>
-        <div class="label">本文</div>
-        <div class="text"><textarea class="text" v-model="newThread.text" @keyup.ctrl.enter.prevent.stop="write(newThread)"></textarea></div>
-        <div class="buttons"><button type="button" class="btn btn-primary" @click="write(newThread)">新規スレッド</button></div>
-      </div>
-      <div v-else>
-        <div class="alert alert-warning">
-          書き込みするには、アカウントを作成またはログインする必要があります
+      <div v-show="currentThread.length <= 0">
+        <h3>新しいスレッド</h3>
+        <div v-if="account.id > 0" class="item-post-form new-thread">
+          <div class="label">名前</div>
+          <div class="label-text">{{ account.name }}</div>
+          <div class="label">タイトル</div>
+          <div class="title"><input type="text" v-model="newThread.title"></div>
+          <div class="label">本文</div>
+          <div class="text"><textarea class="text" v-model="newThread.text" @keyup.ctrl.enter.prevent.stop="write(newThread)"></textarea></div>
+          <div class="buttons"><button type="button" class="btn btn-primary" @click="write(newThread)">新規スレッド</button></div>
+        </div>
+        <div v-else>
+          <div class="alert alert-warning">
+            書き込みするには、アカウントを作成またはログインする必要があります
+          </div>
         </div>
       </div>
       <div class="loading" v-show="isUpdating"><div class="loading-icon"></div></div>
@@ -188,6 +196,7 @@ export default class IssueBbs extends Vue {
   @Prop() public isAdministrator!: boolean;
   @Prop() public onNewThreadReceived!: EventObjectWithParam<api.IssueBbsItem>;
   private isUpdating: boolean = false;
+  private isNeedUpdatePage: boolean = false;
   private newThread: api.IssueBbsItem = new api.IssueBbsItem(-1);
   private threads: api.IssueBbsItem[] = [];
   private currentThread: api.IssueBbsItem[] = [];
@@ -197,6 +206,7 @@ export default class IssueBbs extends Vue {
   private filteringStatus = 0;
   private isOpenMilestonePopup = false;
   private isOpenStatusPopup = false;
+  private canNextPage = false;
 
   private created() {
     this.loadPage(1);
@@ -210,29 +220,23 @@ export default class IssueBbs extends Vue {
         }
       }
 
-      let parent: api.IssueBbsItem | undefined;
+      let isNotNeedUpdate = false;
       this.threads.forEach((t) => {
         if (t.id === thread.id) {
           t.status = thread.status;
           t.category = thread.category;
           t.period = thread.period;
           t.betaVersion = thread.betaVersion;
+          isNotNeedUpdate = true;
         }
         if (t.id === thread.parentId) {
           t.lastModified = thread.lastModified;
           t.lastWriterAccountName = thread.accountName;
-          parent = t;
         }
       });
-      if (parent) {
-        this.threads = this.threads.filter((t) => t.id !== thread.parentId);
-        this.threads.unshift(parent);
-      }
 
-      if (thread.parentId === 0) {
-        if (this.page === 1 && !this.threads.some((t) => t.id === thread.id)) {
-          this.threads.unshift(thread);
-        }
+      if (!isNotNeedUpdate) {
+        this.isNeedUpdatePage = true;
       }
     };
   }
@@ -262,6 +266,10 @@ export default class IssueBbs extends Vue {
       .then((items) => {
         this.threads = items;
         this.page = num;
+        if (this.page === 1) {
+          this.isNeedUpdatePage = false;
+        }
+        this.canNextPage = this.threads.length >= 20;
       })
       .catch(() => {
         NotificationService.loadThreadFailed.notify();
