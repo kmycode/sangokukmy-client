@@ -50,7 +50,7 @@
             <div class="paging-current"><span>{{ page }}</span></div>
             <div class="paging-next"><button v-show="canNextPage" type="button" class="btn btn-light" @click="loadPage(page + 1)">次へ</button></div>
           </div>
-          <div class="thread-list-item"
+          <div :class="'thread-list-item' + (thread.status === 6 ? ' completed' : '')"
               v-for="thread in threads"
               :key="thread.id">
             <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a></h4>
@@ -423,12 +423,26 @@ h3 {
   margin: -16px 0 48px;
 
   .thread-list-item {
-    margin-bottom: 16px;
+    padding: 8px;
+    border-radius: 12px;
 
     h4 {
       margin: 0;
       font-weight: bold;
       text-decoration: underline;
+    }
+
+    &.completed {
+      background: #dedede;
+      h4{
+        font-weight: normal;
+        a {
+          color: #666;
+          &:hover {
+            color: #aaa;
+          }
+        }
+      }
     }
   }
 }
