@@ -364,6 +364,10 @@ export default class TopPage extends Vue {
     // スクロールの現在位置 + 親（.item-container）の高さ >= スクロール内のコンテンツの高さ
     return (window.pageYOffset + 250 + window.innerHeight) >= document.body.scrollHeight;
   }
+
+  private reloadPage() {
+    window.location.href = '/?app=ios';
+  }
 }
 </script>
 

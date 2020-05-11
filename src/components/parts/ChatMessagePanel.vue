@@ -1,7 +1,7 @@
 <template>
   <div class="chat-message-panel">
     <!-- 投稿フォーム -->
-    <div v-if="canPost" class="loading-container">
+    <div v-show="canPost" class="loading-container">
       <div :class="'chat-new-message-parent country-color-' + countryColor">
         <div :class="{'icons': true}" v-show="isShowIcons">
           <CharacterIcon v-for="icon in icons"
@@ -10,7 +10,7 @@
                         :canClick="true"
                         @onclick="isShowIcons = false; selectedIcon = icon"/>
         </div>
-        <div class="chat-new-message">
+        <div class="chat-new-message" ref="chatMessageInputWrapper">
           <CharacterIcon :icon="selectedIcon" :canClick="true" @onclick="isShowIcons ^= true"/>
           <div class="post-pair">
             <div class="message-input-wrapper">
@@ -123,44 +123,17 @@ export default class ChatMessagePanel extends Vue {
     // 画像のクリップボード貼り付け対応
     // https://jsfiddle.net/2tkc99n2/1/
     const element = this.$refs.chatMessageInput as any;
+    const elementWrapper = this.$refs.chatMessageInputWrapper as any;
     const pickImage = this.$refs.pickImage as any;
     if (!element) {
       return;
     }
     element.addEventListener('paste', (e: any) => {
-      if (!e.clipboardData 
-          || !e.clipboardData.types
-          || (e.clipboardData.types.length != 1)
-          || (e.clipboardData.types[0] != 'Files')) {
-        if (e.clipboardData.types[0] === 'text/html') {
-          const temp = document.createElement('div');
-          temp.innerHTML = e.clipboardData.getData('text/html');
-          const pastedImage = temp.querySelector('img');
-      
-          // イメージタグがあればsrc属性からbase64が得られるので
-          // あとは煮るなり焼くなり
-          if (pastedImage) {
-            const base64 = pastedImage.src;
-            (this.$refs.outputImage as HTMLImageElement).src = base64;
-            this.isImageSet = true;
-          }
-          document.execCommand('insertText', false, e.clipboardData.getData('text/plain'));
-          e.preventDefault();
-          return false;
-        } else if (e.clipboardData.types[0] === 'text/plain') {
-          const plain = e.clipboardData.getData('text/plain')
-          document.execCommand('insertText', false, plain);
-          e.preventDefault();
-          return false;
-        }
-        return true;
+      const result = this.loadFromDataTransfer(e.clipboardData, element);
+      if (!result) {
+        e.preventDefault();
       }
-	
-      const imageFile = e.clipboardData.items[0].getAsFile();
-      this.loadImageFromFile(imageFile);
-      element.innerHTML = element.innerText;
-
-      return false;
+      return result;
     });
     element.addEventListener('input', (e: any) => {
       // 仮のエレメントを作り、張り付けた内容にimgタグがあるか探す
@@ -187,13 +160,22 @@ export default class ChatMessagePanel extends Vue {
       event.stopPropagation();
       return false;
     };
-    element.addEventListener('dragenter', cancelEvent);
-    element.addEventListener('dragover', cancelEvent);
-    element.addEventListener('drop', (event: any) => {
-      cancelEvent(event);
-      const file = event.dataTransfer.files[0];
-      this.loadImageFromFile(file);
-      return false;
+    elementWrapper.addEventListener('dragenter', cancelEvent);
+    elementWrapper.addEventListener('dragover', (e: any) => {
+      cancelEvent(e);
+      element.className += ' dragging';
+    });
+    elementWrapper.addEventListener('dragleave', (e: any) => {
+      cancelEvent(e);
+      element.className = (element.className as string).split(' ').filter((s) => s !== 'dragging').join(' ');
+    });
+    elementWrapper.addEventListener('drop', (event: any) => {
+      const result = this.loadFromDataTransfer(event.dataTransfer, element);
+      if (!result) {
+        event.preventDefault();
+      }
+      element.className = (element.className as string).split(' ').filter((s) => s !== 'dragging').join(' ');
+      return result;
     });
   }
 
@@ -201,6 +183,64 @@ export default class ChatMessagePanel extends Vue {
     if (ev.target.files && ev.target.files.length > 0) {
       this.loadImageFromFile(ev.target.files[0]);
     }
+  }
+
+  private loadFromDataTransfer(dt: DataTransfer, element: HTMLElement): boolean {
+    if (!dt || !dt.types || dt.types.length <= 0) {
+      return true;
+    }
+    
+    let fileIndex = -1;
+    for (let i = 0; i < dt.types.length; i++) {
+      if (dt.types[i] === 'Files') {
+        fileIndex = i;
+        break;
+      }
+    }
+
+    if (fileIndex < 0) {
+      if (dt.types[0] === 'text/html') {
+        const temp = document.createElement('div');
+        temp.innerHTML = dt.getData('text/html');
+        const pastedImage = temp.querySelector('img');
+    
+        // イメージタグがあればsrc属性からbase64が得られるので
+        // あとは煮るなり焼くなり
+        if (pastedImage) {
+          const base64 = pastedImage.src;
+          (this.$refs.outputImage as HTMLImageElement).src = base64;
+          this.isImageSet = true;
+        }
+        element.focus();
+        document.execCommand('insertText', false, dt.getData('text/plain'));
+        return false;
+      } else if (dt.types[0] === 'text/plain') {
+        const plain = dt.getData('text/plain')
+        element.focus();
+        document.execCommand('insertText', false, plain);
+        return false;
+      } else if (dt.types[0] === 'text/uri-list') {
+        const plain = dt.getData('URL')
+        element.focus();
+        document.execCommand('insertText', false, plain);
+        return false;
+      }
+      return true;
+    } else {
+      if (dt.items.length > 0) {
+        try {
+          const imageFile = dt.items[0].getAsFile();
+          this.loadImageFromFile(imageFile);
+          element.innerHTML = element.innerText;
+        } catch { }
+      }
+      if (dt.files.length > 0) {
+        this.loadImageFromFile(dt.files[0]);
+        element.innerHTML = element.innerText;
+      }
+    }
+
+    return false;
   }
 
   private loadImageFromFile(imageFile: any) {
@@ -311,6 +351,11 @@ export default class ChatMessagePanel extends Vue {
           font-size: 0.9rem;
           background: rgba(255, 255, 255, 0.356);
           margin-bottom: 4px;
+          word-break: break-word;
+
+          &.dragging {
+            background: rgba(252, 184, 212, 0.507);
+          }
         }
       }
 
