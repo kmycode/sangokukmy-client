@@ -274,7 +274,8 @@ export default class ChatMessagePanel extends Vue {
   private postChat() {
     var element = this.$refs.chatMessageInput as any;
     const image = this.isImageSet ? (this.$refs.outputImage as any).src : undefined;
-    this.model.postChatAsync(element.innerText, this.selectedIcon, image)
+    const text = element.innerText.replace(/\n\n/g, '\n');
+    this.model.postChatAsync(text, this.selectedIcon, image)
       .then(() => {
         element.innerHTML = '';
         this.isImageSet = false;
