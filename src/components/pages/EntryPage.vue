@@ -9,7 +9,7 @@
       <div class="section">
         <h3>初心者向け</h3>
         <div :class="{ 'form-row': true, 'error': !isOkBeginner, }">
-          <div class="label">このゲームは初めてですか？<br>（あなたはこのゲームの内政、戦争を一通り経験済で、周囲の補助がなくても行動できますか？）</div>
+          <div class="label">このゲームは初めてですか？<br>（あなたはこのゲームの大まかな流れを理解しており、内政時や戦争時にどのようなコマンドを入れればいいか判断できますか？）</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true">初めてです</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.isBeginner || !isSelectedBeginner, 'btn-secondary': isSelectedBeginner && !character.isBeginner, }" @click="character.isBeginner = false; isSelectedBeginner = true">経験者です</button>
@@ -24,8 +24,9 @@
       <div class="alert alert-warning" v-if="character.isBeginner">
         <h3>初心者向け</h3>
         登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
-        <span v-if="!isApp"><a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a></span>
-        <span v-else>スライド解説は、情報タブから確認できます。</span><br>
+        <div v-if="!isApp" style="margin-bottom:8px"><a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" class="btn btn-primary" target="_blank">スライド解説</a></div>
+        <div v-else>スライド解説は、情報タブから確認できます。</div>
+        <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" class="btn btn-light" target="_blank">初心者向け解説</a><br>
         <strong>初心者の方は、「手紙」→「全国」で挨拶することをお勧めします。</strong>
       </div>
       <div class="alert alert-success" v-if="character.isBeginner && isApp">
@@ -121,7 +122,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isEditAttributes, }" @click="isEditAttributes ^= true">直接編集する</button>
           </div>
           <div class="detail">
-            能力を自分で編集する場合は、チェックしてください。なお、プログラムミスで能力値に不正な値が設定されエラーになることもあります。その場合も手動での編集が必要になります
+            能力を自分で編集する場合は、チェックしてください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkStrong, }">
@@ -244,7 +245,7 @@
           </div>
         </div>
         <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkKingCheck1, }">
-          <div class="label">あなたはこのゲームの内政、戦争を一通り経験済で、他の人を指導できますか？</div>
+          <div class="label">あなたはこのゲームの内政、戦争を一通り経験済で、他の人に教えられますか？</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isKingCheck1, }" @click="isKingCheck1 ^= true">指導できるので建国できます</button>
           </div>
