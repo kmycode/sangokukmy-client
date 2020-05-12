@@ -36,9 +36,11 @@
           <span v-show="filteringMilestone === 0">マイルストーン</span>
           <span v-show="filteringMilestone === 1">今期</span>
           <span v-show="filteringMilestone === 2">来期</span>
+          <span v-show="filteringMilestone === 4">未設定</span>
           <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 4; loadPage(1)">未設定</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
           </div>
         </button>
