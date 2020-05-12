@@ -2563,7 +2563,7 @@ export default class StatusModel {
   public isOpenIssueBbs: boolean = false;
   public isIssueBbsUnread: boolean = false;
   public issueBbsItemReceivedEventHandler: EventObjectWithParam<api.IssueBbsItem>
-    = new EventObjectWithParam<api.IssueBbsItem>(() => {});
+    = new EventObjectWithParam<api.IssueBbsItem>(() => undefined);
   private onIssueBbsItemReceived(item: api.IssueBbsItem) {
     this.issueBbsItemReceivedEventHandler.fire(item);
     if (!this.isOpenIssueBbs) {

@@ -119,7 +119,7 @@ export default class ChatMessagePanel extends Vue {
   private mounted() {
     this.$emit('call-focus', this.callFocus);
     this.onIconsChanged();
-    
+
     // 画像のクリップボード貼り付け対応
     // https://jsfiddle.net/2tkc99n2/1/
     const element = this.$refs.chatMessageInput as any;
@@ -137,14 +137,14 @@ export default class ChatMessagePanel extends Vue {
     });
     element.addEventListener('input', (e: any) => {
       // 仮のエレメントを作り、張り付けた内容にimgタグがあるか探す
-      var temp = document.createElement('div');
+      const temp = document.createElement('div');
       temp.innerHTML = element.innerHTML;
-      var pastedImage = temp.querySelector('img');
-	
+      const pastedImage = temp.querySelector('img');
+
       // イメージタグがあればsrc属性からbase64が得られるので
       // あとは煮るなり焼くなり
       if (pastedImage) {
-        var base64 = pastedImage.src;
+        const base64 = pastedImage.src;
         (this.$refs.outputImage as HTMLImageElement).src = base64;
         element.innerHTML = element.innerText;
       }
@@ -154,7 +154,6 @@ export default class ChatMessagePanel extends Vue {
     });
 
     // 画像ファイルのドロップ対応
-    // https://www.techscore.com/blog/2012/11/12/html5-%E3%81%AE-file-api-%E3%81%A7%E3%83%89%E3%83%A9%E3%83%83%E3%82%B0%EF%BC%86%E3%83%89%E3%83%AD%E3%83%83%E3%83%97%E3%81%99%E3%82%8B/
     const cancelEvent = (event: any) => {
       event.preventDefault();
       event.stopPropagation();
@@ -189,7 +188,7 @@ export default class ChatMessagePanel extends Vue {
     if (!dt || !dt.types || dt.types.length <= 0) {
       return true;
     }
-    
+
     let fileIndex = -1;
     for (let i = 0; i < dt.types.length; i++) {
       if (dt.types[i] === 'Files') {
@@ -203,7 +202,7 @@ export default class ChatMessagePanel extends Vue {
         const temp = document.createElement('div');
         temp.innerHTML = dt.getData('text/html');
         const pastedImage = temp.querySelector('img');
-    
+
         // イメージタグがあればsrc属性からbase64が得られるので
         // あとは煮るなり焼くなり
         if (pastedImage) {
@@ -215,12 +214,12 @@ export default class ChatMessagePanel extends Vue {
         document.execCommand('insertText', false, dt.getData('text/plain'));
         return false;
       } else if (dt.types[0] === 'text/plain') {
-        const plain = dt.getData('text/plain')
+        const plain = dt.getData('text/plain');
         element.focus();
         document.execCommand('insertText', false, plain);
         return false;
       } else if (dt.types[0] === 'text/uri-list') {
-        const plain = dt.getData('URL')
+        const plain = dt.getData('URL');
         element.focus();
         document.execCommand('insertText', false, plain);
         return false;
@@ -232,9 +231,13 @@ export default class ChatMessagePanel extends Vue {
           const imageFile = dt.items[0].getAsFile();
           this.loadImageFromFile(imageFile);
           element.innerHTML = element.innerText;
-        } catch { }
-      }
-      if (dt.files.length > 0) {
+        } catch {
+          if (dt.files.length > 0) {
+            this.loadImageFromFile(dt.files[0]);
+            element.innerHTML = element.innerText;
+          }
+        }
+      } else if (dt.files.length > 0) {
         this.loadImageFromFile(dt.files[0]);
         element.innerHTML = element.innerText;
       }
@@ -254,7 +257,7 @@ export default class ChatMessagePanel extends Vue {
   }
 
   private updateCanSendChat() {
-    var element = this.$refs.chatMessageInput as any;
+    const element = this.$refs.chatMessageInput as any;
     if (element) {
       this.canSendChat = element.innerText.length !== 0 &&
         this.model.canSend;
@@ -272,7 +275,7 @@ export default class ChatMessagePanel extends Vue {
   }
 
   private postChat() {
-    var element = this.$refs.chatMessageInput as any;
+    const element = this.$refs.chatMessageInput as any;
     const image = this.isImageSet ? (this.$refs.outputImage as any).src : undefined;
     const text = element.innerText.replace(/\n\n/g, '\n');
     this.model.postChatAsync(text, this.selectedIcon, image)
