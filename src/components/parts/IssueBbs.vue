@@ -8,7 +8,7 @@
           <span v-show="filteringStatus === 0">状態</span>
           <span v-show="filteringStatus === 1">新規</span>
           <span v-show="filteringStatus === 2">議論中</span>
-          <span v-show="filteringStatus === 3">準備完了</span>
+          <span v-show="filteringStatus === 3">採用</span>
           <span v-show="filteringStatus === 5">実装中</span>
           <span v-show="filteringStatus === 6">完了</span>
           <span v-show="filteringStatus === 12">保留</span>
@@ -20,7 +20,7 @@
           <div class="dropdown-menu" :style="(isOpenStatusPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 1; loadPage(1)">新規</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 2; loadPage(1)">議論中</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">準備完了</a>
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">採用</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 5; loadPage(1)">実装中</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 6; loadPage(1)">完了</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 12; loadPage(1)">保留</a>
@@ -69,7 +69,7 @@
                 <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステ</button>
                 <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
                   <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">準備完了</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
@@ -328,7 +328,7 @@ export default class IssueBbs extends Vue {
   private getThreadStatus(val: number) {
     return val === api.IssueBbsItem.statusNew ? '新規' :
       val === api.IssueBbsItem.statusDiscussing ? '議論中' :
-      val === api.IssueBbsItem.statusInReady ? '準備完了' :
+      val === api.IssueBbsItem.statusInReady ? '採用' :
       val === api.IssueBbsItem.statusWaiting ? '実装待ち' :
       val === api.IssueBbsItem.statusProcessing ? '実装中' :
       val === api.IssueBbsItem.statusCompleted ? '完了' :
