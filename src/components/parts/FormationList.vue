@@ -40,6 +40,9 @@
     </div>
     <div v-show="canAdd && newFormationTypes.length > 0" style="margin-top:48px">
       <h2>追加可能な陣形</h2>
+      <div class="alert alert-warning">
+        陣形は <strong>3</strong> まで獲得できます (現在 <strong>{{ currentFormationCount }}</strong> )
+      </div>
       <div
         :class="{'item': true, 'selected': canAddSelect && value.id === formation.id, 'selectable': canAddSelect}"
         v-for="formation in newFormationTypes"
@@ -47,7 +50,7 @@
         <div class="formation-info">
           <div class="standard">
             <div class="name responsive-header">{{ formation.name }}</div>
-            <div class="point"><span class="value-name">ポイント</span> <span class="value">{{ formation.point }}</span><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div>
+            <div class="point"><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div>
             <div :class="{ 'description': true, 'current': 0 === index }"
                 v-for="(description, index) in formation.descriptions"
                 :key="description"><span v-if="0 === index">現在の効果 ＞ </span>{{ formation.descriptions[index] }}</div>
@@ -100,6 +103,11 @@ export default class FormationList extends Vue {
   @Prop({
     default: true,
   }) public canAddSelect!: boolean;
+
+  public get currentFormationCount(): number {
+    const defaultFormation = def.FORMATION_TYPES[0];
+    return this.formations.filter((f) => f.type !== defaultFormation.id).length;
+  }
 
   @Watch('formations')
   @Watch('currentFormationType')
