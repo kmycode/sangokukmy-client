@@ -561,6 +561,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(34, '停戦', 'purple'),
   new EventType(35, '割譲', 'blue'),
   new EventType(36, '降伏', 'red'),
+  new EventType(37, '玉璽', 'darkorange'),
 ];
 
 /**

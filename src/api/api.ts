@@ -457,6 +457,8 @@ export class Country {
                      public overthrownGameDate: GameDateTime = new GameDateTime(),
                      public policyPoint: number = 0,
                      public aiType: number = 0,
+                     public isHaveGyokuji: boolean = false,
+                     public gyokujiGameDate: GameDateTime = new GameDateTime(),
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastRequestedIncomes?: number,
