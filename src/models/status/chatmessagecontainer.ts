@@ -65,7 +65,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
   }
 
   public constructor(private store: StatusStore,
-                     private post: (message: string, icon?: api.CharacterIcon, image?: string, sendTo?: number) => Promise<any>,
+                     private post: (message: string, icon?: api.CharacterIcon, image?: string,
+                                    sendTo?: number) => Promise<any>,
                      private load: (sinceId: number) => Promise<api.ChatMessage[]>,
                      private isNeedSendTo: boolean = false,
                      private setRead?: ((id: number) => any)) {

@@ -1356,7 +1356,8 @@ export class Api {
     }
   }
 
-  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number, image?: string): Promise<any> {
+  public static async postGlobalChatMessage(mes: string, icon: CharacterIcon, type: number,
+                                            image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/global', {
         message: mes,
@@ -1380,7 +1381,8 @@ export class Api {
     }
   }
 
-  public static async postPrivateChatMessage(mes: string, icon: CharacterIcon, toCharaId: number, image?: string): Promise<any> {
+  public static async postPrivateChatMessage(mes: string, icon: CharacterIcon,
+                                             toCharaId: number, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/character/' + toCharaId, {
         message: mes,
@@ -1435,7 +1437,8 @@ export class Api {
     }
   }
 
-  public static async postOtherCountryChatMessage(mes: string, icon: CharacterIcon, toCountryId: number, image?: string): Promise<any> {
+  public static async postOtherCountryChatMessage(mes: string, icon: CharacterIcon,
+                                                  toCountryId: number, image?: string): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'chat/country/' + toCountryId, {
         message: mes,
