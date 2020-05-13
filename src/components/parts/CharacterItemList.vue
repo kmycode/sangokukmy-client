@@ -10,8 +10,8 @@
           <div class="params">
             <span v-if="item.type.isResource">
               <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
+              <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               <span class="value-name">標準量</span> <span class="value">{{ item.type.defaultResource }}</span>
-              <span class="value-name">標準価格</span> <span class="value">{{ getItemMoney(item) }}</span>
             </span>
             <span v-else>
               <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
@@ -35,8 +35,8 @@
             <div class="params">
               <span v-if="item.type.isResource">
                 <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
+                <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
                 <span class="value-name">標準量</span> <span class="value">{{ item.type.defaultResource }}</span>
-                <span class="value-name">標準価格</span> <span class="value">{{ getItemMoney(item) }}</span>
               </span>
               <span v-else>
                 <span class="value-name">価格</span> <span class="value">{{ getItemMoney(item) }}</span>
@@ -147,7 +147,7 @@ export default class CharacterItemList extends Vue {
   }
 
   private getItemMoney(item: CharacterItemListItem): number {
-    const m = !item.type.isResource ? item.type.money : item.type.defaultResource * item.type.money;
+    const m = !item.type.isResource ? item.type.money : item.data[0].resource * item.type.money;
 
     if (this.isSell) {
       return m / 2;

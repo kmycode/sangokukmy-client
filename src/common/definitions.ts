@@ -508,6 +508,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (64:1)';
     }
   }),
+  new CommandNameResolver(65, '静養'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -888,7 +889,8 @@ export class CharacterItemType {
                      public canHandOver: boolean = true,
                      public canUse: boolean = false,
                      public isResource: boolean = false,
-                     public defaultResource: number = 0) {}
+                     public defaultResource: number = 0,
+                     public isResourceItem: boolean = false) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 5000, '槍', '武力 +1'),
@@ -974,6 +976,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(81, 80000, '技能書', '使用で技能ポイント +72', true, true, true),
   new CharacterItemType(82, 500000, '黄巾の旗', '使用で即時黄巾出現、全面戦争開始', false, false, true),
   new CharacterItemType(83, 20, '強弩装備', '強弩兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(84, 10000, '時の番人', '更新時刻をランダムに変更する「休養」コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
 ];
 
 /**

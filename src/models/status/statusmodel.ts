@@ -760,13 +760,10 @@ export default class StatusModel {
   private onReceiveSignal(signal: api.ApiSignal) {
     if (signal.type === 1) {
       // 武将が更新された
-      const data = signal.data as { gameDate: api.GameDateTime, secondsNextCommand: number };
-
-      // この時点で新しい武将データは通知されていないので、自前で更新時刻を加算する
-      const lastUpdated = api.DateTime.toDate(this.character.lastUpdated);
-      lastUpdated.setSeconds(lastUpdated.getSeconds() + def.UPDATE_TIME);
-
-      this.commands.onExecutedCommand(data.gameDate, api.DateTime.fromDate(lastUpdated), data.secondsNextCommand);
+      // この時点で武将情報はまだ配信されていない
+      const data = signal.data as {
+        gameDate: api.GameDateTime, secondsNextCommand: number, lastUpdated: api.DateTime };
+      this.commands.onExecutedCommand(data.gameDate, data.lastUpdated, data.secondsNextCommand);
     } else if (signal.type === 2) {
       // 年月が進んだ
       this.updateGameDate(signal.data as api.GameDateTime);
