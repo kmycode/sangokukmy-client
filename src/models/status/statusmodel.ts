@@ -2380,14 +2380,20 @@ export default class StatusModel {
     if (this.promotions.messages.length > 0 && !this.promotions.isOpen) {
       this.promotions.isUnread = read.lastPromotionChatMessageId < this.promotions.messages[0].id;
     }
+    if (this.countryThreadBbs.threads.length > 0 && !this.countryThreadBbs.isOpen) {
+      this.countryThreadBbs.isUnread = read.lastCountryBbsId < this.countryThreadBbs.lastItemId;
+    }
+    if (this.globalThreadBbs.threads.length > 0 && !this.globalThreadBbs.isOpen) {
+      this.globalThreadBbs.isUnread = read.lastGlobalBbsId < this.globalThreadBbs.lastItemId;
+    }
   }
 
   // #endregion
 
   // #region ThreadBbs
 
-  public countryThreadBbs = new ThreadBbs();
-  public globalThreadBbs = new ThreadBbs();
+  public countryThreadBbs = new ThreadBbs((id) => api.Api.setCountryBbsRead(id));
+  public globalThreadBbs = new ThreadBbs((id) => api.Api.setGlobalBbsRead(id));
 
   private onBbsItemReceived(item: api.ThreadBbsItem) {
     if (item.type === api.ThreadBbsItem.typeCountryBbs) {

@@ -6,6 +6,8 @@ export default class ThreadBbs {
   public threads: api.ThreadBbsItem[] = [];
   public isUnread: boolean = false;
   private isOpenPrivate: boolean = false;
+  private isUnreadQueue = false;
+  private lastReadId: number = 0;
 
   public get isOpen(): boolean {
     return this.isOpenPrivate;
@@ -13,9 +15,38 @@ export default class ThreadBbs {
 
   public set isOpen(value: boolean) {
     if (value) {
+      this.isUnreadQueue = this.isUnread;
       this.isUnread = false;
     }
     this.isOpenPrivate = value;
+  }
+
+  public get lastItemId(): number {
+    if (this.threads.length) {
+      const messages = Enumerable
+        .from(this.threads)
+        .concat(Enumerable.from(this.threads).selectMany((t) => t.children ? t.children : []))
+        .orderByDescending((t) => t.id);
+      const first = messages.firstOrDefault();
+      if (first) {
+        return first.id;
+      }
+    }
+    return 0;
+  }
+
+  public constructor(private setRead?: ((id: number) => any)) {
+    if (this.setRead) {
+      window.setInterval(() => {
+        const lastId = this.lastItemId;
+        if (this.setRead && this.threads.length > 0 &&
+            (this.isUnreadQueue || (this.isOpen && this.lastReadId !== lastId))) {
+          this.setRead(lastId);
+          this.isUnreadQueue = this.isUnread;
+          this.lastReadId = lastId;
+        }
+      }, 8000);
+    }
   }
 
   public onItemReceived(item: api.ThreadBbsItem) {

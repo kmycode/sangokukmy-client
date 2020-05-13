@@ -1063,7 +1063,9 @@ export class ChatMessageRead {
   public constructor(public lastCountryChatMessageId: number,
                      public lastGlobalChatMessageId: number,
                      public lastGlobal2ChatMessageId: number,
-                     public lastPromotionChatMessageId: number) {}
+                     public lastPromotionChatMessageId: number,
+                     public lastCountryBbsId: number,
+                     public lastGlobalBbsId: number) {}
 }
 
 export class Api {
@@ -1577,6 +1579,14 @@ export class Api {
     }
   }
 
+  public static async setCountryBbsRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'bbs/country/read/' + id, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async writeGlobalBbsItem(text: string, parentId: number = 0, title: string = ''): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'bbs/global', {
@@ -1592,6 +1602,14 @@ export class Api {
   public static async removeGlobalBbsItem(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'bbs/global/' + id, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setGlobalBbsRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'bbs/global/read/' + id, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
