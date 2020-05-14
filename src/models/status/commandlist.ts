@@ -96,6 +96,12 @@ export default class CommandList {
     return skills.some((s) => s === 45 || s === 47);
   }
 
+  public get canInputChangeTime(): boolean {
+    const items = this.store.items.filter((i) => i.characterId === this.store.character.id &&
+                                                 i.status === api.CharacterItem.statusCharacterHold);
+    return items.some((i) => i.type === 84);
+  }
+
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;
