@@ -282,6 +282,7 @@ export default class ChatMessagePanel extends Vue {
       .then(() => {
         element.innerHTML = '';
         this.isImageSet = false;
+        this.updateCanSendChat();
       });
   }
 
