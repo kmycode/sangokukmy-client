@@ -104,7 +104,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 63),
   new SoldierType(13, 0, 2, '衝車', 20, 500, '0', '0', '対城壁に特化'),
   new SoldierType(14, 0, 2, '井闌', 30, 600, '0', '0', '対城壁に特化。衝車より強い'),
-  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い', undefined, undefined, undefined, undefined, undefined, 4),
+  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い'),
   new SoldierType(32, 0, 2, '祈祷兵', 22, 800, '0', '0', '低級兵種。陣形の相性により大きな攻撃力を得る'),
   new SoldierType(34, 0, 4, '槍兵', 14, 500, '30', '30', '低級兵種'),
   new SoldierType(31, 0, 4, '投石兵', 12, 600, '50', '50', '中級兵種'),
@@ -1055,7 +1055,7 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500'),
   new TownSubBuildingType(2, '市場', 1, 10000, '商業最大 +500'),
   new TownSubBuildingType(3, '工房', 1, 20000, '技術最大 +300'),
-  new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
+  // new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
   new TownSubBuildingType(5, '集落', 2, 10000, '人口最大 +10000。人望 100 が必要'),
   new TownSubBuildingType(6, '城塞', 2, 25000, '城壁最大 +500。武力 100 が必要'),
 ];
