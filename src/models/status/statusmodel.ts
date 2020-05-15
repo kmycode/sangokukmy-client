@@ -1926,7 +1926,7 @@ export default class StatusModel {
         .count((i) => {
           const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((ii) => ii.id === i.type);
           if (info) {
-            return !info.isResource;
+            return !info.isResource || info.isResourceItem;
           }
           return true;
         }),

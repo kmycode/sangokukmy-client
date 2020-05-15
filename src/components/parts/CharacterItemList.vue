@@ -6,7 +6,7 @@
       :key="item.data[0].id">
       <div class="item-info">
         <div class="standard">
-          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
+          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource && !item.type.isResourceItem">資</span>{{ item.type.name }}</div>
           <div class="params">
             <span v-if="item.type.isResource">
               <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
@@ -31,7 +31,7 @@
         :key="item.data[0].id">
         <div class="item-info">
           <div class="standard">
-          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource">資</span>{{ item.type.name }}</div>
+          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource && !item.type.isResourceItem">資</span>{{ item.type.name }}</div>
             <div class="params">
               <span v-if="item.type.isResource">
                 <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
