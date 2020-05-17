@@ -102,11 +102,6 @@ export default class CommandList {
     return items.some((i) => i.type === 84);
   }
 
-  public get canInputFlyingColumn(): boolean {
-    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 56);
-  }
-
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;
