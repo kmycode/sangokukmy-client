@@ -1967,7 +1967,11 @@ export default class StatusModel {
   // #region AiCharacterManagement
 
   private onAiCharacterManagementReceived(obj: api.AiCharacterManagement) {
-    ArrayUtil.addItem(this.store.aiCharacters, obj);
+    if (obj.action === 5) {
+      this.store.aiCharacters = this.store.aiCharacters.filter((a) => a.characterId !== obj.characterId);
+    } else {
+      ArrayUtil.addItem(this.store.aiCharacters, obj);
+    }
   }
 
   // #endregion
