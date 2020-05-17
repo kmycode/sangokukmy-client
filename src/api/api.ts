@@ -259,6 +259,17 @@ export class CharacterUpdateLog implements IIdentitiedEntity {
               public isFirstAtMonth: boolean) {}
 }
 
+export class AiCharacterManagement {
+  public static readonly typeId = 45;
+
+  constructor(public id: number,
+              public characterId: number,
+              public holderCharacterId: number,
+              public action: number,
+              public soldierType: number,
+              public targetTownId: number) {}
+}
+
 export class Formation {
   public static readonly typeId = 35;
 

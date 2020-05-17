@@ -509,6 +509,33 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     }
   }),
   new CommandNameResolver(65, '静養'),
+  new CommandNameResolver(66, '別動隊を雇用'),
+  new CommandNameResolver(67, '[%読込中%] {1}{2} %0%', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const action = p.firstOrDefault((pp) => pp.type === 2);
+      if (!action) {
+        return 'エラー (67:2)';
+      }
+      const actionName = action.numberValue === 0 ? ' なし' :
+        action.numberValue === 1 ? ' 内政' :
+        action.numberValue === 2 ? ' 守備' :
+        action.numberValue === 3 ? ' 攻撃' :
+        action.numberValue === 4 ? ' 遊撃' : '';
+      const soldierType = p.firstOrDefault((pp) => pp.type === 3);
+      let soldierTypeName = '';
+      if (soldierType) {
+        soldierTypeName = soldierType.numberValue === 0 ? ' 標準' :
+          soldierType.numberValue === 1 ? ' 戟兵' :
+          soldierType.numberValue === 2 ? ' 騎兵' :
+          soldierType.numberValue === 3 ? ' 弩兵' : '';
+      }
+      return format.replace('{1}', actionName).replace('{2}', soldierTypeName);
+    } else {
+      return 'エラー (67:1)';
+    }
+  }),
+  new CommandNameResolver(68, '別動隊 %読込中% を削除'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -1001,11 +1028,13 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(54, '官吏 Lv.b3', '戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 8)),
   new CharacterSkillType(9, '官吏 Lv.4', '歩兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
   new CharacterSkillType(10, '官吏 Lv.5', '兵種 梓叡兵、毎月知力Ex +11', 400, (skills) => skills.some((s) => s.type === 9)),
-  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、毎ターン金 +100', 0, (_) => false),
+  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、毎ターン金 +150', 0, (_) => false),
   new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000、貢献 +15', 280, (skills) => skills.some((s) => s.type === 11)),
   new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 360, (skills) => skills.some((s) => s.type === 12)),
-  new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 400, (skills) => skills.some((s) => s.type === 13)),
-  new CharacterSkillType(15, '商人 Lv.5', '米売買上限 +8000', 360, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(14, '商人 Lv.a4', 'コマンド 都市投資', 400, (skills) => !skills.some((s) => s.type === 55) && skills.some((s) => s.type === 13)),
+  new CharacterSkillType(55, '商人 Lv.b4', 'コマンド 偵察', 400, (skills) => !skills.some((s) => s.type === 14) && skills.some((s) => s.type === 13)),
+  new CharacterSkillType(15, '商人 Lv.a5', '米売買上限 +8000、建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(56, '商人 Lv.b5', 'コマンド 別動隊', 360, (skills) => skills.some((s) => s.type === 55)),
   new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
   new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、歩兵装備、騎兵装備、弩生産可能', 360, (skills) => skills.some((s) => s.type === 16)),
   new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、強弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),

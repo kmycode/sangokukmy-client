@@ -134,6 +134,16 @@ export default class CommandInputer {
     });
   }
 
+  public inputCustomizeFlyingColumnCommand(commandType: number, id: number, action: number,
+                                           townId: number, soldierType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, action));
+      c.parameters.push(new api.CharacterCommandParameter(3, soldierType));
+      c.parameters.push(new api.CharacterCommandParameter(4, townId));
+    });
+  }
+
   public inputFormationCommand(commandType: number, id: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
@@ -485,9 +495,10 @@ export default class CommandInputer {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61) {
+    if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
+      command.type === 67) {
       // 都市データ（移動、戦争、偵察）
-      const paramTypeId = command.type === 47 ? 2 : 1;
+      const paramTypeId = command.type === 47 ? 2 : command.type === 67 ? 4 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
@@ -497,7 +508,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
-        command.type === 47 || command.type === 52) {
+        command.type === 47 || command.type === 52 || command.type === 67 || command.type === 68) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 

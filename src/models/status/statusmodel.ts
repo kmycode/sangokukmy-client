@@ -306,6 +306,12 @@ export default class StatusModel {
       .toArray();
   }
 
+  public get characterAiCharacters(): api.Character[] {
+    return this.countryCharacters
+      .filter((c) => this.store.aiCharacters.some((a) => a.holderCharacterId === this.character.id &&
+                                                         a.characterId === c.id));
+  }
+
   public get characterCountryLastTownWar(): api.TownWar | undefined {
     // 自国最後の攻略
     return Enumerable.from(this.store.townWars)
@@ -725,6 +731,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.IssueBbsItem>(
       api.IssueBbsItem.typeId,
       (obj) => this.onIssueBbsItemReceived(obj));
+    ApiStreaming.status.on<api.AiCharacterManagement>(
+      api.AiCharacterManagement.typeId,
+      (obj) => this.onAiCharacterManagementReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -1951,6 +1960,14 @@ export default class StatusModel {
           this.isUpdatingOppositionCharacters = false;
         });
     }
+  }
+
+  // #endregion
+
+  // #region AiCharacterManagement
+
+  private onAiCharacterManagementReceived(obj: api.AiCharacterManagement) {
+    ArrayUtil.addItem(this.store.aiCharacters, obj);
   }
 
   // #endregion
