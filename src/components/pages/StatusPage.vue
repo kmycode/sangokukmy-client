@@ -1108,7 +1108,7 @@
                 <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnSoldierType !== 3, 'btn-secondary': flyingColumnSoldierType === 3, }" @click="flyingColumnSoldierType = 3">弩兵</button>
               </div>
               <Map
-                v-show="flyingColumnAction === 1 || flyingColumnAction === 2 || flyingColumnAction === 3"
+                v-show="flyingColumnAction === 1 || flyingColumnAction === 2 || flyingColumnAction === 3 || flyingColumnAction === 4"
                 :towns="model.towns"
                 :countries="model.countries"
                 :town="mapDialogSelectedTown"
