@@ -32,7 +32,7 @@ export const UPDATE_TIME = 600;
 /**
  * 更新を開始する年
  */
-export const UPDATE_START_YEAR = 24;
+export const UPDATE_START_YEAR = 12;
 
 /**
  * 戦闘解除ターン
