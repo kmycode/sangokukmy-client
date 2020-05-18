@@ -1004,7 +1004,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(82, 500000, '黄巾の旗', '使用で即時黄巾出現、全面戦争開始', false, false, true),
   new CharacterItemType(83, 20, '強弩装備', '強弩兵徴兵可能', true, true, false, true, 1000),
   new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
-  new CharacterItemType(85, 100, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
+  new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
 ];
 
 /**
