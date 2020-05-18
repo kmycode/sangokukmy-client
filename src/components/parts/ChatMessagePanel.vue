@@ -398,7 +398,7 @@ export default class ChatMessagePanel extends Vue {
 
       .message-target {
         padding: 4px 12px;
-        margin-top: -8px;
+        margin-top: -2px;
         cursor: pointer;
         transition: all .2s ease-in;
 
