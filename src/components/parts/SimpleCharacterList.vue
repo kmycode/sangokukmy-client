@@ -12,7 +12,7 @@
           <div class="standard">
             <div class="name responsive-header"><span v-if="chara.isBeginner" class="beginner">🔰</span>{{ chara.name }}</div>
             <div class="commands">
-              <button class="btn btn-light btn-sm" type="button" @click="toggleDetail(chara)">詳細</button>
+              <button v-if="!canSelect" class="btn btn-light btn-sm" type="button" @click="toggleDetail(chara)">詳細</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
             <div class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
@@ -275,7 +275,8 @@ export default class SimpleCharacterList extends Vue {
     Vue.set(chara, 'isOpenDetail', !(chara as any).isOpenDetail);
     if ((chara as any).isOpenDetail) {
       Vue.set(chara, 'isLoadingDetail', true);
-      api.Api.getCharacterDetail(chara.id)
+      const id = (chara as any).characterId ? (chara as any).characterId : chara.id;
+      api.Api.getCharacterDetail(id)
         .then((detail) => {
           if (detail.skills) {
             const skillInfos = detail.skills.map((s) => {
