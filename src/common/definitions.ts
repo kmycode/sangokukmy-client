@@ -1033,8 +1033,8 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 360, (skills) => skills.some((s) => s.type === 12)),
   new CharacterSkillType(14, '商人 Lv.a4', 'コマンド 都市投資', 400, (skills) => !skills.some((s) => s.type === 55) && skills.some((s) => s.type === 13)),
   new CharacterSkillType(55, '商人 Lv.b4', 'コマンド 偵察', 400, (skills) => !skills.some((s) => s.type === 14) && skills.some((s) => s.type === 13)),
-  new CharacterSkillType(15, '商人 Lv.a5', '米売買上限 +8000、建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 14)),
-  new CharacterSkillType(56, '商人 Lv.b5', 'コマンド 別動隊', 360, (skills) => skills.some((s) => s.type === 55)),
+  new CharacterSkillType(15, '商人 Lv.a5', '米売買上限 +15000', 360, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(56, '商人 Lv.b5', '建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 55)),
   new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
   new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、歩兵装備、騎兵装備、弩生産可能', 360, (skills) => skills.some((s) => s.type === 16)),
   new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、強弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),
@@ -1078,7 +1078,8 @@ export class TownSubBuildingType {
                      public name: string = '',
                      public size: number = 0,
                      public money: number = 0,
-                     public description: string = '') {}
+                     public description: string = '',
+                     public needSkill: number | number[] = 0) {}
 }
 export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500'),
@@ -1087,4 +1088,5 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   // new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
   new TownSubBuildingType(5, '集落', 2, 10000, '人口最大 +10000。人望 100 が必要'),
   new TownSubBuildingType(6, '城塞', 2, 25000, '城壁最大 +500。武力 100 が必要'),
+  new TownSubBuildingType(7, '商業組合', 2, 50000, '毎年 1 , 7 月、国庫に金 4000 〜 8000。技能が必要', 56),
 ];

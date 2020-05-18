@@ -1446,6 +1446,8 @@
         </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               :store="model.store"
+                               :isShowAll="false"
                                style="flex:1"/>
         </div>
         <div class="dialog-footer">
