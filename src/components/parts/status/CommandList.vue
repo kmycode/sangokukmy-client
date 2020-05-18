@@ -96,13 +96,13 @@
         <button v-if="list.canInputDecreasePeople" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(59)">農民避難</button>
         <button v-if="list.canInputSoldierTrainingAll" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(60)">合同訓練</button>
         <button v-if="list.canInputSpy" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-spy')">偵察</button>
-        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenAiCharacterPopup = !isOpenAiCharacterPopup">別動隊
+        <!-- <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenAiCharacterPopup = !isOpenAiCharacterPopup">別動隊
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenAiCharacterPopup && list.inputer.canInput ? 'block' : 'none' }">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenAiCharacterPopup = false; list.inputer.inputCommand(66)">雇用</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenAiCharacterPopup = false; $emit('open', 'flyingcolumn-customize')">指示</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenAiCharacterPopup = false; $emit('open', 'flyingcolumn-remove')">削除</a>
           </div>
-        </button>
+        </button> -->
         <button v-if="list.canInputChangeTime" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(65)">静養</button>
         <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
       </div>
