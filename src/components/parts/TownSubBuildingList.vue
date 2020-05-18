@@ -6,7 +6,7 @@
       <div class="skill-info">
         <div class="standard">
           <div class="name responsive-header">{{ subBuildingType.name }}</div>
-          <div class="point"><span class="value-name">敷地</span> <span class="value">{{ subBuildingType.size }}</span><span class="value-name">金</span> <span class="value">{{ subBuildingType.money }}</span></div>
+          <div class="point"><span class="value-name">敷地</span> <span class="value">{{ subBuildingType.size }}</span><span class="value-name">期間</span> <span class="value">{{ subBuildingType.buildDuring }} 月</span><span class="value-name">金</span> <span class="value">{{ subBuildingType.money }}</span></div>
           <div class="description">{{ subBuildingType.description }}</div>
         </div>
         <div class="select-cover" @click="$emit('input', subBuildingType)"></div>
