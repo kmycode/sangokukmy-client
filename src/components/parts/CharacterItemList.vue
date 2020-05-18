@@ -6,7 +6,13 @@
       :key="item.data[0].id">
       <div class="item-info">
         <div class="standard">
-          <div class="name responsive-header"><span class="kind kind-resource" v-if="item.type.isResource && !item.type.isResourceItem">資</span>{{ item.type.name }}</div>
+          <div class="name responsive-header">
+            <span class="kind kind-resource" v-if="item.type.isResource && !item.type.isResourceItem">資</span>
+            {{ item.type.name }}
+            <span class="kind kind-sell" v-if="item.type.canSell">売却</span>
+            <span class="kind kind-handover" v-if="item.type.canHandOver">譲渡</span>
+            <span class="kind kind-use" v-if="item.type.canUse">使用</span>
+          </div>
           <div class="params">
             <span v-if="item.type.isResource">
               <span class="value-name">資源量</span> <span class="value">{{ item.data[0].resource }}</span>
@@ -216,6 +222,24 @@ export default class CharacterItemList extends Vue {
 
         .kind-resource {
           background: #37d;
+        }
+
+        .kind-sell {
+          width: 40px;
+          background: #3cb44c;
+          border-radius: 10px;
+        }
+
+        .kind-handover {
+          width: 40px;
+          background: #e06767;
+          border-radius: 10px;
+        }
+
+        .kind-use {
+          width: 40px;
+          background: #7782e7;
+          border-radius: 10px;
         }
       }
 
