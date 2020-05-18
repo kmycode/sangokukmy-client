@@ -12,28 +12,10 @@
           <div class="standard">
             <div class="name responsive-header"><span v-if="chara.isBeginner" class="beginner">🔰</span>{{ chara.name }}</div>
             <div class="commands">
-            </div>
-            <div class="commands">
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
-              <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+              <button class="btn btn-light btn-sm" type="button" @click="toggleDetail(chara)">詳細</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
-            <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-            <div v-else-if="chara.countryId > 0" class="post-selection">
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
-                {{ getPostName(chara.id, chara.countryId) }}
-              </button>
-              <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
-              </div>
-            </div>
+            <div class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
           </div>
           <div class="parameters">
             <span v-if="isWithFrom" class="parameter-from-wrapper">
@@ -78,6 +60,38 @@
               </span>
             </div>
           </div>
+          <div class="character-detail loading-container" v-if="chara.isOpenDetail">
+            <div class="detail-commands">
+              <div class="message" v-if="chara.detail && chara.detail.message">
+                <KmyChatTagText :isNewLine="false" :text="chara.detail.message"/>
+              </div>
+              <div class="commands">
+                <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
+                <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
+                <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+              </div>
+              <div v-if="canEdit && chara.countryId === myCountryId && chara.countryId > 0 && chara.id !== myCharacterId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
+                  {{ getPostName(chara.id, chara.countryId) }}
+                </button>
+                <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:30px;margin-top:-4px'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+                </div>
+              </div>
+            </div>
+            <div class="detail-skills" v-if="chara.skillInfos">
+              <div v-for="info in chara.skillInfos" :key="info.id">
+                <span class="skill-name">{{ info.name }}</span> - <span class="description">{{ info.description }}</span>
+              </div>
+            </div>
+            <div class="loading" v-show="chara.isLoadingDetail"><div class="loading-icon"></div></div>
+          </div>
         </div>
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
@@ -96,14 +110,17 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
+import NotificationService from '../../services/notificationservice';
 
 @Component({
   components: {
     CharacterIcon,
+    KmyChatTagText,
   },
 })
 export default class SimpleCharacterList extends Vue {
@@ -253,6 +270,33 @@ export default class SimpleCharacterList extends Vue {
   private togglePostsPopup(chara: api.Character) {
     Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
   }
+
+  private toggleDetail(chara: api.Character) {
+    Vue.set(chara, 'isOpenDetail', !(chara as any).isOpenDetail);
+    if ((chara as any).isOpenDetail) {
+      Vue.set(chara, 'isLoadingDetail', true);
+      api.Api.getCharacterDetail(chara.id)
+        .then((detail) => {
+          if (detail.skills) {
+            const skillInfos = detail.skills.map((s) => {
+              const st = def.CHARACTER_SKILL_TYPES.filter((st => st.id === s.type));
+              if (st.length > 0) {
+                return st[0];
+              }
+              return undefined;
+            }).filter((s) => s !== undefined);
+            Vue.set(chara, 'skillInfos', skillInfos);
+          }
+          Vue.set(chara, 'detail', detail);
+        })
+        .catch(() => {
+          NotificationService.getCharacterDetailFailed.notify();
+        })
+        .finally(() => {
+          Vue.set(chara, 'isLoadingDetail', false);
+        });
+    }
+  }
 }
 </script>
 
@@ -336,7 +380,7 @@ export default class SimpleCharacterList extends Vue {
             font-weight: bold;
           }
 
-          .post, .post-selection {
+          .post {
             margin: 4px 12px 0 0;
           }
         }
@@ -410,6 +454,31 @@ export default class SimpleCharacterList extends Vue {
             }
           }
         }
+      }
+    }
+
+    .character-detail {
+      .detail-commands {
+        display: flex;
+        justify-content: flex-end;
+
+        .message {
+          flex: 1;
+          margin: 8px 0;
+        }
+      }
+
+      .detail-skills {
+        .skill-name {
+          font-weight: bold;
+        }
+        .description {
+          color: #666;
+        }
+      }
+
+      .post, .post-selection {
+        margin: 0 12px 0 0;
       }
     }
   }

@@ -448,6 +448,10 @@ export default class NotificationService {
     '武将取得失敗',
     '武将取得に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly getCharacterDetailFailed = new NotificationServiceItem(
+    '武将詳細取得失敗',
+    '武将詳細取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly chatPrivateReceived = new NotificationServiceItem(
     '個宛',
     '{0} から個宛を受け取りました',

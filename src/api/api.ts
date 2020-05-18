@@ -395,6 +395,7 @@ export class Character implements IIdentitiedEntity {
                      public postType: number = 0,   // 統一記録のみで有効
                      public isBeginner: boolean = false,
                      public commands?: CharacterCommand[],
+                     public skills?: CharacterSkill[],
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
 }
@@ -1173,6 +1174,16 @@ export class Api {
     try {
       const result = await axios.get<ApiData<Character>>
         (def.API_HOST + 'character/' + id, this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getCharacterDetail(id: number): Promise<Character> {
+    try {
+      const result = await axios.get<ApiData<Character>>
+        (def.API_HOST + 'character/' + id + '/detail', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
