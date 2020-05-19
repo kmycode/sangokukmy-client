@@ -147,7 +147,10 @@
       <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.loopCommands()">繰返<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
     </div>
     <!-- 放置削除の通知 -->
-    <div v-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
+    <div v-if="list.inputer.isStopCommand" class="alert alert-danger">
+      あなたは現在謹慎されています。謹慎中はコマンドの実行がスキップされます。新しいコマンドを入力することで、謹慎状態を解除できます。理由については自分の国にお問い合わせください
+    </div>
+    <div v-else-if="isShowDeleteTurn" class="alert alert-danger command-delete-turn-notify">
       このままコマンドを入力／実行しなかった場合、あなたは残り <span class="number">{{ deleteTurn }}</span> ターンで削除されます
     </div>
     <div v-else-if="list.isFewRemaining" class="alert alert-warning">

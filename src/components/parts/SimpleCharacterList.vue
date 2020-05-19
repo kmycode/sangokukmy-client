@@ -66,9 +66,13 @@
                 <KmyChatTagText :isNewLine="false" :text="chara.detail.message"/>
               </div>
               <div class="commands">
+                <span v-if="chara.detail && chara.detail.isStopCommand" class="stop-command">謹慎中</span>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 1" class="btn btn-sm btn-warning" @click="stopCommand(chara)">謹慎</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 2" class="btn btn-sm btn-danger" @click="dismissal(chara)">解雇</button>
                 <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
                 <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
                 <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" class="btn btn-light btn-sm" type="button" @click="toggleOpenMoreCommands()">操作</button>
               </div>
               <div v-if="canEdit && chara.countryId === myCountryId && chara.countryId > 0 && chara.id !== myCharacterId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
@@ -156,6 +160,9 @@ export default class SimpleCharacterList extends Vue {
   }) public canEdit!: boolean;
   @Prop({
     default: false,
+  }) public canPunishment!: boolean;
+  @Prop({
+    default: false,
   }) public canPrivateChat!: boolean;
   @Prop({
     default: false,
@@ -180,6 +187,7 @@ export default class SimpleCharacterList extends Vue {
   }) public isSortByTime!: boolean;
 
   private isOpenPostsPopup: boolean = false;
+  private openMoreCommands: number = 0;
 
   private get orderedCharacters(): api.Character[] {
     if (this.isSortByTime) {
@@ -280,8 +288,48 @@ export default class SimpleCharacterList extends Vue {
     return [];
   }
 
+  private stopCommand(chara: api.Character) {
+    if (!chara.isStopCommand && (chara as any).detail) {
+      Vue.set(chara, 'isLoadingDetail', true);
+      api.Api.setCharacterStopCommand(chara.id)
+        .then(() => {
+          (chara as any).detail.isStopCommand = true;
+          NotificationService.stopedCommand.notifyWithParameter(chara.name);
+          this.openMoreCommands = 0;
+        })
+        .catch(() => {
+          NotificationService.stopCommandFailed.notifyWithParameter(chara.name);
+        })
+        .finally(() => {
+          Vue.set(chara, 'isLoadingDetail', false);
+        });
+    }
+  }
+
+  private dismissal(chara: api.Character) {
+    if ((chara as any).detail) {
+      Vue.set(chara, 'isLoadingDetail', true);
+      api.Api.setCharacterDismissal(chara.id)
+        .then(() => {
+          this.characters = this.characters.filter((c) => c.id !== chara.id);
+          NotificationService.dismissaled.notifyWithParameter(chara.name);
+          this.openMoreCommands = 0;
+        })
+        .catch(() => {
+          NotificationService.dismissalFailed.notifyWithParameter(chara.name);
+        })
+        .finally(() => {
+          Vue.set(chara, 'isLoadingDetail', false);
+        });
+    }
+  }
+
   private togglePostsPopup(chara: api.Character) {
     Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
+  }
+
+  private toggleOpenMoreCommands() {
+    this.openMoreCommands = ((this.openMoreCommands + 1) % 3);
   }
 
   private toggleDetail(chara: api.Character) {
@@ -509,6 +557,12 @@ export default class SimpleCharacterList extends Vue {
         .description {
           color: #666;
         }
+      }
+
+      .stop-command {
+        color: red;
+        font-weight: bold;
+        margin-right: 16px;
       }
 
       .post, .post-selection {

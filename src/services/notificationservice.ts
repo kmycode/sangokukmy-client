@@ -220,6 +220,26 @@ export default class NotificationService {
     '解任',
     'あなたは、役職を解任されました。',
     NotificationServiceItemDefaultType.information);
+  public static readonly stopedCommand = new NotificationServiceItem(
+    '謹慎',
+    '{0} を謹慎しました。次のコマンド入力まで、コマンドが実行されなくなります',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly stopCommandFailed = new NotificationServiceItem(
+    '謹慎失敗',
+    '{0} の謹慎に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly myCommandsStoped = new NotificationServiceItem(
+    '謹慎',
+    '謹慎されました。次のコマンド入力まで、コマンドが実行されなくなります',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly dismissaled = new NotificationServiceItem(
+    '解雇',
+    '{0} を解雇しました。解雇理由を連絡してください',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly dismissalFailed = new NotificationServiceItem(
+    '解雇失敗',
+    '{0} の解雇に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly allianced = new NotificationServiceItem(
     '同盟手続き成功',
     '同盟の手続きは、無事相手に送信されました。',

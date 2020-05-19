@@ -398,7 +398,8 @@ export class Character implements IIdentitiedEntity {
                      public skills?: CharacterSkill[],
                      public formation?: Formation,
                      public mainIcon?: CharacterIcon,
-                     public reinforcement?: Reinforcement) {}
+                     public reinforcement?: Reinforcement,
+                     public isStopCommand?: boolean) {}
 }
 
 /**
@@ -1296,6 +1297,24 @@ export class Api {
           type: post,
           characterId,
         }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCharacterStopCommand(characterId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/stopcommand/' + characterId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCharacterDismissal(characterId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/dismissal/' + characterId, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

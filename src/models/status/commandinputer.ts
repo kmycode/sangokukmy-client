@@ -11,6 +11,7 @@ import StatusStore from './statusstore';
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
   public isInputing = false;
+  public isStopCommand: boolean = false;
   private lastClickedCommand?: api.CharacterCommand;
 
   public get canInput(): boolean {
@@ -200,6 +201,7 @@ export default class CommandInputer {
       });
       this.sendCommands(selectCommands, () => {
         NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+        this.isStopCommand = false;
       });
     } else {
       NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
@@ -390,6 +392,7 @@ export default class CommandInputer {
     api.Api.setCommandsEx('insert', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
       .then(() => {
         this.editCommands(true, false);
+        this.isStopCommand = false;
       })
       .catch(() => {
         NotificationService.inputCommandsFailed.notify();
@@ -403,6 +406,7 @@ export default class CommandInputer {
     api.Api.setCommandsEx('remove', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
       .then(() => {
         this.editCommands(false, false);
+        this.isStopCommand = false;
       })
       .catch(() => {
         NotificationService.inputCommandsFailed.notify();

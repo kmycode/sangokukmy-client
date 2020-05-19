@@ -823,6 +823,10 @@ export default class StatusModel {
       // CommandCommentの受信・更新が完了した
       this.commands.updateCommandListInformations();
       NotificationService.commandCommentUpdated.notify();
+    } else if (signal.type === 10) {
+      // 謹慎された
+      this.commands.inputer.isStopCommand = true;
+      NotificationService.myCommandsStoped.notify();
     }
   }
 
@@ -1365,6 +1369,12 @@ export default class StatusModel {
     // 自分が任命権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canPunishment(): boolean {
+    // 自分が懲罰権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1));
   }
 
   public get canSafeOut(): boolean {

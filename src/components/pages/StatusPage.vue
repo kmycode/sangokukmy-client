@@ -653,6 +653,7 @@
             :myCountryId="model.character.countryId"
             :myCharacterId="model.character.id"
             :canEdit="model.canAppoint"
+            :canPunishment="model.canPunishment"
             :canReinforcement="model.canDiplomacy && (model.countryAllianceStatus.id === 3 || model.countryAllianceStatus.id === 6 || model.countryAllianceStatus.id === 106)"
             canPrivateChat="true"
             isSortByTime="true"
