@@ -385,11 +385,29 @@ export default class CommandInputer {
   }
 
   public insertCommands() {
-    this.editCommands(true, false);
+    this.isInputing = true;
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    api.Api.setCommandsEx('insert', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
+      .then(() => {
+        this.editCommands(true, false);
+      })
+      .catch(() => {
+        NotificationService.inputCommandsFailed.notify();
+      })
+      .finally(() => this.isInputing = false);
   }
 
   public removeCommands() {
-    this.editCommands(false, false);
+    this.isInputing = true;
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    api.Api.setCommandsEx('remove', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
+      .then(() => {
+        this.editCommands(false, false);
+      })
+      .catch(() => {
+        NotificationService.inputCommandsFailed.notify();
+      })
+      .finally(() => this.isInputing = false);
   }
 
   public loopCommands() {
@@ -461,8 +479,7 @@ export default class CommandInputer {
       this.updateCommandName(es.new);
     });
 
-    this.isInputing = true;
-    this.sendCommands(pushCommands, () => {
+    const after = () => {
       const newCommands = Enumerable
         .from(pushCommands)
         .concat(this.commands.filter((c) => !commands.some((cc) => cc.commandNumber === c.commandNumber)))
@@ -488,7 +505,14 @@ export default class CommandInputer {
       } else {
         NotificationService.commandRemoved.notify();
       }
-    });
+    };
+
+    if (isLoop) {
+      this.isInputing = true;
+      this.sendCommands(pushCommands, after);
+    } else {
+      after();
+    }
   }
 
   public updateCommandName(command: api.CharacterCommand) {

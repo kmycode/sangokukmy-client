@@ -1151,6 +1151,14 @@ export class Api {
     }
   }
 
+  public static async setCommandsEx(cmd: string, months: number[]) {
+    try {
+      await axios.put(def.API_HOST + 'commands/ex/' + cmd, months, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * コマンドコメントを更新
    */

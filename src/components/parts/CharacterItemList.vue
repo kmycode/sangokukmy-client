@@ -13,7 +13,7 @@
             <span class="kind kind-handover" v-if="item.type.canHandOver">譲渡</span>
             <span class="kind kind-use" v-if="item.type.canUse">使用</span>
             <span>
-              <button v-if="item.type.isResource && !item.type.isResourceItem" type="button" :class="{'btn btn-toggle btn-sm loading-container': true, 'selected': item.data[0].isAvailable}" @click="toggleItemAvailable(item)">
+              <button v-if="!canEdit && item.type.isResource && !item.type.isResourceItem" type="button" :class="{'btn btn-toggle btn-sm loading-container': true, 'selected': item.data[0].isAvailable}" @click="toggleItemAvailable(item)">
                 有効
                 <div class="loading" v-show="isLoading"><div class="loading-icon"></div></div>
               </button>

@@ -142,8 +142,8 @@
     <div class="command-select-options">
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMultiCommandsSelection }" @click="isMultiCommandsSelection = !isMultiCommandsSelection">複数選択</button>
       <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isRanged }" @click="isRanged = !isRanged; list.inputer.setRanged(isRanged); updatePreview()">範囲</button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.insertCommands()">挿<span class="redundant-text">入</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
-      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.removeCommands()">削<span class="redundant-text">除</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput || isRanged" @click="list.inputer.insertCommands()">挿<span class="redundant-text">入</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
+      <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput || isRanged" @click="list.inputer.removeCommands()">削<span class="redundant-text">除</span><div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
       <button type="button" class="btn btn-secondary loading-container" :disabled="!list.inputer.canInput" @click="list.inputer.loopCommands()">繰返<div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div></button>
     </div>
     <!-- 放置削除の通知 -->
