@@ -286,11 +286,11 @@ export default class StatusModel {
 
   public get characterRiceBuyMax(): number {
     let max = def.RICE_BUY_MAX;
-    if (this.characterSkills.some((s) => s.type === 12)) {
-      max += 5000;
+    if (this.characterSkills.some((s) => s.type === 13)) {
+      max += 10000;
     }
-    if (this.characterSkills.some((s) => s.type === 15)) {
-      max += 8000;
+    if (this.characterSkills.some((s) => s.type === 55)) {
+      max += 10000;
     }
     return max;
   }
