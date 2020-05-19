@@ -1,9 +1,10 @@
 <template>
   <div style="height:100%;overflow:auto">
     <div class="loading-container">
-      <div v-show="currentThread.length <= 0">
+      <div v-show="currentThread.length <= 0 && !isOpenNewThreadForm">
         <h3>スレッド一覧</h3>
         <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+        <button type="button" class="btn btn-primary" @click="isOpenNewThreadForm ^= true">新規スレッド</button>
         <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenStatusPopup ^= true">
           <span v-show="filteringStatus === 0">状態</span>
           <span v-show="filteringStatus === 1">新規</span>
@@ -157,7 +158,8 @@
           </div>
         </div>
       </div>
-      <div v-show="currentThread.length <= 0">
+      <div v-show="currentThread.length <= 0 && isOpenNewThreadForm">
+        <button type="button" class="btn btn-secondary" @click="isOpenNewThreadForm = false">スレッド一覧に戻る</button>
         <h3>新しいスレッド</h3>
         <div v-if="account.id > 0" class="item-post-form new-thread">
           <div class="label">名前</div>
@@ -209,6 +211,7 @@ export default class IssueBbs extends Vue {
   private filteringStatus = 0;
   private isOpenMilestonePopup = false;
   private isOpenStatusPopup = false;
+  private isOpenNewThreadForm = false;
   private canNextPage = false;
 
   private created() {
@@ -300,6 +303,7 @@ export default class IssueBbs extends Vue {
     api.Api.postIssue(0, thread.title, thread.text)
       .then((th) => {
         NotificationService.writeThreadSucceed.notify();
+        this.isOpenNewThreadForm = false;
         this.loadThread(th.id);
       })
       .catch(() => {
