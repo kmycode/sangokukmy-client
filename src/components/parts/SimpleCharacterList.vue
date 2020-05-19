@@ -85,6 +85,19 @@
                 </div>
               </div>
             </div>
+            <div class="parameters" v-if="chara.detail && chara.detail.formation">
+              <span class="parameter-item">
+                <span class="parameter-name">金</span>
+                <span class="parameter-value">{{ chara.detail.money }}</span>
+              </span>
+              <span class="parameter-item">
+                <span class="parameter-name">米</span>
+                <span class="parameter-value">{{ chara.detail.rice }}</span>
+              </span>
+            </div>
+            <div class="detail-formation" v-if="chara.formationInfo && chara.detail.formation">
+              陣形 <span class="formation-name">{{ chara.formationInfo.name }} Lv.{{ chara.detail.formation.level }} ({{ chara.formationInfo.type }})</span> - <span class="description">{{ chara.formationInfo.descriptions[chara.detail.formation.level - 1] }}</span>
+            </div>
             <div class="detail-skills" v-if="chara.skillInfos">
               <div v-for="info in chara.skillInfos" :key="info.id">
                 <span class="skill-name">{{ info.name }}</span> - <span class="description">{{ info.description }}</span>
@@ -280,13 +293,20 @@ export default class SimpleCharacterList extends Vue {
         .then((detail) => {
           if (detail.skills) {
             const skillInfos = detail.skills.map((s) => {
-              const st = def.CHARACTER_SKILL_TYPES.filter((st => st.id === s.type));
+              const st = def.CHARACTER_SKILL_TYPES.filter((st) => st.id === s.type);
               if (st.length > 0) {
                 return st[0];
               }
               return undefined;
             }).filter((s) => s !== undefined);
             Vue.set(chara, 'skillInfos', skillInfos);
+          }
+          if (detail.formation) {
+            const type = detail.formation.type;
+            const info = def.FORMATION_TYPES.filter((ft) => ft.id === type);
+            if (info.length > 0) {
+              Vue.set(chara, 'formationInfo', info[0]);
+            }
           }
           Vue.set(chara, 'detail', detail);
         })
@@ -341,6 +361,32 @@ export default class SimpleCharacterList extends Vue {
       }
     }
 
+    %parameters {
+      .parameter-from {
+        width: 4em;
+        padding: 2px 0;
+        display: inline-block;
+      }
+      .parameter-item {
+        padding-right: 12px;
+        .parameter-name {
+          font-size: 0.8rem;
+          color: #666;
+          padding-right: 4px;
+        }
+        .parameter-value {
+          display: inline-block;
+          font-size: 1rem;
+          font-weight: bold;
+          width: 2rem;
+          text-align: center;
+        }
+      }
+      &.parameters-no-from {
+        margin-left: 4em;
+      }
+    }
+
     .item-character-info {
       display: flex;
 
@@ -387,29 +433,7 @@ export default class SimpleCharacterList extends Vue {
         }
 
         .parameters {
-          .parameter-from {
-            width: 4em;
-            padding: 2px 0;
-            display: inline-block;
-          }
-          .parameter-item {
-            padding-right: 12px;
-            .parameter-name {
-              font-size: 0.8rem;
-              color: #666;
-              padding-right: 4px;
-            }
-            .parameter-value {
-              display: inline-block;
-              font-size: 1rem;
-              font-weight: bold;
-              width: 2rem;
-              text-align: center;
-            }
-          }
-          &.parameters-no-from {
-            margin-left: 4em;
-          }
+          @extend %parameters;
         }
       }
     }
@@ -469,6 +493,15 @@ export default class SimpleCharacterList extends Vue {
         }
       }
 
+      .detail-formation {
+        .formation-name {
+          font-weight: bold;
+        }
+        .description {
+          color: #666;
+        }
+      }
+
       .detail-skills {
         .skill-name {
           font-weight: bold;
@@ -480,6 +513,13 @@ export default class SimpleCharacterList extends Vue {
 
       .post, .post-selection {
         margin: 0 12px 0 0;
+      }
+
+      .parameters {
+        @extend %parameters;
+        .parameter-value {
+          width: 5rem !important;
+        }
       }
     }
   }

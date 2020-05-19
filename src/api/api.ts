@@ -396,6 +396,7 @@ export class Character implements IIdentitiedEntity {
                      public isBeginner: boolean = false,
                      public commands?: CharacterCommand[],
                      public skills?: CharacterSkill[],
+                     public formation?: Formation,
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement) {}
 }
