@@ -188,10 +188,12 @@ export default class SimpleCharacterList extends Vue {
 
   private isOpenPostsPopup: boolean = false;
   private openMoreCommands: number = 0;
+  private ignoreIds: number[] = [];
 
   private get orderedCharacters(): api.Character[] {
     if (this.isSortByTime) {
       return Enumerable.from(this.characters)
+        .where((c) => !this.ignoreIds.some((id) => c.id === id))
         .orderBy((c) => api.DateTime.toDate(c.lastUpdated).getTime())
         .toArray();
     }
@@ -289,47 +291,57 @@ export default class SimpleCharacterList extends Vue {
   }
 
   private stopCommand(chara: api.Character) {
-    if (!chara.isStopCommand && (chara as any).detail) {
-      Vue.set(chara, 'isLoadingDetail', true);
-      api.Api.setCharacterStopCommand(chara.id)
-        .then(() => {
-          (chara as any).detail.isStopCommand = true;
-          NotificationService.stopedCommand.notifyWithParameter(chara.name);
-          this.openMoreCommands = 0;
-        })
-        .catch((ex) => {
-          if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
-            NotificationService.actionBlocked.notify();
-          } else {
-            NotificationService.stopCommandFailed.notifyWithParameter(chara.name);
-          }
-        })
-        .finally(() => {
-          Vue.set(chara, 'isLoadingDetail', false);
-        });
-    }
+    this.$emit('yesno', {
+      message: '本当に謹慎しますか？',
+      onYes: () => {
+        if (!chara.isStopCommand && (chara as any).detail) {
+          Vue.set(chara, 'isLoadingDetail', true);
+          api.Api.setCharacterStopCommand(chara.id)
+            .then(() => {
+              (chara as any).detail.isStopCommand = true;
+              NotificationService.stopedCommand.notifyWithParameter(chara.name);
+              this.openMoreCommands = 0;
+            })
+            .catch((ex) => {
+              if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
+                NotificationService.actionBlocked.notify();
+              } else {
+                NotificationService.stopCommandFailed.notifyWithParameter(chara.name);
+              }
+            })
+            .finally(() => {
+              Vue.set(chara, 'isLoadingDetail', false);
+            });
+        }
+      },
+    });
   }
 
   private dismissal(chara: api.Character) {
-    if ((chara as any).detail) {
-      Vue.set(chara, 'isLoadingDetail', true);
-      api.Api.setCharacterDismissal(chara.id)
-        .then(() => {
-          this.characters = this.characters.filter((c) => c.id !== chara.id);
-          NotificationService.dismissaled.notifyWithParameter(chara.name);
-          this.openMoreCommands = 0;
-        })
-        .catch((ex) => {
-          if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
-            NotificationService.actionBlocked.notify();
-          } else {
-            NotificationService.dismissalFailed.notifyWithParameter(chara.name);
-          }
-        })
-        .finally(() => {
-          Vue.set(chara, 'isLoadingDetail', false);
-        });
-    }
+    this.$emit('yesno', {
+      message: '本当に解雇しますか？',
+      onYes: () => {
+        if ((chara as any).detail) {
+          Vue.set(chara, 'isLoadingDetail', true);
+          api.Api.setCharacterDismissal(chara.id)
+            .then(() => {
+              this.ignoreIds.push(chara.id);
+              NotificationService.dismissaled.notifyWithParameter(chara.name);
+              this.openMoreCommands = 0;
+            })
+            .catch((ex) => {
+              if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
+                NotificationService.actionBlocked.notify();
+              } else {
+                NotificationService.dismissalFailed.notifyWithParameter(chara.name);
+              }
+            })
+            .finally(() => {
+              Vue.set(chara, 'isLoadingDetail', false);
+            });
+        }
+      },
+    });
   }
 
   private togglePostsPopup(chara: api.Character) {

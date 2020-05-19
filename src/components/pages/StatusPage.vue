@@ -660,7 +660,8 @@
             @reinforcement-request="model.setReinforcementStatus($event, 1)"
             @reinforcement-cancel="model.setReinforcementStatus($event, 3)"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
-            @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"/>
+            @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"
+            @yesno="openYesno($event)"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -1567,6 +1568,16 @@
         </div>
       </div>
     </div>
+    <div id="status-yesno" v-if="isYesno">
+      <div class="yesno-background" @click="isYesno = false"></div>
+      <div class="yesno-dialog">
+        <div class="message">{{ yesnoMessage }}</div>
+        <div class="commands">
+          <button class="btn btn-light" @click="isYesno = false">いいえ</button>
+          <button class="btn btn-primary" @click="isYesno = false; yesnoEvent()">はい</button>
+        </div>
+      </div>
+    </div>
     <div v-if="!model.store.hasInitialized" class="loading">
       <div class="loading-icon"></div>
       <div v-if="isApp" class="alert alert-warning" style="position:fixed;bottom:10vh;left:10vw;width:80vw;text-align:center">
@@ -1702,6 +1713,8 @@ export default class StatusPage extends Vue {
   public isOpenCustomizeFlyingColumnDialog: boolean = false;
   public isOpenRemoveFlyingColumnDialog: boolean = false;
   public isOpenImage: boolean = false;
+  public isYesno: boolean = false;
+  public yesnoMessage: string = '';
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
@@ -1761,6 +1774,8 @@ export default class StatusPage extends Vue {
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
       || this.isOpenRemoveFlyingColumnDialog;
   }
+  
+  public yesnoEvent: () => void = () => undefined;
 
   public openCommandDialog(event: string) {
     if (event === 'soldier') {
@@ -2060,6 +2075,12 @@ export default class StatusPage extends Vue {
   private openImage(event: any) {
     this.imageUrl = event;
     this.isOpenImage = true;
+  }
+
+  private openYesno(event: any) {
+    this.yesnoMessage = event.message;
+    this.yesnoEvent = event.onYes;
+    this.isYesno = true;
   }
 
   private reloadPage() {
@@ -2766,6 +2787,48 @@ ul.nav {
     pointer-events: all;
     .dialog-background {
       opacity: 0.5;
+    }
+  }
+}
+
+/*
+    <div id="status-yesno">
+      <div class="yesno-background"></div>
+      <div class="yesno-dialog">
+        <div class="message">本当によろしいですか？</div>
+        <div class="commands">
+          <button class="btn btn-light">いいえ</button>
+          <button class="btn btn-primary">はい</button>
+        </div>
+      </div>
+    </div>*/
+#status-yesno {
+  width: 100%;
+  position: relative;
+  z-index: 100;
+  .yesno-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .yesno-dialog {
+    position: fixed;
+    bottom: 0;
+    left: calc(50% - 150px);
+    width: 300px;
+    height: 120px;
+    max-width: 100vw;
+    padding: 16px 32px;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    .message {
+      flex: 1;
     }
   }
 }
