@@ -972,12 +972,13 @@ export default class StatusModel {
       this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
         const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
         if (info) {
+          const label = info.name + '(' + info.size + ')';
           if (s.status === api.TownSubBuilding.statusUnderConstruction) {
-            buffer.push(new TextStatusParameter('建設中', info.name, 'information'));
+            buffer.push(new TextStatusParameter('建設中', label, 'information'));
           } else if (s.status === api.TownSubBuilding.statusRemoving) {
-            buffer.push(new TextStatusParameter('撤去中', info.name, 'warning'));
+            buffer.push(new TextStatusParameter('撤去中', label, 'warning'));
           } else if (s.status === api.TownSubBuilding.statusAvailable) {
-            buffer.push(new TextStatusParameter('建築物', info.name));
+            buffer.push(new TextStatusParameter('建築物', label));
           }
           subBuildingSize += info.size;
         }
