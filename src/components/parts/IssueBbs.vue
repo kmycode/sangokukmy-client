@@ -1,9 +1,10 @@
 <template>
   <div style="height:100%;overflow:auto">
     <div class="loading-container">
-      <div v-show="currentThread.length <= 0">
+      <div v-show="currentThread.length <= 0 && !isOpenNewThreadForm">
         <h3>スレッド一覧</h3>
         <button type="button" class="btn btn-secondary" @click="loadPage(1)">更新</button>
+        <button type="button" class="btn btn-primary" @click="isOpenNewThreadForm ^= true">新規スレッド</button>
         <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenStatusPopup ^= true">
           <span v-show="filteringStatus === 0">状態</span>
           <span v-show="filteringStatus === 1">新規</span>
@@ -18,6 +19,7 @@
           <span v-show="filteringStatus === 10">無効</span>
           <span v-show="filteringStatus === 11">対応せず</span>
           <div class="dropdown-menu" :style="(isOpenStatusPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 0; loadPage(1)">全て</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 1; loadPage(1)">新規</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 2; loadPage(1)">議論中</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 3; loadPage(1)">採用</a>
@@ -29,19 +31,18 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 9; loadPage(1)">複合</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 10; loadPage(1)">無効</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 11; loadPage(1)">対応せず</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenStatusPopup = false; filteringStatus = 0; loadPage(1)">全て</a>
           </div>
         </button>
         <button type="button" class="btn btn-secondary dropdown-toggle" @click="isOpenMilestonePopup ^= true">
-          <span v-show="filteringMilestone === 0">マイルストーン</span>
+          <span v-show="filteringMilestone === 0">時期</span>
           <span v-show="filteringMilestone === 1">今期</span>
           <span v-show="filteringMilestone === 2">来期</span>
           <span v-show="filteringMilestone === 4">未設定</span>
           <div class="dropdown-menu" :style="(isOpenMilestonePopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;margin-top:8px;margin-left:-16px'">
+            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 1; loadPage(1)">今期</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 2; loadPage(1)">来期</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 4; loadPage(1)">未設定</a>
-            <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 0; loadPage(1)">全て</a>
           </div>
         </button>
         <div v-show="isNeedUpdatePage" class="alert alert-warning">
@@ -157,7 +158,8 @@
           </div>
         </div>
       </div>
-      <div v-show="currentThread.length <= 0">
+      <div v-show="currentThread.length <= 0 && isOpenNewThreadForm">
+        <button type="button" class="btn btn-secondary" @click="isOpenNewThreadForm = false">スレッド一覧に戻る</button>
         <h3>新しいスレッド</h3>
         <div v-if="account.id > 0" class="item-post-form new-thread">
           <div class="label">名前</div>
@@ -209,6 +211,7 @@ export default class IssueBbs extends Vue {
   private filteringStatus = 0;
   private isOpenMilestonePopup = false;
   private isOpenStatusPopup = false;
+  private isOpenNewThreadForm = false;
   private canNextPage = false;
 
   private created() {
@@ -300,6 +303,7 @@ export default class IssueBbs extends Vue {
     api.Api.postIssue(0, thread.title, thread.text)
       .then((th) => {
         NotificationService.writeThreadSucceed.notify();
+        this.isOpenNewThreadForm = false;
         this.loadThread(th.id);
       })
       .catch(() => {

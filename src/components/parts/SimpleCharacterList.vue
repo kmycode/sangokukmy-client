@@ -12,28 +12,10 @@
           <div class="standard">
             <div class="name responsive-header"><span v-if="chara.isBeginner" class="beginner">🔰</span>{{ chara.name }}</div>
             <div class="commands">
-            </div>
-            <div class="commands">
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
-              <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
-              <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+              <button v-if="!canSelect" class="btn btn-light btn-sm" type="button" @click="toggleDetail(chara)">詳細</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
-            <div v-if="chara.id === myCharacterId || (chara.countryId > 0 && (!canEdit || myCountryId !== chara.countryId || getPostName(chara.id, chara.countryId) === '君主'))" class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
-            <div v-else-if="chara.countryId > 0" class="post-selection">
-              <button class="btn btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
-                {{ getPostName(chara.id, chara.countryId) }}
-              </button>
-              <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:24px'">
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
-              </div>
-            </div>
+            <div class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
           </div>
           <div class="parameters">
             <span v-if="isWithFrom" class="parameter-from-wrapper">
@@ -78,6 +60,55 @@
               </span>
             </div>
           </div>
+          <div class="character-detail loading-container" v-if="chara.isOpenDetail">
+            <div class="detail-commands">
+              <div class="message" v-if="chara.detail && chara.detail.message">
+                <KmyChatTagText :isNewLine="false" :text="chara.detail.message"/>
+              </div>
+              <span v-if="chara.detail && chara.detail.isStopCommand" class="stop-command">謹慎中</span>
+              <div class="commands">
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 1" class="btn btn-sm btn-warning" @click="stopCommand(chara)">謹慎</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 2" class="btn btn-sm btn-danger" @click="dismissal(chara)">解雇</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" class="btn btn-light btn-sm" type="button" @click="toggleOpenMoreCommands()">操作</button>
+                <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
+                <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
+                <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
+              </div>
+              <div v-if="canEdit && chara.countryId === myCountryId && chara.countryId > 0 && chara.id !== myCharacterId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
+                  {{ getPostName(chara.id, chara.countryId) }}
+                </button>
+                <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:20px;margin-top:-4px'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+                </div>
+              </div>
+            </div>
+            <div class="parameters" v-if="chara.detail && chara.detail.formation">
+              <span class="parameter-item">
+                <span class="parameter-name">金</span>
+                <span class="parameter-value">{{ chara.detail.money }}</span>
+              </span>
+              <span class="parameter-item">
+                <span class="parameter-name">米</span>
+                <span class="parameter-value">{{ chara.detail.rice }}</span>
+              </span>
+            </div>
+            <div class="detail-formation" v-if="chara.formationInfo && chara.detail.formation">
+              陣形 <span class="formation-name">{{ chara.formationInfo.name }} Lv.{{ chara.detail.formation.level }} ({{ chara.formationInfo.type }})</span> - <span class="description">{{ chara.formationInfo.descriptions[chara.detail.formation.level - 1] }}</span>
+            </div>
+            <div class="detail-skills" v-if="chara.skillInfos">
+              <div v-for="info in chara.skillInfos" :key="info.id">
+                <span class="skill-name">{{ info.name }}</span> - <span class="description">{{ info.description }}</span>
+              </div>
+            </div>
+            <div class="loading" v-show="chara.isLoadingDetail"><div class="loading-icon"></div></div>
+          </div>
         </div>
       </div>
       <div v-if="chara.lastUpdated && chara.lastUpdated.year > 2000" class="item-commands">
@@ -96,14 +127,17 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
+import NotificationService from '../../services/notificationservice';
 
 @Component({
   components: {
     CharacterIcon,
+    KmyChatTagText,
   },
 })
 export default class SimpleCharacterList extends Vue {
@@ -124,6 +158,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public canEdit!: boolean;
+  @Prop({
+    default: false,
+  }) public canPunishment!: boolean;
   @Prop({
     default: false,
   }) public canPrivateChat!: boolean;
@@ -150,10 +187,13 @@ export default class SimpleCharacterList extends Vue {
   }) public isSortByTime!: boolean;
 
   private isOpenPostsPopup: boolean = false;
+  private openMoreCommands: number = 0;
+  private ignoreIds: number[] = [];
 
   private get orderedCharacters(): api.Character[] {
     if (this.isSortByTime) {
       return Enumerable.from(this.characters)
+        .where((c) => !this.ignoreIds.some((id) => c.id === id))
         .orderBy((c) => api.DateTime.toDate(c.lastUpdated).getTime())
         .toArray();
     }
@@ -250,8 +290,101 @@ export default class SimpleCharacterList extends Vue {
     return [];
   }
 
+  private stopCommand(chara: api.Character) {
+    this.$emit('yesno', {
+      message: '本当に謹慎しますか？',
+      onYes: () => {
+        if (!chara.isStopCommand && (chara as any).detail) {
+          Vue.set(chara, 'isLoadingDetail', true);
+          api.Api.setCharacterStopCommand(chara.id)
+            .then(() => {
+              (chara as any).detail.isStopCommand = true;
+              NotificationService.stopedCommand.notifyWithParameter(chara.name);
+              this.openMoreCommands = 0;
+            })
+            .catch((ex) => {
+              if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
+                NotificationService.actionBlocked.notify();
+              } else {
+                NotificationService.stopCommandFailed.notifyWithParameter(chara.name);
+              }
+            })
+            .finally(() => {
+              Vue.set(chara, 'isLoadingDetail', false);
+            });
+        }
+      },
+    });
+  }
+
+  private dismissal(chara: api.Character) {
+    this.$emit('yesno', {
+      message: '本当に解雇しますか？',
+      onYes: () => {
+        if ((chara as any).detail) {
+          Vue.set(chara, 'isLoadingDetail', true);
+          api.Api.setCharacterDismissal(chara.id)
+            .then(() => {
+              this.ignoreIds.push(chara.id);
+              NotificationService.dismissaled.notifyWithParameter(chara.name);
+              this.openMoreCommands = 0;
+            })
+            .catch((ex) => {
+              if (ex.data && ex.data.code === api.ErrorCode.blockedActionError) {
+                NotificationService.actionBlocked.notify();
+              } else {
+                NotificationService.dismissalFailed.notifyWithParameter(chara.name);
+              }
+            })
+            .finally(() => {
+              Vue.set(chara, 'isLoadingDetail', false);
+            });
+        }
+      },
+    });
+  }
+
   private togglePostsPopup(chara: api.Character) {
     Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
+  }
+
+  private toggleOpenMoreCommands() {
+    this.openMoreCommands = ((this.openMoreCommands + 1) % 3);
+  }
+
+  private toggleDetail(chara: api.Character) {
+    Vue.set(chara, 'isOpenDetail', !(chara as any).isOpenDetail);
+    if ((chara as any).isOpenDetail) {
+      Vue.set(chara, 'isLoadingDetail', true);
+      const id = (chara as any).characterId ? (chara as any).characterId : chara.id;
+      api.Api.getCharacterDetail(id)
+        .then((detail) => {
+          if (detail.skills) {
+            const skillInfos = detail.skills.map((s) => {
+              const st = def.CHARACTER_SKILL_TYPES.filter((st) => st.id === s.type);
+              if (st.length > 0) {
+                return st[0];
+              }
+              return undefined;
+            }).filter((s) => s !== undefined);
+            Vue.set(chara, 'skillInfos', skillInfos);
+          }
+          if (detail.formation) {
+            const type = detail.formation.type;
+            const info = def.FORMATION_TYPES.filter((ft) => ft.id === type);
+            if (info.length > 0) {
+              Vue.set(chara, 'formationInfo', info[0]);
+            }
+          }
+          Vue.set(chara, 'detail', detail);
+        })
+        .catch(() => {
+          NotificationService.getCharacterDetailFailed.notify();
+        })
+        .finally(() => {
+          Vue.set(chara, 'isLoadingDetail', false);
+        });
+    }
   }
 }
 </script>
@@ -296,6 +429,32 @@ export default class SimpleCharacterList extends Vue {
       }
     }
 
+    %parameters {
+      .parameter-from {
+        width: 4em;
+        padding: 2px 0;
+        display: inline-block;
+      }
+      .parameter-item {
+        padding-right: 12px;
+        .parameter-name {
+          font-size: 0.8rem;
+          color: #666;
+          padding-right: 4px;
+        }
+        .parameter-value {
+          display: inline-block;
+          font-size: 1rem;
+          font-weight: bold;
+          width: 2rem;
+          text-align: center;
+        }
+      }
+      &.parameters-no-from {
+        margin-left: 4em;
+      }
+    }
+
     .item-character-info {
       display: flex;
 
@@ -336,35 +495,13 @@ export default class SimpleCharacterList extends Vue {
             font-weight: bold;
           }
 
-          .post, .post-selection {
+          .post {
             margin: 4px 12px 0 0;
           }
         }
 
         .parameters {
-          .parameter-from {
-            width: 4em;
-            padding: 2px 0;
-            display: inline-block;
-          }
-          .parameter-item {
-            padding-right: 12px;
-            .parameter-name {
-              font-size: 0.8rem;
-              color: #666;
-              padding-right: 4px;
-            }
-            .parameter-value {
-              display: inline-block;
-              font-size: 1rem;
-              font-weight: bold;
-              width: 2rem;
-              text-align: center;
-            }
-          }
-          &.parameters-no-from {
-            margin-left: 4em;
-          }
+          @extend %parameters;
         }
       }
     }
@@ -409,6 +546,55 @@ export default class SimpleCharacterList extends Vue {
               display: none;
             }
           }
+        }
+      }
+    }
+
+    .character-detail {
+      .detail-commands {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        align-items: center;
+
+        .message {
+          flex: 1;
+          margin: 8px 0;
+        }
+      }
+
+      .detail-formation {
+        .formation-name {
+          font-weight: bold;
+        }
+        .description {
+          color: #666;
+        }
+      }
+
+      .detail-skills {
+        .skill-name {
+          font-weight: bold;
+        }
+        .description {
+          color: #666;
+        }
+      }
+
+      .stop-command {
+        color: red;
+        font-weight: bold;
+        margin-right: 16px;
+      }
+
+      .post, .post-selection {
+        margin: 0 12px 0 0;
+      }
+
+      .parameters {
+        @extend %parameters;
+        .parameter-value {
+          width: 5rem !important;
         }
       }
     }

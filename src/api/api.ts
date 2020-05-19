@@ -259,6 +259,17 @@ export class CharacterUpdateLog implements IIdentitiedEntity {
               public isFirstAtMonth: boolean) {}
 }
 
+export class AiCharacterManagement {
+  public static readonly typeId = 45;
+
+  constructor(public id: number,
+              public characterId: number,
+              public holderCharacterId: number,
+              public action: number,
+              public soldierType: number,
+              public targetTownId: number) {}
+}
+
 export class Formation {
   public static readonly typeId = 35;
 
@@ -384,8 +395,11 @@ export class Character implements IIdentitiedEntity {
                      public postType: number = 0,   // 統一記録のみで有効
                      public isBeginner: boolean = false,
                      public commands?: CharacterCommand[],
+                     public skills?: CharacterSkill[],
+                     public formation?: Formation,
                      public mainIcon?: CharacterIcon,
-                     public reinforcement?: Reinforcement) {}
+                     public reinforcement?: Reinforcement,
+                     public isStopCommand?: boolean) {}
 }
 
 /**
@@ -996,7 +1010,8 @@ export class CharacterItem {
                      public townId: number,
                      public characterId: number,
                      public resource: number,
-                     public lastStatusChangedGameDate: GameDateTime) {}
+                     public lastStatusChangedGameDate: GameDateTime,
+                     public isAvailable: boolean) {}
 }
 
 export class CharacterSkill {
@@ -1137,6 +1152,14 @@ export class Api {
     }
   }
 
+  public static async setCommandsEx(cmd: string, months: number[]) {
+    try {
+      await axios.put(def.API_HOST + 'commands/ex/' + cmd, months, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * コマンドコメントを更新
    */
@@ -1162,6 +1185,16 @@ export class Api {
     try {
       const result = await axios.get<ApiData<Character>>
         (def.API_HOST + 'character/' + id, this.authHeader);
+      return result.data.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getCharacterDetail(id: number): Promise<Character> {
+    try {
+      const result = await axios.get<ApiData<Character>>
+        (def.API_HOST + 'character/' + id + '/detail', this.authHeader);
       return result.data.data;
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1264,6 +1297,24 @@ export class Api {
           type: post,
           characterId,
         }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCharacterStopCommand(characterId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/stopcommand/' + characterId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCharacterDismissal(characterId: number): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/dismissal/' + characterId, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1756,12 +1807,13 @@ export class Api {
     }
   }
 
-  public static async addCharacterItem(item: number, itemId: number, status: number): Promise<any> {
+  public static async addCharacterItem(item: number, itemId: number, status: number, isAvailable: boolean): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'items', {
         type: item,
         id: itemId,
         status,
+        isAvailable,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

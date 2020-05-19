@@ -178,6 +178,11 @@ export default class ChatMessagePanel extends Vue {
     });
   }
 
+  @Watch('model.sendTo')
+  private onSendToChanged() {
+    this.updateCanSendChat();
+  }
+
   private selectedImage(ev: any) {
     if (ev.target.files && ev.target.files.length > 0) {
       this.loadImageFromFile(ev.target.files[0]);
@@ -282,6 +287,7 @@ export default class ChatMessagePanel extends Vue {
       .then(() => {
         element.innerHTML = '';
         this.isImageSet = false;
+        this.updateCanSendChat();
       });
   }
 
@@ -397,7 +403,7 @@ export default class ChatMessagePanel extends Vue {
 
       .message-target {
         padding: 4px 12px;
-        margin-top: -8px;
+        margin-top: -2px;
         cursor: pointer;
         transition: all .2s ease-in;
 

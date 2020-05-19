@@ -286,11 +286,11 @@ export default class StatusModel {
 
   public get characterRiceBuyMax(): number {
     let max = def.RICE_BUY_MAX;
-    if (this.characterSkills.some((s) => s.type === 12)) {
-      max += 5000;
+    if (this.characterSkills.some((s) => s.type === 13)) {
+      max += 10000;
     }
-    if (this.characterSkills.some((s) => s.type === 15)) {
-      max += 8000;
+    if (this.characterSkills.some((s) => s.type === 55)) {
+      max += 10000;
     }
     return max;
   }
@@ -304,6 +304,12 @@ export default class StatusModel {
                     c.aiType === api.Character.aiSecretaryUnitLeader ||
                     c.aiType === api.Character.aiSecretaryScouter)
       .toArray();
+  }
+
+  public get characterAiCharacters(): api.Character[] {
+    return this.countryCharacters
+      .filter((c) => this.store.aiCharacters.some((a) => a.holderCharacterId === this.character.id &&
+                                                         a.characterId === c.id));
   }
 
   public get characterCountryLastTownWar(): api.TownWar | undefined {
@@ -725,6 +731,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.IssueBbsItem>(
       api.IssueBbsItem.typeId,
       (obj) => this.onIssueBbsItemReceived(obj));
+    ApiStreaming.status.on<api.AiCharacterManagement>(
+      api.AiCharacterManagement.typeId,
+      (obj) => this.onAiCharacterManagementReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -760,13 +769,10 @@ export default class StatusModel {
   private onReceiveSignal(signal: api.ApiSignal) {
     if (signal.type === 1) {
       // 武将が更新された
-      const data = signal.data as { gameDate: api.GameDateTime, secondsNextCommand: number };
-
-      // この時点で新しい武将データは通知されていないので、自前で更新時刻を加算する
-      const lastUpdated = api.DateTime.toDate(this.character.lastUpdated);
-      lastUpdated.setSeconds(lastUpdated.getSeconds() + def.UPDATE_TIME);
-
-      this.commands.onExecutedCommand(data.gameDate, api.DateTime.fromDate(lastUpdated), data.secondsNextCommand);
+      // この時点で武将情報はまだ配信されていない
+      const data = signal.data as {
+        gameDate: api.GameDateTime, secondsNextCommand: number, lastUpdated: api.DateTime };
+      this.commands.onExecutedCommand(data.gameDate, data.lastUpdated, data.secondsNextCommand);
     } else if (signal.type === 2) {
       // 年月が進んだ
       this.updateGameDate(signal.data as api.GameDateTime);
@@ -817,6 +823,10 @@ export default class StatusModel {
       // CommandCommentの受信・更新が完了した
       this.commands.updateCommandListInformations();
       NotificationService.commandCommentUpdated.notify();
+    } else if (signal.type === 10) {
+      // 謹慎された
+      this.commands.inputer.isStopCommand = true;
+      NotificationService.myCommandsStoped.notify();
     }
   }
 
@@ -953,7 +963,7 @@ export default class StatusModel {
     if (townBuilding && townBuilding.id) {
       if (town.ricePrice !== undefined) {
         ps.push(new TwinTextAndRangedStatusParameter(
-          '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
+          '都市施設', townBuilding.name, '開発度', town.townBuildingValue, 2000));
       } else {
         ps.push(new TextStatusParameter('都市施設', townBuilding.name));
       }
@@ -966,12 +976,13 @@ export default class StatusModel {
       this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
         const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
         if (info) {
+          const label = info.name + '(' + info.size + ')';
           if (s.status === api.TownSubBuilding.statusUnderConstruction) {
-            buffer.push(new TextStatusParameter('建設中', info.name, 'information'));
+            buffer.push(new TextStatusParameter('建設中', label, 'information'));
           } else if (s.status === api.TownSubBuilding.statusRemoving) {
-            buffer.push(new TextStatusParameter('撤去中', info.name, 'warning'));
+            buffer.push(new TextStatusParameter('撤去中', label, 'warning'));
           } else if (s.status === api.TownSubBuilding.statusAvailable) {
-            buffer.push(new TextStatusParameter('建築物', info.name));
+            buffer.push(new TextStatusParameter('建築物', label));
           }
           subBuildingSize += info.size;
         }
@@ -1358,6 +1369,12 @@ export default class StatusModel {
     // 自分が任命権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
       .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+  }
+
+  public get canPunishment(): boolean {
+    // 自分が懲罰権限を持つか
+    return Enumerable.from(this.getCountry(this.character.countryId).posts)
+      .any((p) => p.characterId === this.character.id && (p.type === 1));
   }
 
   public get canSafeOut(): boolean {
@@ -1929,7 +1946,7 @@ export default class StatusModel {
         .count((i) => {
           const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((ii) => ii.id === i.type);
           if (info) {
-            return !info.isResource;
+            return !info.isResource || info.isResourceItem;
           }
           return true;
         }),
@@ -1953,6 +1970,18 @@ export default class StatusModel {
         .finally(() => {
           this.isUpdatingOppositionCharacters = false;
         });
+    }
+  }
+
+  // #endregion
+
+  // #region AiCharacterManagement
+
+  private onAiCharacterManagementReceived(obj: api.AiCharacterManagement) {
+    if (obj.action === 5) {
+      this.store.aiCharacters = this.store.aiCharacters.filter((a) => a.characterId !== obj.characterId);
+    } else {
+      ArrayUtil.addItem(this.store.aiCharacters, obj);
     }
   }
 
@@ -2094,11 +2123,11 @@ export default class StatusModel {
     }
   }
 
-  public addCharacterItem(item: number, itemId: number, status: number) {
+  public addCharacterItem(item: number, itemId: number, status: number, isAvailable: boolean) {
     if (!this.isUpdatingItems) {
       this.isUpdatingItems = true;
       this.itemNotificationLock++;
-      api.Api.addCharacterItem(item, itemId, status)
+      api.Api.addCharacterItem(item, itemId, status, isAvailable)
         .then(() => {
           if (status === api.CharacterItem.statusCharacterHold) {
             NotificationService.itemGotByPending.notify();

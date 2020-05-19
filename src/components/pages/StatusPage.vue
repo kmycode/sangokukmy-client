@@ -129,7 +129,7 @@
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
-            <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 12 * 14 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> までに所有すると統一勝利する可能性があります</div>
+            <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 12 * 12 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
@@ -653,13 +653,15 @@
             :myCountryId="model.character.countryId"
             :myCharacterId="model.character.id"
             :canEdit="model.canAppoint"
+            :canPunishment="model.canPunishment"
             :canReinforcement="model.canDiplomacy && (model.countryAllianceStatus.id === 3 || model.countryAllianceStatus.id === 6 || model.countryAllianceStatus.id === 106)"
             canPrivateChat="true"
             isSortByTime="true"
             @reinforcement-request="model.setReinforcementStatus($event, 1)"
             @reinforcement-cancel="model.setReinforcementStatus($event, 3)"
             @appoint="model.setCountryPost($event.characterId, $event.type)"
-            @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"/>
+            @private-chat="readyPrivateChat($event); isOpenCountryCharactersDialog = false"
+            @yesno="openYesno($event)"/>
           <div class="loading" v-show="model.isUpdatingCountryCharacters || model.isAppointing"><div class="loading-icon"></div></div>
         </div>
         <div class="dialog-footer">
@@ -1078,6 +1080,84 @@
           </div>
         </div>
       </div>
+      <!-- 別動隊 -->
+      <div v-if="isOpenCustomizeFlyingColumnDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">別働隊指示</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list-top-of-map" style="flex:0.6">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.characterAiCharacters"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+            <div class="map" style="flex:1;overflow:auto">
+              <div>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnAction !== 0, 'btn-secondary': flyingColumnAction === 0, }" @click="flyingColumnAction = 0">なし</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnAction !== 1, 'btn-secondary': flyingColumnAction === 1, }" @click="flyingColumnAction = 1">内政</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnAction !== 2, 'btn-secondary': flyingColumnAction === 2, }" @click="flyingColumnAction = 2">守備</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnAction !== 3, 'btn-secondary': flyingColumnAction === 3, }" @click="flyingColumnAction = 3">攻撃</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnAction !== 4, 'btn-secondary': flyingColumnAction === 4, }" @click="flyingColumnAction = 4">遊撃</button>
+              </div>
+              <div v-show="flyingColumnAction === 2 || flyingColumnAction === 3 || flyingColumnAction === 4">
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnSoldierType !== 0, 'btn-secondary': flyingColumnSoldierType === 0, }" @click="flyingColumnSoldierType = 0">最弱</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnSoldierType !== 1, 'btn-secondary': flyingColumnSoldierType === 1, }" @click="flyingColumnSoldierType = 1">戟兵</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnSoldierType !== 2, 'btn-secondary': flyingColumnSoldierType === 2, }" @click="flyingColumnSoldierType = 2">騎兵</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': flyingColumnSoldierType !== 3, 'btn-secondary': flyingColumnSoldierType === 3, }" @click="flyingColumnSoldierType = 3">弩兵</button>
+              </div>
+              <Map
+                v-show="flyingColumnAction === 1 || flyingColumnAction === 2 || flyingColumnAction === 3 || flyingColumnAction === 4"
+                :towns="model.towns"
+                :countries="model.countries"
+                :town="mapDialogSelectedTown"
+                :currentTown="model.characterTown"
+                :store="model.store"
+                @selected="onMapDialogSelected($event)"
+                style="height:400px;min-height:50vh"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCustomizeFlyingColumnDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="closeMapDialog(); isOpenCustomizeFlyingColumnDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 別動隊削除 -->
+      <div v-if="isOpenRemoveFlyingColumnDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">別働隊削除</div>
+          <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
+        </h2>
+        <div class="dialog-content dialog-content-secretary loading-container">
+          <div class="dialog-content-secretary-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.characterAiCharacters"
+                canSelect="true"
+                v-model="targetSecretary"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters || this.model.unitModel.isUpdating"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenRemoveFlyingColumnDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="targetSecretary.id > 0" @click="model.commands.inputer.inputSecretaryRemoveCommand(68, targetSecretary.id); isOpenRemoveFlyingColumnDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- 武将アイコン追加 -->
       <div v-if="isOpenCharacterIconPickerDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">新規アイコン追加</h2>
@@ -1127,6 +1207,7 @@
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
                          :canChange="false"
+                         :skills="model.store.skills"
                          v-model="selectedFormationType"
                          style="flex:1"/>
         </div>
@@ -1180,11 +1261,11 @@
         <div class="dialog-footer">
           <div class="left-side">
             <button class="btn btn-light" @click="isOpenCharacterItemDialog = false">閉じる</button>
-            <button class="btn btn-danger" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 1)">拒否</button>
+            <button class="btn btn-danger" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 1, true)">拒否</button>
           </div>
           <div class="right-side">
             <button class="btn btn-secondary" v-show="model.hasPendingItems" @click="model.receiveAllItems()">一括受取</button>
-            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 3)">承認</button>
+            <button class="btn btn-primary" v-show="selectedCharacterItemType.type.id >= 0" @click="model.addCharacterItem(selectedCharacterItemType.type.id, selectedCharacterItemType.id, 3, true)">承認</button>
           </div>
         </div>
       </div>
@@ -1368,6 +1449,8 @@
         </h2>
         <div class="dialog-content" style="display:flex;flex-direction:column">
           <TownSubBuildingList v-model="selectedTownSubBuilding"
+                               :store="model.store"
+                               :isShowAll="false"
                                style="flex:1"/>
         </div>
         <div class="dialog-footer">
@@ -1482,6 +1565,16 @@
           <div class="right-side">
             <button class="btn btn-primary" @click="isOpenWelcomeDialog = false">承認</button>
           </div>
+        </div>
+      </div>
+    </div>
+    <div id="status-yesno" v-if="isYesno">
+      <div class="yesno-background" @click="isYesno = false"></div>
+      <div class="yesno-dialog">
+        <div class="message">{{ yesnoMessage }}</div>
+        <div class="commands">
+          <button class="btn btn-light" @click="isYesno = false">いいえ</button>
+          <button class="btn btn-primary" @click="isYesno = false; yesnoEvent()">はい</button>
         </div>
       </div>
     </div>
@@ -1617,7 +1710,11 @@ export default class StatusPage extends Vue {
   public isOpenRemoveTownSubBuildingDialog: boolean = false;
   public isOpenMapDialog: boolean = false;
   public isOpenWelcomeDialog: boolean = false;
+  public isOpenCustomizeFlyingColumnDialog: boolean = false;
+  public isOpenRemoveFlyingColumnDialog: boolean = false;
   public isOpenImage: boolean = false;
+  public isYesno: boolean = false;
+  public yesnoMessage: string = '';
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
@@ -1632,6 +1729,8 @@ export default class StatusPage extends Vue {
   public targetSecretary: api.Character = new api.Character(-1);
   public targetCharacter: api.Character = new api.Character(-1);
   public targetUnit: api.Unit = new api.Unit(-1);
+  public flyingColumnAction: number = 0;
+  public flyingColumnSoldierType: number = 0;
   public newCountryCommandersMessage: string = '';
   public newCountrySolicitationMessage: string = '';
   public newCountryUnifiedMessage: string = '';
@@ -1672,8 +1771,11 @@ export default class StatusPage extends Vue {
       || this.isOpenCharacterItemBuyDialog || this.isOpenCharacterItemSellDialog || this.isOpenSkillDialog
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
-      || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage;
+      || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
+      || this.isOpenRemoveFlyingColumnDialog;
   }
+  
+  public yesnoEvent: () => void = () => undefined;
 
   public openCommandDialog(event: string) {
     if (event === 'soldier') {
@@ -1717,6 +1819,16 @@ export default class StatusPage extends Vue {
       this.mapDialogMode = 2;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenSecretaryTownDialog = true;
+    } else if (event === 'flyingcolumn-customize') {
+      this.targetSecretary.id = -1;
+      this.model.updateCharacterCountryCharacters();
+      this.mapDialogMode = 7;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenCustomizeFlyingColumnDialog = true;
+    } else if (event === 'flyingcolumn-remove') {
+      this.targetSecretary.id = -1;
+      this.model.updateCharacterCountryCharacters();
+      this.isOpenRemoveFlyingColumnDialog = true;
     } else if (event === 'formation-add') {
       this.selectedFormationType = new def.FormationType(-1);
       this.isOpenFormationAddDialog = true;
@@ -1777,7 +1889,8 @@ export default class StatusPage extends Vue {
       this.isOpenCharacterItemDialog = this.isOpenCharacterItemBuyDialog = this.isOpenCharacterItemSellDialog =
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
-      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage = false;
+      this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
+      this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = false;
   }
 
   public closeMapDialog() {
@@ -1791,6 +1904,9 @@ export default class StatusPage extends Vue {
       this.model.commands.inputer.inputMoveCommand(61, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 6) {
       this.model.giveTownToCountry(this.mapDialogSelectedTown.id);
+    } else if (this.mapDialogMode === 7) {
+      this.model.commands.inputer.inputCustomizeFlyingColumnCommand(67, this.targetSecretary.id,
+        this.flyingColumnAction, this.mapDialogSelectedTown.id, this.flyingColumnSoldierType);
     }
     this.isOpenMapDialog = false;
   }
@@ -1959,6 +2075,12 @@ export default class StatusPage extends Vue {
   private openImage(event: any) {
     this.imageUrl = event;
     this.isOpenImage = true;
+  }
+
+  private openYesno(event: any) {
+    this.yesnoMessage = event.message;
+    this.yesnoEvent = event.onYes;
+    this.isYesno = true;
   }
 
   private reloadPage() {
@@ -2665,6 +2787,48 @@ ul.nav {
     pointer-events: all;
     .dialog-background {
       opacity: 0.5;
+    }
+  }
+}
+
+/*
+    <div id="status-yesno">
+      <div class="yesno-background"></div>
+      <div class="yesno-dialog">
+        <div class="message">本当によろしいですか？</div>
+        <div class="commands">
+          <button class="btn btn-light">いいえ</button>
+          <button class="btn btn-primary">はい</button>
+        </div>
+      </div>
+    </div>*/
+#status-yesno {
+  width: 100%;
+  position: relative;
+  z-index: 100;
+  .yesno-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  .yesno-dialog {
+    position: fixed;
+    bottom: 0;
+    left: calc(50% - 150px);
+    width: 300px;
+    height: 120px;
+    max-width: 100vw;
+    padding: 16px 32px;
+    text-align: center;
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    .message {
+      flex: 1;
     }
   }
 }

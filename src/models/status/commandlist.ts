@@ -93,7 +93,13 @@ export default class CommandList {
 
   public get canInputSpy(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 45 || s === 47);
+    return skills.some((s) => s === 45 || s === 47 || s === 55);
+  }
+
+  public get canInputChangeTime(): boolean {
+    const items = this.store.items.filter((i) => i.characterId === this.store.character.id &&
+                                                 i.status === api.CharacterItem.statusCharacterHold);
+    return items.some((i) => i.type === 84);
   }
 
   public get restTurns(): number {

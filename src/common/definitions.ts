@@ -32,7 +32,7 @@ export const UPDATE_TIME = 600;
 /**
  * 更新を開始する年
  */
-export const UPDATE_START_YEAR = 24;
+export const UPDATE_START_YEAR = 12;
 
 /**
  * 戦闘解除ターン
@@ -90,34 +90,34 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(1, 0, 4, '剣兵', 1, 0, '0', '0'),
   new SoldierType(2, 0, 4, '禁兵', 1, 0, '10', '10'),
   new SoldierType(500, 0, 4, '剣兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、わずかな補正を得る'),
-  new SoldierType(3, 0, 4, '軽戟兵', 8, 200, '30', '30', '低級兵種'),
-  new SoldierType(33, 0, 4, '戟兵', 14, 500, '60', '60', '中級兵種'),
-  new SoldierType(8, 0, 4, '重戟兵', 20, 800, '90', '90', '高級兵種', undefined, true, 75),
-  new SoldierType(26, 0, 4, '青洲兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 64),
-  new SoldierType(30, 0, 5, '牛兵', 8, 200, '30', '30', '低級兵種'),
-  new SoldierType(5, 0, 5, '軽騎兵', 14, 500, '60', '60', '中級兵種'),
-  new SoldierType(9, 0, 5, '重騎兵', 20, 800, '90', '90', '高級兵種', undefined, true, 76),
-  new SoldierType(38, 0, 5, '戦車兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 77),
-  new SoldierType(4, 0, 6, '弓兵', 8, 200, '30', '30', '低級兵種'),
-  new SoldierType(45, 0, 6, '長弓兵', 14, 500, '60', '60', '中級兵種'),
-  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種', undefined, true, 83),
-  new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種', undefined, true, 63),
+  new SoldierType(3, 0, 4, '軽戟兵', 8, 200, '30', '30', '低級兵種。騎に強く弩に弱い'),
+  new SoldierType(33, 0, 4, '戟兵', 14, 500, '60', '60', '中級兵種。騎に強く弩に弱い'),
+  new SoldierType(8, 0, 4, '重戟兵', 20, 800, '90', '90', '高級兵種。騎に強く弩に弱い', undefined, true, 75),
+  new SoldierType(26, 0, 4, '青洲兵', 35, 1200, '120', '120', '最高級兵種。騎に強く弩に弱い', undefined, true, 64),
+  new SoldierType(30, 0, 5, '牛兵', 8, 200, '30', '30', '低級兵種。弩に強く戟に弱い'),
+  new SoldierType(5, 0, 5, '軽騎兵', 14, 500, '60', '60', '中級兵種。弩に強く戟に弱い'),
+  new SoldierType(9, 0, 5, '重騎兵', 20, 800, '90', '90', '高級兵種。弩に強く戟に弱い', undefined, true, 76),
+  new SoldierType(38, 0, 5, '戦車兵', 35, 1200, '120', '120', '最高級兵種。弩に強く戟に弱い', undefined, true, 77),
+  new SoldierType(4, 0, 6, '弓兵', 8, 200, '30', '30', '低級兵種。戟に強く騎に弱い'),
+  new SoldierType(45, 0, 6, '長弓兵', 14, 500, '60', '60', '中級兵種。戟に強く騎に弱い'),
+  new SoldierType(6, 0, 6, '強弩兵', 20, 800, '90', '90', '高級兵種。戟に強く騎に弱い', undefined, true, 83),
+  new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種。戟に強く騎に弱い', undefined, true, 63),
   new SoldierType(13, 0, 2, '衝車', 20, 500, '0', '0', '対城壁に特化'),
   new SoldierType(14, 0, 2, '井闌', 30, 600, '0', '0', '対城壁に特化。衝車より強い'),
-  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い', undefined, undefined, undefined, undefined, undefined, 4),
+  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い'),
   new SoldierType(32, 0, 2, '祈祷兵', 22, 800, '0', '0', '低級兵種。陣形の相性により大きな攻撃力を得る'),
   new SoldierType(34, 0, 4, '槍兵', 14, 500, '30', '30', '低級兵種'),
   new SoldierType(31, 0, 4, '投石兵', 12, 600, '50', '50', '中級兵種'),
-  new SoldierType(36, 0, 5, '槍騎兵', 12, 600, '50', '50', '中級兵種'),
-  new SoldierType(37, 0, 6, '弓騎兵', 12, 600, '50', '50', '中級兵種'),
+  new SoldierType(36, 0, 5, '槍騎兵', 12, 600, '50', '50', '中級兵種。弩に強く戟に弱い'),
+  new SoldierType(37, 0, 6, '弓騎兵', 12, 600, '50', '50', '中級兵種。戟に強く騎に弱い'),
   new SoldierType(27, 0, 5, '象兵', 25, 800, '0', '0', '突撃に大きな補正', undefined, true, 67),
-  new SoldierType(28, 0, 4, '藤甲兵', 25, 800, '0', '160', '高い防御力を持つ', undefined, true, 68),
+  new SoldierType(28, 0, 4, '藤甲兵', 25, 800, '0', '180', '高い防御力を持つ', undefined, true, 68),
   new SoldierType(23, 1, 4, '梓叡兵', 8, 300, '0', '0', '文官向けの最弱の兵種', undefined, undefined, undefined, [48, 10]),
-  new SoldierType(7, 1, 4, '梓歩兵',  15, 600, '30', '10', '文官向けの兵種'),
-  new SoldierType(24, 1, 5, '梓馬兵', 15, 600, '40', '0', '文官向けの兵種'),
-  new SoldierType(42, 1, 6, '梓弓兵', 15, 600, '20', '20', '文官向けの兵種'),
+  new SoldierType(7, 1, 4, '梓歩兵',  18, 600, '60', '60', '文官向けの兵種。騎に強く弩に弱い'),
+  new SoldierType(24, 1, 5, '梓馬兵', 18, 600, '60', '60', '文官向けの兵種。弩に強く戟に弱い'),
+  new SoldierType(42, 1, 6, '梓弓兵', 18, 600, '60', '60', '文官向けの兵種。戟に強く騎に弱い'),
   new SoldierType(29, 1, 2, '梓琴兵', 25, 600, '0', '0', '文官向けの兵種', undefined, undefined, undefined, 50),
-  new SoldierType(43, 1, 6, '梓弩兵', 35, 1300, '70', '70', '文官向けの兵種', undefined, undefined, undefined, 50),
+  new SoldierType(43, 1, 6, '梓弩兵', 35, 1300, '70', '70', '文官向けの兵種。戟に強く騎に弱い', undefined, undefined, undefined, 50),
   new SoldierType(44, 1, 4, '工作兵', 22, 1000, '0', '0', '文官向けの兵種'),
   new SoldierType(12, 1, 7, '壁守兵', 22, 1000, '0', '110', '文官向けの兵種。高い防御力を持つ'),
   new SoldierType(25, 3, 4, '義勇兵', 10, 300, '0', '0', '仁官向けの最弱の兵種', 30),
@@ -508,6 +508,34 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (64:1)';
     }
   }),
+  new CommandNameResolver(65, '静養'),
+  new CommandNameResolver(66, '別動隊を雇用'),
+  new CommandNameResolver(67, '[%読込中%] {1}{2} %0%', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const action = p.firstOrDefault((pp) => pp.type === 2);
+      if (!action) {
+        return 'エラー (67:2)';
+      }
+      const actionName = action.numberValue === 0 ? ' なし' :
+        action.numberValue === 1 ? ' 内政' :
+        action.numberValue === 2 ? ' 守備' :
+        action.numberValue === 3 ? ' 攻撃' :
+        action.numberValue === 4 ? ' 遊撃' : '';
+      const soldierType = p.firstOrDefault((pp) => pp.type === 3);
+      let soldierTypeName = '';
+      if (soldierType) {
+        soldierTypeName = soldierType.numberValue === 0 ? ' 標準' :
+          soldierType.numberValue === 1 ? ' 戟兵' :
+          soldierType.numberValue === 2 ? ' 騎兵' :
+          soldierType.numberValue === 3 ? ' 弩兵' : '';
+      }
+      return format.replace('{1}', actionName).replace('{2}', soldierTypeName);
+    } else {
+      return 'エラー (67:1)';
+    }
+  }),
+  new CommandNameResolver(68, '別動隊 %読込中% を削除'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -562,6 +590,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(35, '割譲', 'blue'),
   new EventType(36, '降伏', 'red'),
   new EventType(37, '玉璽', 'darkorange'),
+  new EventType(38, '解雇', 'purple'),
 ];
 
 /**
@@ -888,7 +917,8 @@ export class CharacterItemType {
                      public canHandOver: boolean = true,
                      public canUse: boolean = false,
                      public isResource: boolean = false,
-                     public defaultResource: number = 0) {}
+                     public defaultResource: number = 0,
+                     public isResourceItem: boolean = false) {}
 }
 export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(1, 5000, '槍', '武力 +1'),
@@ -974,6 +1004,8 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(81, 80000, '技能書', '使用で技能ポイント +72', true, true, true),
   new CharacterItemType(82, 500000, '黄巾の旗', '使用で即時黄巾出現、全面戦争開始', false, false, true),
   new CharacterItemType(83, 20, '強弩装備', '強弩兵徴兵可能', true, true, false, true, 1000),
+  new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
+  new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
 ];
 
 /**
@@ -996,13 +1028,15 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(7, '官吏 Lv.2', '内政効果 +50%、コマンド 都市巡回', 320, (skills) => skills.some((s) => s.type === 6)),
   new CharacterSkillType(8, '官吏 Lv.a3', '非戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 54)),
   new CharacterSkillType(54, '官吏 Lv.b3', '戦時中内政効果 +50%、政策開発時、未取得政策ブースト確率 +5%', 320, (skills) => skills.some((s) => s.type === 7) && !skills.some((s) => s.type === 8)),
-  new CharacterSkillType(9, '官吏 Lv.4', '歩兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
-  new CharacterSkillType(10, '官吏 Lv.5', '兵種 梓叡兵、毎月知力Ex +11', 400, (skills) => skills.some((s) => s.type === 9)),
-  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、毎ターン金 +100', 0, (_) => false),
-  new CharacterSkillType(12, '商人 Lv.2', '米売買上限 +5000、貢献 +15', 280, (skills) => skills.some((s) => s.type === 11)),
-  new CharacterSkillType(13, '商人 Lv.3', 'アイテム購入価格 -20%、内政時出現 +0.4%、アイテム上限 +2', 360, (skills) => skills.some((s) => s.type === 12)),
-  new CharacterSkillType(14, '商人 Lv.4', 'コマンド 都市投資', 400, (skills) => skills.some((s) => s.type === 13)),
-  new CharacterSkillType(15, '商人 Lv.5', '米売買上限 +8000', 360, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(9, '官吏 Lv.4', '戟兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
+  new CharacterSkillType(10, '官吏 Lv.5', '壁属性含む兵種使用時、混乱 +5%、毎月知力Ex +11', 400, (skills) => skills.some((s) => s.type === 9)),
+  new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、米売買時貢献 +15', 0, (_) => false),
+  new CharacterSkillType(12, '商人 Lv.2', 'コマンド 都市投資', 280, (skills) => skills.some((s) => s.type === 11)),
+  new CharacterSkillType(13, '商人 Lv.3', '米売買上限 +10000', 360, (skills) => skills.some((s) => s.type === 12)),
+  new CharacterSkillType(14, '商人 Lv.a4', 'アイテム上限 +2、内政時出現 +8%', 400, (skills) => !skills.some((s) => s.type === 55) && skills.some((s) => s.type === 13)),
+  new CharacterSkillType(15, '商人 Lv.a5', 'アイテム上限 +2、アイテム購入価格 -20%', 360, (skills) => skills.some((s) => s.type === 14)),
+  new CharacterSkillType(55, '商人 Lv.b4', '米売買上限 +10000', 400, (skills) => !skills.some((s) => s.type === 14) && skills.some((s) => s.type === 13)),
+  new CharacterSkillType(56, '商人 Lv.b5', '建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 55)),
   new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
   new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、歩兵装備、騎兵装備、弩生産可能', 360, (skills) => skills.some((s) => s.type === 16)),
   new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、強弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),
@@ -1021,7 +1055,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(51, '農家 Lv.b3', '義戈兵徴兵可能', 320, (skills) => !skills.some((s) => s. type === 33) && skills.some((s) => s.type === 32)),
   new CharacterSkillType(52, '農家 Lv.b4', '義殲兵徴兵可能', 280, (skills) => skills.some((s) => s.type === 51)),
   new CharacterSkillType(53, '農家 Lv.b5', '投擲器生産可能', 480, (skills) => skills.some((s) => s.type === 52)),
-  new CharacterSkillType(36, '兵家 Lv.1', '毎ターン陣形Ex +4', 0, (_) => false),
+  new CharacterSkillType(36, '兵家 Lv.1', '獲得可能な陣形 +2', 0, (_) => false),
   new CharacterSkillType(37, '兵家 Lv.2', 'コマンド 合同訓練', 400, (skills) => skills.some((s) => s.type === 36)),
   new CharacterSkillType(38, '兵家 Lv.3', '攻撃力 +40、突撃確率 +10%、突撃攻撃力 +80', 320, (skills) => skills.some((s) => s.type === 37)),
   new CharacterSkillType(39, '兵家 Lv.4', 'コマンド 書物執筆、兵法書生産可能', 280, (skills) => skills.some((s) => s.type === 38)),
@@ -1045,14 +1079,20 @@ export class TownSubBuildingType {
   public constructor(public id: number = 0,
                      public name: string = '',
                      public size: number = 0,
+                     public buildDuring: number = 0,
                      public money: number = 0,
-                     public description: string = '') {}
+                     public description: string = '',
+                     public needSkill: number | number[] = 0) {}
 }
 export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
-  new TownSubBuildingType(1, '農地', 1, 10000, '農業最大 +500'),
-  new TownSubBuildingType(2, '市場', 1, 10000, '商業最大 +500'),
-  new TownSubBuildingType(3, '工房', 1, 20000, '技術最大 +300'),
-  new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
-  new TownSubBuildingType(5, '集落', 2, 10000, '人口最大 +10000。人望 100 が必要'),
-  new TownSubBuildingType(6, '城塞', 2, 25000, '城壁最大 +500。武力 100 が必要'),
+  new TownSubBuildingType(1, '農地', 1, 12, 10000, '農業最大 +500'),
+  new TownSubBuildingType(2, '市場', 1, 12, 10000, '商業最大 +500'),
+  new TownSubBuildingType(3, '工房', 1, 12, 20000, '技術最大 +300'),
+  // new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
+  new TownSubBuildingType(5, '集落', 2, 12, 10000, '人口最大 +10000。人望 100 が必要'),
+  new TownSubBuildingType(6, '城塞', 2, 24, 25000, '城壁最大 +500。武力 100 が必要'),
+  new TownSubBuildingType(7, '商業組合', 1, 48, 50000, '毎年 1 , 7 月、国庫に金 4000 〜 8000。技能が必要', 56),
+  new TownSubBuildingType(8, '破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回城壁 -7'),
+  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -2、農民 -100'),
+  new TownSubBuildingType(10, '防衛拠点', 2, 36, 30000, '隣接する戦争相手都市建築物から受ける自都市被害 -66%'),
 ];

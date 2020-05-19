@@ -11,6 +11,7 @@ import StatusStore from './statusstore';
 export default class CommandInputer {
   public commands: api.CharacterCommand[] = [];
   public isInputing = false;
+  public isStopCommand: boolean = false;
   private lastClickedCommand?: api.CharacterCommand;
 
   public get canInput(): boolean {
@@ -134,6 +135,16 @@ export default class CommandInputer {
     });
   }
 
+  public inputCustomizeFlyingColumnCommand(commandType: number, id: number, action: number,
+                                           townId: number, soldierType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, action));
+      c.parameters.push(new api.CharacterCommandParameter(3, soldierType));
+      c.parameters.push(new api.CharacterCommandParameter(4, townId));
+    });
+  }
+
   public inputFormationCommand(commandType: number, id: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
@@ -190,6 +201,7 @@ export default class CommandInputer {
       });
       this.sendCommands(selectCommands, () => {
         NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+        this.isStopCommand = false;
       });
     } else {
       NotificationService.inputCommandsFailedBecauseCommandNotSelected.notify();
@@ -375,11 +387,31 @@ export default class CommandInputer {
   }
 
   public insertCommands() {
-    this.editCommands(true, false);
+    this.isInputing = true;
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    api.Api.setCommandsEx('insert', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
+      .then(() => {
+        this.editCommands(true, false);
+        this.isStopCommand = false;
+      })
+      .catch(() => {
+        NotificationService.inputCommandsFailed.notify();
+      })
+      .finally(() => this.isInputing = false);
   }
 
   public removeCommands() {
-    this.editCommands(false, false);
+    this.isInputing = true;
+    const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
+    api.Api.setCommandsEx('remove', selectCommands.map((s) => api.GameDateTime.toNumber(s.gameDate)))
+      .then(() => {
+        this.editCommands(false, false);
+        this.isStopCommand = false;
+      })
+      .catch(() => {
+        NotificationService.inputCommandsFailed.notify();
+      })
+      .finally(() => this.isInputing = false);
   }
 
   public loopCommands() {
@@ -451,8 +483,7 @@ export default class CommandInputer {
       this.updateCommandName(es.new);
     });
 
-    this.isInputing = true;
-    this.sendCommands(pushCommands, () => {
+    const after = () => {
       const newCommands = Enumerable
         .from(pushCommands)
         .concat(this.commands.filter((c) => !commands.some((cc) => cc.commandNumber === c.commandNumber)))
@@ -478,16 +509,24 @@ export default class CommandInputer {
       } else {
         NotificationService.commandRemoved.notify();
       }
-    });
+    };
+
+    if (isLoop) {
+      this.isInputing = true;
+      this.sendCommands(pushCommands, after);
+    } else {
+      after();
+    }
   }
 
   public updateCommandName(command: api.CharacterCommand) {
     api.CharacterCommand.updateName(command);
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
-    if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61) {
+    if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
+      command.type === 67) {
       // 都市データ（移動、戦争、偵察）
-      const paramTypeId = command.type === 47 ? 2 : 1;
+      const paramTypeId = command.type === 47 ? 2 : command.type === 67 ? 4 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
@@ -497,7 +536,7 @@ export default class CommandInputer {
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
-        command.type === 47 || command.type === 52) {
+        command.type === 47 || command.type === 52 || command.type === 67 || command.type === 68) {
       // サーバからデータを取ってこないとデータがわからない特殊なコマンドは、こっちのほうで名前を変える
       // 登用、国庫搬出、政務官削除、配属
 

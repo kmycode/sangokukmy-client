@@ -220,6 +220,26 @@ export default class NotificationService {
     '解任',
     'あなたは、役職を解任されました。',
     NotificationServiceItemDefaultType.information);
+  public static readonly stopedCommand = new NotificationServiceItem(
+    '謹慎',
+    '{0} を謹慎しました。次のコマンド入力まで、コマンドが実行されなくなります',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly stopCommandFailed = new NotificationServiceItem(
+    '謹慎失敗',
+    '{0} の謹慎に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly myCommandsStoped = new NotificationServiceItem(
+    '謹慎',
+    '謹慎されました。次のコマンド入力まで、コマンドが実行されなくなります',
+    NotificationServiceItemDefaultType.warning);
+  public static readonly dismissaled = new NotificationServiceItem(
+    '解雇',
+    '{0} を解雇しました。解雇理由を連絡してください',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly dismissalFailed = new NotificationServiceItem(
+    '解雇失敗',
+    '{0} の解雇に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly allianced = new NotificationServiceItem(
     '同盟手続き成功',
     '同盟の手続きは、無事相手に送信されました。',
@@ -447,6 +467,10 @@ export default class NotificationService {
   public static readonly getAllCharactersFailed = new NotificationServiceItem(
     '武将取得失敗',
     '武将取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly getCharacterDetailFailed = new NotificationServiceItem(
+    '武将詳細取得失敗',
+    '武将詳細取得に失敗しました',
     NotificationServiceItemDefaultType.error);
   public static readonly chatPrivateReceived = new NotificationServiceItem(
     '個宛',
@@ -732,6 +756,10 @@ export default class NotificationService {
     'アイテム一括入手',
     '入手できるだけのアイテムを入手しました',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly itemAvailableChangeFailed = new NotificationServiceItem(
+    'アイテム状態変更失敗',
+    'アイテムの状態変更に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly skillGetSucceed = new NotificationServiceItem(
     '技能獲得成功',
     '技能の獲得に成功しました',

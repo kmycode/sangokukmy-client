@@ -6,7 +6,7 @@
       <div class="skill-info">
         <div class="standard">
           <div class="name responsive-header">{{ subBuildingType.name }}</div>
-          <div class="point"><span class="value-name">敷地</span> <span class="value">{{ subBuildingType.size }}</span><span class="value-name">金</span> <span class="value">{{ subBuildingType.money }}</span></div>
+          <div class="point"><span class="value-name">敷地</span> <span class="value">{{ subBuildingType.size }}</span><span class="value-name">期間</span> <span class="value">{{ subBuildingType.buildDuring }} 月</span><span class="value-name">金</span> <span class="value">{{ subBuildingType.money }}</span></div>
           <div class="description">{{ subBuildingType.description }}</div>
         </div>
         <div class="select-cover" @click="$emit('input', subBuildingType)"></div>
@@ -22,6 +22,7 @@ import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
+import StatusStore from '../../models/status/statusstore';
 
 @Component({
   components: {
@@ -29,11 +30,41 @@ import Enumerable from 'linq';
   },
 })
 export default class SkillList extends Vue {
-  public subBuildingTypes: def.TownSubBuildingType[] = def.TOWN_SUB_BUILDING_TYPES;
+  public subBuildingTypes: def.TownSubBuildingType[] = [];
 
+  @Prop({
+    default: () => new StatusStore(),
+  }) public store!: StatusStore;
   @Prop({
     default: () => new def.TownSubBuildingType(-1),
   }) public value!: def.TownSubBuildingType;
+  @Prop({
+    default: true,
+  }) public isShowAll!: boolean;
+
+  private mounted() {
+    this.onStoreChanged();
+  }
+
+  @Watch('store')
+  @Watch('isShowAll')
+  private onStoreChanged() {
+    if (!this.isShowAll) {
+      this.subBuildingTypes = def.TOWN_SUB_BUILDING_TYPES
+        .filter((t) => {
+          if (t.needSkill) {
+            if (typeof(t.needSkill) === 'number') {
+              return this.store.skills.some((s) => s.type === t.needSkill);
+            } else {
+              return t.needSkill.some((ns) => this.store.skills.some((s) => s.type === ns));
+            }
+          }
+          return true;
+        });
+    } else {
+      this.subBuildingTypes = def.TOWN_SUB_BUILDING_TYPES;
+    }
+  }
 }
 </script>
 
