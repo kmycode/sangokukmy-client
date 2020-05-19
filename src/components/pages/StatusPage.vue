@@ -1205,6 +1205,7 @@
           <FormationList :currentFormationType="model.character.formationType"
                          :formations="model.formations"
                          :canChange="false"
+                         :skills="model.store.skills"
                          v-model="selectedFormationType"
                          style="flex:1"/>
         </div>

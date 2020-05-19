@@ -41,7 +41,7 @@
     <div v-show="canAdd && newFormationTypes.length > 0" style="margin-top:48px">
       <h2>追加可能な陣形</h2>
       <div class="alert alert-warning">
-        陣形は <strong>3</strong> まで獲得できます (現在 <strong>{{ currentFormationCount }}</strong> )
+        陣形は <strong>{{ formationMax }}</strong> まで獲得できます (現在 <strong>{{ currentFormationCount }}</strong> )
       </div>
       <div
         :class="{'item': true, 'selected': canAddSelect && value.id === formation.id, 'selectable': canAddSelect}"
@@ -103,10 +103,17 @@ export default class FormationList extends Vue {
   @Prop({
     default: true,
   }) public canAddSelect!: boolean;
+  @Prop({
+    default: () => [],
+  }) public skills!: api.CharacterSkill[];
 
   public get currentFormationCount(): number {
     const defaultFormation = def.FORMATION_TYPES[0];
     return this.formations.filter((f) => f.type !== defaultFormation.id).length;
+  }
+
+  public get formationMax(): number {
+    return this.skills.some((s) => s.type === 36) ? 5 : 3;
   }
 
   @Watch('formations')
