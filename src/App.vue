@@ -94,6 +94,10 @@ body {
     background: #444;
     color: white;
   }
+  &.btn-sm {
+    font-size: 0.9rem;
+    padding: 2px 8px;
+  }
 }
 
 @keyframes loading-animation {

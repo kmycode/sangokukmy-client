@@ -8,10 +8,16 @@
         <div class="standard">
           <div class="name responsive-header">
             <span class="kind kind-resource" v-if="item.type.isResource && !item.type.isResourceItem">資</span>
-            {{ item.type.name }}
+            <span class="name-label">{{ item.type.name }}</span>
             <span class="kind kind-sell" v-if="item.type.canSell">売却</span>
             <span class="kind kind-handover" v-if="item.type.canHandOver">譲渡</span>
             <span class="kind kind-use" v-if="item.type.canUse">使用</span>
+            <span>
+              <button v-if="item.type.isResource && !item.type.isResourceItem" type="button" :class="{'btn btn-toggle btn-sm loading-container': true, 'selected': item.data[0].isAvailable}" @click="toggleItemAvailable(item)">
+                有効
+                <div class="loading" v-show="isLoading"><div class="loading-icon"></div></div>
+              </button>
+            </span>
           </div>
           <div class="params">
             <span v-if="item.type.isResource">
@@ -66,6 +72,7 @@ import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
+import NotificationService from '../../services/notificationservice';
 
 class CharacterItemListItem {
   public get count(): number {
@@ -85,6 +92,7 @@ export default class CharacterItemList extends Vue {
   @Prop() public items!: api.CharacterItem[];
   public itemTypes: CharacterItemListItem[] = [];
   public pendingTypes: CharacterItemListItem[] = [];
+  public isLoading: boolean = false;
   @Prop({
     default: false,
   }) public canEdit!: boolean;
@@ -141,7 +149,8 @@ export default class CharacterItemList extends Vue {
                                 i.first().type.id, 0, 0, i.sum((j) => Enumerable.from(j.data).sum((k) => k.resource)),
                                 i.selectMany((j) => j.data)
                                  .orderBy((k) => api.GameDateTime.toNumber(k.lastStatusChangedGameDate))
-                                 .first().lastStatusChangedGameDate),
+                                 .first().lastStatusChangedGameDate,
+                                i.first().data[0].isAvailable),
         ]));
 
     return items
@@ -163,6 +172,21 @@ export default class CharacterItemList extends Vue {
       }
     }
     return m;
+  }
+
+  private toggleItemAvailable(item: CharacterItemListItem) {
+    this.isLoading = true;
+    api.Api.addCharacterItem(item.type.id, item.data[0].id, api.CharacterItem.statusCharacterHold,
+                             !item.data[0].isAvailable)
+      .then(() => {
+        // item.data[0].isAvailable = !item.data[0].isAvailable;
+      })
+      .catch(() => {
+        NotificationService.itemAvailableChangeFailed.notify();
+      })
+      .finally(() => {
+        this.isLoading = false;
+      });
   }
 }
 </script>
@@ -206,6 +230,13 @@ export default class CharacterItemList extends Vue {
     .item-info {
       .name {
         flex: 1;
+        display: flex;
+        align-items: center;
+
+        .name-label {
+          margin: 0 16px 0 0;
+          flex: 1;
+        }
 
         .kind {
           display: inline-block;

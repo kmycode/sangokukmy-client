@@ -1009,7 +1009,8 @@ export class CharacterItem {
                      public townId: number,
                      public characterId: number,
                      public resource: number,
-                     public lastStatusChangedGameDate: GameDateTime) {}
+                     public lastStatusChangedGameDate: GameDateTime,
+                     public isAvailable: boolean) {}
 }
 
 export class CharacterSkill {
@@ -1779,12 +1780,13 @@ export class Api {
     }
   }
 
-  public static async addCharacterItem(item: number, itemId: number, status: number): Promise<any> {
+  public static async addCharacterItem(item: number, itemId: number, status: number, isAvailable: boolean): Promise<any> {
     try {
       await axios.post(def.API_HOST + 'items', {
         type: item,
         id: itemId,
         status,
+        isAvailable,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);

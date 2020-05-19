@@ -736,6 +736,10 @@ export default class NotificationService {
     'アイテム一括入手',
     '入手できるだけのアイテムを入手しました',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly itemAvailableChangeFailed = new NotificationServiceItem(
+    'アイテム状態変更失敗',
+    'アイテムの状態変更に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly skillGetSucceed = new NotificationServiceItem(
     '技能獲得成功',
     '技能の獲得に成功しました',
