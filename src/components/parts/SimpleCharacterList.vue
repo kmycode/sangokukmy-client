@@ -65,14 +65,14 @@
               <div class="message" v-if="chara.detail && chara.detail.message">
                 <KmyChatTagText :isNewLine="false" :text="chara.detail.message"/>
               </div>
+              <span v-if="chara.detail && chara.detail.isStopCommand" class="stop-command">謹慎中</span>
               <div class="commands">
-                <span v-if="chara.detail && chara.detail.isStopCommand" class="stop-command">謹慎中</span>
-                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 1" style="margin-right:30px" class="btn btn-sm btn-warning" @click="stopCommand(chara)">謹慎</button>
-                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 2" style="margin-right:30px" class="btn btn-sm btn-danger" @click="dismissal(chara)">解雇</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 1" class="btn btn-sm btn-warning" @click="stopCommand(chara)">謹慎</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" v-show="openMoreCommands == 2" class="btn btn-sm btn-danger" @click="dismissal(chara)">解雇</button>
+                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" class="btn btn-light btn-sm" type="button" @click="toggleOpenMoreCommands()">操作</button>
                 <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && getPostName(chara.id, chara.countryId) !== '君主' && (!chara.reinforcement || (chara.reinforcement.status === 2 || chara.reinforcement.status === 3 || chara.reinforcement.status === 5 || chara.reinforcement.status === 6))" class="btn btn-warning btn-sm" type="button" @click="$emit('reinforcement-request', chara)">援軍要請</button>
                 <button v-if="canReinforcement && chara.countryId !== myCountryId && (!chara.aiType || chara.aiType === 28) && chara.reinforcement && chara.reinforcement.status === 1" class="btn btn-light btn-sm" type="button" @click="$emit('reinforcement-cancel', chara)">援軍要請取消</button>
                 <button v-if="canPrivateChat && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28)" class="btn btn-light btn-sm" type="button" @click="$emit('private-chat', chara)">個宛</button>
-                <button v-if="canPunishment && chara.id !== myCharacterId && (!chara.aiType || chara.aiType === 28) && chara.countryId === myCountryId" class="btn btn-light btn-sm" type="button" @click="toggleOpenMoreCommands()">操作</button>
               </div>
               <div v-if="canEdit && chara.countryId === myCountryId && chara.countryId > 0 && chara.id !== myCharacterId && getPostName(chara.id, chara.countryId) !== '君主'" class="post-selection">
                 <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup(chara)">
@@ -554,6 +554,8 @@ export default class SimpleCharacterList extends Vue {
       .detail-commands {
         display: flex;
         justify-content: flex-end;
+        flex-wrap: wrap;
+        align-items: center;
 
         .message {
           flex: 1;
