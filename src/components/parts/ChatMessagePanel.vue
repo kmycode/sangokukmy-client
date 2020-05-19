@@ -178,6 +178,11 @@ export default class ChatMessagePanel extends Vue {
     });
   }
 
+  @Watch('model.sendTo')
+  private onSendToChanged() {
+    this.updateCanSendChat();
+  }
+
   private selectedImage(ev: any) {
     if (ev.target.files && ev.target.files.length > 0) {
       this.loadImageFromFile(ev.target.files[0]);
