@@ -959,7 +959,7 @@ export default class StatusModel {
     if (townBuilding && townBuilding.id) {
       if (town.ricePrice !== undefined) {
         ps.push(new TwinTextAndRangedStatusParameter(
-          '都市施設', townBuilding.name, '耐久', town.townBuildingValue, 2000));
+          '都市施設', townBuilding.name, '開発度', town.townBuildingValue, 2000));
       } else {
         ps.push(new TextStatusParameter('都市施設', townBuilding.name));
       }
