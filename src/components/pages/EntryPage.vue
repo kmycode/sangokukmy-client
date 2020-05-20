@@ -111,6 +111,11 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
             <br>その他<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
+            <div v-show="selectedSkills.length > 0">
+              <div v-for="skill in selectedSkills" :key="skill.id">
+                <span style="font-weight: bold">{{ skill.name }}</span> - <span style="color: #666">{{ skill.description }}</span>
+              </div>
+            </div>
           </div>
           <div class="detail">
             出身を指定してください。出身に合った能力が自動で入力されます
@@ -351,6 +356,7 @@ export default class EntryPage extends Vue {
   private isSelectedBeginner: boolean = false;
   private isKingCheck1: boolean = false;
   private isKingCheck2: boolean = false;
+  private selectedSkills: def.CharacterSkillType[] = [];
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -630,10 +636,8 @@ export default class EntryPage extends Vue {
 
   private onFromChanged(id: number) {
     this.character.from = id;
-    if (this.isEditAttributes) {
-      return;
-    }
 
+    let skillId = 0;
     let strong = 0;
     let intellect = 0;
     let leadership = 0;
@@ -646,57 +650,71 @@ export default class EntryPage extends Vue {
       leadership = 90;
       popularity = 5;
       primaries = [1, 3, 2, 4];
+      skillId = 1;
     } else if (id === api.CharacterSkill.typeIntellect) {
       strong = 5;
       intellect = 100;
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+      skillId = 6;
     } else if (id === api.CharacterSkill.typeMerchant) {
       strong = 5;
       intellect = 100;
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+      skillId = 11;
     } else if (id === api.CharacterSkill.typeEngineer) {
       strong = 100;
       intellect = 5;
       leadership = 90;
       popularity = 5;
       primaries = [1, 3, 2, 4];
+      skillId = 16;
     } else if (id === api.CharacterSkill.typeTerrorist) {
       strong = 100;
       intellect = 5;
       leadership = 90;
       popularity = 5;
       primaries = [1, 3, 2, 4];
+      skillId = 26;
     } else if (id === api.CharacterSkill.typePeople) {
       strong = 5;
       intellect = 5;
       leadership = 90;
       popularity = 100;
       primaries = [4, 3, 2, 1];
+      skillId = 31;
     } else if (id === api.CharacterSkill.typeTactician) {
       strong = 90;
       intellect = 5;
       leadership = 100;
       popularity = 5;
       primaries = [3, 1, 2, 4];
+      skillId = 36;
     } else if (id === api.CharacterSkill.typeScholar) {
       strong = 5;
       intellect = 100;
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+      skillId = 41;
     } else if (id === api.CharacterSkill.typeStaff) {
       strong = 5;
       intellect = 100;
       leadership = 90;
       popularity = 5;
       primaries = [2, 3, 4, 1];
+      skillId = 46;
     }
 
     if (!primaries) {
+      return;
+    }
+
+    this.selectedSkills = this.getSkillItems(skillId);
+    if (this.isEditAttributes) {
       return;
     }
 
@@ -736,6 +754,25 @@ export default class EntryPage extends Vue {
 
   private resetTown() {
     this.town = new api.Town();
+  }
+
+  private getSkillItems(firstId: number): def.CharacterSkillType[] {
+    const skills = [new api.CharacterSkill(0, firstId, 0, 0)];
+    def.CHARACTER_SKILL_TYPES.filter((s) => {
+      if (s.subjectAppear) {
+        return s.subjectAppear(skills);
+      }
+      return true;
+    }).forEach((s) => {
+      this.getSkillItems(s.id).forEach((ss) => {
+        if (!skills.some((sss) => sss.type === ss.id)) {
+          skills.push(new api.CharacterSkill(0, ss.id, 0, 0));
+        }
+      });
+    });
+    return skills.map((s) => {
+      return def.CHARACTER_SKILL_TYPES.filter((ss) => ss.id === s.type)[0];
+    });
   }
 
   private entry() {
