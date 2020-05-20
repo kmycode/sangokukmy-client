@@ -167,7 +167,7 @@ export default class CharacterItemList extends Vue {
     if (this.isSell) {
       return m / 2;
     } else if (this.isBuy) {
-      if (this.skills.some((s) => s.type === 13)) {
+      if (this.skills.some((s) => s.type === 15)) {
         return Math.floor(m * 0.8);
       }
     }
