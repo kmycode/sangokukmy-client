@@ -14,7 +14,7 @@
             <span class="kind kind-use" v-if="item.type.canUse">使用</span>
             <span>
               <button v-if="!canEdit && item.type.isResource && !item.type.isResourceItem" type="button" :class="{'btn btn-toggle btn-sm loading-container': true, 'selected': item.data[0].isAvailable}" @click="toggleItemAvailable(item)">
-                有効
+                <span v-show="item.data[0].isAvailable">有効</span><span v-show="!item.data[0].isAvailable">無効</span>
                 <div class="loading" v-show="isLoading"><div class="loading-icon"></div></div>
               </button>
             </span>
@@ -167,7 +167,7 @@ export default class CharacterItemList extends Vue {
     if (this.isSell) {
       return m / 2;
     } else if (this.isBuy) {
-      if (this.skills.some((s) => s.type === 13)) {
+      if (this.skills.some((s) => s.type === 15)) {
         return Math.floor(m * 0.8);
       }
     }
