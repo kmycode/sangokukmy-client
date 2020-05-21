@@ -5,7 +5,7 @@
       <div class="message-container">
         <div class="message">
           <div class="text">
-            <KmyChatTagText :text="message.message"/>
+            <KmyChatTagText :text="message.message" :isIssueLink="isIssueLink" @issue-link="$emit('issue-link', $event)"/>
             <div v-if="message.imageKey" class="image">
               <img :src="iconBaseUri + 'c_' + message.id + '_' + message.imageKey + '.png'" @click.prevent.stop="$emit('open-image', iconBaseUri + 'c_' + message.id + '_' + message.imageKey + '.png')"/>
             </div>
@@ -108,6 +108,9 @@ export default class ChatMessageItem extends Vue {
   @Prop({
     default: false,
   }) public isLoading!: boolean;
+  @Prop({
+    default: false,
+  }) public isIssueLink!: boolean;
   private isOpenReports: boolean = false;
   private isShowForce: boolean = false;
   private isMuting: boolean = false;

@@ -57,7 +57,7 @@
           <div :class="'thread-list-item' + (thread.status >= 6 && thread.status <= 11 ? ' completed' : '')"
               v-for="thread in threads"
               :key="thread.id">
-            <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a></h4>
+            <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a><span class="thread-id">#{{ thread.id }}</span></h4>
             <div class="thread-info">
               <div class="thread-writer">{{ thread.lastWriterAccountName }}</div>
               <div class="thread-updated">{{ thread.lastModified | realdate }}</div>
@@ -110,8 +110,9 @@
         </div>
       </div>
       <div v-if="currentThread.length > 0" class="current-thread">
-        <button type="button" class="btn btn-secondary" @click="currentThread = []; loadPage(page)">スレッド一覧に戻る</button>
-        <h3 class="current-thread">{{ currentThread[0].title }}</h3>
+        <button v-if="navigateStack.length <= 0" type="button" class="btn btn-secondary" @click="currentThread = []; loadPage(page)">スレッド一覧に戻る</button>
+        <button v-else type="button" class="btn btn-secondary" @click="backIssue()">戻る</button>
+        <h3 class="current-thread">{{ currentThread[0].title }}<span class="thread-id">#{{ currentThread[0].id }}</span></h3>
         <div class="thread-info">
           <div :class="'thread-status thread-status-' + currentThread[0].status">{{ getThreadStatus(currentThread[0].status) }}</div>
           <div :class="'thread-category thread-category-' + currentThread[0].category">{{ getThreadCategory(currentThread[0].category) }}</div>
@@ -122,14 +123,14 @@
               :key="thread.id"
               class="thread-item">
             <div class="message">
-              <div class="text"><KmyChatTagText :text="thread.text"/></div>
+              <div class="text"><KmyChatTagText :text="thread.text" :isIssueLink="true" @issue-link="openIssue($event)"/></div>
             </div>
             <div class="message-footer">
               <span class="character-name-group">
                 <span class="character-name">{{ thread.accountName }}</span>
               </span>
               <span class="posted">{{ thread.written | realdate }}</span>
-              <span v-if="!isShowForce && account.id !== thread.accountId">
+              <span v-if="account.id !== thread.accountId">
                 <a class="btn btn-sm btn-light" style="width:20px;height:16px;line-height:12px;margin-left:8px;font-size:12px" @click="toggleReportOpen(thread)">...</a>
                 <div v-if="thread.isOpenReports" style="margin-top:8px">
                   <div v-if="!isReported(thread)">
@@ -213,6 +214,7 @@ export default class IssueBbs extends Vue {
   private isOpenStatusPopup = false;
   private isOpenNewThreadForm = false;
   private canNextPage = false;
+  private navigateStack: number[] = [];
 
   private created() {
     this.loadPage(1);
@@ -281,6 +283,24 @@ export default class IssueBbs extends Vue {
         NotificationService.loadThreadFailed.notify();
       })
       .finally(() => this.isUpdating = false);
+  }
+
+  private openIssue(id: number) {
+    if (this.currentThread.length > 0) {
+      if (this.currentThread[0].id !== id) {
+        this.navigateStack.push(this.currentThread[0].id);
+        this.loadThread(id);
+      }
+    } else {
+      this.loadThread(id);
+    }
+  }
+
+  private backIssue() {
+    if (this.navigateStack.length > 0) {
+      const id = this.navigateStack.pop() as number;
+      this.loadThread(id);
+    }
   }
 
   private loadThread(id: number) {
@@ -423,6 +443,13 @@ h3 {
     background: none;
     color: #666;
     margin-bottom: 4px;
+
+    .thread-id {
+      font-size: 16px;
+      font-weight: normal;
+      color: #999;
+      margin-left: 16px;
+    }
   }
 }
 
@@ -437,6 +464,14 @@ h3 {
       margin: 0;
       font-weight: bold;
       text-decoration: underline;
+
+      .thread-id {
+        color: #999;
+        font-size: 1rem;
+        margin-left: 16px;
+        font-weight: normal;
+        text-decoration: none;
+      }
     }
 
     &.completed {

@@ -57,11 +57,13 @@
             :isLoading="model.isLoading"
             :mutes="mutes"
             :muteKeyword="muteKeyword"
+            :isIssueLink="isIssueLink"
             @chat-private="$emit('chat-private', $event)"
             @chat-other-country="$emit('chat-other-country', $event)"
             @promotion-refuse="model.setPromotionStatusAsync($event, 10)"
             @promotion-apply="model.setPromotionStatusAsync($event, 9)"
-            @open-image="$emit('open-image', $event)"/>
+            @open-image="$emit('open-image', $event)"
+            @issue-link="$emit('issue-link', $event)"/>
         </div>
       </transition-group>
       <div v-show="model.isLoading" class="loading-container load-more">
@@ -108,6 +110,9 @@ export default class ChatMessagePanel extends Vue {
   @Prop({
     default: 0,
   }) public myCountryId!: number;
+  @Prop({
+    default: false,
+  }) public isIssueLink!: boolean;
   private callFocus: EventObject = new EventObject(() => {
     (this.$refs.chatMessageInput as HTMLTextAreaElement).focus();
   });

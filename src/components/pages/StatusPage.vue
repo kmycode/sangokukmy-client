@@ -269,10 +269,12 @@
                               :myCountryId="model.character.countryId"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
+                              :isIssueLink="true"
                               @chat-other-country="readyOtherCountryChatById($event)"
                               @call-focus="callCountryChatFocus = $event"
                               @chat-private="readyPrivateChatById($event)"
-                              @open-image="openImage"/>
+                              @open-image="openImage"
+                              @issue-link="openIssueLink($event)"/>
           </div>
           <div v-show="selectedChatCategory === 1 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.privateChat"
@@ -283,9 +285,11 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
+                              :isIssueLink="true"
                               @chat-private="readyPrivateChatById($event)"
                               @call-focus="callPrivateChatFocus = $event"
-                              @open-image="openImage"/>
+                              @open-image="openImage"
+                              @issue-link="openIssueLink($event)"/>
           </div>
           <div v-show="selectedChatCategory === 5 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.globalChat"
@@ -295,8 +299,10 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
+                              :isIssueLink="true"
                               @chat-private="readyPrivateChatById($event)"
-                              @open-image="openImage"/>
+                              @open-image="openImage"
+                              @issue-link="openIssueLink($event)"/>
           </div>
           <div v-show="selectedChatCategory === 6 && selectedActionTab === 1" class="messages">
             <ChatMessagePanel :model="model.global2Chat"
@@ -306,8 +312,10 @@
                               :myCharacterId="model.character.id"
                               :mutes="model.store.mutes"
                               :muteKeyword="model.store.muteKeyword"
+                              :isIssueLink="true"
                               @chat-private="readyPrivateChatById($event)"
-                              @open-image="openImage"/>
+                              @open-image="openImage"
+                              @issue-link="openIssueLink($event)"/>
           </div>
         </div>
         <!-- 会議室 -->
@@ -512,7 +520,8 @@
         </div>
         <!-- 専用BBS -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 9" class="right-side-content content-setting" style="display:flex;flex-direction:column">
-          <IssueBbs :isAdministrator="model.character.aiType === 28"
+          <IssueBbs ref="bbs"
+                    :isAdministrator="model.character.aiType === 28"
                     :account="model.store.account"
                     :mutes="model.store.mutes"
                     :onNewThreadReceived="model.issueBbsItemReceivedEventHandler"/>
@@ -2075,6 +2084,12 @@ export default class StatusPage extends Vue {
   private openImage(event: any) {
     this.imageUrl = event;
     this.isOpenImage = true;
+  }
+
+  private openIssueLink(id: number) {
+    this.selectedActionTab = 3;
+    this.selectedActionTabSubPanel = 9;
+    (this.$refs.bbs as any).openIssue(id);
   }
 
   private openYesno(event: any) {
