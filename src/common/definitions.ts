@@ -1067,7 +1067,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(45, '学者 Lv.5', 'コマンド 偵察', 280, (skills) => skills.some((s) => s.type === 44)),
   new CharacterSkillType(46, '参謀 Lv.1', '毎ターン知力 +7', 0, (_) => false),
   new CharacterSkillType(47, '参謀 Lv.2', '攻撃力 +20、コマンド 偵察', 320, (skills) => skills.some((s) => s.type === 46)),
-  new CharacterSkillType(48, '参謀 Lv.3', '兵種 梓叡兵、突撃防御力 +20', 400, (skills) => skills.some((s) => s.type === 47)),
+  new CharacterSkillType(48, '参謀 Lv.3', '防御力 +20、同士討ち確率 +2％', 400, (skills) => skills.some((s) => s.type === 47)),
   new CharacterSkillType(49, '参謀 Lv.4', '突撃確率 +2%、突撃攻撃力 +60、混乱確率 +4%', 320, (skills) => skills.some((s) => s.type === 48)),
   new CharacterSkillType(50, '参謀 Lv.5', '兵種 梓琴兵・梓弩兵、戦闘が１ターンで終了時の連戦確率 +50%', 360, (skills) => skills.some((s) => s.type === 49)),
 ];
