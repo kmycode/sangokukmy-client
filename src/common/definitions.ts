@@ -1061,7 +1061,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(39, '兵家 Lv.4', 'コマンド 書物執筆、兵法書生産可能', 280, (skills) => skills.some((s) => s.type === 38)),
   new CharacterSkillType(40, '兵家 Lv.5', '連戦確率 +10%', 400, (skills) => skills.some((s) => s.type === 39)),
   new CharacterSkillType(41, '学者 Lv.1', '毎ターン知力 +7', 0, (_) => false),
-  new CharacterSkillType(42, '学者 Lv.2', '内政効果 +30%', 240, (skills) => skills.some((s) => s.type === 41)),
+  new CharacterSkillType(42, '学者 Lv.2', '内政効果 +40%', 240, (skills) => skills.some((s) => s.type === 41)),
   new CharacterSkillType(43, '学者 Lv.3', 'コマンド 書物執筆、註釈書生産可能', 480, (skills) => skills.some((s) => s.type === 42)),
   new CharacterSkillType(44, '学者 Lv.4', '私撰書生産可能、アイテム上限 +1', 400, (skills) => skills.some((s) => s.type === 43)),
   new CharacterSkillType(45, '学者 Lv.5', 'コマンド 偵察', 280, (skills) => skills.some((s) => s.type === 44)),
