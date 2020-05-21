@@ -1,5 +1,5 @@
 <template>
-  <span v-html="formatedText">
+  <span ref="text" v-html="formatedText">
   </span>
 </template>
 
@@ -13,10 +13,14 @@ import * as api from './../../api/api';
 })
 export default class KmyChatTagText extends Vue {
   private static readonly reg = new RegExp('((https?|http)(:\/\/[-_.!~*\'()a-zA-Z0-9;\/?:\@&=+\$,%#]+))', 'g');
+  private static readonly reg2 = new RegExp('((?!.+http)#([0-9]+)(?!.+<\/a>))', 'g');
   @Prop() private text!: string;
   @Prop({
     default: true,
   }) private isNewLine!: boolean;
+  @Prop({
+    default: false,
+  }) private isIssueLink!: boolean;
 
   private get formatedText(): string {
     let text = this.text
@@ -41,6 +45,9 @@ export default class KmyChatTagText extends Vue {
       .replace(/\[-u\]/g, '</span>')
       .replace(/\[-m\]/g, '</span>')
       .replace(KmyChatTagText.reg, '<a href="$1" target="_blank">$1</a>');
+    if (this.isIssueLink) {
+      text = text.replace(KmyChatTagText.reg2, '<a href="#" class="issue-link">$1</a>');
+    }
     if (this.isNewLine) {
       text = text.replace(/\n/g, '<br>');
     }
@@ -54,6 +61,19 @@ export default class KmyChatTagText extends Vue {
       }
     }
     return text;
+  }
+
+  private mounted() {
+    const text = this.$refs.text as HTMLElement;
+    const issues = text.getElementsByClassName('issue-link');
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i] as HTMLLinkElement;
+      issue.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const num = parseInt((ev.target as HTMLLinkElement).innerText.substr(1), 10);
+        this.$emit('issue-link', num);
+      });
+    }
   }
 }
 </script>
