@@ -49,7 +49,7 @@ export default class CommandList {
 
   public get canInputTownInvent(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 14);
+    return skills.some((s) => s === 12);
   }
 
   public get canInputGenerateItem(): boolean {
