@@ -1087,7 +1087,7 @@ export class TownSubBuildingType {
 export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(1, '農地', 1, 12, 10000, '農業最大 +500'),
   new TownSubBuildingType(2, '市場', 1, 12, 10000, '商業最大 +500'),
-  new TownSubBuildingType(3, '工房', 1, 12, 20000, '技術最大 +300'),
+  new TownSubBuildingType(3, '工房', 2, 12, 20000, '技術最大 +300'),
   // new TownSubBuildingType(4, '大規模工房', 2, 10000, '投石器徴兵可。出身 技師、兵家、参謀 が必要'),
   new TownSubBuildingType(5, '集落', 2, 12, 10000, '人口最大 +10000。人望 100 が必要'),
   new TownSubBuildingType(6, '城塞', 2, 24, 25000, '城壁最大 +500。武力 100 が必要'),
