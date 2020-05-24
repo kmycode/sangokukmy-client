@@ -54,7 +54,8 @@ class RankingData {
                      charas: api.Character[],
                      isContainsAi: boolean = false) {
     const ranking = Enumerable.from(charas)
-      .where((c) => (c as any)[property] !== 0 && (isContainsAi || c.aiType === api.Character.aiHuman))
+      .where((c) => (c as any)[property] !== 0 &&
+        (isContainsAi || (c.aiType === api.Character.aiHuman || c.aiType === api.Character.aiAdministrator)))
       .orderByDescending((c) => (c as any)[property])
       .take(5);
     this.characters = ranking.toArray();
