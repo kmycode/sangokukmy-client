@@ -112,7 +112,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(37, 0, 6, '弓騎兵', 12, 600, '50', '50', '中級兵種。戟に強く騎に弱い'),
   new SoldierType(27, 0, 5, '象兵', 25, 800, '0', '0', '突撃に大きな補正', undefined, true, 67),
   new SoldierType(28, 0, 4, '藤甲兵', 25, 800, '0', '180', '高い防御力を持つ', undefined, true, 68),
-  new SoldierType(23, 1, 4, '梓叡兵', 8, 300, '0', '0', '文官向けの最弱の兵種', undefined, undefined, undefined, [48, 10]),
+  new SoldierType(23, 1, 4, '梓叡兵', 8, 300, '0', '0', '文官向けの最弱の兵種'),
   new SoldierType(7, 1, 4, '梓歩兵',  18, 600, '60', '60', '文官向けの兵種。騎に強く弩に弱い'),
   new SoldierType(24, 1, 5, '梓馬兵', 18, 600, '60', '60', '文官向けの兵種。弩に強く戟に弱い'),
   new SoldierType(42, 1, 6, '梓弓兵', 18, 600, '60', '60', '文官向けの兵種。戟に強く騎に弱い'),
