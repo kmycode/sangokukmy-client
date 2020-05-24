@@ -231,7 +231,7 @@ export default class SimpleCharacterList extends Vue {
     if (soldierType) {
       return soldierType.name;
     }
-    return '雑兵';
+    return def.SOLDIER_TYPES[0].name;
   }
 
   private getCharacterNextTime(time: api.DateTime): api.DateTime {
