@@ -34,7 +34,7 @@
           </div>
           <div class="post-character-notexists" v-else>不在</div>
         </div>
-        <div class="history-toggle loading-container" v-show="!history.isOpen" @click="history.isOpen = true">詳細<div class="layer"></div><div v-show="history.isLoading" class="loading"><div class="loading-icon"></div></div></div>
+        <div class="history-toggle loading-container" v-show="!history.isOpen" @click="history.isOpen = true">詳細 ( {{ history.characters.length }} 名)<div class="layer"></div><div v-show="history.isLoading" class="loading"><div class="loading-icon"></div></div></div>
         <div class="history-toggle" v-show="history.isOpen" @click="history.isOpen = false">閉じる<div class="layer"></div></div>
         <div :class="'character-list country-color-' + history.unifiedCountry.colorId">
           <MiniCharacterList v-if="!history.isOpen" :countries="history.history.countries" :characters="history.history.characters"/>
@@ -161,6 +161,7 @@ class HistoryData {
   private updateData() {
     this.history.characters = Enumerable
       .from(this.history.characters)
+      .where((c) => c.name.indexOf('_') < 0)
       .orderByDescending((c) => c.countryId)
       .toArray();
     this.history.characters.forEach((c) => {
