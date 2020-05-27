@@ -172,9 +172,11 @@ class HistoryData {
     this.history.countries.forEach((c) => {
       c.id = (c as any).countryId;
     });
-    this.history.maplogs.forEach((m) => {
-      m.isImportant = true;
-    });
+    if (this.history.maplogs) {
+      this.history.maplogs.forEach((m) => {
+        m.isImportant = true;
+      });
+    }
 
     if (this.history.towns) {
       const unified = this.unifiedCountry;
