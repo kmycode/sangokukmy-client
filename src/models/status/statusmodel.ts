@@ -251,7 +251,10 @@ export default class StatusModel {
     if (skills.some((s) => s.type === 11)) {
       max += 2;
     }
-    if (skills.some((s) => s.type === 13)) {
+    if (skills.some((s) => s.type === 14)) {
+      max += 2;
+    }
+    if (skills.some((s) => s.type === 15)) {
       max += 2;
     }
     if (skills.some((s) => s.type === 19)) {
@@ -1089,8 +1092,7 @@ export default class StatusModel {
       }
     }
 
-    if (((this.country.id < 0 && country.id === this.character.countryId) || country.id === this.country.id) ||
-        isUpdateRequested) {
+    if (country.id === this.country.id || isUpdateRequested) {
       this.setCountry(country);
     }
   }
