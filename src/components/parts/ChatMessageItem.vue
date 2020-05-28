@@ -194,14 +194,14 @@ export default class ChatMessageItem extends Vue {
 
 .chat-message {
   border-bottom-width: 1px;
-  border-bottom-style: dashed;
+  border-bottom-style: dotted;
   @include country-color-deep('border-bottom-color');
+  @include country-color-light('background-color');
 }
 
 .chat-message > div {
   display: flex;
   padding: 6px;
-  @include country-color-light('background-color');
   @include country-color-deep('color');
 
   .message-container {
