@@ -842,7 +842,7 @@ export const FORMATION_TYPES: FormationType[] = [
                                '攻撃力 +8',
                                '攻撃力 +16',
                                '攻撃力 +32'],
-                        '無', undefined, false, [1000, 2000, 5000, 8000]),
+                        '無', undefined, false, [1000, 3000, 6000, 10000]),
   new FormationType(1, '魚鱗', ['攻撃力 +8',
                                '攻撃力 +16',
                                '攻撃力 +16、防御力 +16、属性攻撃力 +16',
