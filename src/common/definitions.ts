@@ -817,8 +817,10 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
     4, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 29)),
   new CountryPolicyType(30, 3000, '檄', '義勇兵が徴兵可能',
     4, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 31)),
-  new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、攻城属性を除き、常に城壁攻撃力 +60',
+  new CountryPolicyType(47, 3000, '城内拡張', 'すべての都市の敷地 +1',
     4, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 30)),
+  new CountryPolicyType(32, 4000, '衝車常備', '戦闘時、攻城属性を除き、常に城壁攻撃力 +60',
+    4, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 47)),
 
   new CountryPolicyType(37, 0, '胡人徴発', '重騎兵の徴兵コスト /2', 3, undefined,
     '異民族を滅亡せしめる', false),
