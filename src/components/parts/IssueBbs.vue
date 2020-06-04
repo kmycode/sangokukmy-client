@@ -312,7 +312,7 @@ export default class IssueBbs extends Vue {
     this.isUpdating = true;
     api.Api.getIssue(id)
       .then((items) => {
-        this.currentThread = items;
+        this.currentThread = items.reverse();
         this.currentThreadReply = '';
       })
       .catch(() => {
