@@ -473,6 +473,7 @@ export class Country {
                      public aiType: number = 0,
                      public isHaveGyokuji: boolean = false,
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
+                     public isGyokujiRefused: boolean = false,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastRequestedIncomes?: number,
@@ -1297,6 +1298,15 @@ export class Api {
           type: post,
           characterId,
         }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryGyokujiRefused(isRefused: boolean): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/gyokuji/' + (isRefused ? 'false': 'true'), {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

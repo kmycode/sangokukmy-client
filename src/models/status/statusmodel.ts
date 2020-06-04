@@ -1304,6 +1304,20 @@ export default class StatusModel {
       });
   }
 
+  public updateCountryGyokujiRefused(isRefused: boolean) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryGyokujiRefused(isRefused)
+      .then(() => {
+        NotificationService.countryGyokujiRefusedUpdated.notify();
+      })
+      .catch((ex) => {
+        NotificationService.countryGyokujiRefusedUpdateFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
   // #endregion
 
   // #region CountryPost
