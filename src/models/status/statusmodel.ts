@@ -593,6 +593,7 @@ export default class StatusModel {
     if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
       return Enumerable
         .from(this.store.defenders.filter((c) => c.townId === this.town.id))
+        .orderByDescending((d) => d.id)
         .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
         .where((c) => c !== undefined && c !== null)
         .toArray();
