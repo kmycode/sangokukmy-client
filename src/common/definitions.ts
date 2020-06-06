@@ -1008,6 +1008,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(83, 20, '強弩装備', '強弩兵徴兵費用 -50%', true, true, false, true, 1000),
   new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
   new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
+  new CharacterItemType(86, 500000, '真実の鏡', '使用で本物の玉璽を持っている国が判明（武将ログに出力）', false, false, true),
 ];
 
 /**
