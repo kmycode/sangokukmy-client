@@ -45,6 +45,10 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMilestonePopup = false; filteringMilestone = 4; loadPage(1)">未設定</a>
           </div>
         </button>
+        <div>
+          <input type="text" style="width:70%;margin-right:8px" v-model="filteringKeyword"/>
+          <button type="button" class="btn btn-secondary" @click="loadPage(1)">検索</button>
+        </div>
         <div v-show="isNeedUpdatePage" class="alert alert-warning">
           スレッド一覧を更新してください
         </div>
@@ -210,6 +214,7 @@ export default class IssueBbs extends Vue {
   private page = 1;
   private filteringMilestone = 0;
   private filteringStatus = 0;
+  private filteringKeyword = '';
   private isOpenMilestonePopup = false;
   private isOpenStatusPopup = false;
   private isOpenNewThreadForm = false;
@@ -270,7 +275,7 @@ export default class IssueBbs extends Vue {
 
   private loadPage(num: number) {
     this.isUpdating = true;
-    api.Api.getIssuePage(num - 1, this.filteringMilestone, this.filteringStatus)
+    api.Api.getIssuePage(num - 1, this.filteringMilestone, this.filteringStatus, this.filteringKeyword)
       .then((items) => {
         this.threads = items;
         this.page = num;
@@ -307,7 +312,7 @@ export default class IssueBbs extends Vue {
     this.isUpdating = true;
     api.Api.getIssue(id)
       .then((items) => {
-        this.currentThread = items;
+        this.currentThread = items.reverse();
         this.currentThreadReply = '';
       })
       .catch(() => {

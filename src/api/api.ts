@@ -473,6 +473,7 @@ export class Country {
                      public aiType: number = 0,
                      public isHaveGyokuji: boolean = false,
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
+                     public isGyokujiRefused: boolean = false,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastRequestedIncomes?: number,
@@ -1302,6 +1303,15 @@ export class Api {
     }
   }
 
+  public static async setCountryGyokujiRefused(isRefused: boolean): Promise<any> {
+    try {
+      await axios.put
+        (def.API_HOST + 'country/gyokuji/' + (isRefused ? 'false': 'true'), {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async setCharacterStopCommand(characterId: number): Promise<any> {
     try {
       await axios.put
@@ -1939,10 +1949,10 @@ export class Api {
     }
   }
 
-  public static async getIssuePage(page: number, milestone: number, status: number): Promise<IssueBbsItem[]> {
+  public static async getIssuePage(page: number, milestone: number, status: number, keyword: string): Promise<IssueBbsItem[]> {
     try {
       const result = await axios.get(def.API_HOST + 'issue/page/' + page +
-        '?milestone=' + milestone + '&status=' + status, this.authHeader);
+        '?milestone=' + milestone + '&status=' + status + '&keyword=' + keyword, this.authHeader);
       return result.data;
     } catch (ex) {
       throw Api.pickException(ex);

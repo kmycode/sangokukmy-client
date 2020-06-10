@@ -604,6 +604,14 @@ export default class NotificationService {
     '勧誘文更新失敗',
     '新規登録者勧誘文更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryGyokujiRefusedUpdated = new NotificationServiceItem(
+    '玉璽拒否設定更新',
+    '玉璽拒否設定を更新しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly countryGyokujiRefusedUpdateFailed = new NotificationServiceItem(
+    '玉璽拒否設定更新失敗',
+    '玉璽拒否設定の更新に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly countryUnifiedMessageUpdated = new NotificationServiceItem(
     'あいさつ更新',
     'あいさつを更新しました',

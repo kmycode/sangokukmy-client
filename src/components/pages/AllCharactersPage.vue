@@ -33,6 +33,20 @@
           </div>
           <div class="post-character-notexists" v-else>不在</div>
         </div>
+        <div :class="'numbers country-color-' + country.colorId">
+          <div class="number-item">
+            <div class="number-label">武将</div>
+            <div class="number">{{ country.charactersCount }}</div>
+          </div>
+          <div class="number-item">
+            <div class="number-label">人間武将</div>
+            <div class="number">{{ country.humansCount }}</div>
+          </div>
+          <div class="number-item">
+            <div class="number-label">活動中人間</div>
+            <div class="number">{{ country.activeHumansCount }}</div>
+          </div>
+        </div>
         <div :class="'character-list country-color-' + country.colorId">
           <CharacterList :countries="countries" :characters="country.characters"/>
         </div>
@@ -42,7 +56,8 @@
         <CharacterList :countries="countries" :characters="defaultCountryCharacters"/>
       </div>
       <div class="summary">
-        登録武将数 (非AI): <span class="number">{{ count }}</span> 名
+        登録人間武将数: <span class="number">{{ count }}</span> 名<br>
+        活動人間数: <span class="number-small">{{ activeCount }}</span> 名
       </div>
       <div class="cancel">
         <button v-if="!isApp" type="button" class="btn btn-light" @click="$router.push('home')">TOPに戻る</button>
@@ -73,6 +88,7 @@ export default class AllCharactersPage extends Vue {
   public countries: api.Country[] = [];
   public defaultCountryCharacters: api.Character[] = [];
   public count: number = 0;
+  public activeCount: number = 0;
   private isLoading: boolean = true;
   private isApp: boolean = false;
 
@@ -94,6 +110,9 @@ export default class AllCharactersPage extends Vue {
     const allCountries = await api.Api.getAllCountries();
     this.count = Enumerable.from(charas).count((c) => c.aiType === api.Character.aiHuman ||
                                                       c.aiType === api.Character.aiAdministrator);
+    this.activeCount = Enumerable.from(charas).count((c) =>
+          (c.aiType === api.Character.aiHuman ||
+           c.aiType === api.Character.aiAdministrator) && !c.deleteTurn);
     this.allCharacters = charas;
 
     const countries = Enumerable.from(allCountries)
@@ -108,6 +127,10 @@ export default class AllCharactersPage extends Vue {
       cdata.monarch = this.getMonarch(country);
       cdata.warrior = this.getWarrior(country);
       cdata.grandGeneral = this.getGrandGeneral(country);
+      cdata.charactersCount = cdata.characters.length;
+      cdata.humansCount = cdata.characters.filter((c: any) => (!c.aiType || c.aiType === 28)).length;
+      cdata.activeHumansCount = cdata.characters.filter((c: any) => (!c.aiType || c.aiType === 28) &&
+                                                                    !c.deleteTurn).length;
     });
     this.defaultCountryCharacters = Enumerable.from(charas)
       .except(Enumerable.from(countries).selectMany((c) => (c as any).characters as api.Character[]))
@@ -211,6 +234,26 @@ export default class AllCharactersPage extends Vue {
       }
     }
 
+    .numbers {
+      display: flex;
+      padding-top: 8px;
+      border-top: 1px dashed black;
+      @include country-color-light('background-color');
+      @include country-color-deep('border-top-color');
+      .number-item {
+        flex: 1;
+        text-align: center;
+        margin-bottom: 8px;
+        .number-label {
+          color: #666;
+          font-size: 14px;
+        }
+        .number {
+          font-weight: bold;
+        }
+      }
+    }
+
     .character-list {
       border-top-width: 5px;
       border-top-style: double;
@@ -224,6 +267,10 @@ export default class AllCharactersPage extends Vue {
     .number {
       font-weight: bold;
       font-size: 2em;
+    }
+
+    .number-small {
+      font-size: 1.8em;
     }
   }
 }

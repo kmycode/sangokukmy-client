@@ -178,6 +178,13 @@ export default class StatusModel {
       .toArray();
   }
 
+  public get characterCountryPolicies(): api.CountryPolicy[] {
+    // 選択中の国の政策
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .toArray();
+  }
+
   public get characterCountryPolicyTypes(): def.CountryPolicyType[] {
     // 選択中の国の政策
     return Enumerable.from(this.store.policies)
@@ -593,6 +600,7 @@ export default class StatusModel {
     if (this.town.countryId === this.character.countryId || this.town.id === this.character.townId) {
       return Enumerable
         .from(this.store.defenders.filter((c) => c.townId === this.town.id))
+        .orderByDescending((d) => d.id)
         .select((c) => Enumerable.from(this.store.characters).firstOrDefault((cc) => cc.id === c.characterId))
         .where((c) => c !== undefined && c !== null)
         .toArray();
@@ -974,7 +982,11 @@ export default class StatusModel {
 
     if (town.ricePrice !== undefined) {
       let subBuildingSize = 0;
-      const subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+      let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+      if (this.characterCountryPolicies.filter((cp) => cp.status === api.CountryPolicy.statusAvailable)
+                                       .some((cp) => cp.type === 47)) {
+        subBuildingSizeMax += 1;
+      }
       const buffer: StatusParameter[] = [];
       this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
         const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
@@ -1298,6 +1310,20 @@ export default class StatusModel {
         } else {
           NotificationService.countrySolicitationMessageSetFailed.notify();
         }
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
+  public updateCountryGyokujiRefused(isRefused: boolean) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryGyokujiRefused(isRefused)
+      .then(() => {
+        NotificationService.countryGyokujiRefusedUpdated.notify();
+      })
+      .catch((ex) => {
+        NotificationService.countryGyokujiRefusedUpdateFailed.notify();
       })
       .finally(() => {
         this.isUpdatingCountrySettings = false;

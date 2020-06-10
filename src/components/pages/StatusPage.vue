@@ -397,6 +397,13 @@
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
+            <div v-if="model.canCountrySettingExceptForCommands && model.gameDate.year < 36" class="setting-row loading-container">
+              <h3 :class="'country-color-' + model.characterCountryColor">玉璽受け入れ設定</h3>
+              <div>
+                <button type="button" :class="{'btn btn-toggle': true, 'selected': model.characterCountry.isGyokujiRefused}" @click="model.updateCountryGyokujiRefused(!model.characterCountry.isGyokujiRefused)">玉璽を拒否<span v-if="model.characterCountry.isGyokujiRefused">する</span><span v-else>しない</span></button>
+              </div>
+              <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
+            </div>
           </div>
         </div>
         <!-- 個人設定 -->
