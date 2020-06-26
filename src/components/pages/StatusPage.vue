@@ -129,7 +129,7 @@
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
-            <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 12 * 12 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
+            <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 10 * 12 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
