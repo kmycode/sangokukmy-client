@@ -49,7 +49,7 @@
         <h3 v-show="newData.status === 6">同盟内容修正申請</h3>
         <div class="form-group">
           <label for="allianceOption2">破棄猶予（ヶ月）</label>
-          <input type="number" max="96" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
+          <input type="number" min="0" id="allianceOption2" class="form-control" v-model="newData.breakingDelay">
         </div>
         <div class="form-check">
           <button type="button" class="btn btn-toggle selected">相互不可侵</button>
