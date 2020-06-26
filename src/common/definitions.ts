@@ -955,7 +955,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(30, 28000, '孫子の兵法書', '知力 +5'),
   new CharacterItemType(31, 55000, '青嚢書', '知力 +10'),
   new CharacterItemType(32, 55000, '孟徳新書', '知力 +10'),
-  new CharacterItemType(33, 78000, '兵法二十四編', '知力 +15'),
+  new CharacterItemType(33, 78000, '兵法二十四編', '知力 +15', false),
   new CharacterItemType(34, 105000, '信仰新書', '知力 +20'),
   new CharacterItemType(35, 28000, '十六国春秋', '知力 +5'),
   new CharacterItemType(36, 28000, '春秋左氏伝', '知力 +5'),
