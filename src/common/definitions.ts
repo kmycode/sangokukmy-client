@@ -994,7 +994,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(69, 8, '練兵', '徴兵時訓練値下限 60', true, true, false, true, 1000),
   new CharacterItemType(70, 11, '精鋭兵', '徴兵時訓練値下限 100', true, true, false, true, 1000),
   new CharacterItemType(71, 48000, '兵法書', '使用で陣形経験値 +500', true, true, true),
-  new CharacterItemType(72, 55000, '私撰書', '知力 +10'),
+  new CharacterItemType(72, 55000, '私撰書', '知力 +15'),
   new CharacterItemType(73, 48000, '注釈書', '使用で知力経験値 +2222', true, true, true),
   new CharacterItemType(74, 500000, '胡人の証', '所持した状態で経営国家、異民族に仕官可能。仕官で消費', false, true, false),
   new CharacterItemType(75, 20, '重戟装備', '重戟兵徴兵費用 -50%', true, true, false, true, 1000),
