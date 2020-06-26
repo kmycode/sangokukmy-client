@@ -1042,7 +1042,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(56, '商人 Lv.b5', '建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 55)),
   new CharacterSkillType(16, '技師 Lv.1', '攻撃力 +30', 0, (_) => false),
   new CharacterSkillType(17, '技師 Lv.2', 'コマンド 資源生産、歩兵装備、騎兵装備、弩生産可能', 360, (skills) => skills.some((s) => s.type === 16)),
-  new CharacterSkillType(18, '技師 Lv.3', '重戟装備、重騎装備、強弩装備生産可能', 360, (skills) => skills.some((s) => s.type === 17)),
+  new CharacterSkillType(18, '技師 Lv.3', '技術開発で武力を使用可能', 360, (skills) => skills.some((s) => s.type === 17)),
   new CharacterSkillType(19, '技師 Lv.4', 'アイテム上限 +2', 360, (skills) => skills.some((s) => s.type === 18)),
   new CharacterSkillType(20, '技師 Lv.5', '青洲槍、戦車、連弩装備生産可能', 320, (skills) => skills.some((s) => s.type === 19)),
   new CharacterSkillType(26, '胡人 Lv.1', '毎月武力Ex +7', 0, (_) => false),
