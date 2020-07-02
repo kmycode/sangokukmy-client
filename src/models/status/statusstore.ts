@@ -40,4 +40,5 @@ export default class StatusStore {
   public muteKeyword: api.MuteKeyword = new api.MuteKeyword('');
   public account: api.Account = new api.Account(-1);
   public aiCharacters: api.AiCharacterManagement[] = [];
+  public delayEffects: api.DelayEffect[] = [];
 }

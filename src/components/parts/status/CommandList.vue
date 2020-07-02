@@ -104,6 +104,7 @@
           </div>
         </button> -->
         <button v-if="list.canInputChangeTime" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(65)">静養</button>
+        <button v-if="canCommandComment" type="button" class="btn btn-info" @click="$emit('open', 'queue')">キュー</button>
         <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
@@ -181,7 +182,7 @@
       </div>
     </div>
     <div class="command-list-action">
-      <button type="button" class="btn btn-primary command-list-action-button" @click="isOpenMovePopup ^= true">移動
+      <button type="button" class="btn btn-info command-list-action-button" @click="isOpenMovePopup ^= true">移動
         <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMovePopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', 'top': '-280px', }">
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(1)">1</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(50)">50</a>

@@ -1084,6 +1084,19 @@ export class ChatMessageRead {
                      public lastGlobalBbsId: number) {}
 }
 
+export class DelayEffect {
+  public static readonly typeId: number = 46;
+
+  public constructor(public id: number = 0,
+                     public townId: number = 0,
+                     public countryId: number = 0,
+                     public type: number = 0,
+                     public typeData: number = 0,
+                     public typeData2: number = 0,
+                     public appearGameDateTime: GameDateTime = new GameDateTime(),
+                     public isQueue: boolean = false) {}
+}
+
 export class Api {
 
   /**

@@ -745,6 +745,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.AiCharacterManagement>(
       api.AiCharacterManagement.typeId,
       (obj) => this.onAiCharacterManagementReceived(obj));
+    ApiStreaming.status.on<api.DelayEffect>(
+      api.DelayEffect.typeId,
+      (obj) => this.onDelayEffectReceived(obj));
     ApiStreaming.status.onBeforeReconnect = () => {
       this.store.character.id = -1;
       this.store.defenders = [];
@@ -2011,6 +2014,15 @@ export default class StatusModel {
     } else {
       ArrayUtil.addItem(this.store.aiCharacters, obj);
     }
+  }
+
+  // #endregion
+
+  // #region DelayEffect
+
+  private onDelayEffectReceived(obj: api.DelayEffect) {
+    ArrayUtil.addItem(this.store.delayEffects, obj);
+    console.dir(obj);
   }
 
   // #endregion
