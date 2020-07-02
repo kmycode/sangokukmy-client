@@ -182,7 +182,7 @@
     </div>
     <div class="command-list-action">
       <button type="button" class="btn btn-primary command-list-action-button" @click="isOpenMovePopup ^= true">移動
-        <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMovePopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', 'top': '-250px', }">
+        <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMovePopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', 'top': '-280px', }">
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(1)">1</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(50)">50</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(100)">100</a>
@@ -190,8 +190,12 @@
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(200)">200</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(250)">250</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(300)">300</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; isOpenMoveInput ^= true">...</a>
         </div>
       </button>
+    </div>
+    <div class="command-list-move-input" v-show="isOpenMoveInput">
+      移動先: <input type="number" min="1" max="300" v-model.number="moveToNumber"/><button type="button" class="btn btn-secondary" @click="isOpenMoveInput = false; scrollToNumber(moveToNumber)">移動</button>
     </div>
   </div>
 </template>
@@ -229,6 +233,8 @@ export default class CommandListView extends Vue {
   private isOpenMonthPopup: boolean = false;
   private isOpenAiCharacterPopup: boolean = false;
   private isOpenMovePopup: boolean = false;
+  private isOpenMoveInput: boolean = false;
+  private moveToNumber: number = 1;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -486,6 +492,15 @@ $color-navigation-commands: #e0e0e0;
     bottom: 16px;
     right: 16px;
     z-index: 1;
+  }
+  .command-list-move-input {
+    height: 40px;
+    max-height: 40px;
+    line-height: 40px;
+    input {
+      width: 100px;
+      text-align: center;
+    }
   }
 }
 </style>
