@@ -1537,6 +1537,26 @@
           </div>
         </div>
       </div>
+      <!-- キュー -->
+      <div v-if="isOpenQueueDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">キュー</div>
+        </h2>
+        <div class="dialog-content loading-container" style="display:flex;flex-direction:column">
+          <QueueList :delayEffects="model.store.delayEffects"
+                     :towns="model.towns"
+                     v-model="selectedDelayEffect"
+                              style="flex:1"/>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenQueueDialog = false">閉じる</button>
+          </div>
+          <div class="right-side" v-if="false">
+            <button class="btn btn-primary" v-show="selectedDelayEffect.id >= 0" @click="isOpenQueueDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- ようこそ -->
       <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
@@ -1630,6 +1650,7 @@ import UnitListView from '@/components/parts/status/UnitView.vue';
 import CountryPolicyList from '@/components/parts/CountryPolicyList.vue';
 import FormationList from '@/components/parts/FormationList.vue';
 import SkillList from '@/components/parts/SkillList.vue';
+import QueueList from '@/components/parts/QueueList.vue';
 import TownSubBuildingList from '@/components/parts/TownSubBuildingList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import GenerateItemTypePicker from '@/components/parts/GenerateItemTypePicker.vue';
@@ -1673,6 +1694,7 @@ import EventObject from '@/models/common/EventObject';
     CharacterItemList,
     GenerateItemTypePicker,
     SkillList,
+    QueueList,
     TownSubBuildingList,
     RiceSimulatorView,
   },
@@ -1728,6 +1750,7 @@ export default class StatusPage extends Vue {
   public isOpenWelcomeDialog: boolean = false;
   public isOpenCustomizeFlyingColumnDialog: boolean = false;
   public isOpenRemoveFlyingColumnDialog: boolean = false;
+  public isOpenQueueDialog: boolean = false;
   public isOpenImage: boolean = false;
   public isYesno: boolean = false;
   public yesnoMessage: string = '';
@@ -1765,6 +1788,7 @@ export default class StatusPage extends Vue {
     { type: new def.CharacterItemType(-1), id: -1 };
   public selectedGenerateItemType: def.CharacterItemType = new def.CharacterItemType(-1);
   public selectedSkillType: def.CharacterSkillType = new def.CharacterSkillType(-1);
+  public selectedDelayEffect: api.DelayEffect = new api.DelayEffect(-1);
   public selectedTownSubBuilding: def.TownSubBuildingType = new def.TownSubBuildingType(-1);
   public commandCommentMessage: string = '';
   public temporaryAccount: api.Account = new api.Account(-1);
@@ -1788,7 +1812,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
-      || this.isOpenRemoveFlyingColumnDialog;
+      || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog;
   }
   
   public yesnoEvent: () => void = () => undefined;
@@ -1888,6 +1912,8 @@ export default class StatusPage extends Vue {
     } else if (event === 'subbuilding-remove') {
       this.selectedTownSubBuilding = new def.TownSubBuildingType(-1);
       this.isOpenRemoveTownSubBuildingDialog = true;
+    } else if (event === 'queue') {
+      this.isOpenQueueDialog = true;
     }
   }
 
@@ -1906,7 +1932,7 @@ export default class StatusPage extends Vue {
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
       this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
-      this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = false;
+      this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog = false;
   }
 
   public closeMapDialog() {
