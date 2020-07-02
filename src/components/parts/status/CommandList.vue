@@ -181,7 +181,7 @@
       </div>
     </div>
     <div class="command-list-action">
-      <button type="button" class="btn btn-primary command-list-action-button" @click="isOpenMovePopup ^= true">移動
+      <button type="button" class="btn btn-info command-list-action-button" @click="isOpenMovePopup ^= true">移動
         <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMovePopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', 'top': '-280px', }">
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(1)">1</a>
           <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(50)">50</a>
