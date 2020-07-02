@@ -156,11 +156,11 @@
     <div v-else-if="list.isFewRemaining" class="alert alert-warning">
       50ターン以内に、何も実行しないコマンドが存在します
     </div>
-    <div class="command-list">
+    <div class="command-list" ref="list">
       <div v-for="command in list.commands"
-            :key="command.commandNumber"
-            :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
-            @click="onCommandSelected(command, $event)">
+           :key="command.commandNumber"
+           :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
+           @click="onCommandSelected(command, $event)">
         <div v-if="command.isPreview" class="background-layer background-layer-previewed"></div>
         <div v-if="command.event === 1" class="background-layer background-layer-war-start"></div>
         <div v-if="command.event === 2" class="background-layer background-layer-in-war"></div>
@@ -179,6 +179,23 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="command-list-action">
+      <button type="button" class="btn btn-primary command-list-action-button" @click="isOpenMovePopup ^= true">移動
+        <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenMovePopup ? 'block' : 'none', 'min-width': '80px', 'right': '0', 'left': 'auto', 'top': '-280px', }">
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(1)">1</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(50)">50</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(100)">100</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(150)">150</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(200)">200</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(250)">250</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; scrollToNumber(300)">300</a>
+          <a class="dropdown-item" href="#" @click.prevent.stop="isOpenMovePopup = false; isOpenMoveInput ^= true">...</a>
+        </div>
+      </button>
+    </div>
+    <div class="command-list-move-input" v-show="isOpenMoveInput">
+      移動先: <input type="number" min="1" max="300" v-model.number="moveToNumber"/><button type="button" class="btn btn-secondary" @click="isOpenMoveInput = false; scrollToNumber(moveToNumber)">移動</button>
     </div>
   </div>
 </template>
@@ -215,6 +232,9 @@ export default class CommandListView extends Vue {
   private isOpenSubBuildingPopup: boolean = false;
   private isOpenMonthPopup: boolean = false;
   private isOpenAiCharacterPopup: boolean = false;
+  private isOpenMovePopup: boolean = false;
+  private isOpenMoveInput: boolean = false;
+  private moveToNumber: number = 1;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -253,6 +273,10 @@ export default class CommandListView extends Vue {
       }
     }
   }
+
+  private scrollToNumber(num: number) {
+    (this.$refs.list as Element).scrollTo(0, (num - 1) * 45);
+  }
 }
 </script>
 
@@ -266,6 +290,7 @@ $color-navigation-commands: #e0e0e0;
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  position: relative;
   .nav {
     .active {
       background-color: #6bf;
@@ -460,6 +485,21 @@ $color-navigation-commands: #e0e0e0;
         line-height: 1.1rem;
         color: #454545;
       }
+    }
+  }
+  .command-list-action {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    z-index: 1;
+  }
+  .command-list-move-input {
+    height: 40px;
+    max-height: 40px;
+    line-height: 40px;
+    input {
+      width: 100px;
+      text-align: center;
     }
   }
 }
