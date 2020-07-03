@@ -62,13 +62,9 @@
               v-for="thread in threads"
               :key="thread.id">
             <h4><a href="#" @click.prevent.stop="loadThread(thread.id)">{{ thread.title }}</a><span class="thread-id">#{{ thread.id }}</span></h4>
-            <div class="thread-info">
+            <div class="thread-info-list">
               <div class="thread-writer">{{ thread.lastWriterAccountName }}</div>
-              <div class="thread-updated">{{ thread.lastModified | realdate }}</div>
-            </div>
-            <div class="thread-info">
               <div :class="'thread-status thread-status-' + thread.status">{{ getThreadStatus(thread.status) }}</div>
-              <div :class="'thread-category thread-category-' + thread.category">{{ getThreadCategory(thread.category) }}</div>
               <div class="thread-milestone">{{ thread.period }}<span v-if="thread.betaVersion">.{{ thread.betaVersion }}</span></div>
             </div>
             <div v-if="isAdministrator" class="thread-info">
@@ -122,13 +118,24 @@
           <div :class="'thread-category thread-category-' + currentThread[0].category">{{ getThreadCategory(currentThread[0].category) }}</div>
           <div class="thread-milestone">{{ currentThread[0].period }}<span v-if="currentThread[0].betaVersion">.{{ currentThread[0].betaVersion }}</span></div>
         </div>
+        <div v-if="account.id > 0" class="item-post-form reply-thread">
+          <div class="text"><textarea class="text" v-model="currentThreadReply" @keyup.ctrl.enter.prevent.stop="writeThread(currentThread[0], currentThreadReply)"></textarea></div>
+          <div class="post-footer">
+            <div class="name-group">
+              <span class="label">名前</span><span class="name">{{ account.name }}</span>
+            </div>
+            <div class="buttons"><button type="button" class="btn btn-primary" @click="writeThread(currentThread[0], currentThreadReply)">書き込む</button></div>
+          </div>
+        </div>
+        <div v-else>
+          <div class="alert alert-warning">
+            書き込みするには、アカウントを作成またはログインする必要があります
+          </div>
+        </div>
         <div class="thread-items">
-          <div v-for="thread in currentThread"
+          <div v-for="thread in currentThreadReversed"
               :key="thread.id"
               class="thread-item">
-            <div class="message">
-              <div class="text"><KmyChatTagText :text="thread.text" :isIssueLink="true" @issue-link="openIssue($event)"/></div>
-            </div>
             <div class="message-footer">
               <span class="character-name-group">
                 <span class="character-name">{{ thread.accountName }}</span>
@@ -147,19 +154,9 @@
                 </div>
               </span>
             </div>
-          </div>
-        </div>
-        <h3 class="current-thread">このスレッドに書き込み</h3>
-        <div v-if="account.id > 0" class="item-post-form new-thread">
-          <div class="label">名前</div>
-          <div class="label-text">{{ account.name }}</div>
-          <div class="label">本文</div>
-          <div class="text"><textarea class="text" v-model="currentThreadReply" @keyup.ctrl.enter.prevent.stop="writeThread(currentThread[0], currentThreadReply)"></textarea></div>
-          <div class="buttons"><button type="button" class="btn btn-primary" @click="writeThread(currentThread[0], currentThreadReply)">書き込む</button></div>
-        </div>
-        <div v-else>
-          <div class="alert alert-warning">
-            書き込みするには、アカウントを作成またはログインする必要があります
+            <div class="message">
+              <div class="text"><KmyChatTagText :text="thread.text" :isIssueLink="true" @issue-link="openIssue($event)"/></div>
+            </div>
           </div>
         </div>
       </div>
@@ -220,6 +217,10 @@ export default class IssueBbs extends Vue {
   private isOpenNewThreadForm = false;
   private canNextPage = false;
   private navigateStack: number[] = [];
+
+  private get currentThreadReversed(): api.IssueBbsItem[] {
+    return this.currentThread.slice().reverse();
+  }
 
   private created() {
     this.loadPage(1);
@@ -468,7 +469,6 @@ h3 {
     h4 {
       margin: 0;
       font-weight: bold;
-      text-decoration: underline;
 
       .thread-id {
         color: #999;
@@ -498,16 +498,22 @@ div.current-thread {
   margin: 0 0 48px;
 
   .thread-items {
-    margin: 32px 0;
-    
     .thread-item {
       background: white;
-      border-bottom: 1px dashed black;
+      border-top: 16px solid #eeeeff;
+      border-left: 16px solid #eeeeff;
       padding: 8px;
+
+      &:last-child {
+        border-top: 32px solid #eeeeff;
+        border-bottom: 16px solid #eeeeff;
+        border-left-width: 0;
+      }
 
       .message {
         flex: 1;
         word-break: break-word;
+        margin-left: 16px;
 
         .commands {
           text-align: right;
@@ -516,7 +522,8 @@ div.current-thread {
 
       .message-footer {
         font-size: 0.7rem;
-        text-align: right;
+        color: #47f;
+        margin-bottom: 8px;
 
         .character-name-group {
           font-size: 0.8rem;
@@ -524,6 +531,8 @@ div.current-thread {
 
           .character-name {
             font-weight: bold;
+            color: #c42;
+            font-size: 0.9rem;
           }
         }
       }
@@ -531,23 +540,7 @@ div.current-thread {
   }
 }
 
-.thread-info {
-  display: flex;
 
-  > div {
-    flex: 1;
-    margin: 2px 4px;
-    border-left: 4px solid black;
-    padding: 2px 8px;
-  }
-  .thread-writer, .thread-updated {
-    border-width: 0;
-    margin-bottom: 0;
-  }
-
-  .thread-status {
-    border-color: blue;
-  }
   .thread-status-1 {
     font-weight: bold;
     color: #39f;
@@ -578,14 +571,6 @@ div.current-thread {
   .thread-status-12 {
     color: #f39;
   }
-
-  .thread-milestone {
-    border-color: green;
-  }
-
-  .thread-category {
-    border-color: purple;
-  }
   .thread-category-1 {
     color: #39f;
   }
@@ -600,6 +585,44 @@ div.current-thread {
   }
   .thread-category-5 {
     color: #888;
+  }
+
+.thread-info {
+  display: flex;
+
+  > div {
+    flex: 1;
+    margin: 2px 4px;
+    border-left: 4px solid black;
+    padding: 2px 8px;
+  }
+  .thread-writer, .thread-updated {
+    border-width: 0;
+    margin-bottom: 0;
+  }
+
+  .thread-status {
+    border-color: blue;
+  }
+
+  .thread-milestone {
+    border-color: green;
+  }
+
+  .thread-category {
+    border-color: purple;
+  }
+}
+
+.thread-info-list {
+  font-size: 0.9rem;
+  color: gray;
+  display: flex;
+  > div {
+    margin-right: 16px;
+  }
+  .thread-writer {
+    font-weight: bold;
   }
 }
 
@@ -634,7 +657,7 @@ div.current-thread {
     width: 100%;
   }
   textarea {
-    height: 12em;
+    height: 8em;
   }
   input {
     font-size: 20px;
@@ -651,8 +674,25 @@ div.current-thread {
   .label-text {
     margin: 8px 24px;
   }
-  &.reply {
-    margin-top: 12px;
+  &.reply-thread, &.reply {
+    margin-top: 24px;
+  }
+
+  .post-footer {
+    display: flex;
+    .name-group {
+      flex: 1;
+      .label {
+        margin-right: 16px;
+        font-size: 0.8rem;
+        color: gray;
+        font-weight: bold;
+      }
+      .name {
+        color: #c42;
+        font-weight: bold;
+      }
+    }
   }
 }
 
