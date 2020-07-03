@@ -67,40 +67,6 @@
               <div :class="'thread-status thread-status-' + thread.status">{{ getThreadStatus(thread.status) }}</div>
               <div class="thread-milestone">{{ thread.period }}<span v-if="thread.betaVersion">.{{ thread.betaVersion }}</span></div>
             </div>
-            <div v-if="isAdministrator" class="thread-info">
-              <div>
-                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(thread)">ステ</button>
-                <div class="dropdown-menu" :style="(thread.isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 2)">議論中</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 3)">採用</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 5)">実装中</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 6)">完了</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 12)">保留</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 7)">却下</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 8)">重複</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 9)">複合</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 10)">無効</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(thread); updateThreadStatus(thread, 11)">対応せず</a>
-                </div>
-              </div>
-              <div>
-                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(thread)">カテ</button>
-                <div class="dropdown-menu" :style="(thread.isCategoryPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 2)">開発</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 3)">バグ</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 4)">ルール</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(thread); updateThreadCategory(thread, 5)">その他</a>
-                </div>
-              </div>
-              <div>
-                <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleMilestonePopupOpen(thread)">マイル</button>
-                <div class="dropdown-menu" :style="(thread.isMilestonePopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 1)">今期</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 2)">来期</a>
-                  <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(thread); updateThreadMilestone(thread, 3)">リセット</a>
-                </div>
-              </div>
-            </div>
           </div>
           <div class="paging">
             <div class="paging-prev"><button v-show="page > 1" type="button" class="btn btn-light" @click="loadPage(page - 1)">戻る</button></div>
@@ -117,6 +83,40 @@
           <div :class="'thread-status thread-status-' + currentThread[0].status">{{ getThreadStatus(currentThread[0].status) }}</div>
           <div :class="'thread-category thread-category-' + currentThread[0].category">{{ getThreadCategory(currentThread[0].category) }}</div>
           <div class="thread-milestone">{{ currentThread[0].period }}<span v-if="currentThread[0].betaVersion">.{{ currentThread[0].betaVersion }}</span></div>
+        </div>
+        <div v-if="isAdministrator" class="thread-info">
+          <div>
+            <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleStatusPopupOpen(currentThread[0])">ステ</button>
+            <div class="dropdown-menu" :style="(isStatusPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 2)">議論中</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 3)">採用</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 5)">実装中</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 6)">完了</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 12)">保留</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 7)">却下</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 8)">重複</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 9)">複合</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 10)">無効</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleStatusPopupOpen(); updateThreadStatus(currentThread[0], 11)">対応せず</a>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleCategoryPopupOpen(currentThread[0])">カテ</button>
+            <div class="dropdown-menu" :style="(isCategoryPopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(); updateThreadCategory(currentThread[0], 2)">開発</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(); updateThreadCategory(currentThread[0], 3)">バグ</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(); updateThreadCategory(currentThread[0], 4)">ルール</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleCategoryPopupOpen(); updateThreadCategory(currentThread[0], 5)">その他</a>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-secondary dropdown-toggle" type="button" @click="toggleMilestonePopupOpen()">マイル</button>
+            <div class="dropdown-menu" :style="(isMilestonePopupOpen ? 'display:block' : 'display:none') + ';top:auto;left:auto'">
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(); updateThreadMilestone(currentThread[0], 1)">今期</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(); updateThreadMilestone(currentThread[0], 2)">来期</a>
+              <a class="dropdown-item" href="#" @click.prevent.stop="toggleMilestonePopupOpen(); updateThreadMilestone(currentThread[0], 3)">リセット</a>
+            </div>
+          </div>
         </div>
         <div v-if="account.id > 0" class="item-post-form reply-thread">
           <div class="text"><textarea class="text" v-model="currentThreadReply" @keyup.ctrl.enter.prevent.stop="writeThread(currentThread[0], currentThreadReply)"></textarea></div>
@@ -217,6 +217,9 @@ export default class IssueBbs extends Vue {
   private isOpenNewThreadForm = false;
   private canNextPage = false;
   private navigateStack: number[] = [];
+  private isStatusPopupOpen = false;
+  private isCategoryPopupOpen = false;
+  private isMilestonePopupOpen = false;
 
   private get currentThreadReversed(): api.IssueBbsItem[] {
     return this.currentThread.slice().reverse();
@@ -372,9 +375,8 @@ export default class IssueBbs extends Vue {
       val === api.IssueBbsItem.statusPending ? '保留' : '不明';
   }
 
-  private toggleStatusPopupOpen(obj: api.IssueBbsItem) {
-    const a = obj as any as { isStatusPopupOpen: boolean };
-    Vue.set(a, 'isStatusPopupOpen', !a.isStatusPopupOpen);
+  private toggleStatusPopupOpen() {
+    this.isStatusPopupOpen = !this.isStatusPopupOpen;
   }
 
   private updateThreadStatus(item: api.IssueBbsItem, val: number) {
@@ -390,9 +392,8 @@ export default class IssueBbs extends Vue {
       .finally(() => this.isUpdating = false);
   }
 
-  private toggleMilestonePopupOpen(obj: api.IssueBbsItem) {
-    const a = obj as any as { isMilestonePopupOpen: boolean };
-    Vue.set(a, 'isMilestonePopupOpen', !a.isMilestonePopupOpen);
+  private toggleMilestonePopupOpen() {
+    this.isMilestonePopupOpen = !this.isMilestonePopupOpen;
   }
 
   private updateThreadMilestone(item: api.IssueBbsItem, val: number) {
@@ -415,9 +416,8 @@ export default class IssueBbs extends Vue {
       val === api.IssueBbsItem.categoryOther ? 'その他' : '不明';
   }
 
-  private toggleCategoryPopupOpen(obj: api.IssueBbsItem) {
-    const a = obj as any as { isCategoryPopupOpen: boolean };
-    Vue.set(a, 'isCategoryPopupOpen', !a.isCategoryPopupOpen);
+  private toggleCategoryPopupOpen() {
+    this.isCategoryPopupOpen = !this.isCategoryPopupOpen;
   }
 
   private updateThreadCategory(item: api.IssueBbsItem, val: number) {
