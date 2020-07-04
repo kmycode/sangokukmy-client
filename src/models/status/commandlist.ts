@@ -44,7 +44,7 @@ export default class CommandList {
 
   public get canInputTownPatrol(): boolean {
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 2 || s === 7);
+    return skills.some((s) => s === 2 || s === 7 || s === 57);
   }
 
   public get canInputTownInvent(): boolean {
