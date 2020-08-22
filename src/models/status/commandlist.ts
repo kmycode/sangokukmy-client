@@ -102,6 +102,10 @@ export default class CommandList {
     return items.some((i) => i.type === 84);
   }
 
+  public get canInputResign(): boolean {
+    return this.store.systemData.isWaitingReset;
+  }
+
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;
