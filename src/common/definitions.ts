@@ -536,6 +536,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
     }
   }),
   new CommandNameResolver(68, '別動隊 %読込中% を削除'),
+  new CommandNameResolver(69, '下野'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -591,6 +592,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(36, '降伏', 'red'),
   new EventType(37, '玉璽', 'darkorange'),
   new EventType(38, '解雇', 'purple'),
+  new EventType(39, '下野', 'purple'),
 ];
 
 /**
