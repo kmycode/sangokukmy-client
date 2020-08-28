@@ -151,6 +151,13 @@ export default class CommandInputer {
     });
   }
 
+  public inputCreateTownCommand(commandType: number, direction: number, townType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, direction));
+      c.parameters.push(new api.CharacterCommandParameter(2, townType));
+    });
+  }
+
   public inputItemCommand(commandType: number, id: number, resourceSize: number) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
 

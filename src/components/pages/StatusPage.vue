@@ -1557,6 +1557,39 @@
           </div>
         </div>
       </div>
+      <!-- 都市建設 -->
+      <div v-if="isOpenCreateTownDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">都市建設</div>
+        </h2>
+        <div class="dialog-content loading-container">
+          <h3>方向</h3>
+          <div>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 1, 'btn-secondary': selectedDirection === 1}" @click="selectedDirection = 1">左上</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 2, 'btn-secondary': selectedDirection === 2}" @click="selectedDirection = 2">上</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 3, 'btn-secondary': selectedDirection === 3}" @click="selectedDirection = 3">右上</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 4, 'btn-secondary': selectedDirection === 4}" @click="selectedDirection = 4">左</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 5, 'btn-secondary': selectedDirection === 5}" @click="selectedDirection = 5">右</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 6, 'btn-secondary': selectedDirection === 6}" @click="selectedDirection = 6">左下</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 7, 'btn-secondary': selectedDirection === 7}" @click="selectedDirection = 7">下</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 8, 'btn-secondary': selectedDirection === 8}" @click="selectedDirection = 8">右下</button>
+          </div>
+          <h3>特化</h3>
+          <div>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedTownType !== 1, 'btn-secondary': selectedTownType === 1}" @click="selectedTownType = 1">農業都市</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedTownType !== 2, 'btn-secondary': selectedTownType === 2}" @click="selectedTownType = 2">商業都市</button>
+            <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedTownType !== 3, 'btn-secondary': selectedTownType === 3}" @click="selectedTownType = 3">城塞都市</button>
+          </div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenCreateTownDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedDirection > 0 && selectedTownType > 0" @click="model.commands.inputer.inputCreateTownCommand(70, selectedDirection, selectedTownType); isOpenCreateTownDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
       <!-- ようこそ -->
       <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
@@ -1751,11 +1784,14 @@ export default class StatusPage extends Vue {
   public isOpenCustomizeFlyingColumnDialog: boolean = false;
   public isOpenRemoveFlyingColumnDialog: boolean = false;
   public isOpenQueueDialog: boolean = false;
+  public isOpenCreateTownDialog: boolean = false;
   public isOpenImage: boolean = false;
   public isYesno: boolean = false;
   public yesnoMessage: string = '';
   public selectedWarStatus: number = 0;
   public selectedRiceStatus: number = 0;
+  public selectedDirection: number = 0;
+  public selectedTownType: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
 
   public soldierNumber: number = 1;
@@ -1812,7 +1848,7 @@ export default class StatusPage extends Vue {
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
-      || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog;
+      || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog;
   }
   
   public yesnoEvent: () => void = () => undefined;
@@ -1914,6 +1950,8 @@ export default class StatusPage extends Vue {
       this.isOpenRemoveTownSubBuildingDialog = true;
     } else if (event === 'queue') {
       this.isOpenQueueDialog = true;
+    } else if (event === 'town-create') {
+      this.isOpenCreateTownDialog = true;
     }
   }
 
@@ -1932,7 +1970,8 @@ export default class StatusPage extends Vue {
       this.isOpenSkillDialog = this.isOpenCharacterItemUseDialog = this.isOpenGenerateItemUseDialog =
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
       this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
-      this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog = false;
+      this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog =
+      this.isOpenCreateTownDialog = false;
   }
 
   public closeMapDialog() {

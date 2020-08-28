@@ -102,6 +102,12 @@ export default class CommandList {
     return items.some((i) => i.type === 84);
   }
 
+  public get canInputCreateTown(): boolean {
+    const items = this.store.items.filter((i) => i.characterId === this.store.character.id &&
+                                                 i.status === api.CharacterItem.statusCharacterHold);
+    return items.some((i) => i.type === 87);
+  }
+
   public get canInputResign(): boolean {
     return this.store.systemData.isWaitingReset;
   }

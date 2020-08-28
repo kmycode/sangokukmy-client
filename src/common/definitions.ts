@@ -537,6 +537,32 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(68, '別動隊 %読込中% を削除'),
   new CommandNameResolver(69, '下野'),
+  new CommandNameResolver(70, '{0} を現在都市の {1} に建設', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const directionOptional = p.firstOrDefault((pp) => pp.type === 1);
+      const townTypeOptional = p.firstOrDefault((pp) => pp.type === 2);
+      if (!directionOptional) {
+        return 'エラー (70:2)';
+      }
+      const direction = directionOptional.numberValue;
+      if (!direction) {
+        return 'エラー (70:3)';
+      }
+      if (!townTypeOptional) {
+        return 'エラー (70:4)';
+      }
+      const townType = townTypeOptional.numberValue;
+      if (!townType) {
+        return 'エラー (70:5)';
+      }
+      const dirs = ['', '左上', '上', '右上', '左', '右', '左下', '下', '右下'];
+
+      return format.replace('{0}', TOWN_TYPES[townType]).replace('{1}', dirs[direction]);
+    } else {
+      return 'エラー (70:1)';
+    }
+  }),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -1011,6 +1037,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
   new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
   new CharacterItemType(86, 500000, '真実の鏡', '使用で本物の玉璽を持っている国が判明（武将ログに出力）', false, false, true),
+  new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, true),
 ];
 
 /**
