@@ -1602,7 +1602,7 @@
           <div class="header">都市購入</div>
         </h2>
         <div class="dialog-content loading-container">
-          <h4>購入に必要な政策ポイント (目安): <strong>{{ model.townBuyCost }}</strong></h4>
+          <h4>購入に必要な政策ポイント<span v-show="model.town.countryId === model.character.countryId"> (目安)</span>: <strong>{{ model.townBuyCost }}</strong></h4>
           <h4>現在の政策ポイント: {{ model.characterCountry.policyPoint }}</h4>
           <div v-show="model.town.countryId === model.character.countryId && model.canDiplomacy">
             <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
