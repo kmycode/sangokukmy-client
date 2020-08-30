@@ -620,6 +620,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(38, '解雇', 'purple'),
   new EventType(39, '下野', 'purple'),
   new EventType(40, '都市建設', 'green'),
+  new EventType(41, '購入', 'blue'),
 ];
 
 /**

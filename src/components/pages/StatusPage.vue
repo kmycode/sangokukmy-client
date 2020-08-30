@@ -120,6 +120,7 @@
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
+            <button type="button" class="btn btn-info" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -1563,6 +1564,11 @@
           <div class="header">都市建設</div>
         </h2>
         <div class="dialog-content loading-container">
+          <div>
+            <div class="alert alert-warning">
+              都市建設には <strong>200 0000</strong> の金が必要です
+            </div>
+          </div>
           <h3>方向</h3>
           <div>
             <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedDirection !== 1, 'btn-secondary': selectedDirection === 1}" @click="selectedDirection = 1">左上</button>
@@ -1587,6 +1593,34 @@
           </div>
           <div class="right-side">
             <button class="btn btn-primary" v-show="selectedDirection > 0 && selectedTownType > 0" @click="model.commands.inputer.inputCreateTownCommand(70, selectedDirection, selectedTownType); isOpenCreateTownDialog = false">承認</button>
+          </div>
+        </div>
+      </div>
+      <!-- 都市購入 -->
+      <div v-if="isOpenBuyTownDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">都市購入</div>
+        </h2>
+        <div class="dialog-content loading-container">
+          <h4>購入に必要な政策ポイント (目安): <strong>{{ model.townBuyCost }}</strong></h4>
+          <h4>現在の政策ポイント: {{ model.characterCountry.policyPoint }}</h4>
+          <div v-show="model.town.countryId === model.character.countryId && model.canDiplomacy">
+            <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
+            <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
+          </div>
+          <div v-show="model.town.countryId !== model.character.countryId">
+            <div class="alert alert-danger" v-show="model.townBuyCost > model.characterCountry.policyPoint">購入に必要な政策ポイントが足りません</div>
+            <div class="alert alert-danger" v-show="!model.town.countryId">無所属都市は購入できません</div>
+            <div class="alert alert-info" v-show="model.townBuyCost <= model.characterCountry.policyPoint">都市を購入可能です</div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingTownBuyCost"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canDiplomacy && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1785,6 +1819,7 @@ export default class StatusPage extends Vue {
   public isOpenRemoveFlyingColumnDialog: boolean = false;
   public isOpenQueueDialog: boolean = false;
   public isOpenCreateTownDialog: boolean = false;
+  public isOpenBuyTownDialog: boolean = false;
   public isOpenImage: boolean = false;
   public isYesno: boolean = false;
   public yesnoMessage: string = '';
@@ -1848,7 +1883,8 @@ export default class StatusPage extends Vue {
       || this.isOpenCharacterItemUseDialog || this.isOpenGenerateItemUseDialog || this.isOpenCommandCommentDialog
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
-      || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog;
+      || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog
+      || this.isOpenBuyTownDialog;
   }
   
   public yesnoEvent: () => void = () => undefined;
@@ -1971,7 +2007,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
       this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
       this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog =
-      this.isOpenCreateTownDialog = false;
+      this.isOpenCreateTownDialog = this.isOpenBuyTownDialog = false;
   }
 
   public closeMapDialog() {

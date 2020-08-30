@@ -200,6 +200,26 @@ export default class NotificationService {
     '諜報失敗',
     '{0} を諜報できませんでした。',
     NotificationServiceItemDefaultType.error);
+  public static readonly townCostUpdateFailed = new NotificationServiceItem(
+    '都市購入費用取得失敗',
+    '都市の購入費用の取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townCostAdded = new NotificationServiceItem(
+    '都市購入費用加算',
+    '{0} の購入費用を 1000 加算しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townCostAddFailed = new NotificationServiceItem(
+    '都市購入費用加算失敗',
+    '{0} の購入費用の加算に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townBought = new NotificationServiceItem(
+    '都市購入',
+    '{0} を購入しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townBuyFailed = new NotificationServiceItem(
+    '都市購入費用加算失敗',
+    '{0} の購入に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly countryChanged = new NotificationServiceItem(
     '所属国変更',
     'あなたの所属国が変わりました',

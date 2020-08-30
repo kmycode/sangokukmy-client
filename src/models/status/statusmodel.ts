@@ -51,6 +51,7 @@ export default class StatusModel {
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
   public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
+  public townBuyCost: number = 0;
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
@@ -63,6 +64,7 @@ export default class StatusModel {
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
+  public isUpdatingTownBuyCost: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
   public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
@@ -969,6 +971,7 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
+      ps.push(new NoRangeStatusParameter('購入防衛', town.takeoverDefensePoint));
     }
 
     const townBuilding = Enumerable
@@ -986,6 +989,7 @@ export default class StatusModel {
     if (town.ricePrice !== undefined) {
       let subBuildingSize = 0;
       let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+      subBuildingSizeMax += town.townSubBuildingExtraSpace;
       if (this.characterCountryPolicies.filter((cp) => cp.status === api.CountryPolicy.statusAvailable)
                                        .some((cp) => cp.type === 47)) {
         subBuildingSizeMax += 1;
@@ -1045,6 +1049,50 @@ export default class StatusModel {
     if (this.town.id === item.townId) {
       this.setTown(this.town);
     }
+  }
+
+  public updateTownBuyCost() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.getTownBuyCost(this.town.id)
+      .then((cost) => {
+        this.townBuyCost = cost;
+      })
+      .catch(() => {
+        NotificationService.townCostUpdateFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
+  }
+
+  public addBuyTownCost() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.addBuyTownCost(this.town.id)
+      .then((cost) => {
+        this.townBuyCost = cost;
+        NotificationService.townCostAdded.notifyWithParameter(this.town.name);
+      })
+      .catch(() => {
+        NotificationService.townCostAddFailed.notifyWithParameter(this.town.name);
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
+  }
+
+  public buyTown() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.buyTown(this.town.id)
+      .then((cost) => {
+        this.townBuyCost = cost;
+        NotificationService.townBought.notifyWithParameter(this.town.name);
+      })
+      .catch(() => {
+        NotificationService.townBuyFailed.notifyWithParameter(this.town.name);
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
   }
 
   // #endregion

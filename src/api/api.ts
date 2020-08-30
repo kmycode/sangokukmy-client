@@ -599,7 +599,9 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public security: number = 0,
                      public ricePrice: number = 0,
                      public townBuilding: number = 0,
-                     public townBuildingValue: number = 0) {}
+                     public townBuildingValue: number = 0,
+                     public takeoverDefensePoint: number = 0,
+                     public townSubBuildingExtraSpace: number = 0) {}
 }
 
 /**
@@ -1286,6 +1288,16 @@ export class Api {
     }
   }
 
+  public static async getTownBuyCost(townId: number): Promise<number> {
+    try {
+      const result = await axios.get
+        (def.API_HOST + 'town/buycost/' + townId, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 国にいる武将をすべて取得
    */
@@ -1404,6 +1416,25 @@ export class Api {
     try {
       await axios.put
         (def.API_HOST + 'country/' + countryId + '/give/' + townId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async buyTown(townId: number): Promise<any> {
+    try {
+      await axios.post
+        (def.API_HOST + 'buy/town/' + townId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addBuyTownCost(townId: number): Promise<number> {
+    try {
+      const result = await axios.post
+        (def.API_HOST + 'buy/towndef/' + townId, {}, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
