@@ -1724,7 +1724,8 @@ export class Api {
                             icon: CharacterIcon,
                             password: string,
                             country: Country,
-                            invitationCode?: string): Promise<AuthenticationData> {
+                            invitationCode?: string,
+                            isCountryFree: boolean = false): Promise<AuthenticationData> {
     try {
       const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'entry', {
         character: {
@@ -1749,6 +1750,7 @@ export class Api {
           colorId: country.colorId,
         },
         invitationCode,
+        isCountryFree,
       }, this.secretKeyHeader);
       return result.data.data;
     } catch (ex) {

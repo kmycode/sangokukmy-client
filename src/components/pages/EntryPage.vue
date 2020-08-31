@@ -11,7 +11,7 @@
         <div :class="{ 'form-row': true, 'error': !isOkBeginner, }">
           <div class="label">このゲームは初めてですか？<br>（あなたはこのゲームの大まかな流れを理解しており、内政時や戦争時にどのようなコマンドを入れればいいか判断できますか？）</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true">初めてです</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true; isCountryFree = false">初めてです</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.isBeginner || !isSelectedBeginner, 'btn-secondary': isSelectedBeginner && !character.isBeginner, }" @click="character.isBeginner = false; isSelectedBeginner = true">経験者です</button>
           </div>
           <div class="detail">
@@ -186,10 +186,19 @@
         <div :class="{ 'form-row': true, 'error': !isOkTown, }">
           <div class="label">ランダム仕官</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': !isTownSelected, }" @click="resetTown()">ランダム仕官</button>
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': !isTownSelected && !isCountryFree, }" @click="resetTown()">ランダム仕官</button>
           </div>
           <div class="detail">
-            （上級者向け）仕官先をランダムで決定する場合は、ボタンをONにしてください
+            仕官先をランダムで決定する場合は、ボタンをONにしてください
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkTown, }" v-show="!character.isBeginner">
+          <div class="label">無所属として出現</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isCountryFree, }" @click="isCountryFree ^= true">無所属として出現</button>
+          </div>
+          <div class="detail">
+            （上級者向け）無所属として登録する場合は、ボタンをONにしてください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkTown, }">
@@ -342,6 +351,7 @@ export default class EntryPage extends Vue {
   private isOkEula: boolean = false;
   private isOkPrivacyPolicy: boolean = false;
   private isSelectedBeginner: boolean = false;
+  private isCountryFree: boolean = false;
   private selectedSkills: def.CharacterSkillType[] = [];
 
   @Prop() private system!: api.SystemData;
@@ -392,6 +402,10 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkTown(): boolean {
+    if (this.isCountryFree) {
+      return this.town.id !== 0;
+    }
+
     if (this.town.id !== 0) {
       if (this.town.countryId) {
         const extraData = this.getExtraData(this.town.countryId);
@@ -413,6 +427,10 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkEstablishSelection(): boolean {
+    if (this.isCountryFree) {
+      return !this.isPublish;
+    }
+
     return (!this.isTownSelected && !this.isPublish) ||
       (this.isTownSelected &&
        ((this.town.countryId !== 0 && !this.isPublish) ||
@@ -734,6 +752,7 @@ export default class EntryPage extends Vue {
 
   private resetTown() {
     this.town = new api.Town();
+    this.isCountryFree = false;
   }
 
   private getSkillItems(firstId: number): def.CharacterSkillType[] {
@@ -783,7 +802,8 @@ export default class EntryPage extends Vue {
                     this.icon,
                     this.password,
                     this.isPublish ? this.country : this.defaultCountry,
-                    this.invitationCode)
+                    this.invitationCode,
+                    this.isCountryFree)
         .then((auth) => {
           LoginService.setAccessToken(auth);
           if (this.character.isBeginner) {

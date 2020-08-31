@@ -596,6 +596,10 @@ export default class NotificationService {
     '登用文操作失敗',
     '登用文の操作に失敗しました。武将が見つかりません',
     NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailedBecauseCountryLimited = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました。その国への仕官は現在制限されています。戦闘解除をお待ち下さい',
+    NotificationServiceItemDefaultType.error);
   public static readonly promotionReceived = new NotificationServiceItem(
     '登用',
     '{0} から登用を受け取りました',
