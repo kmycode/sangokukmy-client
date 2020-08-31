@@ -953,6 +953,8 @@
               <SimpleCharacterList
                 :countries="model.countries"
                 :characters="model.countryCharacters"
+                :isShowMoney="true"
+                :isShowSoldier="false"
                 canSelect="true"
                 v-model="paySafeTarget"/>
             </div>

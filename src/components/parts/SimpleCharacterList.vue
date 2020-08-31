@@ -39,9 +39,13 @@
               <span class="parameter-name">人望</span>
               <span class="parameter-value">{{ chara.popularity }}</span>
             </span>
-            <span v-if="hasSoldierData(chara)" class="parameter-item">
+            <span v-if="isShowSoldier && hasSoldierData(chara)" class="parameter-item">
               <span class="parameter-name">{{ getSoldierTypeName(chara) }}</span>
               <span class="parameter-value">{{ chara.soldierNumber }}</span>
+            </span>
+            <span class="parameter-item" v-if="isShowMoney && chara.money !== undefined">
+              <span class="parameter-name">金</span>
+              <span class="parameter-value">{{ chara.money }}</span>
             </span>
           </div>
           <div v-if="isShowFormationType && chara.formationLevel !== undefined" class="soldier-type-detail">
@@ -185,6 +189,12 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public isSortByTime!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowMoney!: boolean;
+  @Prop({
+    default: true,
+  }) public isShowSoldier!: boolean;
 
   private isOpenPostsPopup: boolean = false;
   private openMoreCommands: number = 0;
