@@ -222,7 +222,7 @@
           </div>
         </div>
       </div>
-      <div class="section">
+      <div class="section" v-show="!character.isBeginner">
         <h3>建国</h3>
         <div :class="{ 'form-row': true, 'error': !isOkEstablishSelection, }">
           <div class="label">建国の可否</div>
@@ -393,8 +393,12 @@ export default class EntryPage extends Vue {
 
   private get isOkTown(): boolean {
     if (this.town.id !== 0) {
-      const extraData = this.getExtraData(this.town.countryId);
-      return !extraData.isJoinLimited;
+      if (this.town.countryId) {
+        const extraData = this.getExtraData(this.town.countryId);
+        return !extraData.isJoinLimited;
+      } else {
+        return !this.character.isBeginner;
+      }
     } else {
       return this.canBelongCountry;
     }
