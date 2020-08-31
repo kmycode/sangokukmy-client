@@ -1133,7 +1133,7 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(6, '城塞', 2, 24, 25000, '城壁最大 +500。武力 100 が必要'),
   new TownSubBuildingType(7, '商業組合', 1, 48, 50000, '毎年 1 , 7 月、国庫に金 4000 〜 8000。技能が必要', 56),
   new TownSubBuildingType(8, '破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回城壁 -7'),
-  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -2、農民 -100'),
+  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -4、農民 -1000'),
   new TownSubBuildingType(10, '防衛拠点', 2, 36, 30000, '隣接する戦争相手都市建築物から受ける自都市被害 -66%'),
   new TownSubBuildingType(11, '工房破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回技術 -7'),
 ];
