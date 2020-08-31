@@ -220,6 +220,8 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://sangoku.kmycode.net/characters" target="_blank" @click="isOpenRightSidePopupMenu = false">登録武将一覧</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://sangoku.kmycode.net/ranking" target="_blank" @click="isOpenRightSidePopupMenu = false">ランキング</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 8; isOpenRightSidePopupMenu = false">アカウント</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 9; isOpenRightSidePopupMenu = false"><span class="tab-text">BBS<span class="tab-notify" v-show="model.isIssueBbsUnread"></span></span></a>
