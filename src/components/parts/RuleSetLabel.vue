@@ -3,6 +3,7 @@
     <span v-if="ruleSet === 0">標準ルール</span>
     <span v-else-if="ruleSet === 1" style="color:purple;font-weight:bold">放浪ルール</span>
     <span v-else-if="ruleSet === 2" style="color:black;font-weight:bold">原理ルール</span>
+    <span v-else-if="ruleSet === 3" style="color:#800;font-weight:bold">全国戦争ルール</span>
     <span v-else>不明のルール</span>
   </span>
 </template>
