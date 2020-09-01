@@ -119,8 +119,8 @@
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">諜報時点守備</button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
-            <button v-show="model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
-            <button type="button" class="btn btn-info" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
+            <button v-show="model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode && model.systemData.ruleSet !== 2" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
+            <button type="button" class="btn btn-info" v-show="model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
           </div>
         </div>
         <!-- 国情報 -->
