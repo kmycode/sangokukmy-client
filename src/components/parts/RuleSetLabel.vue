@@ -1,0 +1,19 @@
+<template>
+  <span>
+    <span v-if="ruleSet === 0">標準ルール</span>
+    <span v-else-if="ruleSet === 1" style="color:purple;font-weight:bold">放浪ルール</span>
+    <span v-else-if="ruleSet === 2" style="color:black;font-weight:bold">原理ルール</span>
+    <span v-else>不明のルール</span>
+  </span>
+</template>
+
+<script lang="ts">
+import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
+@Component({
+  components: {
+  },
+})
+export default class RuleSetLabel extends Vue {
+  @Prop() ruleSet!: number;
+}
+</script>

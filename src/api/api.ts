@@ -216,6 +216,10 @@ export class ApiError {
 export class SystemData {
   public static readonly typeId = 19;
 
+  public static readonly ruleSetNormal = 0;
+  public static readonly ruleSetWandering = 1;
+  public static readonly ruleSetSimpleBattle = 2;
+
   public constructor(public isDebug: boolean = false,
                      public period: number = 0,
                      public betaVersion: number = 0,
@@ -224,7 +228,10 @@ export class SystemData {
                      public isWaitingReset: boolean = false,
                      public resetGameDateTime: GameDateTime = new GameDateTime(0, 0),
                      public invitationCodeRequestedAtEntry: boolean = false,
-                     public isBattleRoyaleMode: boolean = false) {}
+                     public isBattleRoyaleMode: boolean = false,
+                     public ruleSet: number = 0,
+                     public ruleSetNextPeriod: number = 0,
+                     public ruleSetAfterNextPeriod: number = 0) {}
 }
 
 /**

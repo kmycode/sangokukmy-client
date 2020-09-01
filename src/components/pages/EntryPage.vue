@@ -232,17 +232,19 @@
         </div>
       </div>
       <div class="section" v-show="!character.isBeginner">
-        <h3>建国</h3>
+        <h3 v-if="system.ruleSet === 1">放浪</h3>
+        <h3 v-else>建国</h3>
         <div :class="{ 'form-row': true, 'error': !isOkEstablishSelection, }">
-          <div class="label">建国の可否</div>
+          <div class="label" v-if="system.ruleSet === 1">放浪の可否</div>
+          <div class="label" v-else>建国の可否</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isPublish, }" @click="isPublish ^= true">建国する</button>
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isPublish, }" @click="isPublish ^= true"><span v-if="system.ruleSet === 1">放浪</span><span v-else>建国</span>する</button>
           </div>
           <div class="detail">
-            建国する場合は、上のボタンをONにしてください
+            <span v-if="system.ruleSet === 1">放浪</span><span v-else>建国</span>する場合は、上のボタンをONにしてください
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+        <div v-show="isPublish && system.ruleSet !== 1" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の都市施設</div>
           <div class="field">
             {{ townBuilding.name }}
@@ -250,7 +252,7 @@
           <div class="detail">
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+        <div v-show="isPublish && system.ruleSet !== 1" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の特化</div>
           <div class="field">
             {{ townType }}
