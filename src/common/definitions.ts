@@ -624,6 +624,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(42, '出現', 'dodgerblue'),
   new EventType(43, '放浪', '#008'),
   new EventType(44, '首都建設', 'green'),
+  new EventType(45, '時間終了', 'red'),
 ];
 
 /**
