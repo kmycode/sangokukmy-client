@@ -365,7 +365,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (49:1)';
     }
   }),
-  new CommandNameResolver(50, '{0} を購入', (format, params) => {
+  new CommandNameResolver(50, '%0% の {0} を購入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);

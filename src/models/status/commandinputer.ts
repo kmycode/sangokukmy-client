@@ -167,6 +167,7 @@ export default class CommandInputer {
 
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, this.store.character.townId));
       if (info && info.isResource) {
         c.parameters.push(new api.CharacterCommandParameter(commandType === 50 ? 4 : 3, resourceSize));
       }
@@ -531,9 +532,9 @@ export default class CommandInputer {
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
-      command.type === 67) {
+      command.type === 67 || command.type === 50) {
       // 都市データ（移動、戦争、偵察）
-      const paramTypeId = command.type === 47 ? 2 : command.type === 67 ? 4 : 1;
+      const paramTypeId = (command.type === 47 || command.type === 50) ? 2 : command.type === 67 ? 4 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
