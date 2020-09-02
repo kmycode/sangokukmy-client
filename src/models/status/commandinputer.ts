@@ -208,7 +208,7 @@ export default class CommandInputer {
         }
       });
       this.sendCommands(selectCommands, () => {
-        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
         this.isStopCommand = false;
       });
     } else {

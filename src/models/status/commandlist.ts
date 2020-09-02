@@ -252,7 +252,7 @@ export default class CommandList {
     if (date.year >= def.UPDATE_START_YEAR) {
       if (command && command.type !== undefined && command.type !== 0) {
         this.inputer.updateCommandName(command);
-        NotificationService.commandExecuted.notifyWithParameter(command.name);
+        NotificationService.commandExecuted.notifyWithParameter(command.name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
       } else {
         NotificationService.emptyCommandExecuted.notify();
       }
