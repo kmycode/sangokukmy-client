@@ -14,6 +14,11 @@
       <KmyLogTagText v-show="log.lines.length <= 0" :text="'応戦できる者はいませんでした'"/>
     </div>
     <div class="battle-info">
+      <div class="chara attacker"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.attackerCache.soldierType, log.defenderCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.attackerCache.formationType, log.defenderCache.formationType)">陣形</span></div>
+      <div class="label" style="height:0;overflow:hidden"><span style="visibility:hidden">攻撃力</span></div>
+      <div class="chara defender"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.defenderCache.soldierType, log.attackerCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.defenderCache.formationType, log.attackerCache.formationType)">陣形</span></div>
+    </div>
+    <div class="battle-info last">
       <div class="chara attacker">{{ log.attackerAttackPower }}</div>
       <div class="label">攻撃力</div>
       <div class="chara defender">{{ log.defenderAttackPower }}</div>
@@ -116,6 +121,49 @@ export default class BattleLogView extends Vue {
       return api.Country.default;
     }
   }
+
+  private isStrongerFormation(a: number, b: number): boolean {
+    const ai = def.FORMATION_TYPES.find((f) => f.id === a);
+    const bi = def.FORMATION_TYPES.find((f) => f.id === b);
+    if (ai && bi) {
+      if (ai.type === '水') {
+        return bi.type === '金' || bi.type === '火';
+      }
+      if (ai.type === '木') {
+        return bi.type === '水' || bi.type === '土';
+      }
+      if (ai.type === '火') {
+        return bi.type === '木' || bi.type === '金';
+      }
+      if (ai.type === '土') {
+        return bi.type === '火' || bi.type === '水';
+      }
+      if (ai.type === '金') {
+        return bi.type === '土' || bi.type === '木';
+      }
+    }
+    return false;
+  }
+
+  private isStrongerSoldierType(a: number, b: number): boolean {
+    const ai = def.SOLDIER_TYPES.find((s) => s.id === a);
+    const bi = def.SOLDIER_TYPES.find((s) => s.id === b);
+    if (ai && bi) {
+      if (ai.attribute === 4) {
+        return bi.attribute === 5;
+      }
+      if (ai.attribute === 5) {
+        return bi.attribute === 6;
+      }
+      if (ai.attribute === 6) {
+        return bi.attribute === 4;
+      }
+      if (ai.attribute === 2) {
+        return bi.name.indexOf('守兵') >= 0;
+      }
+    }
+    return false;
+  }
 }
 </script>
 
@@ -135,15 +183,32 @@ export default class BattleLogView extends Vue {
 .battle-info {
   display: flex;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 8px;
-  border-bottom: 2px dashed #ccc;
+  &.last {
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed #ccc;
+  }
   .chara {
     flex: 1;
     text-align: center;
     font-size: 1.4em;
     color: #c00;
     font-weight: bold;
+    .mark {
+      color: black;
+      font-weight: normal;
+      font-size: 14px;
+      padding: 4px 8px;
+      height: 20px;
+      line-height: 20px;
+      border-radius: 10px;
+      &.formation {
+        background: #ccf;
+      }
+      &.soldier-type {
+        background: #fcc;
+      }
+    }
   }
   .label {
     font-size: 1em;
