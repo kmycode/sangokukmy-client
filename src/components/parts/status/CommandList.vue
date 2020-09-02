@@ -177,7 +177,7 @@
           <div class="number">{{ command.commandNumber }}</div>
           <div class="command-information">
             <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
-            <div class="command-text">{{ command.name }}</div>
+            <div class="command-text"><KmyLogTagText :text="command.name"/></div>
             <div v-if="command.eventMessage" class="event-message">{{ command.eventMessage }}</div>
           </div>
         </div>
@@ -207,11 +207,13 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import CommandList from '@/models/status/commandlist';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
 import * as def from '@/common/definitions';
 import Enumerable from 'linq';
 
 @Component({
   components: {
+    KmyLogTagText,
   },
 })
 export default class CommandListView extends Vue {

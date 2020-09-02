@@ -201,7 +201,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(7, '農地開拓'),
   new CommandNameResolver(8, '市場拡大'),
   new CommandNameResolver(9, '城壁増築'),
-  new CommandNameResolver(10, '{0} を {1} 人徴兵', (format, params) => {
+  new CommandNameResolver(10, '{0} を <num>{1}</num> 人徴兵', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const soldierType = p.firstOrDefault((pp) => pp.type === 1);
@@ -222,10 +222,10 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(11, '兵士訓練'),
   new CommandNameResolver(12, '城の守備'),
-  new CommandNameResolver(13, '%0% へ侵攻'),
+  new CommandNameResolver(13, '<town>%0%</town> へ侵攻'),
   new CommandNameResolver(14, '集合'),
-  new CommandNameResolver(15, '%読込中% を登用'),
-  new CommandNameResolver(17, '%0% へ移動'),
+  new CommandNameResolver(15, '<character>%読込中%</character> を登用'),
+  new CommandNameResolver(17, '<town>%0%</town> へ移動'),
   new CommandNameResolver(18, '{0} を強化', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -274,11 +274,11 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       }
 
       if (!result || result.numberValue === undefined) {
-        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' を米に交換' :
-                                        '米 ' + assets.numberValue + ' を金に交換';
+        return type.numberValue === 1 ? '金 <num>' + assets.numberValue + '</num> を米に交換' :
+                                        '米 <num>' + assets.numberValue + '</num> を金に交換';
       } else {
-        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' → 米 ' + result.numberValue :
-                                        '米 ' + assets.numberValue + ' → 金 ' + result.numberValue;
+        return type.numberValue === 1 ? '金 <num>' + assets.numberValue + '</num> → 米 <num>' + result.numberValue + '</num>' :
+                                        '米 <num>' + assets.numberValue + '</num> → 金 <num>' + result.numberValue + '</num>';
       }
     } else {
       return 'エラー (19:1)';
@@ -287,7 +287,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(23, '仕官'),
   new CommandNameResolver(30, '緊急米施し'),
   new CommandNameResolver(31, '都市施設強化'),
-  new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
+  new CommandNameResolver(34, '金 <num>{0}</num> を国庫納入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const money = p.firstOrDefault((pp) => pp.type === 1);
@@ -299,7 +299,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (34:1)';
     }
   }),
-  new CommandNameResolver(35, '国庫から %読込中% へ金 {1} を搬出', (format, params) => {
+  new CommandNameResolver(35, '国庫から <character>%読込中%</character> へ金 <num>{1}</num> を搬出', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const money = p.firstOrDefault((pp) => pp.type === 2);
@@ -327,12 +327,12 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (39:1)';
     }
   }),
-  new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
-  new CommandNameResolver(41, '政務官 %読込中% を解任'),
+  new CommandNameResolver(40, '政務官 <character>%読込中%</character> を %部隊% へ配属'),
+  new CommandNameResolver(41, '政務官 <character>%読込中%</character> を解任'),
   new CommandNameResolver(44, '政策開発'),
-  new CommandNameResolver(45, '%0% へ斥候派遣'),
-  new CommandNameResolver(46, '%0% の斥候を解雇'),
-  new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
+  new CommandNameResolver(45, '<town>%0%</town> へ斥候派遣'),
+  new CommandNameResolver(46, '<town>%0%</town> の斥候を解雇'),
+  new CommandNameResolver(47, '政務官 <character>%読込中%</character> を <town>%0%</town> へ配属'),
   new CommandNameResolver(48, '陣形 {0} を獲得', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -365,7 +365,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (49:1)';
     }
   }),
-  new CommandNameResolver(50, '%0% の {0} を購入', (format, params) => {
+  new CommandNameResolver(50, '<town>%0%</town> の {0} を購入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
@@ -413,7 +413,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (51:1)';
     }
   }),
-  new CommandNameResolver(52, '{0} を %読込中% に譲渡', (format, params) => {
+  new CommandNameResolver(52, '{0} を <character>%読込中%</character> に譲渡', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
@@ -474,7 +474,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(58, '農民呼寄'),
   new CommandNameResolver(59, '農民避難'),
   new CommandNameResolver(60, '合同訓練'),
-  new CommandNameResolver(61, '%0% を偵察'),
+  new CommandNameResolver(61, '<town>%0%</town> を偵察'),
   new CommandNameResolver(62, '探索'),
   new CommandNameResolver(63, '{0} を建設', (format, params) => {
     if (params) {
@@ -510,7 +510,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(65, '静養'),
   new CommandNameResolver(66, '別動隊を雇用'),
-  new CommandNameResolver(67, '[%読込中%] {1}{2} %0%', (format, params) => {
+  new CommandNameResolver(67, '[<character>%読込中%</character>] {1}{2} %0%', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const action = p.firstOrDefault((pp) => pp.type === 2);
@@ -535,7 +535,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (67:1)';
     }
   }),
-  new CommandNameResolver(68, '別動隊 %読込中% を削除'),
+  new CommandNameResolver(68, '別動隊 <character>%読込中%</character> を削除'),
   new CommandNameResolver(69, '下野'),
   new CommandNameResolver(70, '{0} を現在都市の {1} に建設', (format, params) => {
     if (params) {
