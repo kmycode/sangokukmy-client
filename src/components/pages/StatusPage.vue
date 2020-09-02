@@ -81,7 +81,7 @@
             </div>
 
             <div class="content-main character-logs">
-              <MapLogList :logs="model.characterLogs" type="character-log"/>
+              <MapLogList :logs="model.characterLogs" type="character-log" @battle-log="battleLogId = $event; isOpenBattleLogDialog = true"/>
               <div v-show="model.isLoadingMoreCharacterLogs" class="loading-container load-more">
                 <div class="loading" style="height:48px"><div class="loading-icon"></div></div>
               </div>

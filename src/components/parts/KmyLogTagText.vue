@@ -1,5 +1,5 @@
 <template>
-  <span v-html="formatedText">
+  <span v-html="formatedText" ref="text">
   </span>
 </template>
 
@@ -26,8 +26,26 @@ export default class KmyLogTagText extends Vue {
       .replace(/<\/town>/g, '</span>')
       .replace(/<country>/g, '<span class="kmy-format-country">')
       .replace(/<\/country>/g, '</span>')
+      .replace(/<battle-log>/g, '<a class="kmy-format-battle-log-link" href="#" data-logid="')
+      .replace(/<\/battle-log>/g, '">戦闘ログ</a>')
       .replace(/<emerge>/g, '<span class="kmy-format-emerge">')
       .replace(/<\/emerge>/g, '</span>');
+  }
+
+  private mounted() {
+    const text = this.$refs.text as HTMLElement;
+    const issues = text.getElementsByClassName('kmy-format-battle-log-link');
+    for (let i = 0; i < issues.length; i++) {
+      const issue = issues[i] as HTMLLinkElement;
+      issue.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        const numStr = (ev.target as HTMLLinkElement).dataset.logid;
+        if (numStr !== undefined) {
+          const num = parseInt(numStr, 10);
+          this.$emit('battle-log', num);
+        }
+      });
+    }
   }
 }
 </script>
