@@ -104,7 +104,7 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種。戟に強く騎に弱い', undefined, true, 63),
   new SoldierType(13, 0, 2, '衝車', 16, 500, '0', '0', '対城壁に特化'),
   new SoldierType(14, 0, 2, '井闌', 26, 600, '0', '0', '対城壁に特化。衝車より強い'),
-  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い'),
+  new SoldierType(35, 0, 2, '投石器', 40, 1000, '0', '0', '対城壁に特化。井闌より強い'),
   new SoldierType(32, 0, 2, '祈祷兵', 20, 800, '0', '0', '（特殊）低級兵種。陣形の相性により大きな攻撃力を得る'),
   new SoldierType(34, 0, 4, '槍兵', 12, 500, '30', '30', '（特殊）低級兵種'),
   new SoldierType(31, 0, 4, '投石兵', 10, 600, '50', '50', '（特殊）中級兵種'),
@@ -1136,7 +1136,7 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(6, '城塞', 2, 24, 25000, '城壁最大 +500。武力 100 が必要'),
   new TownSubBuildingType(7, '商業組合', 1, 48, 50000, '毎年 1 , 7 月、国庫に金 4000 〜 8000。技能が必要', 56),
   new TownSubBuildingType(8, '破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回城壁 -7'),
-  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -4、農民 -1000'),
+  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -4、農民 -600'),
   new TownSubBuildingType(10, '防衛拠点', 2, 36, 30000, '隣接する戦争相手都市建築物から受ける自都市被害 -66%'),
   new TownSubBuildingType(11, '工房破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回技術 -7'),
 ];

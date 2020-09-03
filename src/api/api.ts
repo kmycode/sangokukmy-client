@@ -679,6 +679,20 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
 }
 
 /**
+ * 定期実行される武将のコマンド
+ */
+export class CharacterRegularlyCommand {
+  public static readonly typeId: number = 47;
+
+  public constructor(public id: number,
+                     public nextRunGameDateTime: GameDateTime,
+                     public type: number,
+                     public option1: number,
+                     public option2: number,
+                     public hasRemoved: boolean = false) {}
+}
+
+/**
  * 武将のコマンドパラメータ
  */
 export class CharacterCommandParameter {
@@ -1189,6 +1203,22 @@ export class Api {
   public static async setCommandComments(comments: CommandComment[]): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'commands/comments', comments, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setRegularlyCommand(month: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'commands/regularly/' + month, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async clearRegularlyCommands(): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'commands/regularly', this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

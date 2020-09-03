@@ -144,6 +144,22 @@ export default class NotificationService {
     'コマンド入力完了',
     '{0} の入力が完了しました。',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandInputed = new NotificationServiceItem(
+    '定期実行コマンド入力完了',
+    '定期実行コマンド {0} の入力が完了しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandInputFalled = new NotificationServiceItem(
+    '定期実行コマンド入力失敗',
+    '定期実行コマンド {0} の入力に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly regularlyCommandCleared = new NotificationServiceItem(
+    '定期実行コマンド削除',
+    '定期実行コマンドを削除しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandClearFalled = new NotificationServiceItem(
+    '定期実行コマンド削除失敗',
+    '定期実行コマンドの削除に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly commandExecuted = new NotificationServiceItem(
     'コマンド実行完了',
     '{0} のコマンドが実行されました。',

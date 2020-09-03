@@ -75,6 +75,7 @@ export default class StatusModel {
   public isUpdatingItems: boolean = false;
   public isUpdatingSkills: boolean = false;
   public isUpdatingAccount: boolean = false;
+  public isUpdatingRegularlyCommands: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -618,6 +619,19 @@ export default class StatusModel {
     return [];
   }
 
+  public get regularlyCommand(): api.CharacterCommand | undefined {
+    if (this.store.regularlyCommands.length >= 1) {
+      const data = this.store.regularlyCommands[0];
+      const command = new api.CharacterCommand(0, 0, data.type, '', [
+        new api.CharacterCommandParameter(1, data.option1),
+        new api.CharacterCommandParameter(2, data.option2),
+      ]);
+      this.commands.inputer.updateCommandName(command);
+      return command;
+    }
+    return undefined;
+  }
+
   public isNextToCountry(townId: number, countryId: number): boolean {
     const town = ArrayUtil.find(this.store.towns, townId);
     if (town) {
@@ -729,6 +743,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterCommand>(
       api.CharacterCommand.typeId,
       (obj) => this.onReceiveOtherCharacterCommand(obj));
+    ApiStreaming.status.on<api.CharacterRegularlyCommand>(
+      api.CharacterRegularlyCommand.typeId,
+      (obj) => this.onReceiveCharacterRegularlyCommand(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -2308,6 +2325,26 @@ export default class StatusModel {
           api.GameDateTime.toNumber(item.gameDate) !== api.GameDateTime.toNumber(c.gameDate));
       this.store.otherCharacterCommands.push(item);
     }
+  }
+
+  private onReceiveCharacterRegularlyCommand(item: api.CharacterRegularlyCommand) {
+    if (item.hasRemoved) {
+      this.store.regularlyCommands = this.store.regularlyCommands.filter((r) => r.id !== item.id);
+    } else {
+      ArrayUtil.addItem(this.store.regularlyCommands, item);
+    }
+  }
+
+  public clearRegularlyCommands() {
+    this.isUpdatingRegularlyCommands = true;
+    api.Api.clearRegularlyCommands()
+      .then(() => {
+        NotificationService.regularlyCommandInputed.notify();
+      })
+      .catch(() => {
+        NotificationService.regularlyCommandInputFalled.notify();
+      })
+      .finally(() => this.isUpdatingRegularlyCommands = false);
   }
 
   // #endregion

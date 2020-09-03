@@ -394,6 +394,24 @@ export default class CommandInputer {
     this.lastClickedCommand = undefined;
   }
 
+  public setRegularlyCommand() {
+    const commands = this.commands.filter((c) => c.isSelected === true && c.canSelect === true);
+    if (commands.length !== 1) {
+      return;
+    }
+    const command = commands[0];
+
+    this.isInputing = true;
+    api.Api.setRegularlyCommand(api.GameDateTime.toNumber(command.gameDate))
+      .then(() => {
+        NotificationService.regularlyCommandInputed.notifyWithParameter(command.name);
+      })
+      .catch(() => {
+        NotificationService.regularlyCommandInputFalled.notifyWithParameter(command.name);
+      })
+      .finally(() => this.isInputing = false);
+  }
+
   public insertCommands() {
     this.isInputing = true;
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();

@@ -36,6 +36,7 @@ export default class StatusStore {
   public skills: api.CharacterSkill[] = [];
   public commandComments: api.CommandComment[] = [];
   public otherCharacterCommands: api.CharacterCommand[] = [];
+  public regularlyCommands: api.CharacterRegularlyCommand[] = [];
   public mutes: api.Mute[] = [];
   public muteKeyword: api.MuteKeyword = new api.MuteKeyword('');
   public account: api.Account = new api.Account(-1);

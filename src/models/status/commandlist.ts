@@ -112,6 +112,11 @@ export default class CommandList {
     return this.store.systemData.isWaitingReset;
   }
 
+  public get canSetRegularly(): boolean {
+    const commands = this.inputer.commands.filter((c) => c.isSelected === true && c.canSelect === true);
+    return commands.length === 1 && (commands[0].type === 57 || commands[0].type === 55);
+  }
+
   public get restTurns(): number {
     // 残りターン数
     let turns = 0;
