@@ -1047,6 +1047,8 @@
               <SimpleCharacterList
                 :countries="model.countries"
                 :characters="model.countrySecretaries"
+                :towns="model.store.towns"
+                :isShowTown="true"
                 canSelect="true"
                 v-model="targetSecretary"/>
             </div>

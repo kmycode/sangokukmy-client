@@ -47,6 +47,10 @@
               <span class="parameter-name">金</span>
               <span class="parameter-value">{{ chara.money }}</span>
             </span>
+            <span class="parameter-item" v-if="isShowTown && towns && chara.townId">
+              <span class="parameter-name">所在</span>
+              <span class="parameter-value">{{ getTownName(chara.townId) }}</span>
+            </span>
           </div>
           <div v-if="isShowFormationType && chara.formationLevel !== undefined" class="soldier-type-detail">
             <div class="parameters parameters-no-from">
@@ -195,6 +199,9 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: true,
   }) public isShowSoldier!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowTown!: boolean;
 
   private isOpenPostsPopup: boolean = false;
   private openMoreCommands: number = 0;
@@ -242,6 +249,16 @@ export default class SimpleCharacterList extends Vue {
       return soldierType.name;
     }
     return def.SOLDIER_TYPES[0].name;
+  }
+
+  private getTownName(townId: number): string {
+    if (this.towns) {
+      const town = this.towns.find((t) => t.id === townId);
+      if (town) {
+        return town.name;
+      }
+    }
+    return '';
   }
 
   private getCharacterNextTime(time: api.DateTime): api.DateTime {
