@@ -1620,6 +1620,7 @@
           <div v-show="model.town.countryId !== model.character.countryId">
             <div class="alert alert-danger" v-show="model.townBuyCost > model.characterCountry.policyPoint">購入に必要な政策ポイントが足りません</div>
             <div class="alert alert-danger" v-show="!model.town.countryId">無所属都市は購入できません</div>
+            <div class="alert alert-danger" v-show="model.gameDate.year < 36">戦闘解除前は購入できません</div>
             <div class="alert alert-info" v-show="model.townBuyCost <= model.characterCountry.policyPoint">都市を購入可能です</div>
           </div>
           <div class="loading" v-show="model.isUpdatingTownBuyCost"><div class="loading-icon"></div></div>
@@ -1629,7 +1630,7 @@
             <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canDiplomacy && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canDiplomacy && model.gameDate.year >= 36 && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
           </div>
         </div>
       </div>
