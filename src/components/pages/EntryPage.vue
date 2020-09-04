@@ -180,6 +180,22 @@
             能力合計が <span class="number">{{ extraData.attributeSumMax }}</span> になるようにしてください
           </div>
         </div>
+        <div :class="{ 'form-row': true, 'error': !isOkFormation, }">
+          <div class="label">陣形</div>
+          <div class="field">
+            <button v-for="formation in formations" :key="formation.id"
+                    type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.formationType !== formation.id, 'btn-secondary': character.formationType === formation.id, }"
+                    @click="onFormationChanged(formation)">{{ formation.name }}</button>
+            <div v-show="selectedFormation.id > 0">
+              <div v-for="(description, level) in selectedFormation.descriptions" :key="level">
+                <span style="font-weight: bold">レベル {{ level + 1 }}</span> - <span style="color: #666">{{ description }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail">
+            登録時に最初に設定される陣形を指定してください
+          </div>
+        </div>
       </div>
       <div class="section">
         <h3>所属</h3>
@@ -212,7 +228,7 @@
               @selected="onTownChanged($event)"/>
           </div>
           <div class="country-list">
-            <div :class="'country-list-item row country-color-' + country.colorId + (!town.id || town.countryId === country.id ? ' selected' : '')"
+            <div :class="'country-list-item row country-color-' + country.colorId + (((!town.id || town.countryId === country.id) && !isCountryFree) ? ' selected' : '')"
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
@@ -355,6 +371,7 @@ export default class EntryPage extends Vue {
   private isSelectedBeginner: boolean = false;
   private isCountryFree: boolean = false;
   private selectedSkills: def.CharacterSkillType[] = [];
+  private selectedFormation: def.FormationType = def.FORMATION_TYPES[0];
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -370,6 +387,10 @@ export default class EntryPage extends Vue {
   private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
   private isApp = false;
+
+  private get formations(): def.FormationType[] {
+    return def.FORMATION_TYPES.filter((f) => f.id);
+  }
 
   private get sumOfAttributes(): number {
     return parseInt(this.character.strong.toString(), 10) +
@@ -455,6 +476,10 @@ export default class EntryPage extends Vue {
     return this.character.from !== 0;
   }
 
+  private get isOkFormation(): boolean {
+    return this.character.formationType !== 0;
+  }
+
   private get isOkStrong(): boolean {
     return this.character.strong >= 5 && this.character.strong <= this.extraData.attributeMax;
   }
@@ -495,6 +520,7 @@ export default class EntryPage extends Vue {
       this.isOkCountryName &&
       this.isOkCountryColor &&
       this.isOkFrom &&
+      this.isOkFormation &&
       this.isOkStrong &&
       this.isOkIntellect &&
       this.isOkLeadership &&
@@ -750,6 +776,11 @@ export default class EntryPage extends Vue {
     this.character.intellect = intellect;
     this.character.leadership = leadership;
     this.character.popularity = popularity;
+  }
+
+  private onFormationChanged(formation: def.FormationType) {
+    this.character.formationType = formation.id;
+    this.selectedFormation = formation;
   }
 
   private resetTown() {

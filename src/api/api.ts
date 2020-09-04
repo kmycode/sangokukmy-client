@@ -1775,6 +1775,7 @@ export class Api {
           townId: chara.townId,
           message: chara.message,
           from: chara.from,
+          formationType: chara.formationType,
           isBeginner: chara.isBeginner,
         },
         icon: {
