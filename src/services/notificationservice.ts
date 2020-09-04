@@ -428,6 +428,14 @@ export default class NotificationService {
     '部隊長交代失敗',
     '部隊 {0} の部隊長交代に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitMemberDischarged = new NotificationServiceItem(
+    '除隊',
+    '隊員 {0} を除隊しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitMemberDischargeFalled = new NotificationServiceItem(
+    '除隊失敗',
+    '隊員 {0} の除隊に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitRemoved = new NotificationServiceItem(
     '部隊削除',
     '部隊 {0} を削除しました',
@@ -443,6 +451,10 @@ export default class NotificationService {
   public static readonly belongsUnitGathered = new NotificationServiceItem(
     '部隊集合',
     '所属部隊が集合されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly belongsUnitDischarged = new NotificationServiceItem(
+    '部隊からの除隊',
+    '所属していた部隊から除隊されました',
     NotificationServiceItemDefaultType.information);
   public static readonly battleLogLoadFailed = new NotificationServiceItem(
     '戦闘ログ取得失敗',

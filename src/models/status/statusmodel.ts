@@ -861,6 +861,9 @@ export default class StatusModel {
       // 謹慎された
       this.commands.inputer.isStopCommand = true;
       NotificationService.myCommandsStoped.notify();
+    } else if (signal.type === 11) {
+      // 部隊から除隊された
+      NotificationService.belongsUnitDischarged.notify();
     }
   }
 

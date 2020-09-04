@@ -229,6 +229,32 @@ export default class UnitModel {
     }
   }
 
+  public dischargeMember(memberId: number) {
+    const member = this.characters.find((c) => c.id === memberId);
+    if (!member) {
+      return;
+    }
+
+    if (this.leaderUnit.id >= 0) {
+      this.isUpdatingUnit = true;
+      let isSucceed = false;
+      api.Api.dischargeUnitCharacter(this.leaderUnit.id, memberId)
+        .then(() => {
+          NotificationService.unitMemberDischarged.notifyWithParameter(member.name);
+          isSucceed = true;
+        })
+        .catch(() => {
+          NotificationService.unitMemberDischargeFalled.notifyWithParameter(member.name);
+        })
+        .finally(() => {
+          this.isUpdatingUnit = false;
+          if (isSucceed) {
+            this.updateUnits();
+          }
+        });
+    }
+  }
+
   public removeLeaderUnit() {
     if (this.leaderUnit.id >= 0) {
       this.isUpdatingUnit = true;

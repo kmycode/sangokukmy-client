@@ -1675,6 +1675,14 @@ export class Api {
     }
   }
 
+  public static async dischargeUnitCharacter(id: number, characterId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'unit/' + id + '/leave/' + characterId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async removeUnit(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'unit/' + id, this.authHeader);
