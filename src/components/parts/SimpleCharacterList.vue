@@ -124,7 +124,7 @@
         <div v-if="(!chara.aiType || chara.aiType === 28) && getCharacterCommands(chara).length > 0" class="commands">
           <div class="command"
                v-for="command in getCharacterCommands(chara)"
-               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name"><KmyLogTagText :text="command.name"/></span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
         </div>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
@@ -136,6 +136,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
@@ -146,11 +147,15 @@ import NotificationService from '../../services/notificationservice';
   components: {
     CharacterIcon,
     KmyChatTagText,
+    KmyLogTagText,
   },
 })
 export default class SimpleCharacterList extends Vue {
   @Prop() public characters!: api.Character[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: () => undefined,
+  }) public towns?: api.Town[];
   @Prop({
     default: -1,
   }) public myCharacterId!: number;
