@@ -1611,13 +1611,22 @@
           <div class="header">都市購入</div>
         </h2>
         <div class="dialog-content loading-container">
-          <h4>購入に必要な政策ポイント<span v-show="model.town.countryId === model.character.countryId"> (目安)</span>: <strong>{{ model.townBuyCost }}</strong></h4>
-          <h4>現在の政策ポイント: {{ model.characterCountry.policyPoint }}</h4>
-          <div v-show="model.town.countryId === model.character.countryId && model.canDiplomacy">
-            <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
-            <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
+          <div v-show="model.town.countryId === model.character.countryId">
+            <h3>各国が購入に必要な政策ポイント</h3>
+            <div style="margin: 16px 16px 32px">
+              <div v-for="data in model.townBuyCosts" :key="data.country.id">
+                {{ data.country.name }} - <strong>{{ data.cost }}</strong>
+              </div>
+            </div>
+            <h3>防衛投資</h3>
+            <div v-show="model.canDiplomacy">
+              <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
+              <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
+            </div>
           </div>
           <div v-show="model.town.countryId !== model.character.countryId">
+            <h4>購入に必要な政策ポイント: <strong>{{ model.townBuyCost }}</strong></h4>
+            <h4>現在の政策ポイント: {{ model.characterCountry.policyPoint }}</h4>
             <div class="alert alert-danger" v-show="model.townBuyCost > model.characterCountry.policyPoint">購入に必要な政策ポイントが足りません</div>
             <div class="alert alert-danger" v-show="!model.town.countryId">無所属都市は購入できません</div>
             <div class="alert alert-danger" v-show="model.gameDate.year < 36">戦闘解除前は購入できません</div>

@@ -1325,7 +1325,7 @@ export class Api {
     }
   }
 
-  public static async getTownBuyCost(townId: number): Promise<number> {
+  public static async getTownBuyCost(townId: number): Promise<{ country: Country, cost: number }[]> {
     try {
       const result = await axios.get
         (def.API_HOST + 'town/buycost/' + townId, this.authHeader);

@@ -51,6 +51,7 @@ export default class StatusModel {
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
   public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
+  public townBuyCosts: { country: api.Country, cost: number }[] = [];
   public townBuyCost: number = 0;
 
   public get isLoading(): boolean {
@@ -1072,7 +1073,11 @@ export default class StatusModel {
     this.isUpdatingTownBuyCost = true;
     api.Api.getTownBuyCost(this.town.id)
       .then((cost) => {
-        this.townBuyCost = cost;
+        this.townBuyCosts = cost.filter((c) => !c.country.aiType && c.country.id !== this.character.countryId);
+        var myCountryData = cost.find((c) => c.country.id === this.character.countryId);
+        if (myCountryData) {
+          this.townBuyCost = myCountryData.cost;
+        }
       })
       .catch(() => {
         NotificationService.townCostUpdateFailed.notify();
@@ -1086,7 +1091,7 @@ export default class StatusModel {
     this.isUpdatingTownBuyCost = true;
     api.Api.addBuyTownCost(this.town.id)
       .then((cost) => {
-        this.townBuyCost = cost;
+        this.updateTownBuyCost();
         NotificationService.townCostAdded.notifyWithParameter(this.town.name);
       })
       .catch(() => {
@@ -1100,12 +1105,16 @@ export default class StatusModel {
   public buyTown() {
     this.isUpdatingTownBuyCost = true;
     api.Api.buyTown(this.town.id)
-      .then((cost) => {
-        this.townBuyCost = cost;
+      .then(() => {
+        this.updateTownBuyCost();
         NotificationService.townBought.notifyWithParameter(this.town.name);
       })
-      .catch(() => {
-        NotificationService.townBuyFailed.notifyWithParameter(this.town.name);
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.townBuyFailedBecauseNotBorder.notifyWithParameter(this.town.name);
+        } else {
+          NotificationService.townBuyFailed.notifyWithParameter(this.town.name);
+        }
       })
       .finally(() => {
         this.isUpdatingTownBuyCost = false;
