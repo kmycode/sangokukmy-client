@@ -566,8 +566,9 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (70:1)';
     }
   }),
-  new CommandNameResolver(71, '布教'),
+  new CommandNameResolver(71, '国教布教'),
   new CommandNameResolver(72, '異教弾圧'),
+  new CommandNameResolver(73, '自教布教'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -633,6 +634,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(46, '改宗', 'deeppink'),
   new EventType(47, '弾圧', 'deeppink'),
   new EventType(48, '宗教支配', 'deeppink'),
+  new EventType(49, '信仰', 'deeppink'),
 ];
 
 /**
@@ -1121,17 +1123,17 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(48, '参謀 Lv.3', '防御力 +20、同士討ち確率 +2％', 400, (skills) => skills.some((s) => s.type === 47)),
   new CharacterSkillType(49, '参謀 Lv.4', '突撃確率 +2%、突撃攻撃力 +60、混乱確率 +4%', 320, (skills) => skills.some((s) => s.type === 48)),
   new CharacterSkillType(50, '参謀 Lv.5', '兵種 梓琴兵・梓弩兵、戦闘が１ターンで終了時の連戦確率 +50%', 360, (skills) => skills.some((s) => s.type === 49)),
-  new CharacterSkillType(58, '儒家 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(58, '儒家 Lv.1', 'コマンド 自教布教、攻撃力 -100', 0, (_) => false),
   new CharacterSkillType(59, '儒家 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 58)),
   new CharacterSkillType(60, '儒家 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 59)),
   new CharacterSkillType(61, '儒家 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 60)),
   new CharacterSkillType(62, '儒家 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 61)),
-  new CharacterSkillType(63, '道家 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(63, '道家 Lv.1', 'コマンド 自教布教、攻撃力 -100', 0, (_) => false),
   new CharacterSkillType(64, '道家 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 63)),
   new CharacterSkillType(65, '道家 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 64)),
   new CharacterSkillType(66, '道家 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 65)),
   new CharacterSkillType(67, '道家 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 66)),
-  new CharacterSkillType(68, '仏僧 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(68, '仏僧 Lv.1', 'コマンド 自教布教、攻撃力 -100', 0, (_) => false),
   new CharacterSkillType(69, '仏僧 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 68)),
   new CharacterSkillType(70, '仏僧 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 69)),
   new CharacterSkillType(71, '仏僧 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 70)),
