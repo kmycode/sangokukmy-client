@@ -1161,6 +1161,7 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -4、農民 -600'),
   new TownSubBuildingType(10, '防衛拠点', 2, 36, 30000, '隣接する戦争相手都市建築物から受ける自都市被害 -66%'),
   new TownSubBuildingType(11, '工房破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回技術 -7'),
+  new TownSubBuildingType(12, '聖堂', 1, 48, 50000, '2 ヶ月に 1 回都市の国教 +8、都市が国教ならさらに技術最大 +3、城壁最大 +7、周囲都市に宗教圧力 +4', [62, 67, 72]),
 ];
 
 export const RELIGION_TYPES: string[] = [

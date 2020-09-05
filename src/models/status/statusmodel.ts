@@ -1083,7 +1083,7 @@ export default class StatusModel {
     api.Api.getTownBuyCost(this.town.id)
       .then((cost) => {
         this.townBuyCosts = cost.filter((c) => !c.country.aiType && c.country.id !== this.character.countryId);
-        var myCountryData = cost.find((c) => c.country.id === this.character.countryId);
+        const myCountryData = cost.find((c) => c.country.id === this.character.countryId);
         if (myCountryData) {
           this.townBuyCost = myCountryData.cost;
         }
@@ -2110,7 +2110,6 @@ export default class StatusModel {
 
   private onDelayEffectReceived(obj: api.DelayEffect) {
     ArrayUtil.addItem(this.store.delayEffects, obj);
-    console.dir(obj);
   }
 
   // #endregion
