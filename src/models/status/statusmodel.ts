@@ -316,7 +316,8 @@ export default class StatusModel {
                     c.aiType === api.Character.aiSecretaryUnitGather ||
                     c.aiType === api.Character.aiSecretaryPioneer ||
                     c.aiType === api.Character.aiSecretaryUnitLeader ||
-                    c.aiType === api.Character.aiSecretaryScouter)
+                    c.aiType === api.Character.aiSecretaryScouter ||
+                    c.aiType === api.Character.aiSecretaryEvangelist)
       .toArray();
   }
 
@@ -494,7 +495,8 @@ export default class StatusModel {
                   c.aiType === api.Character.aiSecretaryPioneer ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitGather ? 1 :
                   c.aiType === api.Character.aiSecretaryUnitLeader ? 1 :
-                  c.aiType === api.Character.aiSecretaryScouter ? 1 : 0);
+                  c.aiType === api.Character.aiSecretaryScouter ? 1 :
+                  c.aiType === api.Character.aiSecretaryEvangelist ? 1 : 0);
   }
 
   public get canSecretaryUnitLeader(): boolean {
