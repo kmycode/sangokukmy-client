@@ -216,6 +216,10 @@ export class ApiError {
 export class SystemData {
   public static readonly typeId = 19;
 
+  public static readonly ruleSetNormal = 0;
+  public static readonly ruleSetWandering = 1;
+  public static readonly ruleSetSimpleBattle = 2;
+
   public constructor(public isDebug: boolean = false,
                      public period: number = 0,
                      public betaVersion: number = 0,
@@ -224,7 +228,10 @@ export class SystemData {
                      public isWaitingReset: boolean = false,
                      public resetGameDateTime: GameDateTime = new GameDateTime(0, 0),
                      public invitationCodeRequestedAtEntry: boolean = false,
-                     public isBattleRoyaleMode: boolean = false) {}
+                     public isBattleRoyaleMode: boolean = false,
+                     public ruleSet: number = 0,
+                     public ruleSetNextPeriod: number = 0,
+                     public ruleSetAfterNextPeriod: number = 0) {}
 }
 
 /**
@@ -474,6 +481,7 @@ export class Country {
                      public isHaveGyokuji: boolean = false,
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
                      public isGyokujiRefused: boolean = false,
+                     public religion: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastRequestedIncomes?: number,
@@ -526,6 +534,8 @@ export class CountryAlliance extends CountryDipromacy {
   public static readonly statusChangingValue = 7;
 
   public isPublic: boolean = false;
+  public canMissionary: boolean = false;
+  public canBuyTown: boolean = false;
   public breakingDelay: number = 0;
   public memo: string = '';
 }
@@ -599,7 +609,13 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public security: number = 0,
                      public ricePrice: number = 0,
                      public townBuilding: number = 0,
-                     public townBuildingValue: number = 0) {}
+                     public townBuildingValue: number = 0,
+                     public takeoverDefensePoint: number = 0,
+                     public townSubBuildingExtraSpace: number = 0,
+                     public religion: number = 0,
+                     public confucianism: number = 0,
+                     public taoism: number = 0,
+                     public buddhism: number = 0) {}
 }
 
 /**
@@ -667,6 +683,20 @@ export class ScoutedTown extends TownBase implements IIdentitiedEntity {
   public characters: Character[] = [];
   public defenders: Character[] = [];
   public subBuildings: TownSubBuilding[] = [];
+}
+
+/**
+ * 定期実行される武将のコマンド
+ */
+export class CharacterRegularlyCommand {
+  public static readonly typeId: number = 47;
+
+  public constructor(public id: number,
+                     public nextRunGameDateTime: GameDateTime,
+                     public type: number,
+                     public option1: number,
+                     public option2: number,
+                     public hasRemoved: boolean = false) {}
 }
 
 /**
@@ -1029,6 +1059,9 @@ export class CharacterSkill {
   public static readonly typeTactician = 8;
   public static readonly typeScholar = 9;
   public static readonly typeStaff = 10;
+  public static readonly typeConfucianism = 11;
+  public static readonly typeTaoism = 12;
+  public static readonly typeBuddhism = 13;
 
   public constructor(public id: number,
                      public type: number,
@@ -1185,6 +1218,22 @@ export class Api {
     }
   }
 
+  public static async setRegularlyCommand(month: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'commands/regularly/' + month, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async clearRegularlyCommands(): Promise<any> {
+    try {
+      await axios.delete(def.API_HOST + 'commands/regularly', this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async getMyCharacter(): Promise<Character> {
     try {
       const result = await axios.get<ApiData<Character>>
@@ -1281,6 +1330,16 @@ export class Api {
     try {
       await axios.post
         (def.API_HOST + 'town/scout', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getTownBuyCost(townId: number): Promise<{ country: Country, cost: number }[]> {
+    try {
+      const result = await axios.get
+        (def.API_HOST + 'town/buycost/' + townId, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1404,6 +1463,25 @@ export class Api {
     try {
       await axios.put
         (def.API_HOST + 'country/' + countryId + '/give/' + townId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async buyTown(townId: number): Promise<any> {
+    try {
+      await axios.post
+        (def.API_HOST + 'buy/town/' + townId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async addBuyTownCost(townId: number): Promise<number> {
+    try {
+      const result = await axios.post
+        (def.API_HOST + 'buy/towndef/' + townId, {}, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1607,6 +1685,14 @@ export class Api {
     }
   }
 
+  public static async dischargeUnitCharacter(id: number, characterId: number): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'unit/' + id + '/leave/' + characterId, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async removeUnit(id: number): Promise<any> {
     try {
       await axios.delete(def.API_HOST + 'unit/' + id, this.authHeader);
@@ -1693,7 +1779,8 @@ export class Api {
                             icon: CharacterIcon,
                             password: string,
                             country: Country,
-                            invitationCode?: string): Promise<AuthenticationData> {
+                            invitationCode?: string,
+                            isCountryFree: boolean = false): Promise<AuthenticationData> {
     try {
       const result = await axios.post<ApiData<AuthenticationData>>(def.API_HOST + 'entry', {
         character: {
@@ -1706,6 +1793,7 @@ export class Api {
           townId: chara.townId,
           message: chara.message,
           from: chara.from,
+          formationType: chara.formationType,
           isBeginner: chara.isBeginner,
         },
         icon: {
@@ -1716,8 +1804,10 @@ export class Api {
         country: {
           name: country.name,
           colorId: country.colorId,
+          religion: country.religion,
         },
         invitationCode,
+        isCountryFree,
       }, this.secretKeyHeader);
       return result.data.data;
     } catch (ex) {

@@ -144,6 +144,22 @@ export default class NotificationService {
     'コマンド入力完了',
     '{0} の入力が完了しました。',
     NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandInputed = new NotificationServiceItem(
+    '定期実行コマンド入力完了',
+    '定期実行コマンド {0} の入力が完了しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandInputFalled = new NotificationServiceItem(
+    '定期実行コマンド入力失敗',
+    '定期実行コマンド {0} の入力に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly regularlyCommandCleared = new NotificationServiceItem(
+    '定期実行コマンド削除',
+    '定期実行コマンドを削除しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly regularlyCommandClearFalled = new NotificationServiceItem(
+    '定期実行コマンド削除失敗',
+    '定期実行コマンドの削除に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly commandExecuted = new NotificationServiceItem(
     'コマンド実行完了',
     '{0} のコマンドが実行されました。',
@@ -199,6 +215,30 @@ export default class NotificationService {
   public static readonly scoutFailed = new NotificationServiceItem(
     '諜報失敗',
     '{0} を諜報できませんでした。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townCostUpdateFailed = new NotificationServiceItem(
+    '都市購入費用取得失敗',
+    '都市の購入費用の取得に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townCostAdded = new NotificationServiceItem(
+    '都市購入費用加算',
+    '{0} の購入費用を 1000 加算しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townCostAddFailed = new NotificationServiceItem(
+    '都市購入費用加算失敗',
+    '{0} の購入費用の加算に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townBought = new NotificationServiceItem(
+    '都市購入',
+    '{0} を購入しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly townBuyFailed = new NotificationServiceItem(
+    '都市購入失敗',
+    '{0} の購入に失敗しました',
+    NotificationServiceItemDefaultType.error);
+  public static readonly townBuyFailedBecauseNotBorder = new NotificationServiceItem(
+    '都市購入失敗',
+    '{0} の購入に失敗しました。隣接していない都市は購入できません',
     NotificationServiceItemDefaultType.error);
   public static readonly countryChanged = new NotificationServiceItem(
     '所属国変更',
@@ -388,6 +428,14 @@ export default class NotificationService {
     '部隊長交代失敗',
     '部隊 {0} の部隊長交代に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly unitMemberDischarged = new NotificationServiceItem(
+    '除隊',
+    '隊員 {0} を除隊しました',
+    NotificationServiceItemDefaultType.succeed);
+  public static readonly unitMemberDischargeFalled = new NotificationServiceItem(
+    '除隊失敗',
+    '隊員 {0} の除隊に失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitRemoved = new NotificationServiceItem(
     '部隊削除',
     '部隊 {0} を削除しました',
@@ -403,6 +451,10 @@ export default class NotificationService {
   public static readonly belongsUnitGathered = new NotificationServiceItem(
     '部隊集合',
     '所属部隊が集合されました',
+    NotificationServiceItemDefaultType.information);
+  public static readonly belongsUnitDischarged = new NotificationServiceItem(
+    '部隊からの除隊',
+    '所属していた部隊から除隊されました',
     NotificationServiceItemDefaultType.information);
   public static readonly battleLogLoadFailed = new NotificationServiceItem(
     '戦闘ログ取得失敗',
@@ -575,6 +627,10 @@ export default class NotificationService {
   public static readonly promotionFailedBecauseNoCharacter = new NotificationServiceItem(
     '登用文操作失敗',
     '登用文の操作に失敗しました。武将が見つかりません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly promotionFailedBecauseCountryLimited = new NotificationServiceItem(
+    '登用文操作失敗',
+    '登用文の操作に失敗しました。その国への仕官は現在制限されています。戦闘解除をお待ち下さい',
     NotificationServiceItemDefaultType.error);
   public static readonly promotionReceived = new NotificationServiceItem(
     '登用',

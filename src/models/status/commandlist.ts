@@ -102,8 +102,24 @@ export default class CommandList {
     return items.some((i) => i.type === 84);
   }
 
+  public get canInputCreateTown(): boolean {
+    const items = this.store.items.filter((i) => i.characterId === this.store.character.id &&
+                                                 i.status === api.CharacterItem.statusCharacterHold);
+    return items.some((i) => i.type === 87);
+  }
+
+  public get canInputOppress(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 61 || s === 66 || s === 71);
+  }
+
   public get canInputResign(): boolean {
     return this.store.systemData.isWaitingReset;
+  }
+
+  public get canSetRegularly(): boolean {
+    const commands = this.inputer.commands.filter((c) => c.isSelected === true && c.canSelect === true);
+    return commands.length === 1 && (commands[0].type === 57 || commands[0].type === 55);
   }
 
   public get restTurns(): number {
@@ -246,7 +262,7 @@ export default class CommandList {
     if (date.year >= def.UPDATE_START_YEAR) {
       if (command && command.type !== undefined && command.type !== 0) {
         this.inputer.updateCommandName(command);
-        NotificationService.commandExecuted.notifyWithParameter(command.name);
+        NotificationService.commandExecuted.notifyWithParameter(command.name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
       } else {
         NotificationService.emptyCommandExecuted.notify();
       }

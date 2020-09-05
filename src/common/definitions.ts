@@ -73,6 +73,7 @@ export class SoldierType {
   public constructor(public id: number = 0,
                      public kind: number = 0,
                      public attribute: number = 0,
+                     public rank: number = 0,
                      public name: string = '',
                      public money: number = 0,
                      public technology: number = 0,
@@ -87,56 +88,57 @@ export class SoldierType {
                      public requestedSubBuildingType?: number | number[]) {}
 }
 export const SOLDIER_TYPES: SoldierType[] = [
-  new SoldierType(1, 0, 4, '剣兵', 1, 0, '0', '0'),
-  new SoldierType(2, 0, 4, '禁兵', 1, 0, '10', '10'),
-  new SoldierType(500, 0, 4, '剣兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、わずかな補正を得る'),
-  new SoldierType(3, 0, 4, '軽戟兵', 6, 200, '30', '30', '低級兵種。騎に強く弩に弱い'),
-  new SoldierType(33, 0, 4, '戟兵', 12, 500, '60', '60', '中級兵種。騎に強く弩に弱い'),
-  new SoldierType(8, 0, 4, '重戟兵', 18, 800, '90', '90', '高級兵種。騎に強く弩に弱い'),
-  new SoldierType(26, 0, 4, '青洲兵', 35, 1200, '120', '120', '最高級兵種。騎に強く弩に弱い', undefined, true, 64),
-  new SoldierType(30, 0, 5, '牛兵', 6, 200, '30', '30', '低級兵種。弩に強く戟に弱い'),
-  new SoldierType(5, 0, 5, '軽騎兵', 12, 500, '60', '60', '中級兵種。弩に強く戟に弱い'),
-  new SoldierType(9, 0, 5, '重騎兵', 18, 800, '90', '90', '高級兵種。弩に強く戟に弱い'),
-  new SoldierType(38, 0, 5, '戦車兵', 35, 1200, '120', '120', '最高級兵種。弩に強く戟に弱い', undefined, true, 77),
-  new SoldierType(4, 0, 6, '弓兵', 6, 200, '30', '30', '低級兵種。戟に強く騎に弱い'),
-  new SoldierType(45, 0, 6, '長弓兵', 12, 500, '60', '60', '中級兵種。戟に強く騎に弱い'),
-  new SoldierType(6, 0, 6, '強弩兵', 18, 800, '90', '90', '高級兵種。戟に強く騎に弱い'),
-  new SoldierType(11, 0, 6, '連弩兵', 35, 1200, '120', '120', '最高級兵種。戟に強く騎に弱い', undefined, true, 63),
-  new SoldierType(13, 0, 2, '衝車', 16, 500, '0', '0', '対城壁に特化'),
-  new SoldierType(14, 0, 2, '井闌', 26, 600, '0', '0', '対城壁に特化。衝車より強い'),
-  new SoldierType(35, 0, 2, '投石器', 40, 600, '0', '0', '対城壁に特化。井闌より強い'),
-  new SoldierType(32, 0, 2, '祈祷兵', 20, 800, '0', '0', '低級兵種。陣形の相性により大きな攻撃力を得る'),
-  new SoldierType(34, 0, 4, '槍兵', 12, 500, '30', '30', '低級兵種'),
-  new SoldierType(31, 0, 4, '投石兵', 10, 600, '50', '50', '中級兵種'),
-  new SoldierType(36, 0, 5, '槍騎兵', 10, 600, '50', '50', '中級兵種。弩に強く戟に弱い'),
-  new SoldierType(37, 0, 6, '弓騎兵', 10, 600, '50', '50', '中級兵種。戟に強く騎に弱い'),
-  new SoldierType(27, 0, 5, '象兵', 22, 800, '0', '0', '突撃に大きな補正', undefined, true, 67),
-  new SoldierType(28, 0, 4, '藤甲兵', 22, 800, '0', '180', '高い防御力を持つ', undefined, true, 68),
-  new SoldierType(23, 1, 4, '梓叡兵', 6, 300, '0', '0', '文官向けの最弱の兵種'),
-  new SoldierType(7, 1, 4, '梓歩兵',  16, 600, '60', '60', '文官向けの兵種。騎に強く弩に弱い'),
-  new SoldierType(24, 1, 5, '梓馬兵', 16, 600, '60', '60', '文官向けの兵種。弩に強く戟に弱い'),
-  new SoldierType(42, 1, 6, '梓弓兵', 16, 600, '60', '60', '文官向けの兵種。戟に強く騎に弱い'),
-  new SoldierType(29, 1, 2, '梓琴兵', 23, 600, '0', '0', '文官向けの兵種', undefined, undefined, undefined, 50),
-  new SoldierType(43, 1, 6, '梓弩兵', 33, 1300, '70', '70', '文官向けの兵種。戟に強く騎に弱い', undefined, undefined, undefined, 50),
-  new SoldierType(44, 1, 4, '工作兵', 20, 1000, '0', '0', '文官向けの兵種'),
-  new SoldierType(12, 1, 7, '壁守兵', 20, 1000, '0', '110', '文官向けの兵種。高い防御力を持つ'),
-  new SoldierType(25, 3, 4, '義勇兵', 8, 300, '0', '0', '仁官向けの最弱の兵種', 30),
-  new SoldierType(39, 3, 4, '義戈兵', 12, 400, '30', '10', '仁官向けの兵種。連戦に補正', undefined, undefined, undefined, 51),
-  new SoldierType(40, 3, 5, '義殲兵', 12, 300, '60', '-20', '仁官向けの兵種。防御を犠牲に、少しの突撃補正', undefined, undefined, undefined, 52),
-  new SoldierType(41, 3, 2, '投擲器', 36, 700, '80', '-40', '仁官向けの兵種。防御を犠牲に、城壁攻撃に特化', undefined, undefined, undefined, 53),
+  new SoldierType(1, 0, 4, 0, '剣兵', 1, 0, '0', '0'),
+  new SoldierType(2, 0, 4, 0, '禁兵', 1, 0, '10', '10'),
+  new SoldierType(500, 0, 4, 0, '剣兵・禁兵', 1, 0, '0 / 10', '0 / 10', '最弱の兵士。首都で徴兵した場合は禁兵となり、わずかな補正を得る'),
+  new SoldierType(3, 0, 4, 1, '軽戟兵', 6, 200, '30', '30', '低級兵種。騎に強く弩に弱い'),
+  new SoldierType(33, 0, 4, 2, '戟兵', 12, 500, '60', '60', '中級兵種。騎に強く弩に弱い'),
+  new SoldierType(8, 0, 4, 3, '重戟兵', 18, 800, '90', '90', '高級兵種。騎に強く弩に弱い'),
+  new SoldierType(26, 0, 4, 4, '青洲兵', 35, 1200, '120', '120', '最高級兵種。騎に強く弩に弱い', undefined, true, 64),
+  new SoldierType(30, 0, 5, 1,  '軽騎兵', 6, 200, '30', '30', '低級兵種。弩に強く戟に弱い'),
+  new SoldierType(5, 0, 5, 2, '騎兵', 12, 500, '60', '60', '中級兵種。弩に強く戟に弱い'),
+  new SoldierType(9, 0, 5, 3, '重騎兵', 18, 800, '90', '90', '高級兵種。弩に強く戟に弱い'),
+  new SoldierType(38, 0, 5, 4, '戦車兵', 35, 1200, '120', '120', '最高級兵種。弩に強く戟に弱い', undefined, true, 77),
+  new SoldierType(4, 0, 6, 1, '弓兵', 6, 200, '30', '30', '低級兵種。戟に強く騎に弱い'),
+  new SoldierType(45, 0, 6, 2, '弩兵', 12, 500, '60', '60', '中級兵種。戟に強く騎に弱い'),
+  new SoldierType(6, 0, 6, 3, '強弩兵', 18, 800, '90', '90', '高級兵種。戟に強く騎に弱い'),
+  new SoldierType(11, 0, 6, 4, '連弩兵', 35, 1200, '120', '120', '最高級兵種。戟に強く騎に弱い', undefined, true, 63),
+  new SoldierType(13, 0, 2, 0, '衝車', 16, 500, '0', '0', '対城壁に特化'),
+  new SoldierType(14, 0, 2, 0, '井闌', 26, 600, '0', '0', '対城壁に特化。衝車より強い'),
+  new SoldierType(35, 0, 2, 0, '投石器', 40, 1000, '0', '0', '対城壁に特化。井闌より強い'),
+  new SoldierType(32, 0, 2, 0, '祈祷兵', 20, 800, '0', '0', '（特殊）低級兵種。陣形の相性により大きな攻撃力を得る'),
+  new SoldierType(34, 0, 4, 0, '槍兵', 12, 500, '30', '30', '（特殊）低級兵種'),
+  new SoldierType(31, 0, 4, 0, '投石兵', 10, 600, '50', '50', '（特殊）中級兵種'),
+  new SoldierType(36, 0, 5, 0, '槍騎兵', 10, 600, '50', '50', '（特殊）中級兵種。弩に強く戟に弱い'),
+  new SoldierType(37, 0, 6, 0, '弓騎兵', 10, 600, '50', '50', '（特殊）中級兵種。戟に強く騎に弱い'),
+  new SoldierType(27, 0, 5, 0, '象兵', 22, 800, '0', '0', '突撃に大きな補正', undefined, true, 67),
+  new SoldierType(28, 0, 4, 0, '藤甲兵', 22, 800, '0', '180', '高い防御力を持つ', undefined, true, 68),
+  new SoldierType(23, 1, 4, 2, '梓叡兵', 6, 300, '0', '0', '文官向けの最弱の兵種'),
+  new SoldierType(7, 1, 4, 2, '梓歩兵',  16, 600, '60', '60', '文官向けの兵種。騎に強く弩に弱い'),
+  new SoldierType(24, 1, 5, 2, '梓馬兵', 16, 600, '60', '60', '文官向けの兵種。弩に強く戟に弱い'),
+  new SoldierType(42, 1, 6, 2, '梓弓兵', 16, 600, '60', '60', '文官向けの兵種。戟に強く騎に弱い'),
+  new SoldierType(29, 1, 2, 3, '梓琴兵', 23, 600, '0', '0', '文官向けの兵種', undefined, undefined, undefined, 50),
+  new SoldierType(43, 1, 6, 3, '梓弩兵', 33, 1300, '70', '70', '文官向けの兵種。戟に強く騎に弱い', undefined, undefined, undefined, 50),
+  new SoldierType(44, 1, 4, 1, '工作兵', 20, 1000, '0', '0', '文官向けの兵種'),
+  new SoldierType(12, 1, 7, 2, '壁守兵', 20, 1000, '0', '110', '文官向けの兵種。高い防御力を持つ'),
+  new SoldierType(25, 3, 4, 0, '義勇兵', 8, 300, '0', '0', '仁官向けの最弱の兵種', 30),
+  new SoldierType(39, 3, 4, 1, '義戈兵', 12, 400, '30', '10', '仁官向けの兵種。連戦に補正', undefined, undefined, undefined, 51),
+  new SoldierType(40, 3, 5, 1, '義殲兵', 12, 300, '60', '-20', '仁官向けの兵種。防御を犠牲に、少しの突撃補正', undefined, undefined, undefined, 52),
+  new SoldierType(41, 3, 2, 1, '投擲器', 36, 700, '80', '-40', '仁官向けの兵種。防御を犠牲に、城壁攻撃に特化', undefined, undefined, undefined, 53),
 
-  new SoldierType(15, 0, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
-  new SoldierType(17, 0, 0, '異民族兵A', 32767, 32767, '0', '0', ''),
-  new SoldierType(18, 0, 0, '異民族兵B', 32767, 32767, '0', '0', ''),
-  new SoldierType(19, 0, 0, '異民族兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(20, 0, 0, '賊兵A', 32767, 32767, '0', '0', ''),
-  new SoldierType(21, 0, 0, '賊兵B', 32767, 32767, '0', '0', ''),
-  new SoldierType(22, 0, 0, '賊兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(100, 0, 0, '守兵A', 32767, 32767, '0', '0', ''),
-  new SoldierType(101, 0, 0, '守兵B', 32767, 32767, '0', '0', ''),
-  new SoldierType(102, 0, 0, '守兵C', 32767, 32767, '0', '0', ''),
-  new SoldierType(103, 0, 0, '守兵D', 32767, 32767, '0', '0', ''),
-  new SoldierType(104, 0, 0, '守兵E', 32767, 32767, '0', '0', ''),
+  new SoldierType(15, 0, 0, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
+  new SoldierType(17, 0, 5, 1, '異民族兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(18, 0, 5, 2, '異民族兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(19, 0, 5, 3, '異民族兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(20, 0, 0, 1, '賊兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(21, 0, 0, 1, '賊兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(22, 0, 0, 1, '賊兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(100, 0, 0, 0, '守兵A', 32767, 32767, '0', '0', ''),
+  new SoldierType(101, 0, 0, 0, '守兵B', 32767, 32767, '0', '0', ''),
+  new SoldierType(102, 0, 0, 0, '守兵C', 32767, 32767, '0', '0', ''),
+  new SoldierType(103, 0, 0, 0, '守兵D', 32767, 32767, '0', '0', ''),
+  new SoldierType(104, 0, 0, 0, '守兵E', 32767, 32767, '0', '0', ''),
+  new SoldierType(105, 0, 0, 0, '守兵F', 32767, 32767, '0', '0', ''),
 ];
 
 /**
@@ -201,7 +203,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(7, '農地開拓'),
   new CommandNameResolver(8, '市場拡大'),
   new CommandNameResolver(9, '城壁増築'),
-  new CommandNameResolver(10, '{0} を {1} 人徴兵', (format, params) => {
+  new CommandNameResolver(10, '{0} を <num>{1}</num> 人徴兵', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const soldierType = p.firstOrDefault((pp) => pp.type === 1);
@@ -222,10 +224,10 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(11, '兵士訓練'),
   new CommandNameResolver(12, '城の守備'),
-  new CommandNameResolver(13, '%0% へ侵攻'),
+  new CommandNameResolver(13, '<town>%0%</town> へ侵攻'),
   new CommandNameResolver(14, '集合'),
-  new CommandNameResolver(15, '%読込中% を登用'),
-  new CommandNameResolver(17, '%0% へ移動'),
+  new CommandNameResolver(15, '<character>%読込中%</character> を登用'),
+  new CommandNameResolver(17, '<town>%0%</town> へ移動'),
   new CommandNameResolver(18, '{0} を強化', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -274,11 +276,11 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       }
 
       if (!result || result.numberValue === undefined) {
-        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' を米に交換' :
-                                        '米 ' + assets.numberValue + ' を金に交換';
+        return type.numberValue === 1 ? '金 <num>' + assets.numberValue + '</num> を米に交換' :
+                                        '米 <num>' + assets.numberValue + '</num> を金に交換';
       } else {
-        return type.numberValue === 1 ? '金 ' + assets.numberValue + ' → 米 ' + result.numberValue :
-                                        '米 ' + assets.numberValue + ' → 金 ' + result.numberValue;
+        return type.numberValue === 1 ? '金 <num>' + assets.numberValue + '</num> → 米 <num>' + result.numberValue + '</num>' :
+                                        '米 <num>' + assets.numberValue + '</num> → 金 <num>' + result.numberValue + '</num>';
       }
     } else {
       return 'エラー (19:1)';
@@ -287,7 +289,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(23, '仕官'),
   new CommandNameResolver(30, '緊急米施し'),
   new CommandNameResolver(31, '都市施設強化'),
-  new CommandNameResolver(34, '金 {0} を国庫納入', (format, params) => {
+  new CommandNameResolver(34, '金 <num>{0}</num> を国庫納入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const money = p.firstOrDefault((pp) => pp.type === 1);
@@ -299,7 +301,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (34:1)';
     }
   }),
-  new CommandNameResolver(35, '国庫から %読込中% へ金 {1} を搬出', (format, params) => {
+  new CommandNameResolver(35, '国庫から <character>%読込中%</character> へ金 <num>{1}</num> を搬出', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const money = p.firstOrDefault((pp) => pp.type === 2);
@@ -327,12 +329,12 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (39:1)';
     }
   }),
-  new CommandNameResolver(40, '政務官 %読込中% を %部隊% へ配属'),
-  new CommandNameResolver(41, '政務官 %読込中% を解任'),
+  new CommandNameResolver(40, '政務官 <character>%読込中%</character> を %部隊% へ配属'),
+  new CommandNameResolver(41, '政務官 <character>%読込中%</character> を解任'),
   new CommandNameResolver(44, '政策開発'),
-  new CommandNameResolver(45, '%0% へ斥候派遣'),
-  new CommandNameResolver(46, '%0% の斥候を解雇'),
-  new CommandNameResolver(47, '政務官 %読込中% を %0% へ配属'),
+  new CommandNameResolver(45, '<town>%0%</town> へ斥候派遣'),
+  new CommandNameResolver(46, '<town>%0%</town> の斥候を解雇'),
+  new CommandNameResolver(47, '政務官 <character>%読込中%</character> を <town>%0%</town> へ配属'),
   new CommandNameResolver(48, '陣形 {0} を獲得', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
@@ -365,7 +367,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (49:1)';
     }
   }),
-  new CommandNameResolver(50, '{0} を購入', (format, params) => {
+  new CommandNameResolver(50, '<town>%0%</town> の {0} を購入', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
@@ -413,7 +415,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (51:1)';
     }
   }),
-  new CommandNameResolver(52, '{0} を %読込中% に譲渡', (format, params) => {
+  new CommandNameResolver(52, '{0} を <character>%読込中%</character> に譲渡', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const itemType = p.firstOrDefault((pp) => pp.type === 1);
@@ -474,7 +476,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(58, '農民呼寄'),
   new CommandNameResolver(59, '農民避難'),
   new CommandNameResolver(60, '合同訓練'),
-  new CommandNameResolver(61, '%0% を偵察'),
+  new CommandNameResolver(61, '<town>%0%</town> を偵察'),
   new CommandNameResolver(62, '探索'),
   new CommandNameResolver(63, '{0} を建設', (format, params) => {
     if (params) {
@@ -510,7 +512,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(65, '静養'),
   new CommandNameResolver(66, '別動隊を雇用'),
-  new CommandNameResolver(67, '[%読込中%] {1}{2} %0%', (format, params) => {
+  new CommandNameResolver(67, '[<character>%読込中%</character>] {1}{2} %0%', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const action = p.firstOrDefault((pp) => pp.type === 2);
@@ -535,8 +537,36 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (67:1)';
     }
   }),
-  new CommandNameResolver(68, '別動隊 %読込中% を削除'),
+  new CommandNameResolver(68, '別動隊 <character>%読込中%</character> を削除'),
   new CommandNameResolver(69, '下野'),
+  new CommandNameResolver(70, '{0} を現在都市の {1} に建設', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const directionOptional = p.firstOrDefault((pp) => pp.type === 1);
+      const townTypeOptional = p.firstOrDefault((pp) => pp.type === 2);
+      if (!directionOptional) {
+        return 'エラー (70:2)';
+      }
+      const direction = directionOptional.numberValue;
+      if (!direction) {
+        return 'エラー (70:3)';
+      }
+      if (!townTypeOptional) {
+        return 'エラー (70:4)';
+      }
+      const townType = townTypeOptional.numberValue;
+      if (!townType) {
+        return 'エラー (70:5)';
+      }
+      const dirs = ['', '左上', '上', '右上', '左', '右', '左下', '下', '右下'];
+
+      return format.replace('{0}', TOWN_TYPES[townType]).replace('{1}', dirs[direction]);
+    } else {
+      return 'エラー (70:1)';
+    }
+  }),
+  new CommandNameResolver(71, '布教'),
+  new CommandNameResolver(72, '異教弾圧'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -593,6 +623,15 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(37, '玉璽', 'darkorange'),
   new EventType(38, '解雇', 'purple'),
   new EventType(39, '下野', 'purple'),
+  new EventType(40, '都市建設', 'green'),
+  new EventType(41, '購入', 'blue'),
+  new EventType(42, '出現', 'dodgerblue'),
+  new EventType(43, '放浪', '#008'),
+  new EventType(44, '首都建設', 'green'),
+  new EventType(45, '時間終了', 'red'),
+  new EventType(46, '改宗', 'deeppink'),
+  new EventType(47, '弾圧', 'deeppink'),
+  new EventType(48, '宗教支配', 'deeppink'),
 ];
 
 /**
@@ -1011,6 +1050,9 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
   new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
   new CharacterItemType(86, 500000, '真実の鏡', '使用で本物の玉璽を持っている国が判明（武将ログに出力）', false, false, true),
+  new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, true),
+  new CharacterItemType(88, 500000, '都市計画書', '使用で都市敷地最大 +1', false, true, true),
+  new CharacterItemType(89, 500000, '大都市計画書', '使用で都市敷地最大 +3', false, true, true),
 ];
 
 /**
@@ -1036,7 +1078,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
     (skills) => skills.some((s) => s.type === 7 || s.type === 57) && !skills.some((s) => s.type === 54)),
   new CharacterSkillType(54, '官吏 Lv.b3', '戦時中内政効果 +40%、政策開発時、未取得政策ブースト確率 +5%', 320,
     (skills) => skills.some((s) => s.type === 7 || s.type === 57) && !skills.some((s) => s.type === 8)),
-  new CharacterSkillType(9, '官吏 Lv.4', '戟兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
+  new CharacterSkillType(9, '官吏 Lv.4', '歩兵属性含む兵種使用時、攻撃力 +20、防御力 +50', 360, (skills) => skills.some((s) => s.type === 8 || s.type === 54)),
   new CharacterSkillType(10, '官吏 Lv.5', '壁属性含む兵種使用時、混乱 +5%、毎月知力Ex +11', 400, (skills) => skills.some((s) => s.type === 9)),
   new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、米売買時貢献 +15', 0, (_) => false),
   new CharacterSkillType(12, '商人 Lv.2', 'コマンド 都市投資', 280, (skills) => skills.some((s) => s.type === 11)),
@@ -1078,6 +1120,21 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(48, '参謀 Lv.3', '防御力 +20、同士討ち確率 +2％', 400, (skills) => skills.some((s) => s.type === 47)),
   new CharacterSkillType(49, '参謀 Lv.4', '突撃確率 +2%、突撃攻撃力 +60、混乱確率 +4%', 320, (skills) => skills.some((s) => s.type === 48)),
   new CharacterSkillType(50, '参謀 Lv.5', '兵種 梓琴兵・梓弩兵、戦闘が１ターンで終了時の連戦確率 +50%', 360, (skills) => skills.some((s) => s.type === 49)),
+  new CharacterSkillType(58, '儒家 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(59, '儒家 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 58)),
+  new CharacterSkillType(60, '儒家 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 59)),
+  new CharacterSkillType(61, '儒家 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 60)),
+  new CharacterSkillType(62, '儒家 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 61)),
+  new CharacterSkillType(63, '道家 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(64, '道家 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 63)),
+  new CharacterSkillType(65, '道家 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 64)),
+  new CharacterSkillType(66, '道家 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 65)),
+  new CharacterSkillType(67, '道家 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 66)),
+  new CharacterSkillType(68, '仏僧 Lv.1', '無所属でも布教可能、攻撃力 -100', 0, (_) => false),
+  new CharacterSkillType(69, '仏僧 Lv.2', '布教効果 +100%', 100, (skills) => skills.some((s) => s.type === 68)),
+  new CharacterSkillType(70, '仏僧 Lv.3', '自分と同じ宗教を信仰する都市の内政効果 +100%', 600, (skills) => skills.some((s) => s.type === 69)),
+  new CharacterSkillType(71, '仏僧 Lv.4', 'コマンド 異教弾圧', 500, (skills) => skills.some((s) => s.type === 70)),
+  new CharacterSkillType(72, '仏僧 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 71)),
 ];
 
 /**
@@ -1101,6 +1158,16 @@ export const TOWN_SUB_BUILDING_TYPES: TownSubBuildingType[] = [
   new TownSubBuildingType(6, '城塞', 2, 24, 25000, '城壁最大 +500。武力 100 が必要'),
   new TownSubBuildingType(7, '商業組合', 1, 48, 50000, '毎年 1 , 7 月、国庫に金 4000 〜 8000。技能が必要', 56),
   new TownSubBuildingType(8, '破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回城壁 -7'),
-  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -2、農民 -100'),
+  new TownSubBuildingType(9, '扇動所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回民忠 -4、農民 -600'),
   new TownSubBuildingType(10, '防衛拠点', 2, 36, 30000, '隣接する戦争相手都市建築物から受ける自都市被害 -66%'),
+  new TownSubBuildingType(11, '工房破壊所', 2, 24, 30000, '隣接する戦争相手都市で 2 ヶ月に 1 回技術 -7'),
+  new TownSubBuildingType(12, '聖堂', 1, 48, 50000, '2 ヶ月に 1 回都市の国教 +8、都市が国教ならさらに技術最大 +3、城壁最大 +7、周囲都市に宗教圧力 +4', [62, 67, 72]),
+];
+
+export const RELIGION_TYPES: string[] = [
+  'なし',
+  '無宗教',
+  '儒教',
+  '道教',
+  '仏教',
 ];

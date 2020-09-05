@@ -51,6 +51,8 @@ export default class StatusModel {
   public countryCommandersMessage: api.CountryMessage = new api.CountryMessage();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
   public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
+  public townBuyCosts: { country: api.Country, cost: number }[] = [];
+  public townBuyCost: number = 0;
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
@@ -63,6 +65,7 @@ export default class StatusModel {
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
+  public isUpdatingTownBuyCost: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
   public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
@@ -73,6 +76,7 @@ export default class StatusModel {
   public isUpdatingItems: boolean = false;
   public isUpdatingSkills: boolean = false;
   public isUpdatingAccount: boolean = false;
+  public isUpdatingRegularlyCommands: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -616,6 +620,19 @@ export default class StatusModel {
     return [];
   }
 
+  public get regularlyCommand(): api.CharacterCommand | undefined {
+    if (this.store.regularlyCommands.length >= 1) {
+      const data = this.store.regularlyCommands[0];
+      const command = new api.CharacterCommand(0, 0, data.type, '', [
+        new api.CharacterCommandParameter(1, data.option1),
+        new api.CharacterCommandParameter(2, data.option2),
+      ]);
+      this.commands.inputer.updateCommandName(command);
+      return command;
+    }
+    return undefined;
+  }
+
   public isNextToCountry(townId: number, countryId: number): boolean {
     const town = ArrayUtil.find(this.store.towns, townId);
     if (town) {
@@ -727,6 +744,9 @@ export default class StatusModel {
     ApiStreaming.status.on<api.CharacterCommand>(
       api.CharacterCommand.typeId,
       (obj) => this.onReceiveOtherCharacterCommand(obj));
+    ApiStreaming.status.on<api.CharacterRegularlyCommand>(
+      api.CharacterRegularlyCommand.typeId,
+      (obj) => this.onReceiveCharacterRegularlyCommand(obj));
     ApiStreaming.status.on<api.CountryPolicy>(
       api.CountryPolicy.typeId,
       (obj) => this.onCountryPolicyReceived(obj));
@@ -763,6 +783,8 @@ export default class StatusModel {
         api.Api.setPrivateChatMessageRead();
       }
     };
+    this.newAllianceData.canMissionary = true;
+    this.newAllianceData.canBuyTown = true;
 
     setInterval(() =>
       this.monthTimer = Math.floor((this.monthTimerDate.getTime() - new Date().getTime()) / 1000),
@@ -841,6 +863,9 @@ export default class StatusModel {
       // 謹慎された
       this.commands.inputer.isStopCommand = true;
       NotificationService.myCommandsStoped.notify();
+    } else if (signal.type === 11) {
+      // 部隊から除隊された
+      NotificationService.belongsUnitDischarged.notify();
     }
   }
 
@@ -961,6 +986,7 @@ export default class StatusModel {
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type]));
     ps.push(new TextStatusParameter('下地', def.TOWN_TYPES[town.subType]));
+    ps.push(new TextStatusParameter('宗教', def.RELIGION_TYPES[town.religion]));
     if (town.ricePrice !== undefined) {
       ps.push(new NoRangeStatusParameter('相場', Math.round(town.ricePrice * 1000) / 1000));
       ps.push(new NoRangeStatusParameter('農民', town.people));
@@ -969,6 +995,10 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
+      ps.push(new NoRangeStatusParameter('購入防衛', town.takeoverDefensePoint));
+      ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
+      ps.push(new NoRangeStatusParameter('道教', town.taoism));
+      ps.push(new NoRangeStatusParameter('仏教', town.buddhism));
     }
 
     const townBuilding = Enumerable
@@ -986,6 +1016,7 @@ export default class StatusModel {
     if (town.ricePrice !== undefined) {
       let subBuildingSize = 0;
       let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
+      subBuildingSizeMax += town.townSubBuildingExtraSpace;
       if (this.characterCountryPolicies.filter((cp) => cp.status === api.CountryPolicy.statusAvailable)
                                        .some((cp) => cp.type === 47)) {
         subBuildingSizeMax += 1;
@@ -1045,6 +1076,58 @@ export default class StatusModel {
     if (this.town.id === item.townId) {
       this.setTown(this.town);
     }
+  }
+
+  public updateTownBuyCost() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.getTownBuyCost(this.town.id)
+      .then((cost) => {
+        this.townBuyCosts = cost.filter((c) => !c.country.aiType && c.country.id !== this.character.countryId);
+        const myCountryData = cost.find((c) => c.country.id === this.character.countryId);
+        if (myCountryData) {
+          this.townBuyCost = myCountryData.cost;
+        }
+      })
+      .catch(() => {
+        NotificationService.townCostUpdateFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
+  }
+
+  public addBuyTownCost() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.addBuyTownCost(this.town.id)
+      .then((cost) => {
+        this.updateTownBuyCost();
+        NotificationService.townCostAdded.notifyWithParameter(this.town.name);
+      })
+      .catch(() => {
+        NotificationService.townCostAddFailed.notifyWithParameter(this.town.name);
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
+  }
+
+  public buyTown() {
+    this.isUpdatingTownBuyCost = true;
+    api.Api.buyTown(this.town.id)
+      .then(() => {
+        this.updateTownBuyCost();
+        NotificationService.townBought.notifyWithParameter(this.town.name);
+      })
+      .catch((ex) => {
+        if (ex.data.code === api.ErrorCode.invalidOperationError) {
+          NotificationService.townBuyFailedBecauseNotBorder.notifyWithParameter(this.town.name);
+        } else {
+          NotificationService.townBuyFailed.notifyWithParameter(this.town.name);
+        }
+      })
+      .finally(() => {
+        this.isUpdatingTownBuyCost = false;
+      });
   }
 
   // #endregion
@@ -1121,6 +1204,7 @@ export default class StatusModel {
     const ps: StatusParameter[] = [];
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('首都', capital.name));
+    ps.push(new TextStatusParameter('国教', def.RELIGION_TYPES[country.religion]));
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
@@ -1590,10 +1674,14 @@ export default class StatusModel {
       status === api.CountryAlliance.statusChangeRequesting) {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
+      alliance.canMissionary = this.newAllianceData.canMissionary;
+      alliance.canBuyTown = this.newAllianceData.canBuyTown;
       alliance.memo = this.newAllianceData.memo;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
+      alliance.canMissionary = old.canMissionary;
+      alliance.canBuyTown = old.canBuyTown;
       alliance.memo = old.memo;
     }
 
@@ -2022,7 +2110,6 @@ export default class StatusModel {
 
   private onDelayEffectReceived(obj: api.DelayEffect) {
     ArrayUtil.addItem(this.store.delayEffects, obj);
-    console.dir(obj);
   }
 
   // #endregion
@@ -2260,6 +2347,26 @@ export default class StatusModel {
           api.GameDateTime.toNumber(item.gameDate) !== api.GameDateTime.toNumber(c.gameDate));
       this.store.otherCharacterCommands.push(item);
     }
+  }
+
+  private onReceiveCharacterRegularlyCommand(item: api.CharacterRegularlyCommand) {
+    if (item.hasRemoved) {
+      this.store.regularlyCommands = this.store.regularlyCommands.filter((r) => r.id !== item.id);
+    } else {
+      ArrayUtil.addItem(this.store.regularlyCommands, item);
+    }
+  }
+
+  public clearRegularlyCommands() {
+    this.isUpdatingRegularlyCommands = true;
+    api.Api.clearRegularlyCommands()
+      .then(() => {
+        NotificationService.regularlyCommandInputed.notify();
+      })
+      .catch(() => {
+        NotificationService.regularlyCommandInputFalled.notify();
+      })
+      .finally(() => this.isUpdatingRegularlyCommands = false);
   }
 
   // #endregion

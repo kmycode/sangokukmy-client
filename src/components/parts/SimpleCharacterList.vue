@@ -39,9 +39,17 @@
               <span class="parameter-name">人望</span>
               <span class="parameter-value">{{ chara.popularity }}</span>
             </span>
-            <span v-if="hasSoldierData(chara)" class="parameter-item">
+            <span v-if="isShowSoldier && hasSoldierData(chara)" class="parameter-item">
               <span class="parameter-name">{{ getSoldierTypeName(chara) }}</span>
               <span class="parameter-value">{{ chara.soldierNumber }}</span>
+            </span>
+            <span class="parameter-item" v-if="isShowMoney && chara.money !== undefined">
+              <span class="parameter-name">金</span>
+              <span class="parameter-value">{{ chara.money }}</span>
+            </span>
+            <span class="parameter-item" v-if="isShowTown && towns && chara.townId">
+              <span class="parameter-name">所在</span>
+              <span class="parameter-value">{{ getTownName(chara.townId) }}</span>
             </span>
           </div>
           <div v-if="isShowFormationType && chara.formationLevel !== undefined" class="soldier-type-detail">
@@ -116,7 +124,7 @@
         <div v-if="(!chara.aiType || chara.aiType === 28) && getCharacterCommands(chara).length > 0" class="commands">
           <div class="command"
                v-for="command in getCharacterCommands(chara)"
-               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+               :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name"><KmyLogTagText :text="command.name"/></span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
         </div>
       </div>
       <div class="select-cover" @click="$emit('input', chara)"></div>
@@ -128,6 +136,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
@@ -138,11 +147,15 @@ import NotificationService from '../../services/notificationservice';
   components: {
     CharacterIcon,
     KmyChatTagText,
+    KmyLogTagText,
   },
 })
 export default class SimpleCharacterList extends Vue {
   @Prop() public characters!: api.Character[];
   @Prop() public countries!: api.Country[];
+  @Prop({
+    default: () => undefined,
+  }) public towns?: api.Town[];
   @Prop({
     default: -1,
   }) public myCharacterId!: number;
@@ -185,6 +198,15 @@ export default class SimpleCharacterList extends Vue {
   @Prop({
     default: false,
   }) public isSortByTime!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowMoney!: boolean;
+  @Prop({
+    default: true,
+  }) public isShowSoldier!: boolean;
+  @Prop({
+    default: false,
+  }) public isShowTown!: boolean;
 
   private isOpenPostsPopup: boolean = false;
   private openMoreCommands: number = 0;
@@ -232,6 +254,16 @@ export default class SimpleCharacterList extends Vue {
       return soldierType.name;
     }
     return def.SOLDIER_TYPES[0].name;
+  }
+
+  private getTownName(townId: number): string {
+    if (this.towns) {
+      const town = this.towns.find((t) => t.id === townId);
+      if (town) {
+        return town.name;
+      }
+    }
+    return '';
   }
 
   private getCharacterNextTime(time: api.DateTime): api.DateTime {

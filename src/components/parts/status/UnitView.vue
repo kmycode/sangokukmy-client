@@ -5,7 +5,7 @@
         <button :class="{'btn': true, 'btn-secondary': mode === 0, 'btn-outline-secondary': mode !== 0}" @click="mode = 0" href="#">部隊一覧</button>
         <button v-if="!model.leaderUnit || model.leaderUnit.id < 0" :class="{'btn': true, 'btn-secondary': mode === 1, 'btn-outline-secondary': mode !== 1}" @click="mode = 1" href="#">部隊作成</button>
         <button v-if="model.leaderUnit && model.leaderUnit.id >= 0" :class="{'btn': true, 'btn-secondary': mode === 2, 'btn-outline-secondary': mode !== 2}" @click="mode = 2" href="#">部隊編集</button>
-        <button v-if="model.leaderUnit && model.leaderUnit.id >= 0" :class="{'btn': true, 'btn-secondary': mode === 3, 'btn-outline-secondary': mode !== 3}" @click="mode = 3" href="#">部隊長交代</button>
+        <button v-if="model.leaderUnit && model.leaderUnit.id >= 0" :class="{'btn': true, 'btn-secondary': mode === 3, 'btn-outline-secondary': mode !== 3}" @click="mode = 3" href="#">武将一覧</button>
       </div>
       <div v-show="mode === 1" class="unit-form">
         <span class="input-label unit-name-input-label">名前</span><input type="text" class="unit-name-input" v-model="model.leaderUnit.name"><br>
@@ -47,7 +47,8 @@
             v-model="changeLeaderTarget"/>
         </div>
         <div v-show="changeLeaderTarget && changeLeaderTarget.id > 0" style="text-align:right">
-          <button class="btn btn-primary" @click="model.changeLeaderUnitLeader(changeLeaderTarget.id)">承認</button>
+          <button class="btn btn-secondary" @click="model.dischargeMember(changeLeaderTarget.id)">除隊</button>
+          <button class="btn btn-secondary" @click="model.changeLeaderUnitLeader(changeLeaderTarget.id)">部隊長交代</button>
         </div>
       </div>
     </div>

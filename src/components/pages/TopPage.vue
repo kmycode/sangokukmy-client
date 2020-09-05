@@ -6,6 +6,7 @@
           <h1>三国志NET KMY Version 9</h1>
           <h2>第{{ system.period }}<span v-if="system.betaVersion > 0">.{{ system.betaVersion }}</span>期</h2>
           [<span class="number">{{ system.gameDateTime.year }}</span>年<span class="number">{{ system.gameDateTime.month | zeroformat(2) }}</span>月]<br>
+          <RuleSetLabel :ruleSet="system.ruleSet"/><br>
           来月まであと <span class="number">{{ nextMonthSeconds }}</span>秒
           <div v-if="system.gameDateTime.year < 12">更新開始: <span class="number">12</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year >= 12 && system.gameDateTime.year < 36">主要国戦闘解除: <span class="number">36</span>年<span class="number">01</span>月より</div>
@@ -138,6 +139,9 @@
           <div v-show="isLoadingSystem" class="loading"><div class="loading-icon"></div></div>
         </div>
       </div>
+      <div class="row" style="margin:8px 0;display:block;text-align:center">
+        <span style="color:gray;font-size:14px;margin-right:8px">(今期)</span><RuleSetLabel :ruleSet="system.ruleSet"/> &gt; <span style="color:gray;font-size:14px;margin-right:8px">(来期)</span> <RuleSetLabel :ruleSet="system.ruleSetNextPeriod"/> &gt; <span style="color:gray;font-size:14px;margin-right:8px">(来々期)</span> <RuleSetLabel :ruleSet="system.ruleSetAfterNextPeriod"/>
+      </div>
     </div>
     <Footer/>
   </div>
@@ -152,6 +156,7 @@ import RealDateTime from '../parts/RealDateTime.vue';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
 import NotificationService from '@/services/notificationservice';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
+import RuleSetLabel from '@/components/parts/RuleSetLabel.vue';
 import Map from '@/components/parts/Map.vue';
 import EntryPage from '@/components/pages/EntryPage.vue';
 import AsyncUtil from '../../models/common/AsyncUtil';
@@ -174,6 +179,7 @@ import Enumerable from 'linq';
     CharacterIcon,
     EntryPage,
     Footer,
+    RuleSetLabel,
   },
 })
 export default class TopPage extends Vue {

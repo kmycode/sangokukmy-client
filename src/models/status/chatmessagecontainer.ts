@@ -177,6 +177,8 @@ export default class ChatMessageContainer<T extends api.IIdentitiedEntity> imple
           NotificationService.promotionFailedBecauseNoCountry.notify();
         } else if (ex.data.code === api.ErrorCode.characterNotFoundError) {
           NotificationService.promotionFailedBecauseNoCharacter.notify();
+        } else if (ex.data.code === api.ErrorCode.cantJoinAtSuchCountryhError) {
+          NotificationService.promotionFailedBecauseCountryLimited.notify();
         } else {
           NotificationService.promotionFailed.notify();
         }

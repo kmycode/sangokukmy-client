@@ -11,7 +11,7 @@
         <div :class="{ 'form-row': true, 'error': !isOkBeginner, }">
           <div class="label">このゲームは初めてですか？<br>（あなたはこのゲームの大まかな流れを理解しており、内政時や戦争時にどのようなコマンドを入れればいいか判断できますか？）</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true">初めてです</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': !character.isBeginner, 'btn-secondary': character.isBeginner, }" @click="character.isBeginner = true; isSelectedBeginner = true; isCountryFree = false">初めてです</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.isBeginner || !isSelectedBeginner, 'btn-secondary': isSelectedBeginner && !character.isBeginner, }" @click="character.isBeginner = false; isSelectedBeginner = true">経験者です</button>
           </div>
           <div class="detail">
@@ -109,6 +109,12 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
+            <span v-show="system.ruleSet !== 2">
+              <br>宗教系<br>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 11, 'btn-secondary': character.from === 11, }" @click="onFromChanged(11)">儒家</button>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 12, 'btn-secondary': character.from === 12, }" @click="onFromChanged(12)">道家</button>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 13, 'btn-secondary': character.from === 13, }" @click="onFromChanged(13)">仏僧</button>
+            </span>
             <br>その他<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
             <div v-show="selectedSkills.length > 0">
@@ -180,16 +186,41 @@
             能力合計が <span class="number">{{ extraData.attributeSumMax }}</span> になるようにしてください
           </div>
         </div>
+        <div :class="{ 'form-row': true, 'error': !isOkFormation, }">
+          <div class="label">陣形</div>
+          <div class="field">
+            <button v-for="formation in formations" :key="formation.id"
+                    type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.formationType !== formation.id, 'btn-secondary': character.formationType === formation.id, }"
+                    @click="onFormationChanged(formation)">{{ formation.name }}</button>
+            <div v-show="selectedFormation.id > 0">
+              <div v-for="(description, level) in selectedFormation.descriptions" :key="level">
+                <span style="font-weight: bold">レベル {{ level + 1 }}</span> - <span style="color: #666">{{ description }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="detail">
+            登録時に最初に設定される陣形を指定してください
+          </div>
+        </div>
       </div>
       <div class="section">
         <h3>所属</h3>
         <div :class="{ 'form-row': true, 'error': !isOkTown, }">
           <div class="label">ランダム仕官</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': !isTownSelected, }" @click="resetTown()">ランダム仕官</button>
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': !isTownSelected && !isCountryFree, }" @click="resetTown()">ランダム仕官</button>
           </div>
           <div class="detail">
-            （上級者向け）仕官先をランダムで決定する場合は、ボタンをONにしてください
+            仕官先をランダムで決定する場合は、ボタンをONにしてください
+          </div>
+        </div>
+        <div :class="{ 'form-row': true, 'error': !isOkTown, }" v-show="!character.isBeginner">
+          <div class="label">無所属として出現</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isCountryFree, }" @click="isCountryFree ^= true">無所属として出現</button>
+          </div>
+          <div class="detail">
+            （上級者向け）無所属として登録する場合は、ボタンをONにしてください
           </div>
         </div>
         <div :class="{ 'form-row': true, 'error': !isOkTown, }">
@@ -203,11 +234,11 @@
               @selected="onTownChanged($event)"/>
           </div>
           <div class="country-list">
-            <div :class="'country-list-item row country-color-' + country.colorId + (!town.id || town.countryId === country.id ? ' selected' : '')"
+            <div :class="'country-list-item row country-color-' + country.colorId + (((!town.id || town.countryId === country.id) && !isCountryFree) ? ' selected' : '')"
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
-              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br>宗教: <strong>{{ getReligionName(country.religion) }}</strong><br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
@@ -222,18 +253,20 @@
           </div>
         </div>
       </div>
-      <div class="section">
-        <h3>建国</h3>
+      <div class="section" v-show="!character.isBeginner">
+        <h3 v-if="system.ruleSet === 1">放浪</h3>
+        <h3 v-else>建国</h3>
         <div :class="{ 'form-row': true, 'error': !isOkEstablishSelection, }">
-          <div class="label">建国の可否</div>
+          <div class="label" v-if="system.ruleSet === 1">放浪の可否</div>
+          <div class="label" v-else>建国の可否</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isPublish, }" @click="isPublish ^= true">建国する</button>
+            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isPublish, }" @click="isPublish ^= true"><span v-if="system.ruleSet === 1">放浪</span><span v-else>建国</span>する</button>
           </div>
           <div class="detail">
-            建国する場合は、上のボタンをONにしてください
+            <span v-if="system.ruleSet === 1">放浪</span><span v-else>建国</span>する場合は、上のボタンをONにしてください
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+        <div v-show="isPublish && system.ruleSet !== 1" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の都市施設</div>
           <div class="field">
             {{ townBuilding.name }}
@@ -241,7 +274,7 @@
           <div class="detail">
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkTown }">
+        <div v-show="isPublish && system.ruleSet !== 1" :class="{ 'form-row': true, 'error': !isOkTown }">
           <div class="label">選択都市の特化</div>
           <div class="field">
             {{ townType }}
@@ -265,6 +298,17 @@
           </div>
           <div class="detail">
             国の色を決めてください。他の国と同じ色にはできません
+          </div>
+        </div>
+        <div v-show="isPublish && system.ruleSet !== 2" :class="{ 'form-row': true, 'error': !isOkReligion, }">
+          <div class="label">国教</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 2, 'btn-secondary': country.religion === 2, }" @click="country.religion = 2">儒教</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 3, 'btn-secondary': country.religion === 3, }" @click="country.religion = 3">道教</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 4, 'btn-secondary': country.religion === 4, }" @click="country.religion = 4">仏教</button>
+          </div>
+          <div class="detail">
+            国教を指定してください
           </div>
         </div>
       </div>
@@ -342,7 +386,9 @@ export default class EntryPage extends Vue {
   private isOkEula: boolean = false;
   private isOkPrivacyPolicy: boolean = false;
   private isSelectedBeginner: boolean = false;
+  private isCountryFree: boolean = false;
   private selectedSkills: def.CharacterSkillType[] = [];
+  private selectedFormation: def.FormationType = def.FORMATION_TYPES[0];
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -358,6 +404,10 @@ export default class EntryPage extends Vue {
   private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
   private isApp = false;
+
+  private get formations(): def.FormationType[] {
+    return def.FORMATION_TYPES.filter((f) => f.id);
+  }
 
   private get sumOfAttributes(): number {
     return parseInt(this.character.strong.toString(), 10) +
@@ -392,9 +442,17 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkTown(): boolean {
+    if (this.isCountryFree) {
+      return this.town.id !== 0;
+    }
+
     if (this.town.id !== 0) {
-      const extraData = this.getExtraData(this.town.countryId);
-      return !extraData.isJoinLimited;
+      if (this.town.countryId) {
+        const extraData = this.getExtraData(this.town.countryId);
+        return !extraData.isJoinLimited;
+      } else {
+        return !this.character.isBeginner;
+      }
     } else {
       return this.canBelongCountry;
     }
@@ -409,6 +467,10 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkEstablishSelection(): boolean {
+    if (this.isCountryFree) {
+      return !this.isPublish;
+    }
+
     return (!this.isTownSelected && !this.isPublish) ||
       (this.isTownSelected &&
        ((this.town.countryId !== 0 && !this.isPublish) ||
@@ -427,8 +489,16 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
+  private get isOkReligion(): boolean {
+    return !this.isPublish || this.country.religion >= 2;
+  }
+
   private get isOkFrom(): boolean {
     return this.character.from !== 0;
+  }
+
+  private get isOkFormation(): boolean {
+    return this.character.formationType !== 0;
   }
 
   private get isOkStrong(): boolean {
@@ -470,7 +540,9 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
+      this.isOkReligion &&
       this.isOkFrom &&
+      this.isOkFormation &&
       this.isOkStrong &&
       this.isOkIntellect &&
       this.isOkLeadership &&
@@ -499,6 +571,10 @@ export default class EntryPage extends Vue {
       return def.TOWN_TYPES[this.town.type];
     }
     return '未選択';
+  }
+
+  public getReligionName(id: number): string {
+    return def.RELIGION_TYPES[id];
   }
 
   @Watch('isOpened')
@@ -683,6 +759,27 @@ export default class EntryPage extends Vue {
       popularity = 5;
       primaries = [2, 3, 4, 1];
       skillId = 46;
+    } else if (id === api.CharacterSkill.typeConfucianism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 58;
+    } else if (id === api.CharacterSkill.typeTaoism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 63;
+    } else if (id === api.CharacterSkill.typeBuddhism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 68;
     }
 
     if (!primaries) {
@@ -728,8 +825,14 @@ export default class EntryPage extends Vue {
     this.character.popularity = popularity;
   }
 
+  private onFormationChanged(formation: def.FormationType) {
+    this.character.formationType = formation.id;
+    this.selectedFormation = formation;
+  }
+
   private resetTown() {
     this.town = new api.Town();
+    this.isCountryFree = false;
   }
 
   private getSkillItems(firstId: number): def.CharacterSkillType[] {
@@ -779,7 +882,8 @@ export default class EntryPage extends Vue {
                     this.icon,
                     this.password,
                     this.isPublish ? this.country : this.defaultCountry,
-                    this.invitationCode)
+                    this.invitationCode,
+                    this.isCountryFree)
         .then((auth) => {
           LoginService.setAccessToken(auth);
           if (this.character.isBeginner) {

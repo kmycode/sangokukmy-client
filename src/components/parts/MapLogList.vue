@@ -9,7 +9,7 @@
         <span v-if="mlog.isFirstAtMonth">=== {{ mlog.gameDate | gamedate }} ({{ mlog.date | realdate }}) ===</span>
       </li>
       <li v-if="type === 'character-log'" v-for="mlog in logs" :key="mlog.id">
-        {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message"/> ({{ mlog.date | shortrealdate }})
+        {{ mlog.gameDate | gamedate }}: <KmyLogTagText :text="mlog.message" @battle-log="$emit('battle-log', $event)"/> ({{ mlog.date | shortrealdate }})
       </li>
     </transition-group>
   </ul>

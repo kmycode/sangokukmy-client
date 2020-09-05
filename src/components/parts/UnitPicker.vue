@@ -16,7 +16,7 @@
             <div v-show="!unit.leader.character.aiType || unit.leader.character.aiType === 28"
                 class="command"
                 v-for="command in getCharacterCommands(unit.leader.character)"
-                :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name">{{ command.name }}</span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
+                :key="getCommandUniqueKey(command)"><span v-if="command && command.name" class="name"><KmyLogTagText :text="command.name"/></span><span v-else class="name name-no-input">未入力</span><span class="next">&gt;</span></div>
           </div>
         </div>
         <div class="unit-members"><MiniCharacterList :characters="unitMemberCharacters(unit)" :countries="countries"/></div>
@@ -28,6 +28,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import MiniCharacterList from '@/components/parts/MiniCharacterList.vue';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import * as api from './../../api/api';
 import * as def from '@/common/definitions';
@@ -37,6 +38,7 @@ import CommandList from '../../models/status/commandlist';
 @Component({
   components: {
     MiniCharacterList,
+    KmyLogTagText,
     CharacterIcon,
   },
 })

@@ -151,6 +151,13 @@ export default class CommandInputer {
     });
   }
 
+  public inputCreateTownCommand(commandType: number, direction: number, townType: number) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, direction));
+      c.parameters.push(new api.CharacterCommandParameter(2, townType));
+    });
+  }
+
   public inputItemCommand(commandType: number, id: number, resourceSize: number) {
     const info = Enumerable.from(def.CHARACTER_ITEM_TYPES).firstOrDefault((i) => i.id === id);
 
@@ -160,6 +167,7 @@ export default class CommandInputer {
 
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, id));
+      c.parameters.push(new api.CharacterCommandParameter(2, this.store.character.townId));
       if (info && info.isResource) {
         c.parameters.push(new api.CharacterCommandParameter(commandType === 50 ? 4 : 3, resourceSize));
       }
@@ -200,7 +208,7 @@ export default class CommandInputer {
         }
       });
       this.sendCommands(selectCommands, () => {
-        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name);
+        NotificationService.inputCommandsSucceed.notifyWithParameter(selectCommands[0].name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
         this.isStopCommand = false;
       });
     } else {
@@ -386,6 +394,24 @@ export default class CommandInputer {
     this.lastClickedCommand = undefined;
   }
 
+  public setRegularlyCommand() {
+    const commands = this.commands.filter((c) => c.isSelected === true && c.canSelect === true);
+    if (commands.length !== 1) {
+      return;
+    }
+    const command = commands[0];
+
+    this.isInputing = true;
+    api.Api.setRegularlyCommand(api.GameDateTime.toNumber(command.gameDate))
+      .then(() => {
+        NotificationService.regularlyCommandInputed.notifyWithParameter(command.name);
+      })
+      .catch(() => {
+        NotificationService.regularlyCommandInputFalled.notifyWithParameter(command.name);
+      })
+      .finally(() => this.isInputing = false);
+  }
+
   public insertCommands() {
     this.isInputing = true;
     const selectCommands = Enumerable.from(this.commands).where((c) => c.isSelected === true).toArray();
@@ -524,9 +550,9 @@ export default class CommandInputer {
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
-      command.type === 67) {
+      command.type === 67 || command.type === 50) {
       // 都市データ（移動、戦争、偵察）
-      const paramTypeId = command.type === 47 ? 2 : command.type === 67 ? 4 : 1;
+      const paramTypeId = (command.type === 47 || command.type === 50) ? 2 : command.type === 67 ? 4 : 1;
       const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
       if (targetTownId && targetTownId.numberValue) {
         const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);

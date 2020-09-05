@@ -18,6 +18,7 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(30)">緊急米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(71)">布教</button>
         <button v-if="canSubBuilding" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSubBuildingPopup = !isOpenSubBuildingPopup">建築物
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSubBuildingPopup && list.inputer.canInput ? 'block' : 'none' }">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSubBuildingPopup = false; $emit('open', 'subbuilding-build')">建設</a>
@@ -87,6 +88,7 @@
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
+        <button v-if="list.canInputOppress" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(72)">異教弾圧</button>
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
         <button v-if="list.canInputGenerateItem" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">資源製造</button>
@@ -105,7 +107,9 @@
           </div>
         </button> -->
         <button v-if="list.canInputChangeTime" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(65)">静養</button>
+        <button v-if="list.canInputCreateTown" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-create')">都市建設</button>
         <button type="button" class="btn btn-info" @click="$emit('open', 'queue')">キュー</button>
+        <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput || !list.canSetRegularly" @click="list.inputer.setRegularlyCommand()">定期実行</button>
         <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
@@ -176,7 +180,7 @@
           <div class="number">{{ command.commandNumber }}</div>
           <div class="command-information">
             <div class="command-helper"><span class="gamedate">{{ command.gameDate | gamedate }}</span><span class="realdate" v-if="command.commandNumber > 1">{{ command.date | realdate }}</span><span class="rest" v-if="command.commandNumber === 1">実行まであと<span class="rest-time">{{ list.secondsOfNextCommand }}</span>秒</span></div>
-            <div class="command-text">{{ command.name }}</div>
+            <div class="command-text"><KmyLogTagText :text="command.name"/></div>
             <div v-if="command.eventMessage" class="event-message">{{ command.eventMessage }}</div>
           </div>
         </div>
@@ -206,11 +210,13 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import CommandList from '@/models/status/commandlist';
+import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
 import * as def from '@/common/definitions';
 import Enumerable from 'linq';
 
 @Component({
   components: {
+    KmyLogTagText,
   },
 })
 export default class CommandListView extends Vue {
