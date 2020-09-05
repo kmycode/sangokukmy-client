@@ -1523,6 +1523,11 @@
               :store="model.store"
               @selected="onMapDialogSelected($event)"
               style="height:400px;min-height:50vh"/>
+            <div v-if="mapDialogMode === 0 || mapDialogMode === 1">
+              <div class="alert alert-warning">
+                所在都市のタテ・ヨコ・ナナメに隣接する都市に移動または侵攻できます。部隊に入っている場合は注意してください
+              </div>
+            </div>
             <div v-if="mapDialogMode === 6">
               <div class="alert alert-warning">
                 割譲先と隣接した都市しか割譲できません<br>
