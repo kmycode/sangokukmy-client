@@ -41,7 +41,10 @@ Vue.filter('charafromname', (chara: api.Character): string => {
     chara.from === 7 ? '農家' :
     chara.from === 8 ? '兵家' :
     chara.from === 9 ? '学者' :
-    chara.from === 10 ? '参謀' : 'なし';
+    chara.from === 10 ? '参謀' :
+    chara.from === 11 ? '儒家' :
+    chara.from === 12 ? '道家' :
+    chara.from === 13 ? '仏僧' : 'なし';
 });
 
 @Component({
