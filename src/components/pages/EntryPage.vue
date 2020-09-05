@@ -109,6 +109,12 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
+            <span v-show="system.ruleSet !== 2">
+              <br>宗教系<br>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 11, 'btn-secondary': character.from === 11, }" @click="onFromChanged(11)">儒家</button>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 12, 'btn-secondary': character.from === 12, }" @click="onFromChanged(12)">道家</button>
+              <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 13, 'btn-secondary': character.from === 13, }" @click="onFromChanged(13)">仏僧</button>
+            </span>
             <br>その他<br>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 7, 'btn-secondary': character.from === 7, }" @click="onFromChanged(7)">農家</button>
             <div v-show="selectedSkills.length > 0">
@@ -232,7 +238,7 @@
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
-              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br>宗教: <strong>{{ getReligionName(country.religion) }}</strong><br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
@@ -292,6 +298,17 @@
           </div>
           <div class="detail">
             国の色を決めてください。他の国と同じ色にはできません
+          </div>
+        </div>
+        <div v-show="isPublish && system.ruleSet !== 2" :class="{ 'form-row': true, 'error': !isOkReligion, }">
+          <div class="label">国教</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 2, 'btn-secondary': country.religion === 2, }" @click="country.religion = 2">儒教</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 3, 'btn-secondary': country.religion === 3, }" @click="country.religion = 3">道教</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 4, 'btn-secondary': country.religion === 4, }" @click="country.religion = 4">仏教</button>
+          </div>
+          <div class="detail">
+            国教を指定してください
           </div>
         </div>
       </div>
@@ -472,6 +489,10 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
+  private get isOkReligion(): boolean {
+    return !this.isPublish || this.country.religion >= 2;
+  }
+
   private get isOkFrom(): boolean {
     return this.character.from !== 0;
   }
@@ -519,6 +540,7 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
+      this.isOkReligion &&
       this.isOkFrom &&
       this.isOkFormation &&
       this.isOkStrong &&
@@ -549,6 +571,10 @@ export default class EntryPage extends Vue {
       return def.TOWN_TYPES[this.town.type];
     }
     return '未選択';
+  }
+
+  public getReligionName(id: number): string {
+    return def.RELIGION_TYPES[id];
   }
 
   @Watch('isOpened')
@@ -733,6 +759,27 @@ export default class EntryPage extends Vue {
       popularity = 5;
       primaries = [2, 3, 4, 1];
       skillId = 46;
+    } else if (id === api.CharacterSkill.typeConfucianism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 58;
+    } else if (id === api.CharacterSkill.typeTaoism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 63;
+    } else if (id === api.CharacterSkill.typeBuddhism) {
+      strong = 5;
+      intellect = 100;
+      leadership = 90;
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
+      skillId = 68;
     }
 
     if (!primaries) {

@@ -783,6 +783,8 @@ export default class StatusModel {
         api.Api.setPrivateChatMessageRead();
       }
     };
+    this.newAllianceData.canMissionary = true;
+    this.newAllianceData.canBuyTown = true;
 
     setInterval(() =>
       this.monthTimer = Math.floor((this.monthTimerDate.getTime() - new Date().getTime()) / 1000),
@@ -984,6 +986,7 @@ export default class StatusModel {
     ps.push(new TextStatusParameter('国', country.name));
     ps.push(new TextStatusParameter('特化', def.TOWN_TYPES[town.type]));
     ps.push(new TextStatusParameter('下地', def.TOWN_TYPES[town.subType]));
+    ps.push(new TextStatusParameter('宗教', def.RELIGION_TYPES[town.religion]));
     if (town.ricePrice !== undefined) {
       ps.push(new NoRangeStatusParameter('相場', Math.round(town.ricePrice * 1000) / 1000));
       ps.push(new NoRangeStatusParameter('農民', town.people));
@@ -993,6 +996,9 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new NoRangeStatusParameter('購入防衛', town.takeoverDefensePoint));
+      ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
+      ps.push(new NoRangeStatusParameter('道教', town.taoism));
+      ps.push(new NoRangeStatusParameter('仏教', town.buddhism));
     }
 
     const townBuilding = Enumerable
@@ -1198,6 +1204,7 @@ export default class StatusModel {
     const ps: StatusParameter[] = [];
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('首都', capital.name));
+    ps.push(new TextStatusParameter('国教', def.RELIGION_TYPES[country.religion]));
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
@@ -1667,10 +1674,14 @@ export default class StatusModel {
       status === api.CountryAlliance.statusChangeRequesting) {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
+      alliance.canMissionary = this.newAllianceData.canMissionary;
+      alliance.canBuyTown = this.newAllianceData.canBuyTown;
       alliance.memo = this.newAllianceData.memo;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
+      alliance.canMissionary = old.canMissionary;
+      alliance.canBuyTown = old.canBuyTown;
       alliance.memo = old.memo;
     }
 

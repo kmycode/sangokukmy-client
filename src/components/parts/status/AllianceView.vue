@@ -4,12 +4,16 @@
     <div v-if="diplomacy !== undefined && status.id !== 0 && status.id !== 2 && status.id !== 5" class="content-section current-diplomacy">
       <h3>同盟条件</h3>
       破棄猶予：{{ diplomacy.breakingDelay }}ヶ月<br>
+      布教：{{ diplomacy.canMissionary ? '許可' : '禁止' }}<br>
+      都市購入：{{ diplomacy.canBuyTown ? '許可' : '禁止' }}<br>
       公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}<br>
       <span style="white-space:pre-line">{{ diplomacy.memo }}</span>
     </div>
     <div v-if="changingValue !== undefined && (status.id === 6 || status.id === 106)" class="content-section current-diplomacy">
       <h3>同盟条件修正案</h3>
       破棄猶予：{{ changingValue.breakingDelay }}ヶ月<br>
+      布教：{{ changingValue.canMissionary ? '許可' : '禁止' }}<br>
+      都市購入：{{ changingValue.canBuyTown ? '許可' : '禁止' }}<br>
       公表：{{ changingValue.isPublic ? 'する' : 'しない' }}<br>
       <span style="white-space:pre-line">{{ changingValue.memo }}</span>
     </div>
@@ -53,7 +57,9 @@
         </div>
         <div class="form-check">
           <button type="button" class="btn btn-toggle selected">相互不可侵</button>
-          <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟関係を公表する</button>
+          <button type="button" :class="'btn btn-toggle' + (newData.canMissionary ? ' selected' : '')" @click="newData.canMissionary ^= true">布教</button>
+          <button type="button" :class="'btn btn-toggle' + (newData.canBuyTown ? ' selected' : '')" @click="newData.canBuyTown ^= true">都市購入</button>
+          <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟公表</button>
         </div>
         <div class="form-group">
           <label for="allianceOption3">備考</label>
@@ -94,6 +100,8 @@ export default class AllianceView extends Vue {
   private onDiplomacyChanged() {
     if (this.isShow && this.diplomacy) {
       this.newData.isPublic = this.diplomacy.isPublic;
+      this.newData.canMissionary = this.diplomacy.canMissionary;
+      this.newData.canBuyTown = this.diplomacy.canBuyTown;
       this.newData.breakingDelay = this.diplomacy.breakingDelay;
       this.newData.memo = this.diplomacy.memo;
     }

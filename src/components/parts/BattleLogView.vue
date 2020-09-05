@@ -14,9 +14,9 @@
       <KmyLogTagText v-show="log.lines.length <= 0" :text="'応戦できる者はいませんでした'"/>
     </div>
     <div class="battle-info">
-      <div class="chara attacker"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.attackerCache.soldierType, log.defenderCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.attackerCache.formationType, log.defenderCache.formationType)">陣形</span></div>
+      <div class="chara attacker"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.attackerCache.soldierType, log.defenderCache.soldierType)">兵属</span><span class="mark soldier-rank" v-if="isStrongerSoldierRank(log.attackerCache.soldierType, log.defenderCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.attackerCache.formationType, log.defenderCache.formationType)">陣形</span></div>
       <div class="label" style="height:0;overflow:hidden"><span style="visibility:hidden">攻撃力</span></div>
-      <div class="chara defender"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.defenderCache.soldierType, log.attackerCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.defenderCache.formationType, log.attackerCache.formationType)">陣形</span></div>
+      <div class="chara defender"><span class="mark soldier-type" v-if="isStrongerSoldierType(log.defenderCache.soldierType, log.attackerCache.soldierType)">兵属</span><span class="mark soldier-rank" v-if="isStrongerSoldierRank(log.defenderCache.soldierType, log.attackerCache.soldierType)">兵種</span><span class="mark formation" v-if="isStrongerFormation(log.defenderCache.formationType, log.attackerCache.formationType)">陣形</span></div>
     </div>
     <div class="battle-info last">
       <div class="chara attacker">{{ log.attackerAttackPower }}</div>
@@ -164,6 +164,15 @@ export default class BattleLogView extends Vue {
     }
     return false;
   }
+
+  private isStrongerSoldierRank(a: number, b: number): boolean {
+    const ai = def.SOLDIER_TYPES.find((s) => s.id === a);
+    const bi = def.SOLDIER_TYPES.find((s) => s.id === b);
+    if (ai && bi && ai.rank && bi.rank) {
+      return ai.rank > bi.rank;
+    }
+    return false;
+  }
 }
 </script>
 
@@ -206,6 +215,9 @@ export default class BattleLogView extends Vue {
         background: #ccf;
       }
       &.soldier-type {
+        background: #ffc;
+      }
+      &.soldier-rank {
         background: #fcc;
       }
     }

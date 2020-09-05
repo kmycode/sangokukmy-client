@@ -481,6 +481,7 @@ export class Country {
                      public isHaveGyokuji: boolean = false,
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
                      public isGyokujiRefused: boolean = false,
+                     public religion: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastRequestedIncomes?: number,
@@ -533,6 +534,8 @@ export class CountryAlliance extends CountryDipromacy {
   public static readonly statusChangingValue = 7;
 
   public isPublic: boolean = false;
+  public canMissionary: boolean = false;
+  public canBuyTown: boolean = false;
   public breakingDelay: number = 0;
   public memo: string = '';
 }
@@ -608,7 +611,11 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public townBuilding: number = 0,
                      public townBuildingValue: number = 0,
                      public takeoverDefensePoint: number = 0,
-                     public townSubBuildingExtraSpace: number = 0) {}
+                     public townSubBuildingExtraSpace: number = 0,
+                     public religion: number = 0,
+                     public confucianism: number = 0,
+                     public taoism: number = 0,
+                     public buddhism: number = 0) {}
 }
 
 /**
@@ -1052,6 +1059,9 @@ export class CharacterSkill {
   public static readonly typeTactician = 8;
   public static readonly typeScholar = 9;
   public static readonly typeStaff = 10;
+  public static readonly typeConfucianism = 11;
+  public static readonly typeTaoism = 12;
+  public static readonly typeBuddhism = 13;
 
   public constructor(public id: number,
                      public type: number,
@@ -1794,6 +1804,7 @@ export class Api {
         country: {
           name: country.name,
           colorId: country.colorId,
+          religion: country.religion,
         },
         invitationCode,
         isCountryFree,

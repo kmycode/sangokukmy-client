@@ -108,6 +108,11 @@ export default class CommandList {
     return items.some((i) => i.type === 87);
   }
 
+  public get canInputOppress(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 61 || s === 66 || s === 71);
+  }
+
   public get canInputResign(): boolean {
     return this.store.systemData.isWaitingReset;
   }

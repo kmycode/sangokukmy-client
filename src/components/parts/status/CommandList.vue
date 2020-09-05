@@ -18,6 +18,7 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(6)">米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(30)">緊急米施し</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(31)">都市施設<span class="redundant-text">強化</span></button>
+        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(71)">布教</button>
         <button v-if="canSubBuilding" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSubBuildingPopup = !isOpenSubBuildingPopup">建築物
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSubBuildingPopup && list.inputer.canInput ? 'block' : 'none' }">
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSubBuildingPopup = false; $emit('open', 'subbuilding-build')">建設</a>
@@ -87,6 +88,7 @@
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
+        <button v-if="list.canInputOppress" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(72)">異教弾圧</button>
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
         <button v-if="list.canInputGenerateItem" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'item-generate')">資源製造</button>

@@ -9,6 +9,11 @@
            :key="country.id"
            :class="'country country-color-' + country.colorId">
         <h3 :class="'country-name country-color-' + country.colorId">{{ country.name }}</h3>
+        <div :class="'religion country-color-' + country.colorId">
+          <div class="religion-inner">
+            宗教 <strong>{{ getReligionName(country.religion) }}</strong>
+          </div>
+        </div>
         <div :class="'post country-color-' + country.colorId">
           <h4 class="post-name">君主</h4>
           <div class="post-character" v-if="country.monarch.id > 0">
@@ -73,6 +78,7 @@ import { Component, Vue } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import CharacterList from '@/components/parts/CharacterList.vue';
 import * as api from './../../api/api';
+import * as def from './../../common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
 import Enumerable from 'linq';
 import NotificationService from '@/services/notificationservice';
@@ -138,6 +144,10 @@ export default class AllCharactersPage extends Vue {
     this.countries = countries;
   }
 
+  private getReligionName(id: number): string {
+    return def.RELIGION_TYPES[id];
+  }
+
   private getMonarch(country: api.Country): api.Character {
     return this.getPostCharacter(country, api.CountryPost.typeMonarch);
   }
@@ -186,6 +196,16 @@ export default class AllCharactersPage extends Vue {
       text-align: center;
       @include country-color-deep('background-color');
       @include country-color-light('color');
+    }
+
+    .religion {
+      text-align: center;
+      padding-bottom: 8px;
+      @include country-color-light('background-color');
+      .religion-inner {
+        padding: 4px;
+        background: rgba(0, 0, 0, 0.12);
+      }
     }
 
     .post {
