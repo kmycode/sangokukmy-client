@@ -485,6 +485,7 @@ export class Country {
                      public religion: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
+                     public lastPolicyPointIncomes?: number,
                      public lastRequestedIncomes?: number,
                      public safeMoney?: number) {}
 }

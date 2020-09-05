@@ -1151,6 +1151,7 @@ export default class StatusModel {
       if (country.lastMoneyIncomes === undefined && this.character.countryId === country.id) {
         country.lastMoneyIncomes = old.lastMoneyIncomes;
         country.lastRiceIncomes = old.lastRiceIncomes;
+        country.lastPolicyPointIncomes = old.lastPolicyPointIncomes;
         country.safeMoney = old.safeMoney;
         country.policyPoint = old.policyPoint;
       }
@@ -1211,8 +1212,10 @@ export default class StatusModel {
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
         country.lastRequestedIncomes !== undefined &&
+        country.lastPolicyPointIncomes !== undefined &&
         country.safeMoney !== undefined) {
       ps.push(new NoRangeStatusParameter('政策ポイント', country.policyPoint));
+      ps.push(new NoRangeStatusParameter('政策P収入', country.lastPolicyPointIncomes));
       ps.push(new RangedStatusParameter('使用中の政務官', this.currentSecretaryPoint, this.secretaryMaxValue));
       ps.push(new NoRangeStatusParameter('金収入', country.lastMoneyIncomes));
       ps.push(new NoRangeStatusParameter('米収入', country.lastRiceIncomes));
