@@ -88,6 +88,7 @@
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
+        <button v-if="list.canInputMissionarySelf" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(73)">自教布教</button>
         <button v-if="list.canInputOppress" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(72)">異教弾圧</button>
         <button v-if="list.canInputTownPatrol" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
