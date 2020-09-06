@@ -53,6 +53,8 @@ export default class StatusModel {
   public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
   public townBuyCosts: { country: api.Country, cost: number }[] = [];
   public townBuyCost: number = 0;
+  public onlineCount: number = 0;
+  public onlineRank: number = 0;
 
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
@@ -868,6 +870,12 @@ export default class StatusModel {
     } else if (signal.type === 11) {
       // 部隊から除隊された
       NotificationService.belongsUnitDischarged.notify();
+    } else if (signal.type === 12) {
+      // オンライン情報
+      if (signal.data) {
+        this.onlineCount = signal.data.count;
+        this.onlineRank = signal.data.rank;
+      }
     }
   }
 
