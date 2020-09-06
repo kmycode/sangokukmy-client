@@ -3,13 +3,14 @@
     <div class="container">
       <div class="row">
         <div class="top-table top-title-logo loading-container col-sm-10 offset-sm-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
-          <h1>三国志NET KMY Version 9</h1>
+          <h1>三国志NET KMY Version</h1>
           <h2>第{{ system.period }}<span v-if="system.betaVersion > 0">.{{ system.betaVersion }}</span>期</h2>
           [<span class="number">{{ system.gameDateTime.year }}</span>年<span class="number">{{ system.gameDateTime.month | zeroformat(2) }}</span>月]<br>
           <RuleSetLabel :ruleSet="system.ruleSet"/><br>
           来月まであと <span class="number">{{ nextMonthSeconds }}</span>秒
           <div v-if="system.gameDateTime.year < 12">更新開始: <span class="number">12</span>年<span class="number">01</span>月より</div>
-          <div v-if="system.gameDateTime.year >= 12 && system.gameDateTime.year < 36">主要国戦闘解除: <span class="number">36</span>年<span class="number">01</span>月より</div>
+          <div v-if="system.gameDateTime.year < 36">主要国戦闘解除: <span class="number">36</span>年<span class="number">01</span>月より</div>
+          <div v-if="system.gameDateTime.year < 48">都市購入解禁: <span class="number">48</span>年<span class="number">01</span>月より</div>
           <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
           <div v-if="system.isBattleRoyaleMode" class="battle-royale-mode">全国戦争中</div>
           <div class="onlines">

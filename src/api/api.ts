@@ -485,6 +485,7 @@ export class Country {
                      public religion: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
+                     public lastPolicyPointIncomes?: number,
                      public lastRequestedIncomes?: number,
                      public safeMoney?: number) {}
 }
@@ -946,6 +947,7 @@ export class BattleLog {
                      public defenderType: number = 0,
                      public attackerAttackPower: number = 0,
                      public defenderAttackPower: number = 0,
+                     public isSameReligion: number = 0,
                      public attackerCache: Character = new Character(-1),
                      public defenderCache: Character = new Character(-1),
                      public maplog: MapLog = new MapLog(-1),

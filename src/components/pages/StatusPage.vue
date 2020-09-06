@@ -1626,8 +1626,8 @@
                 {{ data.country.name }} - <strong>{{ data.cost }}</strong>
               </div>
             </div>
-            <h3>防衛投資</h3>
             <div v-show="model.canDiplomacy">
+              <h3>防衛投資</h3>
               <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
               <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
             </div>
