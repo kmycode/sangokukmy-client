@@ -1628,7 +1628,7 @@
             </div>
             <div v-show="model.canDiplomacy">
               <h3>防衛投資</h3>
-              <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを 1000 加算します</div>
+              <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを加算します</div>
               <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
             </div>
           </div>
@@ -1639,6 +1639,12 @@
             <div class="alert alert-danger" v-show="!model.town.countryId">無所属都市は購入できません</div>
             <div class="alert alert-danger" v-show="model.gameDate.year < 48">48 年より前は購入できません</div>
             <div class="alert alert-info" v-show="model.townBuyCost <= model.characterCountry.policyPoint">都市を購入可能です</div>
+          </div>
+          <div class="alert alert-info">
+            都市購入の費用は、おもに以下によって変動します。<br>
+            ・購入を行う国の都市数、武将数<br>
+            ・自国と相手国が戦争または同盟を結んでいるか<br>
+            ・自国と相手国との国教が異なり、都市の宗教が国教と同じか<br>
           </div>
           <div class="loading" v-show="model.isUpdatingTownBuyCost"><div class="loading-icon"></div></div>
         </div>
