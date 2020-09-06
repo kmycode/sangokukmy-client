@@ -143,6 +143,10 @@
       <div class="row" style="margin:8px 0;display:block;text-align:center">
         <span style="color:gray;font-size:14px;margin-right:8px">(今期)</span><RuleSetLabel :ruleSet="system.ruleSet"/> &gt; <span style="color:gray;font-size:14px;margin-right:8px">(来期)</span> <RuleSetLabel :ruleSet="system.ruleSetNextPeriod"/> &gt; <span style="color:gray;font-size:14px;margin-right:8px">(来々期)</span> <RuleSetLabel :ruleSet="system.ruleSetAfterNextPeriod"/>
       </div>
+      <div class="row" style="display: block; text-align: center" v-if="!isApp">
+        <a target="_blank" href='https://play.google.com/store/apps/details?id=net.kmycode.sangokukmy&hl=ja_JP'><img alt='Google Play で手に入れよう' src='https://play.google.com/intl/us-en/badges/static/images/badges/ja_badge_web_generic.png' height="60"/></a>
+        <a target="_blank" href="https://apps.apple.com/jp/app/%E4%B8%89%E5%9B%BD%E5%BF%97net-kmy-version/id1508100098" style="display:inline-block;overflow:hidden;background:url(https://linkmaker.itunes.apple.com/en-us/badge-lrg.svg?releaseDate=2020-08-05&kind=iossoftware&bubble=apple_music) no-repeat;width:135px;height:40px;transform:translateY(16px)"></a>
+      </div>
     </div>
     <Footer/>
   </div>
