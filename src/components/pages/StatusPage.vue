@@ -127,8 +127,8 @@
             <button v-show="model.town.scoutedGameDateTime && model.town.id !== model.character.townId" type="button" class="btn btn-info" @click="isOpenTownDefendersDialog = true">諜報時点守備</button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
-            <button v-show="model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode && model.systemData.ruleSet !== 2" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
-            <button type="button" class="btn btn-info" v-show="model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
+            <button v-show="model.character.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode && model.systemData.ruleSet !== 2" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
+            <button type="button" class="btn btn-info" v-show="model.character.countryId && model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -143,10 +143,10 @@
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
             <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
-            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
-            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && !model.country.aiType && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
-            <button v-show="model.town.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
-            <button v-if="false" v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
+            <button v-show="model.character.countryId && model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
+            <button v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && !model.country.aiType && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
+            <button v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
+            <button v-if="false" v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
             <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
           </div>
         </div>

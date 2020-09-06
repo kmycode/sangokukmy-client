@@ -57,7 +57,7 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenFormationPopup = false; $emit('open', 'formation-change')">変更</a>
           </div>
         </button>
-        <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
+        <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(14)">集合</button>
       </div>
       <!-- 個人コマンド -->
       <div v-show="selectedCommandCategory === 4" class="commands">
