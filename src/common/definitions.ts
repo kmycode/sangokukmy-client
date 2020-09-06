@@ -250,6 +250,9 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
         case 4:
           name = '人望';
           break;
+        case 5:
+          name = '技能';
+          break;
         default:
           return 'エラー (18:3)';
       }

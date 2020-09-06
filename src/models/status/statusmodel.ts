@@ -676,9 +676,6 @@ export default class StatusModel {
     ApiStreaming.status.on<api.SystemData>(
       api.SystemData.typeId,
       (obj) => this.updateSystemData(obj));
-    ApiStreaming.status.on<api.GameDateTime>(
-      api.GameDateTime.typeId,
-      (obj) => this.updateGameDate(obj));
     ApiStreaming.status.on<api.Town>(
       api.Town.typeId,
       (obj) => this.updateTown(obj));
