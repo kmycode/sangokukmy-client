@@ -122,6 +122,11 @@ export default class CommandList {
     return this.store.systemData.isWaitingReset;
   }
 
+  public get canInputSkillPointTraining(): boolean {
+    return this.store.character.countryId === 0 &&
+      !this.commands.filter((c) => c.isSelected === true).some((c) => c.gameDate.year >= 36);
+  }
+
   public get isCountryCharacter(): boolean {
     return this.store.character.countryId !== 0;
   }

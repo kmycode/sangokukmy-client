@@ -68,6 +68,7 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 2)">知力</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 3)">統率</a>
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 4)">人望</a>
+            <a v-if="list.canInputSkillPointTraining" class="dropdown-item" href="#" @click.prevent.stop="isOpenTrainingPopup = false; list.inputer.inputTrainingCommand(18, 5)">技能</a>
           </div>
         </button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'promotion')">登用</button>
