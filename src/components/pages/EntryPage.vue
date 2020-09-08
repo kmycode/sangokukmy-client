@@ -509,11 +509,11 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkReligion(): boolean {
-    return !this.isPublish || this.country.religion >= 2;
+    return this.system.ruleSet === 2 || (!this.isPublish || this.country.religion >= 2);
   }
 
   private get isFirstReligion(): boolean {
-    return !this.countries.some((c) => c.religion === this.country.religion);
+    return this.system.ruleSet === 2 || !this.countries.some((c) => c.religion === this.country.religion);
   }
 
   private get isOkExtraTown(): boolean {
