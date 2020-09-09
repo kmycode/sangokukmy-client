@@ -93,6 +93,7 @@
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 11, 'characterId': chara.id })">外交官</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 12, 'characterId': chara.id })">金庫番</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 13, 'characterId': chara.id })">政策番</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
@@ -237,12 +238,14 @@ export default class SimpleCharacterList extends Vue {
   private getPostName(charaId: number, countryId: number): string {
     const country = ArrayUtil.find(this.countries, countryId);
     if (country && country.posts) {
-      const post = Enumerable.from(country.posts).firstOrDefault((p) => p.characterId === charaId);
-      const postTypeId = post ? post.type : 0;
-      const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((pt) => pt.id === postTypeId);
-      if (postType) {
-        return postType.name;
+      const posts = country.posts.filter((p) => p.characterId === charaId).map((p) => p.type);
+      if (posts.length <= 0) {
+        posts.push(0);
       }
+      const postTypes = def.COUNTRY_POSTS
+        .filter((pt) => posts.some((p) => p === pt.id))
+        .map((pt) => pt.name);
+      return postTypes.join(' / ');
     }
     return '';
   }

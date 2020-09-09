@@ -420,9 +420,11 @@ export class CountryPost {
   public static readonly typeWarrior = 2;
   public static readonly typeGrandGeneral = 3;
 
-  public constructor(public type: number = 0,
+  public constructor(public id: number = 0,
+                     public type: number = 0,
                      public countryId: number = 0,
                      public characterId: number = 0,
+                     public isUnAppointed: boolean = false,
                      public character: Character) {}
 }
 

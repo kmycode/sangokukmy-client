@@ -1437,13 +1437,20 @@ export default class StatusModel {
         Vue.set(country, 'posts', []);
       }
 
-      country.posts = Enumerable.from(country.posts)
-        .where((p) => p.characterId !== post.characterId)
-        .toArray();
+      console.log(this.character.id);
+      console.log(post.characterId);
+
       if (post.type !== 0) {
-        // 任命
-        ArrayUtil.addItemUniquely(country.posts, post, (p) => p.type);
+        if (!post.isUnAppointed) {
+          // 任命
+          ArrayUtil.addItem(country.posts, post);
+        } else {
+          country.posts = country.posts.filter((p) => p.id !== post.id);
+        }
+      } else {
+        country.posts = country.posts.filter((p) => p.characterId !== post.characterId);
       }
+      console.dir(country.posts);
 
       if (this.country.id === country.id) {
         this.setCountry(country);
