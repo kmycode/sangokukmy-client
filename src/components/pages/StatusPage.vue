@@ -1629,7 +1629,7 @@
                 {{ data.country.name }} - <strong>{{ data.cost }}</strong>
               </div>
             </div>
-            <div v-show="model.canDiplomacy">
+            <div v-show="model.canPolicy">
               <h3>防衛投資</h3>
               <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを加算します</div>
               <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
@@ -1656,7 +1656,7 @@
             <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canDiplomacy && model.gameDate.year >= 48 && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
+            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canPolicy && model.gameDate.year >= 48 && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
           </div>
         </div>
       </div>

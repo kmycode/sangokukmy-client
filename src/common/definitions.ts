@@ -663,6 +663,7 @@ export const COUNTRY_POSTS: CountryPostType[] = [
   new CountryPostType(10, '政務官長'),
   new CountryPostType(11, '外交官'),
   new CountryPostType(12, '金庫番'),
+  new CountryPostType(13, '政策番'),
 ];
 
 /**

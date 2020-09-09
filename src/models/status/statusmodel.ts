@@ -785,7 +785,6 @@ export default class StatusModel {
       }
     };
     this.newAllianceData.canMissionary = true;
-    this.newAllianceData.canBuyTown = true;
 
     setInterval(() =>
       this.monthTimer = Math.floor((this.monthTimerDate.getTime() - new Date().getTime()) / 1000),
@@ -1536,7 +1535,7 @@ export default class StatusModel {
   public get canPolicy(): boolean {
     // 自分が政策権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 13));
   }
 
   public get canCountrySetting(): boolean {
