@@ -1505,13 +1505,13 @@ export default class StatusModel {
   public get canSafeOut(): boolean {
     // 自分が国庫搬出権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 12));
   }
 
   public get canSecretary(): boolean {
     // 自分が政務官任命権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 10));
   }
 
   public get canCommandComment(): boolean {
@@ -1530,7 +1530,7 @@ export default class StatusModel {
   public get canDiplomacy(): boolean {
     // 自分が外交権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2));
+      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 11));
   }
 
   public get canPolicy(): boolean {

@@ -660,6 +660,9 @@ export const COUNTRY_POSTS: CountryPostType[] = [
   new CountryPostType(7, '将軍'),
   new CountryPostType(8, '君主（不在）'),
   new CountryPostType(9, '建築官'),
+  new CountryPostType(10, '政務官長'),
+  new CountryPostType(11, '外交官'),
+  new CountryPostType(12, '金庫番'),
 ];
 
 /**
