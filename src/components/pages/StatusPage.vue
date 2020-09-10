@@ -1363,7 +1363,7 @@
             <div class="character-list">
               <SimpleCharacterList
                 :countries="model.countries"
-                :characters="model.countryCharacters"
+                :characters="model.allHumanCharacters"
                 canSelect="true"
                 v-model="targetCharacter"/>
             </div>
@@ -1999,7 +1999,6 @@ export default class StatusPage extends Vue {
       this.isOpenCharacterItemSellDialog = true;
     } else if (event === 'item-handover') {
       this.selectedCharacterItemType = { type: new def.CharacterItemType(-1), id: -1 };
-      this.model.updateCharacterCountryCharacters();
       this.isOpenCharacterItemHandOverDialog = true;
     } else if (event === 'item-use') {
       this.selectedCharacterItemType = { type: new def.CharacterItemType(-1), id: -1 };

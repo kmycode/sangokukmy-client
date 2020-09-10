@@ -311,6 +311,14 @@ export default class StatusModel {
     return max;
   }
 
+  public get allHumanCharacters(): api.Character[] {
+    return Enumerable.from(this.store.characters)
+      .where((c) => c.aiType === api.Character.aiHuman || c.aiType === api.Character.aiAdministrator)
+      .orderBy((c) => c.countryId)
+      .orderBy((c) => c.countryId === this.character.countryId ? 0 : !c.countryId ? 2 : 1)
+      .toArray();
+  }
+
   public get countrySecretaries(): api.Character[] {
     return Enumerable
       .from(this.countryCharacters)
