@@ -2371,10 +2371,10 @@ export default class StatusModel {
     this.isUpdatingRegularlyCommands = true;
     api.Api.clearRegularlyCommands()
       .then(() => {
-        NotificationService.regularlyCommandInputed.notify();
+        NotificationService.regularlyCommandCleared.notify();
       })
       .catch(() => {
-        NotificationService.regularlyCommandInputFalled.notify();
+        NotificationService.regularlyCommandClearFalled.notify();
       })
       .finally(() => this.isUpdatingRegularlyCommands = false);
   }

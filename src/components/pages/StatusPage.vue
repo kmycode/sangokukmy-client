@@ -84,7 +84,7 @@
             </div>
 
             <div class="alert alert-info" v-if="model.regularlyCommand">
-              定期実行: <strong>{{ model.regularlyCommand.name }}</strong> <button type="button" class="btn btn-sm btn-warning" style="margin-left:16px;transform:translateY(2px)">削除</button>
+              定期実行: <strong>{{ model.regularlyCommand.name }}</strong> <button type="button" class="btn btn-sm btn-warning" style="margin-left:16px;transform:translateY(2px)" @click="model.clearRegularlyCommands()">削除</button>
             </div>
             <div class="alert alert-info" v-else>現在、定期実行コマンドは設定されていません</div>
 
