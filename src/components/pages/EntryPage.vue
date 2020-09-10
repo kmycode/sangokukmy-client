@@ -798,24 +798,24 @@ export default class EntryPage extends Vue {
       skillId = 46;
     } else if (id === api.CharacterSkill.typeConfucianism) {
       strong = 5;
-      intellect = 5;
+      intellect = 100;
       leadership = 90;
-      popularity = 100;
-      primaries = [4, 3, 2, 1];
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
       skillId = 58;
     } else if (id === api.CharacterSkill.typeTaoism) {
       strong = 5;
-      intellect = 5;
+      intellect = 100;
       leadership = 90;
-      popularity = 100;
-      primaries = [4, 3, 2, 1];
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
       skillId = 63;
     } else if (id === api.CharacterSkill.typeBuddhism) {
       strong = 5;
-      intellect = 5;
+      intellect = 100;
       leadership = 90;
-      popularity = 100;
-      primaries = [4, 3, 2, 1];
+      popularity = 5;
+      primaries = [2, 3, 4, 1];
       skillId = 68;
     }
 
