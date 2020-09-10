@@ -1718,6 +1718,7 @@ export default class StatusModel {
     const countryA = this.country.id;
     const countryB = this.character.countryId;
     const status = this.newWarData.status;
+    const mode = this.newWarData.mode;
 
     const old = Enumerable
       .from(this.store.wars)
@@ -1731,6 +1732,7 @@ export default class StatusModel {
     war.status = status;
     war.requestedCountryId = countryB;
     war.insistedCountryId = countryA;
+    war.mode = mode;
     if (!old || old.status === api.CountryWar.statusStoped) {
       war.startGameDate = this.newWarData.startGameDate;
     } else {
@@ -1751,6 +1753,8 @@ export default class StatusModel {
           NotificationService.warFailedBecauseNotPermission.notify();
         } else if (ex.data.code === api.ErrorCode.invalidOperationError) {
           NotificationService.warFailedBecauseInvalidOperation.notify();
+        } else if (ex.data.code === api.ErrorCode.religionError) {
+          NotificationService.warFailedBecauseSameReligion.notify();
         } else {
           NotificationService.warFailed.notify();
         }

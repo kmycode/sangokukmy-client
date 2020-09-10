@@ -573,6 +573,7 @@
                 :soldierTypes="model.selectableSoldierTypes"
                 :skills="model.characterSkills"
                 :items="model.characterItems"
+                :mode="soldierMode"
                 v-model="selectedSoldierType"/>
             </div>
             <div class="soldier-input">
@@ -779,6 +780,7 @@
                    :isSending="model.isSendingWar"
                    :canEdit="model.canDiplomacy"
                    :isShow="isOpenWarDialog"
+                   :ruleSet="model.store.systemData.ruleSet"
                    style="flex:1"/>
         </div>
         <div class="dialog-footer">
@@ -1863,6 +1865,7 @@ export default class StatusPage extends Vue {
   public selectedRiceStatus: number = 0;
   public selectedDirection: number = 0;
   public selectedTownType: number = 0;
+  public soldierMode: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
 
   public soldierNumber: number = 1;
@@ -1928,6 +1931,11 @@ export default class StatusPage extends Vue {
   public openCommandDialog(event: string) {
     if (event === 'soldier') {
       this.setSelectedSoldierNumberType(this.selectedSoldierNumberType);
+      this.soldierMode = 0;
+      this.isOpenSoldierDialog = true;
+    } else if (event === 'soldier-religion') {
+      this.setSelectedSoldierNumberType(this.selectedSoldierNumberType);
+      this.soldierMode = 1;
       this.isOpenSoldierDialog = true;
     } else if (event === 'promotion') {
       this.model.updateOppositionCharacters();

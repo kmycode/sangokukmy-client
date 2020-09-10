@@ -3,7 +3,8 @@
     <div :class="'current-status alert alert-' + (status.id === 4 ? 'warning' : status.id === 1 ? 'danger' : 'info')">{{ status.name }}</div>
     <div v-if="diplomacy !== undefined && status.id !== 0" class="content-section current-diplomacy">
       <h3>戦争</h3>
-      {{ diplomacy.startGameDate | gamedate }} 開戦
+      {{ diplomacy.startGameDate | gamedate }} 開戦<br>
+      種類: <span v-if="diplomacy.mode === 1">宗教</span><span v-else>通常</span>
     </div>
     <div v-if="canEdit" class="editor">
       <button v-show="status.id ===   0 || status.id === 3" :class="{'btn': true, 'btn-secondary': newData.status === 4, 'btn-outline-secondary': newData.status !== 4, }" @click="newData.status = 4" href="#">宣戦布告</button>
@@ -15,6 +16,11 @@
         <h3>宣戦布告</h3>
         <div class="alert alert-warning">12年後〜24年後までの年月を指定できます</div>
         <GameDateTimePicker v-model="newData.startGameDate"/>
+        <div v-if="ruleSet === 5">
+          <h4>戦争の種類</h4>
+          <button :class="{ 'bth': true, 'btn-secondary': !newData.mode, 'btn-outline-secondary': newData.mode, }" @click="newData.mode = 0">通常</button>
+          <button :class="{ 'bth': true, 'btn-secondary': newData.mode === 1, 'btn-outline-secondary': newData.mode !== 1, }" @click="newData.mode = 1">宗教</button>
+        </div>
       </div>
       <div v-show="newData.status === 3" class="content-section">
         <h3>停戦承認</h3>
@@ -48,6 +54,7 @@ export default class WarView extends Vue {
   @Prop() private isSending!: boolean;
   @Prop() private canEdit!: boolean;
   @Prop() private isShow!: boolean;
+  @Prop() private ruleSet!: number;
 
   @Watch('isShow')
   private onIsShowChanged() {

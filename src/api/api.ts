@@ -58,6 +58,7 @@ export enum ErrorCode {
   duplicateAccountNameOrAliasIdError = 53,
   duplicateAccountOfCharacterError = 54,
   uploadImageFailedError = 55,
+  religionError = 58,
 }
 
 /**
@@ -516,6 +517,7 @@ export abstract class CountryDipromacy {
 
   public constructor(public id: number = 0,
                      public status: number = 0,
+                     public mode: number = 0,
                      public requestedCountryId: number = 0,
                      public insistedCountryId: number = 0,
                      public requestedCountry: Country = new Country(),

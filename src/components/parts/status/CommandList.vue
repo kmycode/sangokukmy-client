@@ -48,6 +48,7 @@
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier')">徴兵</button>
+        <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-religion')">使徒徴兵</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-war')">戦争</button>
@@ -89,7 +90,7 @@
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
-        <button v-if="list.canInputMissionarySelf" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(73)">自教布教</button>
+        <!-- <button v-if="list.canInputMissionarySelf" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(73)">自教布教</button> -->
         <button v-if="list.canInputOppress" type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(72)">異教弾圧</button>
         <button v-if="list.canInputTownPatrol" type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(54)">都市巡回</button>
         <button v-if="list.canInputTownInvent" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(55)">都市投資</button>
