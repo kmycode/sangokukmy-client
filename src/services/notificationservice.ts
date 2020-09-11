@@ -348,6 +348,10 @@ export default class NotificationService {
     '戦争手続き失敗',
     '同じ国教を持つ国に宗教戦争を仕掛けることはできません',
     NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseMultipleWarMode = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '自分または相手国は、通常戦争と宗教戦争を同時に行うことはできません',
+    NotificationServiceItemDefaultType.error);
   public static readonly warFailedBecauseSameStatus = new NotificationServiceItem(
     '戦争手続き失敗',
     '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',

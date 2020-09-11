@@ -1763,6 +1763,8 @@ export default class StatusModel {
           NotificationService.warFailedBecauseInvalidOperation.notify();
         } else if (ex.data.code === api.ErrorCode.religionError) {
           NotificationService.warFailedBecauseSameReligion.notify();
+        } else if (ex.data.code === api.ErrorCode.invalidWarModeError) {
+          NotificationService.warFailedBecauseMultipleWarMode.notify();
         } else {
           NotificationService.warFailed.notify();
         }

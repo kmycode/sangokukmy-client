@@ -59,6 +59,7 @@ export enum ErrorCode {
   duplicateAccountOfCharacterError = 54,
   uploadImageFailedError = 55,
   religionError = 58,
+  invalidWarModeError = 59,
 }
 
 /**
