@@ -898,7 +898,8 @@
             <h3 v-else-if="commander.subject === 3">出身: {{ commander.subjectData | charafromname }}</h3>
             <h3 v-else-if="commander.subject === 4 && model.getCharacter(commander.subjectData)">個人: {{ model.getCharacter(commander.subjectData).name }}</h3>
             <div :class="{ 'directive': true, 'active': commander.id === model.store.myCountryCommanderAll.id || commander.id === model.store.myCountryCommanderAttribute.id || commander.id === model.store.myCountryCommanderFrom.id || commander.id === model.store.myCountryCommanderPrivate.id, }">
-              <KmyChatTagText :text="commander.message"/>
+              <div class="active-message">あなた向けの指令です</div>
+              <div class="directive-main"><KmyChatTagText :text="commander.message"/></div>
               <div class="writer">
                 {{ commander.writerCharacterName }} ({{ model.getPostName(commander.writerPost) }})
               </div>
@@ -2944,11 +2945,21 @@ ul.nav {
 
       &.dialog-content-directive {
         .directive {
-          padding: 8px 16px;
           margin-bottom: 24px;
           background-color: #dedede;
+          .active-message {
+            display: none;
+          }
+          .directive-main {
+            padding: 8px 16px;
+          }
           &.active {
             background-color: #ffdede;
+            .active-message {
+              display: block;
+              background-color: #f5c0e9;
+              padding-left: 16px;
+            }
           }
         }
         .writer {
