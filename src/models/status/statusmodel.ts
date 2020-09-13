@@ -923,6 +923,11 @@ export default class StatusModel {
   // #region Town
 
   private updateTown(town: api.Town) {
+    if (town.type === api.Town.typeRemoved) {
+      this.store.towns = this.towns.filter((t) => t.id !== town.id);
+      return;
+    }
+
     ArrayUtil.addItem(this.towns, town);
 
     // 現在表示中の都市を更新

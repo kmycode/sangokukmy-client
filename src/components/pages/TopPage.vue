@@ -293,7 +293,11 @@ export default class TopPage extends Vue {
       }
     });
     ApiStreaming.top.on<api.Town>(api.Town.typeId, (log) => {
-      ArrayUtil.addItem(this.towns, log);
+      if (log.type === api.Town.typeRemoved) {
+        this.towns = this.towns.filter((t) => t.id !== log.id);
+      } else {
+        ArrayUtil.addItem(this.towns, log);
+      }
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
       this.onMapLogReceived(log);

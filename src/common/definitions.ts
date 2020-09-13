@@ -641,6 +641,7 @@ export const EVENT_TYPES: EventType[] = [
   new EventType(49, '信仰', 'deeppink'),
   new EventType(50, '出現', '#9400D3'),
   new EventType(51, '宗教支配', 'blue'),
+  new EventType(52, '都市崩壊', 'black'),
 ];
 
 /**

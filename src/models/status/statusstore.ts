@@ -44,7 +44,7 @@ export default class StatusStore {
   public aiCharacters: api.AiCharacterManagement[] = [];
   public delayEffects: api.DelayEffect[] = [];
   public chatMessageRead: api.ChatMessageRead = new api.ChatMessageRead();
-  
+
   public myCountryCommanderAll: api.CountryCommander = new api.CountryCommander();
   public myCountryCommanderAttribute: api.CountryCommander = new api.CountryCommander();
   public myCountryCommanderFrom: api.CountryCommander = new api.CountryCommander();
