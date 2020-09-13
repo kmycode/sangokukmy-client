@@ -276,6 +276,17 @@ export default class CommandListView extends Vue {
     return isShow;
   }
 
+  private updateCountryCommanderMessageRead(id: number) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryCommanderRead(id)
+      .catch(() => {
+        NotificationService.countryCommandersMessageReadFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
+  }
+
   @Watch('axbA')
   @Watch('axbB')
   @Watch('isOpenAxb')
@@ -301,17 +312,6 @@ export default class CommandListView extends Vue {
 
   private scrollToNumber(num: number) {
     (this.$refs.list as Element).scrollTo(0, (num - 1) * 45);
-  }
-
-  public updateCountryCommanderMessageRead(id: number) {
-    this.isUpdatingCountrySettings = true;
-    api.Api.setCountryCommanderRead(id)
-      .catch(() => {
-        NotificationService.countryCommandersMessageReadFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingCountrySettings = false;
-      });
   }
 }
 </script>

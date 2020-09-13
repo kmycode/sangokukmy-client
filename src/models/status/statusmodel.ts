@@ -1455,9 +1455,9 @@ export default class StatusModel {
   }
 
   private onCountryCommanderReceived(message: api.CountryCommander) {
-    console.dir(message);
     const old = this.store.countryCommanders.find((c) =>
-      c.subject === message.subject && c.subjectData === message.subjectData && c.subjectData2 === message.subjectData2);
+      c.subject === message.subject && c.subjectData === message.subjectData &&
+      c.subjectData2 === message.subjectData2);
     let isAdd = true;
     if (old) {
       old.isEditing = false;
@@ -1466,17 +1466,14 @@ export default class StatusModel {
         old.writerCharacterId = message.writerCharacterId;
         old.writerPost = message.writerPost;
         isAdd = false;
-        console.log('A')
       } else if (!message.message) {
         this.store.countryCommanders = this.store.countryCommanders.filter((c) => c.id !== old.id);
-        console.log('B')
       } else {
         old.id = message.id;
         old.message = message.message;
         old.writerCharacterId = message.writerCharacterId;
         old.writerPost = message.writerPost;
         isAdd = message.message !== '';
-        console.log('C')
       }
     }
 
@@ -1571,9 +1568,6 @@ export default class StatusModel {
         Vue.set(country, 'posts', []);
       }
 
-      console.log(this.character.id);
-      console.log(post.characterId);
-
       if (post.type !== 0) {
         if (!post.isUnAppointed) {
           // 任命
@@ -1584,7 +1578,6 @@ export default class StatusModel {
       } else {
         country.posts = country.posts.filter((p) => p.characterId !== post.characterId);
       }
-      console.dir(country.posts);
 
       if (this.country.id === country.id) {
         this.setCountry(country);
@@ -1694,7 +1687,8 @@ export default class StatusModel {
   public get canCountryCommander(): boolean {
     // 自分が国の設定を行う権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 3 || p.type === 14));
+      .any((p) => p.characterId === this.character.id &&
+                  (p.type === 1 || p.type === 2 || p.type === 3 || p.type === 14));
   }
 
   public get canCountryUnifiedMessage(): boolean {

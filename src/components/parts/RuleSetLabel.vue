@@ -16,6 +16,6 @@ import { Component, Prop, Vue, Emit } from 'vue-property-decorator';
   },
 })
 export default class RuleSetLabel extends Vue {
-  @Prop() ruleSet!: number;
+  @Prop() private ruleSet!: number;
 }
 </script>

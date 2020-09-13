@@ -1992,7 +1992,7 @@ export default class StatusPage extends Vue {
       || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog
       || this.isOpenBuyTownDialog || this.isOpenCommanderTargetCharacterDialog;
   }
-  
+
   public yesnoEvent: () => void = () => undefined;
 
   public openCommandDialog(event: string) {

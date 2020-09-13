@@ -400,7 +400,7 @@ export default class SimpleCharacterList extends Vue {
         .then((detail) => {
           if (detail.skills) {
             const skillInfos = detail.skills.map((s) => {
-              const st = def.CHARACTER_SKILL_TYPES.filter((st) => st.id === s.type);
+              const st = def.CHARACTER_SKILL_TYPES.filter((stt) => stt.id === s.type);
               if (st.length > 0) {
                 return st[0];
               }
