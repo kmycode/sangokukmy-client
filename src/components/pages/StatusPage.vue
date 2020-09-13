@@ -897,7 +897,7 @@
             <h3 v-else-if="commander.subject === 2">能力: {{ model.getCharacterTypeName(commander.subjectData) }}</h3>
             <h3 v-else-if="commander.subject === 3">出身: {{ commander.subjectData | charafromname }}</h3>
             <h3 v-else-if="commander.subject === 4 && model.getCharacter(commander.subjectData)">個人: {{ model.getCharacter(commander.subjectData).name }}</h3>
-            <div :class="{ 'directive': true, 'active': commander.id === model.store.myCountryCommanderAll.id || commander.id === model.store.myCountryCommanderAttribute.id || commander.id === model.store.myCountryCommanderFrom || commander.id === model.store.myCountryCommanderPrivate, }">
+            <div :class="{ 'directive': true, 'active': commander.id === model.store.myCountryCommanderAll.id || commander.id === model.store.myCountryCommanderAttribute.id || commander.id === model.store.myCountryCommanderFrom.id || commander.id === model.store.myCountryCommanderPrivate.id, }">
               <KmyChatTagText :text="commander.message"/>
               <div class="writer">
                 {{ commander.writerCharacterName }} ({{ model.getPostName(commander.writerPost) }})
