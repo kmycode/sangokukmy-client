@@ -644,6 +644,10 @@ export default class NotificationService {
     '登用',
     '{0} から登用を受け取りました',
     NotificationServiceItemDefaultType.information);
+  public static readonly countryCommandersMessageAddFalledBecauseSubjectAlreadyExists = new NotificationServiceItem(
+    '指令追加失敗',
+    '同条件の指令がすでに存在します',
+    NotificationServiceItemDefaultType.warning);
   public static readonly countryCommandersMessageSet = new NotificationServiceItem(
     '指令更新',
     '指令を更新しました',
@@ -652,10 +656,18 @@ export default class NotificationService {
     '指令更新失敗',
     '指令更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryCommandersMessageSetFailedBecauseTooLong = new NotificationServiceItem(
+    '指令更新失敗',
+    '指令更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly countryCommandersMessageUpdated = new NotificationServiceItem(
     '指令更新',
     '指令が更新されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly countryCommandersMessageReadFailed = new NotificationServiceItem(
+    '指令既読失敗',
+    '指令の既読付けに失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly countrySolicitationMessageSet = new NotificationServiceItem(
     '勧誘文更新',
     '新規登録者勧誘文を更新しました',

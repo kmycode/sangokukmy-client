@@ -29,7 +29,7 @@
           <div id="current-war-status" class="in-reset" v-if="model.systemData.isWaitingReset">{{ model.systemData.resetGameDateTime.year }}年終了</div>
         </div>
         <div id="directive" :class="'country-color-' + model.characterCountryColor" @click="isOpenCommandersDialog = true">
-          指令: <KmyChatTagText :text="model.countryCommandersMessage.message" :isNewLine="false"/>
+          指令: <KmyChatTagText :text="model.store.myCountryCommanderAll.message" :isNewLine="false"/>
         </div>
         <div id="map-container" :class="{'mini-mode': mapMode === 9}">
           <Map
@@ -204,7 +204,11 @@
       <div class="col-lg-5 col-md-6">
         <div id="right-side-mode-tab">
           <ul class="nav nav-pills nav-fill">
-            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining"></span></span></a></li>
+            <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 0 }" @click.prevent.stop="selectedActionTab = 0" href="#"><span class="tab-text"><span v-show="selectedActionTab === 0">コマンド</span><span v-show="selectedActionTab !== 0">残り {{ model.commands.restTurns }}</span><span class="tab-notify" v-show="model.commands.isFewRemaining ||
+                (model.store.myCountryCommanderAll.message && model.store.myCountryCommanderAll.id > model.store.chatMessageRead.lastAllCommanderId) ||
+                (model.store.myCountryCommanderAttribute.message && model.store.myCountryCommanderAttribute.id > model.store.chatMessageRead.lastAttributeCommanderId) ||
+                (model.store.myCountryCommanderFrom.message && model.store.myCountryCommanderFrom.id > model.store.chatMessageRead.lastFromCommanderId) ||
+                (model.store.myCountryCommanderPrivate.message && model.store.myCountryCommanderPrivate.id > model.store.chatMessageRead.lastPrivateCommanderId)"></span></span></a></li>
             <li class="nav-item"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 1 }" @click.prevent.stop="selectedActionTab = 1" href="#"><span class="tab-text">手紙<span class="tab-notify" v-show="model.countryChat.isUnread || model.privateChat.isUnread || model.globalChat.isUnread || model.global2Chat.isUnread"></span></span></a></li>
             <li class="nav-item" v-if="model.character.countryId"><a :class="{ 'nav-link': true, 'active': selectedActionTab === 2 }" @click.prevent.stop="selectedActionTab = 2" href="#"><span class="tab-text">会議室<span class="tab-notify" v-show="model.countryThreadBbs.isUnread"></span></span></a></li>
             <li class="nav-item dropdown" :class="{ 'tab-highlighted': !model.character.countryId }"><a :class="'nav-link dropdown-toggle' + (isOpenRightSidePopupMenu || selectedActionTab === 3 ? ' active' : '')" href="#" @click.prevent.stop="isOpenRightSidePopupMenu ^= true">
@@ -224,7 +228,7 @@
               <div class="dropdown-menu" :style="'right:0;left:auto;display:' + (isOpenRightSidePopupMenu ? 'block' : 'none')">
                 <a :class="{ 'dropdown-item': true, 'tab-highlighted': !model.character.countryId }" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 0; isOpenRightSidePopupMenu = false"><span class="tab-text">登用<span class="tab-notify" v-show="model.promotions.isUnread"></span></span></a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 2; isOpenRightSidePopupMenu = false"><span class="tab-text">全国会議室<span class="tab-notify" v-show="model.globalThreadBbs.isUnread"></span></span></a>
-                <a v-if="model.canCountrySetting" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
+                <a v-if="model.canCountrySetting || model.canCountryCommander" class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 1; isOpenRightSidePopupMenu = false">国設定</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 5; isOpenRightSidePopupMenu = false">個人設定</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.updateOppositionCharacters(); isOpenOppositionCharactersDialog = true; isOpenRightSidePopupMenu = false">無所属武将</a>
@@ -256,7 +260,8 @@
                            :canCommandComment="model.canCommandComment"
                            :canSubBuilding="model.canSubBuilding"
                            :gameDate="model.gameDate"
-                           @open="openCommandDialog($event)"/>
+                           @open="openCommandDialog($event)"
+                           @open-commander-message="isOpenCommandersDialog = true"/>
         </div>
         <!-- 手紙 -->
         <div v-show="selectedActionTab === 1" class="right-side-content content-chat" style="display:flex;flex-direction:column">
@@ -363,29 +368,55 @@
                   </div>
                 </div>
               </div>
-              <textarea v-model="newCountryUnifiedMessage" ref="commandersMessageInput"></textarea>
+              <textarea v-model="newCountryUnifiedMessage"></textarea>
               <div class="buttons">
                 <button type="button" class="btn btn-light" @click="newCountryUnifiedMessage = model.countryUnifiedMessage.message">リセット</button>
                 <button type="button" class="btn btn-primary" @click="model.updateCountryUnifiedMessage(newCountryUnifiedMessage)">承認</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
-            <div class="setting-row loading-container">
+            <div v-if="model.canCountryCommander" class="setting-row loading-container">
               <h3 :class="'country-color-' + model.characterCountryColor">指令</h3>
-              <div class="current-message">
-                <h4>現在の指令</h4>
-                <div :class="'current-message-content country-color-' + model.characterCountryColor">
-                  <KmyChatTagText v-if="model.countryCommandersMessage.message" :text="model.countryCommandersMessage.message"/>
-                  <span v-if="!model.countryCommandersMessage.message" class="message-empty">なし</span>
+              <div class="current-message" v-for="commander in model.sortedCountryCommanders" :key="commander.subject + '-' + commander.subjectData + '-' + commander.subjectData2">
+                <h4 v-if="commander.subject === 1">全員</h4>
+                <h4 v-else-if="commander.subject === 2">能力: {{ model.getCharacterTypeName(commander.subjectData) }}</h4>
+                <h4 v-else-if="commander.subject === 3">出身: {{ commander.subjectData | charafromname }}</h4>
+                <h4 v-else-if="commander.subject === 4 && model.getCharacter(commander.subjectData)">個人: {{ model.getCharacter(commander.subjectData).name }}</h4>
+                <div :class="'current-message-content country-color-' + model.characterCountryColor" style="margin-bottom:8px">
+                  <KmyChatTagText v-if="commander.message" :text="commander.message"/>
+                  <span v-if="!commander.message" class="message-empty">なし</span>
                   <div v-else class="current-message-writer">
-                    {{ model.countryCommandersMessage.writerCharacterName }} ({{ model.getPostName(model.countryCommandersMessage.writerPost) }})
+                    {{ commander.writerCharacterName }} ({{ model.getPostName(commander.writerPost) }})
                   </div>
                 </div>
+                <textarea v-model="commander.message" ref="commandersMessageInput" @input="commander.isEditing = true" style="height:80px"></textarea>
+                <div class="buttons">
+                  <button type="button" class="btn btn-danger" @click="model.updateCountryCommanderMessage('', commander.subject, commander.subjectData, commander.subjectData2)">削除</button>
+                  <button type="button" class="btn btn-primary" v-show="commander.isEditing" @click="model.updateCountryCommanderMessage(commander.message, commander.subject, commander.subjectData, commander.subjectData2)">保存</button>
+                  <button type="button" class="btn btn-warning" @click="model.sendCountryCommanderMessageChat(commander.message, commander.subject, commander.subjectData, commander.subjectData2)">個宛</button>
+                </div>
               </div>
-              <textarea v-model="newCountryCommandersMessage" ref="commandersMessageInput"></textarea>
+              <div>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 1, 'btn-secondary': newCountryCommanderSubject === 1, }" @click="newCountryCommanderSubject = 1; newCountryCommanderSubjectData = 0">全員</button><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 2 || newCountryCommanderSubjectData !== 1, 'btn-secondary': newCountryCommanderSubject === 2 && newCountryCommanderSubjectData === 1, }" @click="newCountryCommanderSubject = 2; newCountryCommanderSubjectData = 1">武官</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 2 || newCountryCommanderSubjectData !== 2, 'btn-secondary': newCountryCommanderSubject === 2 && newCountryCommanderSubjectData === 2, }" @click="newCountryCommanderSubject = 2; newCountryCommanderSubjectData = 2">文官</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 2 || newCountryCommanderSubjectData !== 3, 'btn-secondary': newCountryCommanderSubject === 2 && newCountryCommanderSubjectData === 3, }" @click="newCountryCommanderSubject = 2; newCountryCommanderSubjectData = 3">仁官</button><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 1, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 1, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 1">武家</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 2, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 2, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 2">官吏</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 3, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 3, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 3">商人</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 4, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 4, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 4">技師</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 6, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 6, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 6">胡人</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 7, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 7, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 7">農家</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 8, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 8, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 8">兵家</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 9, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 9, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 9">学者</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 10, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 10, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 10">儒家</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 10, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 10, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 10">道家</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 3 || newCountryCommanderSubjectData !== 10, 'btn-secondary': newCountryCommanderSubject === 3 && newCountryCommanderSubjectData === 10, }" @click="newCountryCommanderSubject = 3; newCountryCommanderSubjectData = 10">仏僧</button><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject !== 4, 'btn-secondary': newCountryCommanderSubject === 4, }" @click="newCountryCommanderSubject = 4; newCountryCommanderSubjectData = 0; model.updateCountryCharacters(); isOpenCommanderTargetCharacterDialog = true">個人</button>
+                <span style="font-weight:bold" v-show="newCountryCommanderSubject === 4 && targetCharacter.id > 0">{{ targetCharacter.name }}</span>
+              </div>
               <div class="buttons">
-                <button type="button" class="btn btn-light" @click="newCountryCommandersMessage = model.countryCommandersMessage.message">リセット</button>
-                <button type="button" class="btn btn-primary" @click="model.updateCountryCommandersMessage(newCountryCommandersMessage)">承認</button>
+                <button type="button" class="btn btn-primary" @click="model.createEmptyCountryCommander(newCountryCommanderSubject, newCountryCommanderSubjectData || targetCharacter.id, newCountryCommanderSubjectData2)">追加</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
@@ -579,7 +610,7 @@
             <div class="soldier-input">
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 0, 'btn-secondary': selectedSoldierNumberType === 0}" @click="setSelectedSoldierNumberType(0)">ALL</button>
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 1, 'btn-secondary': selectedSoldierNumberType === 1}" @click="setSelectedSoldierNumberType(1)">1人</button>
-              <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 2, 'btn-secondary': selectedSoldierNumberType === 2}" @click="setSelectedSoldierNumberType(2)">9人</button>
+              <!-- <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 2, 'btn-secondary': selectedSoldierNumberType === 2}" @click="setSelectedSoldierNumberType(2)">9人</button> -->
               <button type="button" :class="{'btn': true, 'btn-outline-secondary': selectedSoldierNumberType !== 3, 'btn-secondary': selectedSoldierNumberType === 3}" @click="setSelectedSoldierNumberType(3)">末尾9</button>
               <input type="number" min="1" class="form-control" style="width:96px;text-align:center;display:inline;font-size:1.0em" v-model="soldierNumber" @input="selectedSoldierNumberType = 4">人徴兵
             </div>
@@ -861,10 +892,16 @@
       <div v-if="isOpenCommandersDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">{{ model.characterCountry.name }} 指令</h2>
         <div class="dialog-content dialog-content-directive">
-          <div class="directive">
-            <KmyChatTagText :text="model.countryCommandersMessage.message"/>
-            <div v-if="model.countryCommandersMessage.message" class="writer">
-              {{ model.countryCommandersMessage.writerCharacterName }} ({{ model.getPostName(model.countryCommandersMessage.writerPost) }})
+          <div v-for="commander in model.sortedCountryCommanders" :key="commander.subject + '-' + commander.subjectData + '-' + commander.subjectData2">
+            <h3 v-if="commander.subject === 1">全員</h3>
+            <h3 v-else-if="commander.subject === 2">能力: {{ model.getCharacterTypeName(commander.subjectData) }}</h3>
+            <h3 v-else-if="commander.subject === 3">出身: {{ commander.subjectData | charafromname }}</h3>
+            <h3 v-else-if="commander.subject === 4 && model.getCharacter(commander.subjectData)">個人: {{ model.getCharacter(commander.subjectData).name }}</h3>
+            <div :class="{ 'directive': true, 'active': commander.id === model.store.myCountryCommanderAll.id || commander.id === model.store.myCountryCommanderAttribute.id || commander.id === model.store.myCountryCommanderFrom || commander.id === model.store.myCountryCommanderPrivate, }">
+              <KmyChatTagText :text="commander.message"/>
+              <div class="writer">
+                {{ commander.writerCharacterName }} ({{ model.getPostName(commander.writerPost) }})
+              </div>
             </div>
           </div>
         </div>
@@ -873,6 +910,32 @@
           <div class="right-side">
             <button v-if="model.canCountrySetting" class="btn btn-primary" @click="readyEditCommanders()">編集</button>
             <button class="btn btn-light" @click="isOpenCommandersDialog = false">閉じる</button>
+          </div>
+        </div>
+      </div>
+      <!-- 指令対象武将選択 -->
+      <div v-if="isOpenCommanderTargetCharacterDialog" class="dialog-body">
+        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
+          <div class="header">指令対象武将選択</div>
+        </h2>
+        <div class="dialog-content dialog-content-rice dialog-content-safe-out loading-container">
+          <div class="content dialog-content-safe-out-main">
+            <div class="character-list">
+              <SimpleCharacterList
+                :countries="model.countries"
+                :characters="model.countryCharacters"
+                canSelect="true"
+                v-model="targetCharacter"/>
+            </div>
+          </div>
+          <div class="loading" v-show="model.isUpdatingCountryCharacters"><div class="loading-icon"></div></div>
+        </div>
+        <div class="dialog-footer">
+          <div class="left-side">
+            <button v-show="targetCharacter.id <= 0" class="btn btn-light" @click="isOpenCommanderTargetCharacterDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button v-show="targetCharacter.id > 0" class="btn btn-primary" @click="isOpenCommanderTargetCharacterDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1858,6 +1921,7 @@ export default class StatusPage extends Vue {
   public isOpenQueueDialog: boolean = false;
   public isOpenCreateTownDialog: boolean = false;
   public isOpenBuyTownDialog: boolean = false;
+  public isOpenCommanderTargetCharacterDialog: boolean = false;
   public isOpenImage: boolean = false;
   public isYesno: boolean = false;
   public yesnoMessage: string = '';
@@ -1876,7 +1940,7 @@ export default class StatusPage extends Vue {
   public promotionTarget: api.Character = new api.Character(-1);
   public promotionMessage: string = '';
   public targetSecretary: api.Character = new api.Character(-1);
-  public targetCharacter: api.Character = new api.Character(-1);
+  public targetCharacter: api.Character = new api.Character(0);
   public targetUnit: api.Unit = new api.Unit(-1);
   public flyingColumnAction: number = 0;
   public flyingColumnSoldierType: number = 0;
@@ -1884,6 +1948,9 @@ export default class StatusPage extends Vue {
   public newCountrySolicitationMessage: string = '';
   public newCountryUnifiedMessage: string = '';
   public newPrivateMessage: string = '';
+  public newCountryCommanderSubject: number = 1;
+  public newCountryCommanderSubjectData: number = 0;
+  public newCountryCommanderSubjectData2: number = 0;
   public newMuteKeywords: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
@@ -1923,7 +1990,7 @@ export default class StatusPage extends Vue {
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
       || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog
-      || this.isOpenBuyTownDialog;
+      || this.isOpenBuyTownDialog || this.isOpenCommanderTargetCharacterDialog;
   }
   
   public yesnoEvent: () => void = () => undefined;
@@ -2050,7 +2117,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
       this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
       this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog =
-      this.isOpenCreateTownDialog = this.isOpenBuyTownDialog = false;
+      this.isOpenCreateTownDialog = this.isOpenBuyTownDialog = this.isOpenCommanderTargetCharacterDialog = false;
   }
 
   public closeMapDialog() {
@@ -2203,7 +2270,13 @@ export default class StatusPage extends Vue {
     this.isOpenCommandersDialog = false;
     this.selectedActionTab = 3;
     this.selectedActionTabSubPanel = 1;
-    (this.$refs.commandersMessageInput as HTMLTextAreaElement).focus();
+    if (typeof(this.$refs.commandersMessageInput) === 'object') {
+      if (Array.isArray(this.$refs.commandersMessageInput)) {
+        (this.$refs.commandersMessageInput[0] as HTMLTextAreaElement).focus();
+      } else {
+        (this.$refs.commandersMessageInput as HTMLTextAreaElement).focus();
+      }
+    }
   }
 
   private isScrolled(event: any): boolean {
@@ -2213,6 +2286,10 @@ export default class StatusPage extends Vue {
 
   private resetNewIcon() {
     this.newIcon = new api.CharacterIcon(0, 0, false, 1, '0.gif');
+  }
+
+  private resetTargetCharacter() {
+    this.targetCharacter = new api.Character(0);
   }
 
   private setSelectedSoldierNumberType(num: number) {
@@ -2868,7 +2945,11 @@ ul.nav {
       &.dialog-content-directive {
         .directive {
           padding: 8px 16px;
+          margin-bottom: 24px;
           background-color: #dedede;
+          &.active {
+            background-color: #ffdede;
+          }
         }
         .writer {
           text-align: right;

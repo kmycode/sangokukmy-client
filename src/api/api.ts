@@ -367,9 +367,23 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryScouter = 29;
   public static readonly aiSecretaryEvangelist = 32;
 
+  public static readonly typeStrong = 1;
+  public static readonly typeIntellect = 2;
+  public static readonly typePopularity = 3;
+
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
     return def.CLASS_NAMES[lank];
+  }
+
+  public static getType(chara: Character): number {
+    if (chara.strong > chara.intellect && chara.strong > chara.popularity) {
+      return this.typeStrong;
+    }
+    if (chara.intellect > chara.popularity) {
+      return this.typeIntellect;
+    }
+    return this.typePopularity;
   }
 
   public constructor(public id: number = 0,
@@ -464,6 +478,25 @@ export class CountryMessage {
                      public writerCharacterName: string = '',
                      public writerPost: number = 0,
                      public writerIcon: CharacterIcon = new CharacterIcon()) {}
+}
+
+export class CountryCommander {
+  public static readonly typeId = 48;
+
+  public static readonly subjectAll = 1;
+  public static readonly subjectAttribute = 2;
+  public static readonly subjectFrom = 3;
+  public static readonly subjectPrivate = 4;
+
+  public constructor(public id: number = 0,
+                     public subject: number = 0,
+                     public subjectData: number = 0,
+                     public subjectData2: number = 0,
+                     public writerCharacterId: number = 0,
+                     public writerPost: number = 0,
+                     public message: string = '',
+                     public writerCharacterName: string = '',
+                     public isEditing?: boolean) {}
 }
 
 /**
@@ -1117,12 +1150,16 @@ export class MuteKeyword {
 export class ChatMessageRead {
   public static readonly typeId: number = 42;
 
-  public constructor(public lastCountryChatMessageId: number,
-                     public lastGlobalChatMessageId: number,
-                     public lastGlobal2ChatMessageId: number,
-                     public lastPromotionChatMessageId: number,
-                     public lastCountryBbsId: number,
-                     public lastGlobalBbsId: number) {}
+  public constructor(public lastCountryChatMessageId: number = 0,
+                     public lastGlobalChatMessageId: number = 0,
+                     public lastGlobal2ChatMessageId: number = 0,
+                     public lastPromotionChatMessageId: number = 0,
+                     public lastCountryBbsId: number = 0,
+                     public lastGlobalBbsId: number = 0,
+                     public lastAllCommanderId: number = 0,
+                     public lastAttributeCommanderId: number = 0,
+                     public lastFromCommanderId: number = 0,
+                     public lastPrivateCommanderId: number = 0) {}
 }
 
 export class DelayEffect {
@@ -1421,6 +1458,34 @@ export class Api {
     }
   }
 
+  public static async setCountryCommander(message: string, subject: number,
+                                          subjectData: number | undefined, subjectData2: number | undefined): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'country/commanders', {
+        message,
+        subject,
+        subjectData: subjectData !== undefined ? subjectData : 0,
+        subjectData2: subjectData2 !== undefined ? subjectData2 : 0,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryCommanderChat(message: string, subject: number,
+                                              subjectData: number | undefined, subjectData2: number | undefined): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'country/commanders/chat', {
+        message,
+        subject,
+        subjectData,
+        subjectData2,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async addCountryPolicy(policy: number): Promise<any> {
     try {
       await axios.post
@@ -1596,6 +1661,14 @@ export class Api {
   public static async setPromotionChatMessageRead(id: number): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'chat/promotion/read/' + id, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryCommanderRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'country/commanders/read/' + id, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

@@ -166,6 +166,16 @@
       50ターン以内に、何も実行しないコマンドが存在します
     </div>
     <div class="command-list" ref="list">
+      <div class="loading-container">
+        <div class="alert alert-warning alert-update-commander" v-if="list.store.myCountryCommanderAll.message && (list.store.myCountryCommanderAll.id > list.store.chatMessageRead.lastAllCommanderId)"><div class="message-singleline">全員向けの指令が更新されました</div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="updateCountryCommanderMessageRead(list.store.myCountryCommanderAll.id)">既読</button> </div>
+        <div class="alert alert-warning alert-update-commander" v-if="list.store.myCountryCommanderAttribute.message && (list.store.myCountryCommanderAttribute.id > list.store.chatMessageRead.lastAttributeCommanderId)"><div class="message">能力指令: <KmyChatTagText :text="list.store.myCountryCommanderAttribute.message"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="updateCountryCommanderMessageRead(list.store.myCountryCommanderAttribute.id)">既読</button></div>
+        <div class="alert alert-info alert-update-commander" v-else-if="list.store.myCountryCommanderAttribute.message"><div class="message-singleline">能力指令: <KmyChatTagText :text="list.store.myCountryCommanderAttribute.message" :isNewLine="false"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="$emit('open-commander-message')">確認</button></div>
+        <div class="alert alert-warning alert-update-commander" v-if="list.store.myCountryCommanderFrom.message && (list.store.myCountryCommanderFrom.id > list.store.chatMessageRead.lastFromCommanderId)"><div class="message">出身指令: <KmyChatTagText :text="list.store.myCountryCommanderFrom.message"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="updateCountryCommanderMessageRead(list.store.myCountryCommanderFrom.id)">既読</button></div>
+        <div class="alert alert-info alert-update-commander" v-else-if="list.store.myCountryCommanderFrom.message"><div class="message-singleline">出身指令: <KmyChatTagText :text="list.store.myCountryCommanderFrom.message" :isNewLine="false"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="$emit('open-commander-message')">確認</button></div>
+        <div class="alert alert-warning alert-update-commander" v-if="list.store.myCountryCommanderPrivate.message && (list.store.myCountryCommanderPrivate.id > list.store.chatMessageRead.lastPrivateCommanderId)"><div class="message">個人指令: <KmyChatTagText :text="list.store.myCountryCommanderPrivate.message"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="updateCountryCommanderMessageRead(list.store.myCountryCommanderPrivate.id)">既読</button></div>
+        <div class="alert alert-info alert-update-commander" v-else-if="list.store.myCountryCommanderPrivate.message"><div class="message-singleline">個人指令: <KmyChatTagText :text="list.store.myCountryCommanderPrivate.message" :isNewLine="false"/></div><button type="button" class="btn btn-sm btn-secondary" style="transform:translateY(-4px);margin:0" @click="$emit('open-commander-message')">確認</button></div>
+        <div class="loading" v-show="isUpdatingCountrySettings"><div class="loading-icon"></div></div>
+      </div>
       <div v-for="command in list.commands"
            :key="command.commandNumber"
            :class="{ 'command-list-item': true, 'selected': command.isSelected, 'disabled': !command.canSelect, 'previewed': command.isPreview }"
@@ -214,12 +224,15 @@ import { Component, Vue, Prop, Watch } from 'vue-property-decorator';
 import * as api from '@/api/api';
 import CommandList from '@/models/status/commandlist';
 import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
+import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as def from '@/common/definitions';
 import Enumerable from 'linq';
+import NotificationService from '@/services/notificationservice';
 
 @Component({
   components: {
     KmyLogTagText,
+    KmyChatTagText,
   },
 })
 export default class CommandListView extends Vue {
@@ -246,6 +259,7 @@ export default class CommandListView extends Vue {
   private isOpenMovePopup: boolean = false;
   private isOpenMoveInput: boolean = false;
   private moveToNumber: number = 1;
+  private isUpdatingCountrySettings: boolean = false;
 
   private axbA: number = 3;
   private axbB: number = 0;
@@ -287,6 +301,17 @@ export default class CommandListView extends Vue {
 
   private scrollToNumber(num: number) {
     (this.$refs.list as Element).scrollTo(0, (num - 1) * 45);
+  }
+
+  public updateCountryCommanderMessageRead(id: number) {
+    this.isUpdatingCountrySettings = true;
+    api.Api.setCountryCommanderRead(id)
+      .catch(() => {
+        NotificationService.countryCommandersMessageReadFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountrySettings = false;
+      });
   }
 }
 </script>
@@ -511,6 +536,19 @@ $color-navigation-commands: #e0e0e0;
     input {
       width: 100px;
       text-align: center;
+    }
+  }
+
+  .alert-update-commander {
+    display: flex;
+    div.message-singleline {
+      flex: 1;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    div.message {
+      flex: 1;
     }
   }
 }
