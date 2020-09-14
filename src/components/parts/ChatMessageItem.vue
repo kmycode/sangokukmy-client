@@ -32,6 +32,7 @@
           </span>
           <span v-else class="character-name-group">
             <span class="beginner" v-if="message.character.isBeginner">🔰</span>
+            <span class="reinforcement" v-if="message.character.reinforcement">援軍</span>
             <span class="character-name">{{ message.character.name }}</span>
           </span>
           <span class="posted">{{ message.posted | realdate }}</span>
@@ -242,6 +243,12 @@ export default class ChatMessageItem extends Vue {
           border-radius: 12px;
           margin-right: 8px;
           font-weight: bold;
+        }
+
+        .reinforcement {
+          margin-right: 8px;
+          font-weight: bold;
+          color: #247924;
         }
 
         .character-name {
