@@ -44,7 +44,7 @@
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
             <div class="alert alert-info">
-              あなたのアクティブ接続月数は <strong>{{ model.onlineCount }}</strong> で <strong>{{ model.onlineRank }}</strong> 位です
+              あなたのオン率は <strong>{{ (model.onlineCount * 100 / model.gameDateTimeNumber).toFixed(1) }}</strong>% で <strong>{{ model.onlineRank }}</strong> 位です
             </div>
             <div class="online-list-item">
               <h3>ACTIVE</h3>

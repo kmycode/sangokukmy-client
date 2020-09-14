@@ -56,6 +56,10 @@ export default class StatusModel {
   public onlineCount: number = 0;
   public onlineRank: number = 0;
 
+  public get gameDateTimeNumber(): number {
+    return api.GameDateTime.toNumber(this.systemData.gameDateTime);
+  }
+
   public get isLoading(): boolean {
     return this.isCommandInputing || this.isUpdatingTownCharacters
       || this.isUpdatingTownDefenders || this.isUpdatingCountryCharacters || this.isScouting
