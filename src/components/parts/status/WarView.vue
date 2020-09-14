@@ -3,7 +3,7 @@
     <div :class="'current-status alert alert-' + (status.id === 4 ? 'warning' : status.id === 1 ? 'danger' : 'info')">{{ status.name }}</div>
     <div v-if="diplomacy !== undefined && status.id !== 0" class="content-section current-diplomacy">
       <h3>戦争</h3>
-      {{ diplomacy.startGameDate | gamedate }} 開戦<br>
+      {{ diplomacy.startGameDate | gamedate }} 開戦 ({{ diplomacy.startGameDate | torealdate(system) | shortrealdate }})<br>
       種類: <span v-if="diplomacy.mode === 1">宗教</span><span v-else>通常</span>
     </div>
     <div v-if="canEdit" class="editor">
