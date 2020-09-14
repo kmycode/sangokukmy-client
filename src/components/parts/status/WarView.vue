@@ -15,7 +15,7 @@
       <div v-show="newData.status === 4 && (status.id === 0 || status.id === 3)" class="content-section">
         <h3>宣戦布告</h3>
         <div class="alert alert-warning">12年後〜24年後までの年月を指定できます</div>
-        <GameDateTimePicker v-model="newData.startGameDate"/>
+        <GameDateTimePicker v-model="newData.startGameDate" :system="system"/>
         <div v-if="ruleSet === 5">
           <h4>戦争の種類</h4>
           <button :class="{ 'bth': true, 'btn-secondary': !newData.mode, 'btn-outline-secondary': newData.mode, }" @click="newData.mode = 0">通常</button>
@@ -55,6 +55,7 @@ export default class WarView extends Vue {
   @Prop() private canEdit!: boolean;
   @Prop() private isShow!: boolean;
   @Prop() private ruleSet!: number;
+  @Prop() private system?: api.SystemData;
 
   @Watch('isShow')
   private onIsShowChanged() {

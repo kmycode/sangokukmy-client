@@ -28,8 +28,11 @@ Vue.filter('realdate', (value: api.DateTime): string => {
 Vue.filter('shortrealdate', (value: api.DateTime): string => {
   return api.DateTime.toShortFormatedString(value);
 });
-Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
-  return api.GameDateTime.toRealDate(value);
+Vue.filter('torealdate', (value: api.GameDateTime, system: api.SystemData): api.DateTime => {
+  if (value && system) {
+    return api.GameDateTime.toRealDate(value, system);
+  }
+  return new api.DateTime();
 });
 Vue.filter('charafromname', (chara: api.Character | number): string => {
   const from = typeof(chara) === 'number' ? chara : chara.from;

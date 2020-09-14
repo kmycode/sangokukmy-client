@@ -848,6 +848,7 @@
                    :canEdit="model.canDiplomacy"
                    :isShow="isOpenWarDialog"
                    :ruleSet="model.store.systemData.ruleSet"
+                   :system="model.systemData"
                    style="flex:1"/>
         </div>
         <div class="dialog-footer">

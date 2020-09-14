@@ -170,9 +170,16 @@ export class GameDateTime {
     return new GameDateTime(Math.floor(num / 12), num % 12 + 1);
   }
 
-  public static toRealDate(date: GameDateTime): DateTime {
-    // TODO
-    return new DateTime(2018, 12, 1, 20, 0, 0);
+  public static toRealDate(date: GameDateTime, system: SystemData): DateTime {
+    const d = GameDateTime.toNumber(new GameDateTime(parseInt(date.year.toString()),
+          parseInt(date.month.toString()))) - GameDateTime.toNumber(system.gameDateTime);
+    const seconds = d * def.UPDATE_TIME;
+    const currentDate = DateTime.toDate(system.currentMonthStartDateTime);
+    currentDate.setSeconds(currentDate.getSeconds() + seconds);
+    const realDate = DateTime.fromDate(currentDate);
+    console.log(d);
+
+    return realDate;
   }
 
   public static addMonth(date: GameDateTime, add: number): GameDateTime {
