@@ -127,6 +127,9 @@ export const SOLDIER_TYPES: SoldierType[] = [
   new SoldierType(40, 3, 5, 1, 0, '義殲兵', 12, 300, '60', '-20', '仁官向けの兵種。防御を犠牲に、少しの突撃補正', undefined, undefined, undefined, 52),
   new SoldierType(41, 3, 2, 1, 0, '投擲器', 36, 700, '80', '-40', '仁官向けの兵種。防御を犠牲に、城壁攻撃に特化', undefined, undefined, undefined, 53),
 
+  new SoldierType(47, 0, 4, 1, 1, '使徒見習い', 10, 300, '30', '30', '宗教戦争の簡易的な兵種。誰でも徴兵可能'),
+  new SoldierType(46, 1, 4, 2, 1, '使徒', 15, 500, '60', '60', '宗教戦争で利用する兵種。宗教系出身のみが利用可能', undefined, undefined, undefined, [58, 63, 68]),
+
   new SoldierType(15, 0, 0, 0, 0, 'カスタム', 0, 0, '0', '0', 'カスタム兵種'),
   new SoldierType(17, 0, 5, 1, 0, '異民族兵A', 32767, 32767, '0', '0', ''),
   new SoldierType(18, 0, 5, 2, 0, '異民族兵B', 32767, 32767, '0', '0', ''),
