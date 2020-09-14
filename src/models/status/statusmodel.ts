@@ -40,6 +40,7 @@ export default class StatusModel {
   public mapLogs: api.MapLog[] = [];
   public characterLogs: api.CharacterLog[] = [];
   public countryCharacters: api.Character[] = [];
+  public filteredCharacters: api.Character[] = [];
   public leaderUnit: api.Unit = new api.Unit(-1);
   public oppositionCharacters: api.Character[] = [];
 
@@ -1334,6 +1335,20 @@ export default class StatusModel {
           }
         });
         this.countryCharacters = characters;
+      })
+      .catch(() => {
+        NotificationService.getCountryCharactersFailed.notify();
+      })
+      .finally(() => {
+        this.isUpdatingCountryCharacters = false;
+      });
+  }
+
+  public updateCountryCharactersFiltering(subject: number, subjectData: number, subjectData2: number) {
+    this.isUpdatingCountryCharacters = true;
+    api.Api.getAllCharactersBelongsCountryWithFilter(this.character.countryId, subject, subjectData, subjectData2)
+      .then((characters) => {
+        this.filteredCharacters = characters;
       })
       .catch(() => {
         NotificationService.getCountryCharactersFailed.notify();

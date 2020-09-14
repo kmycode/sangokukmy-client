@@ -1405,6 +1405,21 @@ export class Api {
     }
   }
 
+  public static async getAllCharactersBelongsCountryWithFilter(
+        countryId: number, subject: number, subjectData: number, subjectData2: number): Promise<Character[]> {
+    try {
+      const result = await axios.post<Character[]>
+        (def.API_HOST + 'country/' + countryId + '/characters/filter', {
+          subject,
+          subjectData,
+          subjectData2,
+        }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 国の役職を設定
    * @param characterId 設定する相手のID
