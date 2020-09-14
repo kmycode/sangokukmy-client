@@ -425,13 +425,22 @@
               <h3 :class="'country-color-' + model.characterCountryColor">特殊な一斉個宛送信</h3>
               <textarea v-model="commanderPrivateMessage"></textarea>
               <div>
-                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 5, 'btn-secondary': newCountryCommanderSubject2 === 5, }" @click="newCountryCommanderSubject2 = 5">援軍以外</button>
-                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 6, 'btn-secondary': newCountryCommanderSubject2 === 6, }" @click="newCountryCommanderSubject2 = 6">派遣した援軍</button>
-                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 7, 'btn-secondary': newCountryCommanderSubject2 === 7, }" @click="newCountryCommanderSubject2 = 7">両方</button><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 5, 'btn-secondary': newCountryCommanderSubject2 === 5, }" @click="newCountryCommanderSubject2 = 5; newCountryCommanderSubject2Data = 0">援軍以外</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 6, 'btn-secondary': newCountryCommanderSubject2 === 6, }" @click="newCountryCommanderSubject2 = 6; newCountryCommanderSubject2Data = 0">派遣した援軍</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 7, 'btn-secondary': newCountryCommanderSubject2 === 7, }" @click="newCountryCommanderSubject2 = 7; newCountryCommanderSubject2Data = 0">両方</button><br>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 15, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 15, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 15">ロール1</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 16, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 16, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 16">2</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 17, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 17, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 17">3</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 18, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 18, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 18">4</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 19, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 19, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 19">5</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 20, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 20, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 20">6</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 21, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 21, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 21">7</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 22, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 22, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 22">8</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 8 || newCountryCommanderSubject2Data !== 23, 'btn-secondary': newCountryCommanderSubject2 === 8 && newCountryCommanderSubject2Data === 23, }" @click="newCountryCommanderSubject2 = 8; newCountryCommanderSubject2Data = 23">9</button><br>
               </div>
               <div class="buttons">
                 <button type="button" class="btn btn-light" @click="commanderPrivateMessage = ''">クリア</button>
-                <button type="button" class="btn btn-warning" @click="model.sendCountryCommanderMessageChat(commanderPrivateMessage, newCountryCommanderSubject2)">個宛</button>
+                <button type="button" class="btn btn-warning" @click="model.sendCountryCommanderMessageChat(commanderPrivateMessage, newCountryCommanderSubject2, newCountryCommanderSubject2Data)">個宛</button>
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
@@ -1968,6 +1977,7 @@ export default class StatusPage extends Vue {
   public newCountryCommanderSubject2: number = 5;
   public newCountryCommanderSubjectData: number = 0;
   public newCountryCommanderSubjectData2: number = 0;
+  public newCountryCommanderSubject2Data: number = 0;
   public commanderPrivateMessage: string = '';
   public newMuteKeywords: string = '';
   public payRiceOrMoney: number = -1;
