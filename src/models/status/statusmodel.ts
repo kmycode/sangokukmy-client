@@ -1468,6 +1468,7 @@ export default class StatusModel {
         old.id = message.id;
         old.writerCharacterId = message.writerCharacterId;
         old.writerPost = message.writerPost;
+        old.oldMessage = message.message;
         isAdd = false;
       } else if (!message.message) {
         this.store.countryCommanders = this.store.countryCommanders.filter((c) => c.id !== old.id);
@@ -1476,12 +1477,14 @@ export default class StatusModel {
         old.message = message.message;
         old.writerCharacterId = message.writerCharacterId;
         old.writerPost = message.writerPost;
+        old.oldMessage = message.message;
         isAdd = message.message !== '';
       }
     }
 
     if (message.message) {
       message.isEditing = false;
+      message.oldMessage = message.message;
       if (isAdd) {
         ArrayUtil.addItem(this.store.countryCommanders, message);
       }

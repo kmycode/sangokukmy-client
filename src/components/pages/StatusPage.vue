@@ -392,6 +392,7 @@
                 <textarea v-model="commander.message" ref="commandersMessageInput" @input="commander.isEditing = true" style="height:80px"></textarea>
                 <div class="buttons">
                   <button type="button" class="btn btn-danger" @click="model.updateCountryCommanderMessage('', commander.subject, commander.subjectData, commander.subjectData2)">削除</button>
+                  <button type="button" class="btn btn-light" v-show="commander.isEditing" @click="commander.message = commander.oldMessage">戻す</button>
                   <button type="button" class="btn btn-primary" v-show="commander.isEditing" @click="model.updateCountryCommanderMessage(commander.message, commander.subject, commander.subjectData, commander.subjectData2)">保存</button>
                   <button type="button" class="btn btn-warning" @click="model.sendCountryCommanderMessageChat(commander.message, commander.subject, commander.subjectData, commander.subjectData2)">個宛</button>
                 </div>

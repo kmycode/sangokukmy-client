@@ -496,7 +496,8 @@ export class CountryCommander {
                      public writerPost: number = 0,
                      public message: string = '',
                      public writerCharacterName: string = '',
-                     public isEditing?: boolean) {}
+                     public isEditing?: boolean,
+                     public oldMessage?: string) {}
 }
 
 /**
