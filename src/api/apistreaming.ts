@@ -71,6 +71,15 @@ export default class ApiStreaming {
   }
 
   /**
+   * ストリーミングを再開
+   */
+  public restart() {
+    this.stop();
+    this.isStreaming = false;
+    this.start();
+  }
+
+  /**
    * ストリーミングでオブジェクトを受け取った時のイベントを設定する。
    * 受け取るオブジェクトの型は、ジェネリックで指定する
    * @param onFire 受け取ったときのイベント

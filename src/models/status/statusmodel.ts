@@ -891,7 +891,10 @@ export default class StatusModel {
       }
     } else if (signal.type === 13) {
       // 国を変更した時
-      // this.store.hasInitialized = false;
+      this.store.hasInitialized = false;
+    } else if (signal.type === 14) {
+      // 国変更処理が完了
+      ApiStreaming.status.restart();
     }
   }
 
