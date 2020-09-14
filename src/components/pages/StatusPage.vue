@@ -421,6 +421,20 @@
               </div>
               <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
             </div>
+            <div v-if="model.canCountryCommander" class="setting-row loading-container">
+              <h3 :class="'country-color-' + model.characterCountryColor">特殊な一斉個宛送信</h3>
+              <textarea v-model="commanderPrivateMessage"></textarea>
+              <div>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 5, 'btn-secondary': newCountryCommanderSubject2 === 5, }" @click="newCountryCommanderSubject2 = 5">援軍以外</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 6, 'btn-secondary': newCountryCommanderSubject2 === 6, }" @click="newCountryCommanderSubject2 = 6">派遣した援軍</button>
+                <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': newCountryCommanderSubject2 !== 7, 'btn-secondary': newCountryCommanderSubject2 === 7, }" @click="newCountryCommanderSubject2 = 7">両方</button><br>
+              </div>
+              <div class="buttons">
+                <button type="button" class="btn btn-light" @click="commanderPrivateMessage = ''">クリア</button>
+                <button type="button" class="btn btn-warning" @click="model.sendCountryCommanderMessageChat(commanderPrivateMessage, newCountryCommanderSubject2)">個宛</button>
+              </div>
+              <div v-show="model.isUpdatingCountrySettings" class="loading"><div class="loading-icon"></div></div>
+            </div>
             <div v-if="model.canCountrySettingExceptForCommands" class="setting-row loading-container">
               <h3 :class="'country-color-' + model.characterCountryColor">新規登録者勧誘文</h3>
               <div class="current-message">
@@ -1951,8 +1965,10 @@ export default class StatusPage extends Vue {
   public newCountryUnifiedMessage: string = '';
   public newPrivateMessage: string = '';
   public newCountryCommanderSubject: number = 1;
+  public newCountryCommanderSubject2: number = 5;
   public newCountryCommanderSubjectData: number = 0;
   public newCountryCommanderSubjectData2: number = 0;
+  public commanderPrivateMessage: string = '';
   public newMuteKeywords: string = '';
   public payRiceOrMoney: number = -1;
   public paySafeMoney: number = def.PAY_SAFE_MAX;
