@@ -889,6 +889,9 @@ export default class StatusModel {
         this.onlineCount = signal.data.count;
         this.onlineRank = signal.data.rank;
       }
+    } else if (signal.type === 13) {
+      // 国を変更した時
+      // this.store.hasInitialized = false;
     }
   }
 
