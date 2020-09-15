@@ -22,7 +22,7 @@
                   <div class="name responsive-header">{{ chara.name }}</div>
                   <div :class="'countryname country-color-' + getCountryColorId(chara.countryId)">{{ getCountryName(chara.countryId) }}</div>
                 </div>
-                <div :class="{ 'number responsive-header': true, 'top': index === 0 }">{{ chara[ranking.property] }}</div>
+                <div :class="{ 'number responsive-header': true, 'top': index === 0 }">{{ ranking.isRankingObject ? chara.ranking[ranking.rankingProperty] : chara[ranking.property] }}</div>
               </div>
             </div>
           </div>
@@ -48,17 +48,21 @@ import NotificationService from '@/services/notificationservice';
 
 class RankingData {
   public characters: api.Character[];
+  public isRankingObject: boolean;
 
   public constructor(public name: string,
                      public property: string,
+                     public rankingProperty: string,
                      charas: api.Character[],
                      isContainsAi: boolean = false) {
+    this.isRankingObject = !(!rankingProperty);
     const ranking = Enumerable.from(charas)
-      .where((c) => (c as any)[property] !== 0 &&
+      .where((c) => (!this.isRankingObject ? (c as any)[property] : c.ranking[rankingProperty]) > 0 &&
         (isContainsAi || (c.aiType === api.Character.aiHuman || c.aiType === api.Character.aiAdministrator)))
-      .orderByDescending((c) => (c as any)[property])
+      .orderByDescending((c) => (!this.isRankingObject ? (c as any)[property] : c.ranking[rankingProperty]))
       .take(5);
     this.characters = ranking.toArray();
+    console.dir(charas[0]);
   }
 }
 
@@ -96,31 +100,32 @@ export default class RankingPage extends Vue {
 
     charas.forEach((c) => {
       const cdata = c as any;
+      const crank = cdata.ranking;
       cdata.attributeSum = c.strong + c.intellect + c.leadership + c.popularity;
-      cdata.winRate = (cdata.battleWonCount + cdata.battleLostCount >= 10) ?
-        Math.round((cdata.battleWonCount / (cdata.battleWonCount + cdata.battleLostCount)) * 1000) / 10 :
+      cdata.winRate = (crank.battleWonCount + crank.battleLostCount >= 10) ?
+        Math.round((crank.battleWonCount / (crank.battleWonCount + crank.battleLostCount)) * 1000) / 10 :
         0;
-      cdata.battleKillRate = (cdata.battleKilledCount + cdata.battleBeingKilledCount > 0) ?
-        Math.round((cdata.battleKilledCount / (cdata.battleKilledCount + cdata.battleBeingKilledCount)) * 1000) / 10 :
+      cdata.battleKillRate = (crank.battleKilledCount + crank.battleBeingKilledCount > 0) ?
+        Math.round((crank.battleKilledCount / (crank.battleKilledCount + crank.battleBeingKilledCount)) * 1000) / 10 :
         0;
     });
 
-    this.rankings.push(new RankingData('総合力', 'attributeSum', charas));
-    this.rankings.push(new RankingData('武力', 'strong', charas));
-    this.rankings.push(new RankingData('知力', 'intellect', charas));
-    this.rankings.push(new RankingData('統率', 'leadership', charas));
-    this.rankings.push(new RankingData('人望', 'popularity', charas));
-    this.rankings.push(new RankingData('階級', 'classValue', charas));
-    this.rankings.push(new RankingData('対人戦闘勝利数', 'battleWonCount', charas, true));
-    this.rankings.push(new RankingData('対人戦闘敗北数', 'battleLostCount', charas, true));
-    this.rankings.push(new RankingData('勝率', 'winRate', charas, true));
-    this.rankings.push(new RankingData('城壁破壊量', 'battleBrokeWallSize', charas, true));
-    this.rankings.push(new RankingData('支配数', 'battleDominateCount', charas, true));
-    this.rankings.push(new RankingData('連戦数', 'battleContinuousCount', charas, true));
-    this.rankings.push(new RankingData('計略使用回数', 'battleSchemeCount', charas, true));
-    this.rankings.push(new RankingData('倒した兵士数', 'battleKilledCount', charas, true));
-    this.rankings.push(new RankingData('失った兵士数', 'battleBeingKilledCount', charas, true));
-    this.rankings.push(new RankingData('戦闘効率', 'battleKillRate', charas, true));
+    this.rankings.push(new RankingData('総合力', 'attributeSum', '', charas));
+    this.rankings.push(new RankingData('武力', 'strong', '', charas));
+    this.rankings.push(new RankingData('知力', 'intellect', '', charas));
+    this.rankings.push(new RankingData('統率', 'leadership', '', charas));
+    this.rankings.push(new RankingData('人望', 'popularity', '', charas));
+    this.rankings.push(new RankingData('階級', 'classValue', '', charas));
+    this.rankings.push(new RankingData('対人戦闘勝利数', '', 'battleWonCount', charas, true));
+    this.rankings.push(new RankingData('対人戦闘敗北数', '', 'battleLostCount', charas, true));
+    this.rankings.push(new RankingData('勝率', 'winRate', '', charas, true));
+    this.rankings.push(new RankingData('城壁破壊量', '', 'battleBrokeWallSize', charas, true));
+    this.rankings.push(new RankingData('支配数', '', 'battleDominateCount', charas, true));
+    this.rankings.push(new RankingData('連戦数', '', 'battleContinuousCount', charas, true));
+    this.rankings.push(new RankingData('計略使用回数', '', 'battleSchemeCount', charas, true));
+    this.rankings.push(new RankingData('倒した兵士数', '', 'battleKilledCount', charas, true));
+    this.rankings.push(new RankingData('失った兵士数', '', 'battleBeingKilledCount', charas, true));
+    this.rankings.push(new RankingData('戦闘効率', 'battleKillRate', '', charas, true));
   }
 
   private getCountryColorId(countryId: number): number {

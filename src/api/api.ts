@@ -430,7 +430,8 @@ export class Character implements IIdentitiedEntity {
                      public formation?: Formation,
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement,
-                     public isStopCommand?: boolean) {}
+                     public isStopCommand?: boolean,
+                     public ranking?: any) {}
 }
 
 /**
