@@ -1092,18 +1092,33 @@
           <div class="header">政務官募集</div>
           <div class="help"><a class="btn btn-sm btn-info" href="https://w.atwiki.jp/sangokukmy9/pages/67.html" target="_blank">？</a></div>
         </h2>
-        <div class="dialog-content dialog-content-training">
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 8)">仁官 ( 2 ポイント )</button><br>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 9)">集合官 ( 1 ポイント )</button><br>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 11)">農商官 ( 1 ポイント )</button><br>
-          <button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 32)">伝道師 ( 1 ポイント )</button><br>
-          <span v-if="model.canSecretaryUnitLeader"><button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 27)">部隊長 ( 1 ポイント )</button><br></span>
-          <span v-if="model.canSecretaryScouter"><button class="btn btn-secondary" @click="isOpenAddSecretaryDialog = false; model.commands.inputer.inputSecretaryAddCommand(39, 29)">斥候 ( 1 ポイント )</button><br></span>
-          <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
+        <div class="dialog-content dialog-content-secretary-main">
+          <div>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 8, 'btn-secondary': selectedSecretaryType === 8, }" @click="selectedSecretaryType = 8">仁官 (2)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 9, 'btn-secondary': selectedSecretaryType === 9, }" @click="selectedSecretaryType = 9">集合官 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 11, 'btn-secondary': selectedSecretaryType === 11, }" @click="selectedSecretaryType = 11">農商官 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 32, 'btn-secondary': selectedSecretaryType === 32, }" @click="selectedSecretaryType = 32">伝道師 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 27, 'btn-secondary': selectedSecretaryType === 27, }" @click="selectedSecretaryType = 27" v-if="model.canSecretaryUnitLeader">部隊長 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 29, 'btn-secondary': selectedSecretaryType === 29, }" @click="selectedSecretaryType = 29" v-if="model.canSecretaryScouter">拙攻 (1)</button>
+            <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
+          </div>
+          <div class="map" v-show="selectedSecretaryType !== 27">
+            <Map
+              :towns="model.towns"
+              :countries="model.countries"
+              :town="mapDialogSelectedTown"
+              :currentTown="model.characterTown"
+              :store="model.store"
+              @selected="onMapDialogSelected($event)"
+              style="height:400px;min-height:50vh"/>
+          </div>
         </div>
         <div class="dialog-footer">
           <div class="left-side">
             <button class="btn btn-light" @click="isOpenAddSecretaryDialog = false">キャンセル</button>
+          </div>
+          <div class="right-side">
+            <button class="btn btn-primary" v-show="selectedSecretaryType > 0 && mapDialogSelectedTown.id > 0" @click="model.commands.inputer.inputSecretaryAddCommand(39, selectedSecretaryType, mapDialogSelectedTown.id); isOpenAddSecretaryDialog = false">承認</button>
           </div>
         </div>
       </div>
@@ -1967,6 +1982,7 @@ export default class StatusPage extends Vue {
   public selectedRiceStatus: number = 0;
   public selectedDirection: number = 0;
   public selectedTownType: number = 0;
+  public selectedSecretaryType: number = 0;
   public soldierMode: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
 
@@ -2072,6 +2088,7 @@ export default class StatusPage extends Vue {
       this.model.updateCharacterCountryCharacters();
       this.isOpenSecretaryDialog = true;
     } else if (event === 'secretary-add') {
+      this.mapDialogSelectedTown = this.model.town;
       this.isOpenAddSecretaryDialog = true;
     } else if (event === 'secretary-remove') {
       this.targetSecretary.id = -1;

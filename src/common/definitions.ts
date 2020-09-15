@@ -320,7 +320,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
       return 'エラー (35:1)';
     }
   }),
-  new CommandNameResolver(39, '{1} 政務官を雇用', (format, params) => {
+  new CommandNameResolver(39, '{1} 政務官を{2}雇用', (format, params) => {
     if (params) {
       const p = Enumerable.from(params);
       const type = p.firstOrDefault((pp) => pp.type === 1);
@@ -332,7 +332,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
                                    type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' :
                                    type.numberValue === api.Character.aiSecretaryUnitLeader ? '部隊長' :
                                    type.numberValue === api.Character.aiSecretaryScouter ? '斥候' :
-                                   type.numberValue === api.Character.aiSecretaryEvangelist ? '伝道師' : '不明');
+                                   type.numberValue === api.Character.aiSecretaryEvangelist ? '伝道師' : '不明')
+                   .replace('{2}', type.numberValue !== api.Character.aiSecretaryUnitLeader ? ' <town>%0%</town> で ' : '');
     } else {
       return 'エラー (39:1)';
     }

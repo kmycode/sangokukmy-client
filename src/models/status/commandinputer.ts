@@ -109,9 +109,10 @@ export default class CommandInputer {
     });
   }
 
-  public inputSecretaryAddCommand(commandType: number, type: number) {
+  public inputSecretaryAddCommand(commandType: number, type: number, townId: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, type));
+      c.parameters.push(new api.CharacterCommandParameter(2, townId));
     });
   }
 
@@ -550,15 +551,18 @@ export default class CommandInputer {
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
-      command.type === 67 || command.type === 50) {
+      command.type === 67 || command.type === 50 || command.type === 39) {
       // 都市データ（移動、戦争、偵察）
-      const paramTypeId = (command.type === 47 || command.type === 50) ? 2 : command.type === 67 ? 4 : 1;
-      const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
-      if (targetTownId && targetTownId.numberValue) {
-        const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
-        command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
-      } else {
-        command.name = 'エラー (' + command.type + ':A)';
+      if (command.name.indexOf('%0%') >= 0) {
+        const paramTypeId = (command.type === 47 || command.type === 50 || command.type === 39) ? 2 :
+                            command.type === 67 ? 4 : 1;
+        const targetTownId = Enumerable.from(command.parameters).firstOrDefault((cp) => cp.type === paramTypeId);
+        if (targetTownId && targetTownId.numberValue) {
+          const town = ArrayUtil.find(this.store.towns, targetTownId.numberValue);
+          command.name = command.name.replace('%0%', town ? town.name : 'ERR[' + targetTownId.numberValue + ']');
+        } else {
+          command.name = 'エラー (' + command.type + ':A)';
+        }
       }
     }
     if (command.type === 15 || command.type === 35 || command.type === 40 || command.type === 41 ||
