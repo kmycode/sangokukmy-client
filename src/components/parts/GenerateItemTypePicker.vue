@@ -66,6 +66,9 @@ export default class GenerateItemTypePicker extends Vue {
     if (this.skills.some((s) => s.type === 35)) {
       this.addItemType(70);
     }
+    if (this.skills.some((s) => s.type === 38)) {
+      this.addItemType(85);
+    }
     if (this.skills.some((s) => s.type === 39)) {
       this.addItemType(71);
     }
