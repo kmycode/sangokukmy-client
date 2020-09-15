@@ -1557,6 +1557,20 @@ export class Api {
     }
   }
 
+  public static async getWarPenaltyCountries(countryId: number, targetCountryId: number): Promise<number[]> {
+    try {
+      const result = await axios.post<number[]>
+        (def.API_HOST + 'country/penalties', {
+          status: 1,
+          requestedCountryId: countryId,
+          insistedCountryId: targetCountryId,
+        }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   public static async giveTown(countryId: number, townId: number): Promise<any> {
     try {
       await axios.put

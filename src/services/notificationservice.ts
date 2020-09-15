@@ -356,6 +356,10 @@ export default class NotificationService {
     '戦争手続き失敗',
     '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
     NotificationServiceItemDefaultType.error);
+  public static readonly penaltyDataGetFalled = new NotificationServiceItem(
+    '戦争ペナルティ情報取得失敗',
+    '戦争ペナルティ情報の取得がエラーにより失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly unitLoadFailed = new NotificationServiceItem(
     '部隊取得失敗',
     '部隊一覧を取得できませんでした',

@@ -847,8 +847,9 @@
                    :isSending="model.isSendingWar"
                    :canEdit="model.canDiplomacy"
                    :isShow="isOpenWarDialog"
-                   :ruleSet="model.store.systemData.ruleSet"
                    :system="model.systemData"
+                   :myCountryId="model.character.countryId"
+                   :targetCountryId="model.country.id"
                    style="flex:1"/>
         </div>
         <div class="dialog-footer">
