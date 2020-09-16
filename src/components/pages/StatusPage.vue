@@ -1480,7 +1480,7 @@
             <div class="character-list">
               <SimpleCharacterList
                 :countries="model.countries"
-                :characters="model.allHumanCharacters"
+                :characters="model.countryCharacters"
                 canSelect="true"
                 v-model="targetCharacter"/>
             </div>
