@@ -1771,8 +1771,9 @@
           <div class="alert alert-info">
             都市購入の費用は、おもに以下によって変動します。<br>
             ・購入を行う国の都市数、武将数<br>
-            ・自国と相手国が戦争または同盟を結んでいるか<br>
+            ・自国と相手国が戦争関係にあるか<br>
             ・自国と相手国との国教が異なり、都市の宗教が国教と同じか<br>
+            また、同盟締結中の国の都市は購入できません
           </div>
           <div class="loading" v-show="model.isUpdatingTownBuyCost"><div class="loading-icon"></div></div>
         </div>
