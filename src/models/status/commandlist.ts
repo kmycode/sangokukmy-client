@@ -22,6 +22,10 @@ export default class CommandList {
     return this.inputer.commands;
   }
 
+  public get canReligion(): boolean {
+    return this.store.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle;
+  }
+
   public get canUseCountrySafe(): boolean {
     // 国庫を使えるか
     return this.isPolicyEnabled(api.CountryPolicy.typeStorage);

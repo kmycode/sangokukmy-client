@@ -1052,9 +1052,11 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new NoRangeStatusParameter('購入防衛', town.takeoverDefensePoint));
-      ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
-      ps.push(new NoRangeStatusParameter('道教', town.taoism));
-      ps.push(new NoRangeStatusParameter('仏教', town.buddhism));
+      if (this.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle) {
+        ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
+        ps.push(new NoRangeStatusParameter('道教', town.taoism));
+        ps.push(new NoRangeStatusParameter('仏教', town.buddhism));
+      }
     }
 
     const townBuilding = Enumerable
