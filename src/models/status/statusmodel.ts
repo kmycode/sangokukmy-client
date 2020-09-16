@@ -1873,13 +1873,11 @@ export default class StatusModel {
       alliance.breakingDelay = this.newAllianceData.breakingDelay;
       alliance.isPublic = this.newAllianceData.isPublic;
       alliance.canMissionary = this.newAllianceData.canMissionary;
-      alliance.canBuyTown = this.newAllianceData.canBuyTown;
       alliance.memo = this.newAllianceData.memo;
     } else {
       alliance.breakingDelay = old.breakingDelay;
       alliance.isPublic = old.isPublic;
       alliance.canMissionary = old.canMissionary;
-      alliance.canBuyTown = old.canBuyTown;
       alliance.memo = old.memo;
     }
 
