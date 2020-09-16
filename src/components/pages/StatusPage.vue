@@ -138,7 +138,10 @@
           </h4>
           <div class="content-main">
             <StatusParametersPanel :parameters="model.countryParameters"/>
-            <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 10 * 12 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
+            <div v-if="!model.systemData.isWaitingReset">
+              <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.country.gyokujiGameDate.year + 10 * 12 }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
+              <div class="alert alert-info">宗教勝利の進捗状況　都市: <strong>{{ model.countryReligionTownCount }}</strong> / <strong>{{ model.townCountForReligionWin }}</strong> 、国: <strong>1</strong> / <strong>{{ model.sameReligionCountryCount }}</strong><span v-if="!model.isAllTownHaveReligion"><br>まだすべての都市が宗教を信仰していません</span></div>
+            </div>
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>

@@ -476,6 +476,23 @@ export default class StatusModel {
     }
   }
 
+  public get isAllTownHaveReligion(): boolean {
+    return !this.towns.some((t) => t.religion === 0 || t.religion === 1);
+  }
+
+  public get countryReligionTownCount(): number {
+    return Enumerable.from(this.store.towns)
+      .count((t) => t.religion !== 0 && t.religion !== 1 && t.religion === this.country.religion);
+  }
+
+  public get townCountForReligionWin(): number {
+    return Math.floor(this.store.towns.length * 3 / 4);
+  }
+
+  public get sameReligionCountryCount(): number {
+    return Enumerable.from(this.store.countries).count((c) => c.religion === this.country.religion);
+  }
+
   public get readyForReinforcement(): boolean {
     return !Enumerable.from(this.store.reinforcements)
       .any((r) => r.status === api.Reinforcement.statusActive);
