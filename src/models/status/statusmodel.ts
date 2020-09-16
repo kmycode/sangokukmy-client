@@ -1316,21 +1316,24 @@ export default class StatusModel {
 
     // 役職
     if (country.id > 0 && country.posts) {
-      Enumerable.from(country.posts).orderBy((p) => p.type).forEach((p) => {
-        const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((cp) => cp.id === p.type);
-        if (postType) {
-          let characterName = '';
-          if (!p.character) {
-            const chara = ArrayUtil.find(this.store.characters, p.characterId);
-            if (chara) {
-              characterName = chara.name;
+      Enumerable.from(country.posts)
+        .orderBy((p) => p.type)
+        .where((p) => !(p.type >= 15 && p.type <= 23))  // ロール
+        .forEach((p) => {
+          const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((cp) => cp.id === p.type);
+          if (postType) {
+            let characterName = '';
+            if (!p.character) {
+              const chara = ArrayUtil.find(this.store.characters, p.characterId);
+              if (chara) {
+                characterName = chara.name;
+              }
+            } else {
+              characterName = p.character.name;
             }
-          } else {
-            characterName = p.character.name;
+            ps.push(new TextStatusParameter(postType.name, characterName));
           }
-          ps.push(new TextStatusParameter(postType.name, characterName));
-        }
-      });
+        });
     }
 
     return ps;
