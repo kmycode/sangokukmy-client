@@ -38,8 +38,29 @@
           この宣戦布告を行うと、相手の国はペナルティを受けなくなります
         </div>
       </div>
+      <div v-show="newData.status === 2" class="content-section">
+        <h3>停戦申入</h3>
+        <div class="alert alert-success" v-show="!isUpdatingPenalty && isPenalty && !isPenaltyIfStopWar" style="min-height:40px">
+          停戦すると、あなたの国はペナルティから免れることができます
+        </div>
+        <div class="alert alert-success" v-show="!isUpdatingPenalty && !isPenaltyTarget && isPenaltyTargetIfStopWar" style="min-height:40px">
+          停戦すると、相手の国がペナルティを受けます
+        </div>
+        <div class="alert alert-warning" v-show="!isUpdatingPenalty && isPenaltyTarget && !isPenaltyTargetIfStopWar" style="min-height:40px">
+          停戦すると、相手の国はペナルティを受けなくなります
+        </div>
+      </div>
       <div v-show="newData.status === 3" class="content-section">
         <h3>停戦承認</h3>
+        <div class="alert alert-success" v-show="!isUpdatingPenalty && isPenalty && !isPenaltyIfStopWar" style="min-height:40px">
+          停戦すると、あなたの国はペナルティから免れることができます
+        </div>
+        <div class="alert alert-success" v-show="!isUpdatingPenalty && !isPenaltyTarget && isPenaltyTargetIfStopWar" style="min-height:40px">
+          停戦すると、相手の国がペナルティを受けます
+        </div>
+        <div class="alert alert-warning" v-show="!isUpdatingPenalty && isPenaltyTarget && !isPenaltyTargetIfStopWar" style="min-height:40px">
+          停戦すると、相手の国はペナルティを受けなくなります
+        </div>
       </div>
       <div v-show="newData.status === 4 && status.id === 102" class="content-section">
         <h3>停戦拒否</h3>
@@ -102,8 +123,10 @@ export default class WarView extends Vue {
   @Prop() private system?: api.SystemData;
   private isPenalty: boolean = false;
   private isPenaltyIfStartWar: boolean = false;
+  private isPenaltyIfStopWar: boolean = false;
   private isPenaltyTarget: boolean = false;
   private isPenaltyTargetIfStartWar: boolean = false;
+  private isPenaltyTargetIfStopWar: boolean = false;
   private isUpdatingPenalty: boolean = false;
 
   @Watch('isShow')
@@ -112,6 +135,7 @@ export default class WarView extends Vue {
       this.newData.status = -1;
       this.updateIsPenalty();
       this.updateIsPenaltyIfStartWar();
+      this.updateIsPenaltyIfStopWar();
     }
   }
 
@@ -121,7 +145,7 @@ export default class WarView extends Vue {
 
   private updateIsPenalty() {
     this.isUpdatingPenalty = true;
-    api.Api.getWarPenaltyCountries(0, 0)
+    api.Api.getWarPenaltyCountries(0, 0, api.CountryWar.statusStoped)
       .then((countries) => {
         this.isPenalty = countries.some((c) => c === this.myCountryId);
         this.isPenaltyTarget = countries.some((c) => c === this.targetCountryId);
@@ -136,10 +160,25 @@ export default class WarView extends Vue {
 
   private updateIsPenaltyIfStartWar() {
     this.isUpdatingPenalty = true;
-    api.Api.getWarPenaltyCountries(this.myCountryId, this.targetCountryId)
+    api.Api.getWarPenaltyCountries(this.myCountryId, this.targetCountryId, api.CountryWar.statusAvailable)
       .then((countries) => {
         this.isPenaltyIfStartWar = countries.some((c) => c === this.myCountryId);
         this.isPenaltyTargetIfStartWar = countries.some((c) => c === this.targetCountryId);
+      })
+      .catch(() => {
+        NotificationService.penaltyDataGetFalled.notify();
+      })
+      .finally(() => {
+        this.isUpdatingPenalty = false;
+      });
+  }
+
+  private updateIsPenaltyIfStopWar() {
+    this.isUpdatingPenalty = true;
+    api.Api.getWarPenaltyCountries(this.myCountryId, this.targetCountryId, api.CountryWar.statusStoped)
+      .then((countries) => {
+        this.isPenaltyIfStopWar = countries.some((c) => c === this.myCountryId);
+        this.isPenaltyTargetIfStopWar = countries.some((c) => c === this.targetCountryId);
       })
       .catch(() => {
         NotificationService.penaltyDataGetFalled.notify();

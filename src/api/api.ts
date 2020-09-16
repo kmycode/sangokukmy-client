@@ -529,6 +529,7 @@ export class Country {
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
                      public isGyokujiRefused: boolean = false,
                      public religion: number = 0,
+                     public isWarPenalty: boolean = false,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastPolicyPointIncomes?: number,
@@ -1557,11 +1558,11 @@ export class Api {
     }
   }
 
-  public static async getWarPenaltyCountries(countryId: number, targetCountryId: number): Promise<number[]> {
+  public static async getWarPenaltyCountries(countryId: number, targetCountryId: number, status: number): Promise<number[]> {
     try {
       const result = await axios.post<number[]>
         (def.API_HOST + 'country/penalties', {
-          status: 1,
+          status,
           requestedCountryId: countryId,
           insistedCountryId: targetCountryId,
         }, this.authHeader);
