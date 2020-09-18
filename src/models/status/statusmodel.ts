@@ -54,7 +54,6 @@ export default class StatusModel {
   public townBuyCosts: { country: api.Country, cost: number }[] = [];
   public townBuyCost: number = 0;
   public onlineCount: number = 0;
-  public onlineRank: number = 0;
 
   public get gameDateTimeNumber(): number {
     return Math.max(1, api.GameDateTime.toNumber(this.systemData.gameDateTime));
@@ -909,7 +908,6 @@ export default class StatusModel {
       // オンライン情報
       if (signal.data) {
         this.onlineCount = signal.data.count;
-        this.onlineRank = signal.data.rank;
       }
     } else if (signal.type === 13) {
       // 国を変更した時
