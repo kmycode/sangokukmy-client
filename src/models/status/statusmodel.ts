@@ -57,7 +57,7 @@ export default class StatusModel {
   public onlineRank: number = 0;
 
   public get gameDateTimeNumber(): number {
-    return api.GameDateTime.toNumber(this.systemData.gameDateTime);
+    return Math.max(1, api.GameDateTime.toNumber(this.systemData.gameDateTime));
   }
 
   public get isLoading(): boolean {
