@@ -118,6 +118,7 @@
             <MiniCharacterList
               :countries="model.countries"
               :characters="model.townCharacters"/>
+            <div v-show="model.town.isMayBeBought" class="alert alert-info">この都市は将来、周辺の国に購入される可能性があります</div>
           </div>
           <div class="commands">
             <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">滞在</button>
@@ -1758,6 +1759,7 @@
               <h3>防衛投資</h3>
               <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを加算します</div>
               <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
+              <div v-show="model.town.isMayBeBought" class="alert alert-warning">この都市は将来、周辺の国に購入される可能性があります</div>
             </div>
           </div>
           <div v-show="model.town.countryId !== model.character.countryId">

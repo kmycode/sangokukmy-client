@@ -664,7 +664,8 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public religion: number = 0,
                      public confucianism: number = 0,
                      public taoism: number = 0,
-                     public buddhism: number = 0) {}
+                     public buddhism: number = 0,
+                     public isMayBeBought: boolean = false) {}
 }
 
 /**
