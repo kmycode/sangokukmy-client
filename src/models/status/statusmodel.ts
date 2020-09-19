@@ -1049,7 +1049,7 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('商業', town.commercial, town.commercialMax));
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
-      ps.push(new NoRangeStatusParameter('購入防衛', town.takeoverDefensePoint));
+      ps.push(new NoRangeStatusParameter('防衛投資', town.takeoverDefensePoint));
       if (this.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle) {
         ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
         ps.push(new NoRangeStatusParameter('道教', town.taoism));
