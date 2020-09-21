@@ -390,7 +390,7 @@
                 <h4 v-else-if="commander.subject === 3">出身: {{ commander.subjectData | charafromname }}</h4>
                 <h4 v-else-if="commander.subject === 4 && model.getCharacter(commander.subjectData)">個人: {{ model.getCharacter(commander.subjectData).name }}</h4>
                 <div :class="'current-message-content country-color-' + model.characterCountryColor" style="margin-bottom:8px">
-                  <KmyChatTagText v-if="commander.message" :text="commander.message"/>
+                  <KmyChatTagText v-if="commander.oldMessage" :text="commander.message"/>
                   <span v-if="!commander.message" class="message-empty">なし</span>
                   <div v-else class="current-message-writer">
                     {{ commander.writerCharacterName }} ({{ model.getPostName(commander.writerPost) }})
