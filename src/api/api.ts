@@ -530,6 +530,7 @@ export class Country {
                      public isGyokujiRefused: boolean = false,
                      public religion: number = 0,
                      public isWarPenalty: boolean = false,
+                     public townSubBuildingExtraSpace: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastPolicyPointIncomes?: number,

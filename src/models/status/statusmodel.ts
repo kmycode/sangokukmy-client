@@ -1073,10 +1073,7 @@ export default class StatusModel {
       let subBuildingSize = 0;
       let subBuildingSizeMax = town.type === api.Town.typeLarge ? 4 : town.type === api.Town.typeFortress ? 3 : 2;
       subBuildingSizeMax += town.townSubBuildingExtraSpace;
-      if (this.characterCountryPolicies.filter((cp) => cp.status === api.CountryPolicy.statusAvailable)
-                                       .some((cp) => cp.type === 47)) {
-        subBuildingSizeMax += 1;
-      }
+      subBuildingSizeMax += country.townSubBuildingExtraSpace;
       const buffer: StatusParameter[] = [];
       this.store.subBuildings.filter((s) => s.townId === town.id && s.status).forEach((s) => {
         const info = def.TOWN_SUB_BUILDING_TYPES.find((si) => si.id === s.type);
