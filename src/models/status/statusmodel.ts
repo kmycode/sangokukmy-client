@@ -127,10 +127,6 @@ export default class StatusModel {
     return this.store.town;
   }
 
-  public get units(): api.Unit[] {
-    return this.store.units;
-  }
-
   // #endregion
 
   // #region Properties
@@ -555,11 +551,6 @@ export default class StatusModel {
       .count((p) => p.type === 1 || p.type === 10 || p.type === 11 || p.type === 12) * 100_0000;
   }
 
-  public get soldierLaboratorySize(): number {
-    // 兵種研究所の強さ
-    return 1;
-  }
-
   public get selectableSoldierTypes(): def.SoldierType[] {
     const types: def.SoldierType[] = [];
     Enumerable.from(def.SOLDIER_TYPES).orderBy((t) => t.technology).forEach((t) => {
@@ -911,7 +902,7 @@ export default class StatusModel {
       }
     } else if (signal.type === 13) {
       // 国を変更した時
-      this.store.hasInitialized = false;
+      this.hasInitialized = false;
     } else if (signal.type === 14) {
       // 国変更処理が完了
       ApiStreaming.status.restart();
