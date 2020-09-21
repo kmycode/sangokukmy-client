@@ -688,6 +688,10 @@ export default class StatusModel {
     return [];
   }
 
+  public get isTownScouter(): boolean {
+    return this.townCharacters.some((c) => c.aiType === api.Character.aiSecretaryScouter);
+  }
+
   public get regularlyCommand(): api.CharacterCommand | undefined {
     if (this.store.regularlyCommands.length >= 1) {
       const data = this.store.regularlyCommands[0];

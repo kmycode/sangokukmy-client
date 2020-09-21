@@ -114,6 +114,7 @@
             </div>
           </h4>
           <div class="content-main">
+            <div class="content-main-header" v-show="model.isTownScouter">斥候がこの都市で任務中です</div>
             <StatusParametersPanel :parameters="model.townParameters"/>
             <MiniCharacterList
               :countries="model.countries"
@@ -2641,6 +2642,12 @@ ul.nav {
     }
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    .content-main-header {
+      background: rgba(0, 0, 0, 0.4);
+      text-align: center;
+      color: white;
+      padding: 2px 0;
+    }
   }
   .commands {
     min-height: 44px;
