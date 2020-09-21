@@ -488,6 +488,44 @@ export default class StatusModel {
     return Enumerable.from(this.store.countries).count((c) => c.religion === this.country.religion);
   }
 
+  public get isTownMayBeAppendFarmers(): boolean {
+    if (this.town.ricePrice === undefined) {
+      return false;
+    }
+    const war = this.store.wars
+      .find((ca) => (ca.status === api.CountryWar.statusAvailable ||
+                     ca.status === api.CountryWar.statusInReady ||
+                     ca.status === api.CountryWar.statusStopRequesting) &&
+                    (ca.insistedCountryId === this.country.id ||
+                     ca.requestedCountryId === this.country.id));
+    if (!war || this.country.isWarPenalty) {
+      return this.town.security <= 8 && this.town.people <= 8000 && this.townDefenders.length === 0;
+    }
+    return false;
+  }
+
+  public get isTownMayBeAppendReligionFarmers(): boolean {
+    if (this.town.ricePrice === undefined) {
+      return false;
+    }
+    const war = this.store.wars
+      .find((ca) => (ca.status === api.CountryWar.statusAvailable ||
+                     ca.status === api.CountryWar.statusInReady ||
+                     ca.status === api.CountryWar.statusStopRequesting) &&
+                    (ca.insistedCountryId === this.country.id ||
+                     ca.requestedCountryId === this.country.id));
+    if ((!war || this.country.isWarPenalty) && this.country.religion >= 2) {
+      const religions = Enumerable.from([this.town.confucianism, this.town.buddhism, this.town.taoism]);
+      if (religions.max() > (religions.sum() - religions.max()) * 3 && this.townDefenders.length === 0) {
+        const aroundCountries = Enumerable.from(api.Town.getAroundTowns(this.towns, this.town))
+          .join(this.countries.filter((c) => c.id !== this.town.id),
+                (t) => t.countryId, (c) => c.id, (_, c) => c);
+        return aroundCountries.any((c) => c.religion === this.town.religion);
+      }
+    }
+    return false;
+  }
+
   public get readyForReinforcement(): boolean {
     return !Enumerable.from(this.store.reinforcements)
       .any((r) => r.status === api.Reinforcement.statusActive);
@@ -2230,7 +2268,7 @@ export default class StatusModel {
       ps.push(new TextStatusParameter('兵種', def.SOLDIER_TYPES[0].name));
     }
 
-    ps.push(new RangedStatusParameter('兵士小隊', character.soldierNumber, character.leadership));
+    ps.push(new RangedStatusParameter('兵士数', character.soldierNumber, character.leadership));
     ps.push(new RangedStatusParameter('訓練', character.proficiency, 100));
     const formation = Enumerable.from(def.FORMATION_TYPES).firstOrDefault((f) => f.id === character.formationType);
     let formationData = Enumerable

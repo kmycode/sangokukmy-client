@@ -119,6 +119,8 @@
               :countries="model.countries"
               :characters="model.townCharacters"/>
             <div v-show="model.town.isMayBeBought" class="alert alert-info">この都市は将来、周辺の国に購入される可能性があります</div>
+            <div v-if="model.isTownMayBeAppendFarmers" class="alert alert-warning">この都市で農民反乱が発生する可能性があります</div>
+            <div v-if="model.isTownMayBeAppendReligionFarmers" class="alert alert-warning">この都市で宗教による農民反乱が発生する可能性があります</div>
           </div>
           <div class="commands">
             <button v-show="model.town.id === model.character.townId || model.town.countryId === model.character.countryId" type="button" class="btn btn-info" @click="isOpenTownCharactersDialog = true">滞在</button>
