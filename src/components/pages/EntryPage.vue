@@ -21,6 +21,9 @@
           </div>
         </div>
       </div>
+      <div class="alert alert-danger" v-if="character.isBeginner && canEntryAsBeginner">
+        現在、すべての国に仕官制限がかけられているか、誰も建国していない状態です。この状態で初心者として登録することはできません。新たな建国がされるか、36年までお待ち下さい
+      </div>
       <div class="alert alert-warning" v-if="character.isBeginner">
         <h3>初心者向け</h3>
         登録される前に、スライド解説をご一読されることをおすすめいたします。ゲームの概要、初心者がすべきことなどが記載されています。<br>
@@ -355,6 +358,9 @@
       <button v-show="false" type="button" class="btn btn-primary" onclick="grecaptcha.execute()">送信</button>
       <button v-show="canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
       <span v-show="!canEntry" style="color:red">上の記述項目の赤いところをすべて入力するか、修正してください</span>
+      <div class="alert alert-danger" v-if="character.isBeginner && canEntryAsBeginner">
+        現在、すべての国に仕官制限がかけられているか、誰も建国していない状態です。この状態で初心者として登録することはできません。新たな建国がされるか、36年までお待ち下さい
+      </div>
     </div>
     <div v-show="isLoading" class="loading"><div class="loading-icon"></div></div>
   </div>
@@ -423,6 +429,10 @@ export default class EntryPage extends Vue {
   private isLoadingExtraDataPrivate = true;
   private isEntrying = false;
   private isApp = false;
+
+  private get canEntryAsBeginner(): boolean {
+    return !this.extraData.countryData.some((c) => c.isJoinLimited);
+  }
 
   private get formations(): def.FormationType[] {
     return def.FORMATION_TYPES.filter((f) => f.id);
@@ -517,7 +527,7 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkExtraTown(): boolean {
-    return !this.isFirstReligion || this.isNotExtraTown ||
+    return !this.isFirstReligion || this.isNotExtraTown || this.system.ruleSet === 1 ||
       (this.extraTown.id > 0 && this.extraTown.id !== this.town.id &&
        !this.extraTown.countryId && api.TownBase.isNextToTown(this.town, this.extraTown));
   }
