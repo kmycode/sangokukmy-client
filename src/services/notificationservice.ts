@@ -344,9 +344,21 @@ export default class NotificationService {
     '戦争手続き失敗',
     '隣接していない国に布告することはできません',
     NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseSameReligion = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '同じ国教を持つ国に宗教戦争を仕掛けることはできません',
+    NotificationServiceItemDefaultType.error);
+  public static readonly warFailedBecauseMultipleWarMode = new NotificationServiceItem(
+    '戦争手続き失敗',
+    '自分または相手国は、通常戦争と宗教戦争を同時に行うことはできません',
+    NotificationServiceItemDefaultType.error);
   public static readonly warFailedBecauseSameStatus = new NotificationServiceItem(
     '戦争手続き失敗',
     '戦争手続きについて、現在と同じ状態に変更する操作をしようとしました。他の人があなたと同時に同じ操作をした可能性があります。',
+    NotificationServiceItemDefaultType.error);
+  public static readonly penaltyDataGetFalled = new NotificationServiceItem(
+    '戦争ペナルティ情報取得失敗',
+    '戦争ペナルティ情報の取得がエラーにより失敗しました',
     NotificationServiceItemDefaultType.error);
   public static readonly unitLoadFailed = new NotificationServiceItem(
     '部隊取得失敗',
@@ -636,6 +648,10 @@ export default class NotificationService {
     '登用',
     '{0} から登用を受け取りました',
     NotificationServiceItemDefaultType.information);
+  public static readonly countryCommandersMessageAddFalledBecauseSubjectAlreadyExists = new NotificationServiceItem(
+    '指令追加失敗',
+    '同条件の指令がすでに存在します',
+    NotificationServiceItemDefaultType.warning);
   public static readonly countryCommandersMessageSet = new NotificationServiceItem(
     '指令更新',
     '指令を更新しました',
@@ -644,10 +660,18 @@ export default class NotificationService {
     '指令更新失敗',
     '指令更新に失敗しました',
     NotificationServiceItemDefaultType.error);
+  public static readonly countryCommandersMessageSetFailedBecauseTooLong = new NotificationServiceItem(
+    '指令更新失敗',
+    '指令更新に失敗しました。文章が長すぎます (現在: {0}, 最大: {1})',
+    NotificationServiceItemDefaultType.error);
   public static readonly countryCommandersMessageUpdated = new NotificationServiceItem(
     '指令更新',
     '指令が更新されました',
     NotificationServiceItemDefaultType.information);
+  public static readonly countryCommandersMessageReadFailed = new NotificationServiceItem(
+    '指令既読失敗',
+    '指令の既読付けに失敗しました',
+    NotificationServiceItemDefaultType.error);
   public static readonly countrySolicitationMessageSet = new NotificationServiceItem(
     '勧誘文更新',
     '新規登録者勧誘文を更新しました',

@@ -22,6 +22,10 @@ export default class CommandList {
     return this.inputer.commands;
   }
 
+  public get canReligion(): boolean {
+    return this.store.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle;
+  }
+
   public get canUseCountrySafe(): boolean {
     // 国庫を使えるか
     return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
@@ -73,7 +77,7 @@ export default class CommandList {
   public get canInputGenerateItem4(): boolean {
     // 書物執筆
     const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
-    return skills.some((s) => s === 39 || s === 43);
+    return skills.some((s) => s === 38 || s === 43);
   }
 
   public get canInputIncreasePeople(): boolean {
@@ -276,7 +280,8 @@ export default class CommandList {
     if (date.year >= def.UPDATE_START_YEAR) {
       if (command && command.type !== undefined && command.type !== 0) {
         this.inputer.updateCommandName(command);
-        NotificationService.commandExecuted.notifyWithParameter(command.name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
+        NotificationService.commandExecuted.notifyWithParameter(
+          command.name.replace(/<("[^"]*"|'[^']*'|[^'">])*>/g, ''));
       } else {
         NotificationService.emptyCommandExecuted.notify();
       }

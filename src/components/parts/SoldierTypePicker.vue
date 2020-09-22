@@ -61,11 +61,17 @@ export default class SoldierTypePicker extends Vue {
   @Prop({
     default: () => [],
   }) public items!: api.CharacterItem[];
+  @Prop({
+    default: 0,
+  }) public mode!: number;
 
   @Watch('soldierTypes')
   @Watch('items')
   public onTypesChanged() {
     this.types = this.soldierTypes.filter((st) => {
+      if (st.warMode !== this.mode) {
+        return false;
+      }
       if (st.requestedSkillType && !st.isNeedResource) {
         return this.skills.some((s) => !Array.isArray(st.requestedSkillType) ?
                                               s.type === st.requestedSkillType :

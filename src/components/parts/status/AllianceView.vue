@@ -5,7 +5,6 @@
       <h3>同盟条件</h3>
       破棄猶予：{{ diplomacy.breakingDelay }}ヶ月<br>
       布教：{{ diplomacy.canMissionary ? '許可' : '禁止' }}<br>
-      都市購入：{{ diplomacy.canBuyTown ? '許可' : '禁止' }}<br>
       公表：{{ diplomacy.isPublic ? 'する' : 'しない' }}<br>
       <span style="white-space:pre-line">{{ diplomacy.memo }}</span>
     </div>
@@ -13,7 +12,6 @@
       <h3>同盟条件修正案</h3>
       破棄猶予：{{ changingValue.breakingDelay }}ヶ月<br>
       布教：{{ changingValue.canMissionary ? '許可' : '禁止' }}<br>
-      都市購入：{{ changingValue.canBuyTown ? '許可' : '禁止' }}<br>
       公表：{{ changingValue.isPublic ? 'する' : 'しない' }}<br>
       <span style="white-space:pre-line">{{ changingValue.memo }}</span>
     </div>
@@ -58,7 +56,6 @@
         <div class="form-check">
           <button type="button" class="btn btn-toggle selected">相互不可侵</button>
           <button type="button" :class="'btn btn-toggle' + (newData.canMissionary ? ' selected' : '')" @click="newData.canMissionary ^= true">布教</button>
-          <button type="button" :class="'btn btn-toggle' + (newData.canBuyTown ? ' selected' : '')" @click="newData.canBuyTown ^= true">都市購入</button>
           <button type="button" :class="'btn btn-toggle' + (newData.isPublic ? ' selected' : '')" @click="newData.isPublic ^= true">同盟公表</button>
         </div>
         <div class="form-group">
@@ -101,7 +98,6 @@ export default class AllianceView extends Vue {
     if (this.isShow && this.diplomacy) {
       this.newData.isPublic = this.diplomacy.isPublic;
       this.newData.canMissionary = this.diplomacy.canMissionary;
-      this.newData.canBuyTown = this.diplomacy.canBuyTown;
       this.newData.breakingDelay = this.diplomacy.breakingDelay;
       this.newData.memo = this.diplomacy.memo;
     }

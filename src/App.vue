@@ -28,23 +28,27 @@ Vue.filter('realdate', (value: api.DateTime): string => {
 Vue.filter('shortrealdate', (value: api.DateTime): string => {
   return api.DateTime.toShortFormatedString(value);
 });
-Vue.filter('torealdate', (value: api.GameDateTime): api.DateTime => {
-  return api.GameDateTime.toRealDate(value);
+Vue.filter('torealdate', (value: api.GameDateTime, system: api.SystemData): api.DateTime => {
+  if (value && system) {
+    return api.GameDateTime.toRealDate(value, system);
+  }
+  return new api.DateTime();
 });
-Vue.filter('charafromname', (chara: api.Character): string => {
-  return chara.from === 1 ? '武家' :
-    chara.from === 2 ? '官吏' :
-    chara.from === 3 ? '商人' :
-    chara.from === 4 ? '技師' :
-    chara.from === 5 ? 'ＡＩ' :
-    chara.from === 6 ? '胡人' :
-    chara.from === 7 ? '農家' :
-    chara.from === 8 ? '兵家' :
-    chara.from === 9 ? '学者' :
-    chara.from === 10 ? '参謀' :
-    chara.from === 11 ? '儒家' :
-    chara.from === 12 ? '道家' :
-    chara.from === 13 ? '仏僧' : 'なし';
+Vue.filter('charafromname', (chara: api.Character | number): string => {
+  const from = typeof(chara) === 'number' ? chara : chara.from;
+  return from === 1 ? '武家' :
+    from === 2 ? '官吏' :
+    from === 3 ? '商人' :
+    from === 4 ? '技師' :
+    from === 5 ? 'ＡＩ' :
+    from === 6 ? '胡人' :
+    from === 7 ? '農家' :
+    from === 8 ? '兵家' :
+    from === 9 ? '学者' :
+    from === 10 ? '参謀' :
+    from === 11 ? '儒家' :
+    from === 12 ? '道家' :
+    from === 13 ? '仏僧' : 'なし';
 });
 
 @Component({

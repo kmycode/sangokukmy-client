@@ -11,7 +11,7 @@
           <div v-if="system.gameDateTime.year < 12">更新開始: <span class="number">12</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year < 36">主要国戦闘解除: <span class="number">36</span>年<span class="number">01</span>月より</div>
           <div v-if="system.gameDateTime.year < 48">都市購入解禁: <span class="number">48</span>年<span class="number">01</span>月より</div>
-          <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime.year }}</span>年<span class="number">{{ system.resetGameDateTime.month | zeroformat(2) }}</span>月より</div>
+          <div v-if="system.isWaitingReset">リセット: <span class="number">{{ system.resetGameDateTime | torealdate(system) | shortrealdate }}</span></div>
           <div v-if="system.isBattleRoyaleMode" class="battle-royale-mode">全国戦争中</div>
           <div class="onlines">
             <MiniCharacterList
@@ -293,7 +293,11 @@ export default class TopPage extends Vue {
       }
     });
     ApiStreaming.top.on<api.Town>(api.Town.typeId, (log) => {
-      ArrayUtil.addItem(this.towns, log);
+      if (log.type === api.Town.typeRemoved) {
+        this.towns = this.towns.filter((t) => t.id !== log.id);
+      } else {
+        ArrayUtil.addItem(this.towns, log);
+      }
     });
     ApiStreaming.top.on<api.MapLog>(api.MapLog.typeId, (log) => {
       this.onMapLogReceived(log);

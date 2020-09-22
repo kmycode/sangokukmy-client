@@ -15,7 +15,7 @@
               <button v-if="!canSelect" class="btn btn-light btn-sm" type="button" @click="toggleDetail(chara)">詳細</button>
             </div>
             <div v-if="chara.reinforcement && chara.reinforcement.status === 4" class="reinforcement-status">援軍</div>
-            <div class="post">{{ getPostName(chara.id, chara.countryId) }}</div>
+            <div class="post">{{ getPostName(chara.id, chara.countryId, true) }}</div>
           </div>
           <div class="parameters">
             <span v-if="isWithFrom" class="parameter-from-wrapper">
@@ -89,11 +89,30 @@
                 <div class="dropdown-menu" :style="(chara.isOpenPostsPopup ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:20px;margin-top:-4px'">
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 2, 'characterId': chara.id })">軍師</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 3, 'characterId': chara.id })">大将軍</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 14, 'characterId': chara.id })">司令官</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 10, 'characterId': chara.id })">政務官長</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 9, 'characterId': chara.id })">建築官</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 11, 'characterId': chara.id })">外交官</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 12, 'characterId': chara.id })">金庫番</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 13, 'characterId': chara.id })">政策番</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 4, 'characterId': chara.id })">騎兵将軍</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 5, 'characterId': chara.id })">弓将軍</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 7, 'characterId': chara.id })">将軍</a>
                   <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup(chara); $emit('appoint', { 'type': 0, 'characterId': chara.id })">一般</a>
+                </div>
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" @click="togglePostsPopup2(chara)">
+                  ロール
+                </button>
+                <div class="dropdown-menu" :style="(chara.isOpenPostsPopup2 ? 'display:block' : 'display:none') + ';top:auto;left:auto;right:20px;margin-top:-4px'">
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 15, 'characterId': chara.id })">ロール1</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 16, 'characterId': chara.id })">ロール2</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 17, 'characterId': chara.id })">ロール3</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 18, 'characterId': chara.id })">ロール4</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 19, 'characterId': chara.id })">ロール5</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 20, 'characterId': chara.id })">ロール6</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 21, 'characterId': chara.id })">ロール7</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 22, 'characterId': chara.id })">ロール8</a>
+                  <a class="dropdown-item" href="#" @click.prevent.stop="togglePostsPopup2(chara); $emit('appoint', { 'type': 23, 'characterId': chara.id })">ロール9</a>
                 </div>
               </div>
             </div>
@@ -231,15 +250,17 @@ export default class SimpleCharacterList extends Vue {
     }
   }
 
-  private getPostName(charaId: number, countryId: number): string {
+  private getPostName(charaId: number, countryId: number, isContainsRole: boolean | undefined): string {
     const country = ArrayUtil.find(this.countries, countryId);
     if (country && country.posts) {
-      const post = Enumerable.from(country.posts).firstOrDefault((p) => p.characterId === charaId);
-      const postTypeId = post ? post.type : 0;
-      const postType = Enumerable.from(def.COUNTRY_POSTS).firstOrDefault((pt) => pt.id === postTypeId);
-      if (postType) {
-        return postType.name;
+      const posts = country.posts.filter((p) => p.characterId === charaId).map((p) => p.type);
+      if (posts.length <= 0) {
+        posts.push(0);
       }
+      const postTypes = def.COUNTRY_POSTS
+        .filter((pt) => posts.some((p) => p === pt.id) && (isContainsRole || !pt.isRoleGroup))
+        .map((pt) => pt.name);
+      return postTypes.join(' / ');
     }
     return '';
   }
@@ -380,6 +401,10 @@ export default class SimpleCharacterList extends Vue {
     Vue.set(chara, 'isOpenPostsPopup', !(chara as any).isOpenPostsPopup);
   }
 
+  private togglePostsPopup2(chara: api.Character) {
+    Vue.set(chara, 'isOpenPostsPopup2', !(chara as any).isOpenPostsPopup2);
+  }
+
   private toggleOpenMoreCommands() {
     this.openMoreCommands = ((this.openMoreCommands + 1) % 3);
   }
@@ -393,7 +418,7 @@ export default class SimpleCharacterList extends Vue {
         .then((detail) => {
           if (detail.skills) {
             const skillInfos = detail.skills.map((s) => {
-              const st = def.CHARACTER_SKILL_TYPES.filter((st) => st.id === s.type);
+              const st = def.CHARACTER_SKILL_TYPES.filter((stt) => stt.id === s.type);
               if (st.length > 0) {
                 return st[0];
               }
@@ -529,6 +554,8 @@ export default class SimpleCharacterList extends Vue {
 
           .post {
             margin: 4px 12px 0 0;
+            color: #5a5b61;
+            font-size: 14px;
           }
         }
 

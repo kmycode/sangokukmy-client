@@ -35,6 +35,7 @@ export default class StatusStore {
   public items: api.CharacterItem[] = [];
   public skills: api.CharacterSkill[] = [];
   public commandComments: api.CommandComment[] = [];
+  public countryCommanders: api.CountryCommander[] = [];
   public otherCharacterCommands: api.CharacterCommand[] = [];
   public regularlyCommands: api.CharacterRegularlyCommand[] = [];
   public mutes: api.Mute[] = [];
@@ -42,4 +43,10 @@ export default class StatusStore {
   public account: api.Account = new api.Account(-1);
   public aiCharacters: api.AiCharacterManagement[] = [];
   public delayEffects: api.DelayEffect[] = [];
+  public chatMessageRead: api.ChatMessageRead = new api.ChatMessageRead();
+
+  public myCountryCommanderAll: api.CountryCommander = new api.CountryCommander();
+  public myCountryCommanderAttribute: api.CountryCommander = new api.CountryCommander();
+  public myCountryCommanderFrom: api.CountryCommander = new api.CountryCommander();
+  public myCountryCommanderPrivate: api.CountryCommander = new api.CountryCommander();
 }

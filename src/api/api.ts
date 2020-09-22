@@ -58,6 +58,8 @@ export enum ErrorCode {
   duplicateAccountNameOrAliasIdError = 53,
   duplicateAccountOfCharacterError = 54,
   uploadImageFailedError = 55,
+  religionError = 58,
+  invalidWarModeError = 59,
 }
 
 /**
@@ -168,9 +170,16 @@ export class GameDateTime {
     return new GameDateTime(Math.floor(num / 12), num % 12 + 1);
   }
 
-  public static toRealDate(date: GameDateTime): DateTime {
-    // TODO
-    return new DateTime(2018, 12, 1, 20, 0, 0);
+  public static toRealDate(date: GameDateTime, system: SystemData): DateTime {
+    const d = GameDateTime.toNumber(new GameDateTime(parseInt(date.year.toString()),
+          parseInt(date.month.toString()))) - GameDateTime.toNumber(system.gameDateTime);
+    const seconds = d * def.UPDATE_TIME;
+    const currentDate = DateTime.toDate(system.currentMonthStartDateTime);
+    currentDate.setSeconds(currentDate.getSeconds() + seconds);
+    const realDate = DateTime.fromDate(currentDate);
+    console.log(d);
+
+    return realDate;
   }
 
   public static addMonth(date: GameDateTime, add: number): GameDateTime {
@@ -365,9 +374,23 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryScouter = 29;
   public static readonly aiSecretaryEvangelist = 32;
 
+  public static readonly typeStrong = 1;
+  public static readonly typeIntellect = 2;
+  public static readonly typePopularity = 3;
+
   public static getClassName(chara: Character): string {
     const lank = Math.min(Math.floor(chara.classValue / def.NEXT_LANK), def.CLASS_NAMES.length - 1);
     return def.CLASS_NAMES[lank];
+  }
+
+  public static getType(chara: Character): number {
+    if (chara.strong > chara.intellect && chara.strong > chara.popularity) {
+      return this.typeStrong;
+    }
+    if (chara.intellect > chara.popularity) {
+      return this.typeIntellect;
+    }
+    return this.typePopularity;
   }
 
   public constructor(public id: number = 0,
@@ -407,7 +430,8 @@ export class Character implements IIdentitiedEntity {
                      public formation?: Formation,
                      public mainIcon?: CharacterIcon,
                      public reinforcement?: Reinforcement,
-                     public isStopCommand?: boolean) {}
+                     public isStopCommand?: boolean,
+                     public ranking?: any) {}
 }
 
 /**
@@ -420,9 +444,11 @@ export class CountryPost {
   public static readonly typeWarrior = 2;
   public static readonly typeGrandGeneral = 3;
 
-  public constructor(public type: number = 0,
+  public constructor(public id: number = 0,
+                     public type: number = 0,
                      public countryId: number = 0,
                      public characterId: number = 0,
+                     public isUnAppointed: boolean = false,
                      public character: Character) {}
 }
 
@@ -462,6 +488,26 @@ export class CountryMessage {
                      public writerIcon: CharacterIcon = new CharacterIcon()) {}
 }
 
+export class CountryCommander {
+  public static readonly typeId = 48;
+
+  public static readonly subjectAll = 1;
+  public static readonly subjectAttribute = 2;
+  public static readonly subjectFrom = 3;
+  public static readonly subjectPrivate = 4;
+
+  public constructor(public id: number = 0,
+                     public subject: number = 0,
+                     public subjectData: number = 0,
+                     public subjectData2: number = 0,
+                     public writerCharacterId: number = 0,
+                     public writerPost: number = 0,
+                     public message: string = '',
+                     public writerCharacterName: string = '',
+                     public isEditing?: boolean,
+                     public oldMessage?: string) {}
+}
+
 /**
  * 国
  */
@@ -483,6 +529,8 @@ export class Country {
                      public gyokujiGameDate: GameDateTime = new GameDateTime(),
                      public isGyokujiRefused: boolean = false,
                      public religion: number = 0,
+                     public isWarPenalty: boolean = false,
+                     public townSubBuildingExtraSpace: number = 0,
                      public lastMoneyIncomes?: number,
                      public lastRiceIncomes?: number,
                      public lastPolicyPointIncomes?: number,
@@ -514,6 +562,7 @@ export abstract class CountryDipromacy {
 
   public constructor(public id: number = 0,
                      public status: number = 0,
+                     public mode: number = 0,
                      public requestedCountryId: number = 0,
                      public insistedCountryId: number = 0,
                      public requestedCountry: Country = new Country(),
@@ -537,7 +586,6 @@ export class CountryAlliance extends CountryDipromacy {
 
   public isPublic: boolean = false;
   public canMissionary: boolean = false;
-  public canBuyTown: boolean = false;
   public breakingDelay: number = 0;
   public memo: string = '';
 }
@@ -617,7 +665,8 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public religion: number = 0,
                      public confucianism: number = 0,
                      public taoism: number = 0,
-                     public buddhism: number = 0) {}
+                     public buddhism: number = 0,
+                     public isMayBeBought: boolean = false) {}
 }
 
 /**
@@ -632,6 +681,7 @@ export class Town extends TownBase implements IIdentitiedEntity {
   public static readonly typeCommercial = 2;
   public static readonly typeFortress = 3;
   public static readonly typeLarge = 4;
+  public static readonly typeRemoved = 5;
 
   public static isScouted(town: TownBase): boolean {
     const scoutMethod = (town as ScoutedTown).scoutMethod;
@@ -1112,12 +1162,16 @@ export class MuteKeyword {
 export class ChatMessageRead {
   public static readonly typeId: number = 42;
 
-  public constructor(public lastCountryChatMessageId: number,
-                     public lastGlobalChatMessageId: number,
-                     public lastGlobal2ChatMessageId: number,
-                     public lastPromotionChatMessageId: number,
-                     public lastCountryBbsId: number,
-                     public lastGlobalBbsId: number) {}
+  public constructor(public lastCountryChatMessageId: number = 0,
+                     public lastGlobalChatMessageId: number = 0,
+                     public lastGlobal2ChatMessageId: number = 0,
+                     public lastPromotionChatMessageId: number = 0,
+                     public lastCountryBbsId: number = 0,
+                     public lastGlobalBbsId: number = 0,
+                     public lastAllCommanderId: number = 0,
+                     public lastAttributeCommanderId: number = 0,
+                     public lastFromCommanderId: number = 0,
+                     public lastPrivateCommanderId: number = 0) {}
 }
 
 export class DelayEffect {
@@ -1361,6 +1415,21 @@ export class Api {
     }
   }
 
+  public static async getAllCharactersBelongsCountryWithFilter(
+        countryId: number, subject: number, subjectData: number, subjectData2: number): Promise<Character[]> {
+    try {
+      const result = await axios.post<Character[]>
+        (def.API_HOST + 'country/' + countryId + '/characters/filter', {
+          subject,
+          subjectData,
+          subjectData2,
+        }, this.authHeader);
+      return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
   /**
    * 国の役職を設定
    * @param characterId 設定する相手のID
@@ -1381,7 +1450,7 @@ export class Api {
   public static async setCountryGyokujiRefused(isRefused: boolean): Promise<any> {
     try {
       await axios.put
-        (def.API_HOST + 'country/gyokuji/' + (isRefused ? 'false': 'true'), {}, this.authHeader);
+        (def.API_HOST + 'country/gyokuji/' + (isRefused ? 'false' : 'true'), {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1410,6 +1479,34 @@ export class Api {
       await axios.put(def.API_HOST + 'country/messages', {
         message,
         type,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryCommander(message: string, subject: number, subjectData: number | undefined,
+                                          subjectData2: number | undefined): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'country/commanders', {
+        message,
+        subject,
+        subjectData: subjectData !== undefined ? subjectData : 0,
+        subjectData2: subjectData2 !== undefined ? subjectData2 : 0,
+      }, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryCommanderChat(message: string, subject: number, subjectData: number | undefined,
+                                              subjectData2: number | undefined): Promise<any> {
+    try {
+      await axios.post(def.API_HOST + 'country/commanders/chat', {
+        message,
+        subject,
+        subjectData,
+        subjectData2,
       }, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
@@ -1457,6 +1554,20 @@ export class Api {
     try {
       await axios.put
         (def.API_HOST + 'town/' + townId + '/war', {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async getWarPenaltyCountries(countryId: number, targetCountryId: number, status: number): Promise<number[]> {
+    try {
+      const result = await axios.post<number[]>
+        (def.API_HOST + 'country/penalties', {
+          status,
+          requestedCountryId: countryId,
+          insistedCountryId: targetCountryId,
+        }, this.authHeader);
+      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1591,6 +1702,14 @@ export class Api {
   public static async setPromotionChatMessageRead(id: number): Promise<any> {
     try {
       await axios.put(def.API_HOST + 'chat/promotion/read/' + id, {}, this.authHeader);
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async setCountryCommanderRead(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'country/commanders/read/' + id, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }
@@ -1925,7 +2044,8 @@ export class Api {
     }
   }
 
-  public static async addCharacterItem(item: number, itemId: number, status: number, isAvailable: boolean): Promise<any> {
+  public static async addCharacterItem(item: number, itemId: number, status: number, isAvailable: boolean)
+      : Promise<any> {
     try {
       await axios.post(def.API_HOST + 'items', {
         type: item,
@@ -2057,7 +2177,8 @@ export class Api {
     }
   }
 
-  public static async getIssuePage(page: number, milestone: number, status: number, keyword: string): Promise<IssueBbsItem[]> {
+  public static async getIssuePage(page: number, milestone: number, status: number, keyword: string)
+      : Promise<IssueBbsItem[]> {
     try {
       const result = await axios.get(def.API_HOST + 'issue/page/' + page +
         '?milestone=' + milestone + '&status=' + status + '&keyword=' + keyword, this.authHeader);
