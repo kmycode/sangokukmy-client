@@ -527,7 +527,7 @@ export default class EntryPage extends Vue {
   }
 
   private get isOkExtraTown(): boolean {
-    return !this.isFirstReligion || this.isNotExtraTown || this.system.ruleSet === 1 ||
+    return !this.isFirstReligion || this.isNotExtraTown || this.system.ruleSet === 1 || !this.isPublish ||
       (this.extraTown.id > 0 && this.extraTown.id !== this.town.id &&
        !this.extraTown.countryId && api.TownBase.isNextToTown(this.town, this.extraTown));
   }
