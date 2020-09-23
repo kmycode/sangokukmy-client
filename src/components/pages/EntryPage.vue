@@ -21,7 +21,7 @@
           </div>
         </div>
       </div>
-      <div class="alert alert-danger" v-if="character.isBeginner && canEntryAsBeginner">
+      <div class="alert alert-danger" v-if="character.isBeginner && !canEntryAsBeginner">
         現在、すべての国に仕官制限がかけられているか、誰も建国していない状態です。この状態で初心者として登録することはできません。新たな建国がされるか、36年までお待ち下さい
       </div>
       <div class="alert alert-warning" v-if="character.isBeginner">
@@ -358,7 +358,7 @@
       <button v-show="false" type="button" class="btn btn-primary" onclick="grecaptcha.execute()">送信</button>
       <button v-show="canEntry" type="button" class="btn btn-primary" @click="entry()">送信</button>
       <span v-show="!canEntry" style="color:red">上の記述項目の赤いところをすべて入力するか、修正してください</span>
-      <div class="alert alert-danger" v-if="character.isBeginner && canEntryAsBeginner">
+      <div class="alert alert-danger" v-if="character.isBeginner && !canEntryAsBeginner">
         現在、すべての国に仕官制限がかけられているか、誰も建国していない状態です。この状態で初心者として登録することはできません。新たな建国がされるか、36年までお待ち下さい
       </div>
     </div>
@@ -431,7 +431,7 @@ export default class EntryPage extends Vue {
   private isApp = false;
 
   private get canEntryAsBeginner(): boolean {
-    return !this.extraData.countryData.some((c) => c.isJoinLimited);
+    return this.extraData.countryData.some((c) => !c.isJoinLimited);
   }
 
   private get formations(): def.FormationType[] {
