@@ -2127,6 +2127,7 @@ export default class StatusPage extends Vue {
       this.selectedCharacterItemType = { type: new def.CharacterItemType(-1), id: -1 };
       this.isOpenCharacterItemSellDialog = true;
     } else if (event === 'item-handover') {
+      this.model.updateCharacterCountryCharacters();
       this.selectedCharacterItemType = { type: new def.CharacterItemType(-1), id: -1 };
       this.isOpenCharacterItemHandOverDialog = true;
     } else if (event === 'item-use') {
