@@ -1100,7 +1100,7 @@
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 11, 'btn-secondary': selectedSecretaryType === 11, }" @click="selectedSecretaryType = 11">農商官 (1)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 32, 'btn-secondary': selectedSecretaryType === 32, }" @click="selectedSecretaryType = 32">伝道師 (1)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 27, 'btn-secondary': selectedSecretaryType === 27, }" @click="selectedSecretaryType = 27" v-if="model.canSecretaryUnitLeader">部隊長 (1)</button>
-            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 29, 'btn-secondary': selectedSecretaryType === 29, }" @click="selectedSecretaryType = 29" v-if="model.canSecretaryScouter">拙攻 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 29, 'btn-secondary': selectedSecretaryType === 29, }" @click="selectedSecretaryType = 29" v-if="model.canSecretaryScouter">斥候 (1)</button>
             <div class="alert alert-warning">政務官ポイントの上限は <strong>{{ model.secretaryMaxValue }}</strong>、うち現在使用しているポイントは <strong>{{ model.currentSecretaryPoint }}</strong> です<br>毎年1、7月に、国庫、なければ収入から代金 2000 を持っていきますので注意してください</div>
           </div>
           <div class="map" v-show="selectedSecretaryType !== 27">
