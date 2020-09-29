@@ -485,7 +485,8 @@ export default class StatusModel {
   }
 
   public get sameReligionCountryCount(): number {
-    return Enumerable.from(this.store.countries).count((c) => c.religion === this.country.religion);
+    return Enumerable.from(this.store.countries).count((c) => c.religion === this.country.religion &&
+                                                              !c.hasOverthrown);
   }
 
   public get isTownMayBeAppendFarmers(): boolean {
