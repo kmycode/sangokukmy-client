@@ -303,17 +303,6 @@
             国の色を決めてください。他の国と同じ色にはできません
           </div>
         </div>
-        <div v-show="isPublish && system.ruleSet !== 2" :class="{ 'form-row': true, 'error': !isOkReligion, }">
-          <div class="label">国教</div>
-          <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 2, 'btn-secondary': country.religion === 2, }" @click="country.religion = 2">儒教</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 3, 'btn-secondary': country.religion === 3, }" @click="country.religion = 3">道教</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.religion !== 4, 'btn-secondary': country.religion === 4, }" @click="country.religion = 4">仏教</button>
-          </div>
-          <div class="detail">
-            国教を指定してください
-          </div>
-        </div>
       </div>
       <div class="section">
         <h3>規約への同意</h3>
@@ -499,10 +488,6 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
-  private get isOkReligion(): boolean {
-    return this.system.ruleSet === 2 || (!this.isPublish || this.country.religion >= 2);
-  }
-
   private get isFirstReligion(): boolean {
     return this.system.ruleSet === 2 || !this.countries.some((c) => c.religion === this.country.religion);
   }
@@ -554,7 +539,6 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
-      this.isOkReligion &&
       this.isOkFrom &&
       this.isOkFormation &&
       this.isOkStrong &&
