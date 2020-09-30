@@ -314,23 +314,6 @@
             国教を指定してください
           </div>
         </div>
-        <div v-show="isPublish && system.ruleSet !== 1 && isFirstReligion" :class="{ 'form-row': true, 'error': !isOkExtraTown, }">
-          <div class="label">ボーナスの都市</div>
-          <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isNotExtraTown, }" @click="isNotExtraTown ^= true">指定しない</button>
-          </div>
-          <div v-show="!isNotExtraTown" class="field" style="height:500px">
-            <Map
-              :towns="towns"
-              :countries="countries"
-              :town="extraTown"
-              :currentTown="extraTown"
-              @selected="onExtraTownChanged($event)"/>
-          </div>
-          <div class="detail">
-            指定の国教で建国するのは初めてです。ボーナスの都市を指定してください。首都に隣接する無所属の都市でなければいけません
-          </div>
-        </div>
       </div>
       <div class="section">
         <h3>規約への同意</h3>
@@ -412,8 +395,6 @@ export default class EntryPage extends Vue {
   private isCountryFree: boolean = false;
   private selectedSkills: def.CharacterSkillType[] = [];
   private selectedFormation: def.FormationType = def.FORMATION_TYPES[0];
-  private extraTown: api.Town = new api.Town();
-  private isNotExtraTown: boolean = false;
 
   @Prop() private system!: api.SystemData;
   @Prop() private countries!: api.Country[];
@@ -526,12 +507,6 @@ export default class EntryPage extends Vue {
     return this.system.ruleSet === 2 || !this.countries.some((c) => c.religion === this.country.religion);
   }
 
-  private get isOkExtraTown(): boolean {
-    return !this.isFirstReligion || this.isNotExtraTown || this.system.ruleSet === 1 || !this.isPublish ||
-      (this.extraTown.id > 0 && this.extraTown.id !== this.town.id &&
-       !this.extraTown.countryId && api.TownBase.isNextToTown(this.town, this.extraTown));
-  }
-
   private get isOkFrom(): boolean {
     return this.character.from !== 0;
   }
@@ -580,7 +555,6 @@ export default class EntryPage extends Vue {
       this.isOkCountryName &&
       this.isOkCountryColor &&
       this.isOkReligion &&
-      this.isOkExtraTown &&
       this.isOkFrom &&
       this.isOkFormation &&
       this.isOkStrong &&
@@ -723,13 +697,6 @@ export default class EntryPage extends Vue {
     if (t) {
       this.town = t;
       this.character.townId = t.id;
-    }
-  }
-
-  private onExtraTownChanged(id: number) {
-    const t = ArrayUtil.find(this.towns, id);
-    if (t) {
-      this.extraTown = t;
     }
   }
 
@@ -930,8 +897,7 @@ export default class EntryPage extends Vue {
                     this.password,
                     this.isPublish ? this.country : this.defaultCountry,
                     this.invitationCode,
-                    this.isCountryFree,
-                    (this.isPublish && !this.isNotExtraTown) ? this.extraTown.id : 0)
+                    this.isCountryFree)
         .then((auth) => {
           LoginService.setAccessToken(auth);
           if (this.character.isBeginner) {
