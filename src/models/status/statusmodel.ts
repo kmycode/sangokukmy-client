@@ -516,9 +516,7 @@ export default class StatusModel {
                     (ca.insistedCountryId === this.country.id ||
                      ca.requestedCountryId === this.country.id));
     if ((!war || this.country.isWarPenalty) && this.country.religion >= 2) {
-      const religions = Enumerable.from([this.town.confucianism, this.town.buddhism, this.town.taoism]);
-      if (religions.max() > (religions.sum() - religions.max()) * 3 && this.townDefenders.length === 0 &&
-          this.town.religion !== this.country.religion) {
+      if (this.townDefenders.length === 0 && this.town.religion !== this.country.religion) {
         const aroundCountries = Enumerable.from(api.Town.getAroundTowns(this.towns, this.town))
           .join(this.countries.filter((c) => c.id !== this.town.id),
                 (t) => t.countryId, (c) => c.id, (_, c) => c);
