@@ -132,7 +132,7 @@
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.character.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode && model.systemData.ruleSet !== 2" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
-            <button type="button" class="btn btn-info" v-show="model.character.countryId && model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
+            <button v-if="false" type="button" class="btn btn-info" v-show="model.character.countryId && model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -269,6 +269,7 @@
                            :canSecretary="model.canSecretary"
                            :canCommandComment="model.canCommandComment"
                            :canSubBuilding="model.canSubBuilding"
+                           :canBuyTown="model.canPolicy"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"
                            @open-commander-message="isOpenCommandersDialog = true"/>
@@ -1774,10 +1775,9 @@
         </div>
         <div class="dialog-footer">
           <div class="left-side">
-            <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
           </div>
           <div class="right-side">
-            <button class="btn btn-primary" v-show="!model.isUpdatingTownBuyCost && model.town.countryId && model.canPolicy && model.gameDate.year >= 48 && model.characterCountry.policyPoint >= model.townBuyCost" @click="model.buyTown(); isOpenBuyTownDialog = false">承認</button>
+            <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
           </div>
         </div>
       </div>
@@ -2143,6 +2143,10 @@ export default class StatusPage extends Vue {
       this.mapDialogMode = 0;
       this.mapDialogSelectedTown = this.model.town;
       this.isOpenMapDialog = true;
+    } else if (event === 'town-buy') {
+      this.mapDialogMode = 8;
+      this.mapDialogSelectedTown = this.model.town;
+      this.isOpenMapDialog = true;
     } else if (event === 'town-war') {
       this.mapDialogMode = 1;
       this.mapDialogSelectedTown = this.model.town;
@@ -2197,6 +2201,8 @@ export default class StatusPage extends Vue {
     } else if (this.mapDialogMode === 7) {
       this.model.commands.inputer.inputCustomizeFlyingColumnCommand(67, this.targetSecretary.id,
         this.flyingColumnAction, this.mapDialogSelectedTown.id, this.flyingColumnSoldierType);
+    } else if (this.mapDialogMode === 8) {
+      this.model.commands.inputer.inputMoveCommand(74, this.mapDialogSelectedTown.id);
     }
     this.isOpenMapDialog = false;
   }

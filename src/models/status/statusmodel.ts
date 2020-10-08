@@ -1199,25 +1199,6 @@ export default class StatusModel {
       });
   }
 
-  public buyTown() {
-    this.isUpdatingTownBuyCost = true;
-    api.Api.buyTown(this.town.id)
-      .then(() => {
-        this.updateTownBuyCost();
-        NotificationService.townBought.notifyWithParameter(this.town.name);
-      })
-      .catch((ex) => {
-        if (ex.data.code === api.ErrorCode.invalidOperationError) {
-          NotificationService.townBuyFailedBecauseNotBorder.notifyWithParameter(this.town.name);
-        } else {
-          NotificationService.townBuyFailed.notifyWithParameter(this.town.name);
-        }
-      })
-      .finally(() => {
-        this.isUpdatingTownBuyCost = false;
-      });
-  }
-
   // #endregion
 
   // #region Country

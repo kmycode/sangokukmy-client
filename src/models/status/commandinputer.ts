@@ -551,7 +551,7 @@ export default class CommandInputer {
 
     // ステータス画面のデータがないと更新できない特殊なコマンドは、こっちのほうで名前を変える
     if (command.type === 17 || command.type === 13 || command.type === 47 || command.type === 61 ||
-      command.type === 67 || command.type === 50 || command.type === 39) {
+      command.type === 67 || command.type === 50 || command.type === 39 || command.type === 74) {
       // 都市データ（移動、戦争、偵察）
       if (command.name.indexOf('%0%') >= 0) {
         const paramTypeId = (command.type === 47 || command.type === 50 || command.type === 39) ? 2 :

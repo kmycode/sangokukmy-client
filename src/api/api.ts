@@ -1582,15 +1582,6 @@ export class Api {
     }
   }
 
-  public static async buyTown(townId: number): Promise<any> {
-    try {
-      await axios.post
-        (def.API_HOST + 'buy/town/' + townId, {}, this.authHeader);
-    } catch (ex) {
-      throw Api.pickException(ex);
-    }
-  }
-
   public static async addBuyTownCost(townId: number): Promise<number> {
     try {
       const result = await axios.post

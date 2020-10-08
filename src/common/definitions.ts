@@ -577,6 +577,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(71, '国教布教'),
   new CommandNameResolver(72, '異教弾圧'),
   new CommandNameResolver(73, '自教布教'),
+  new CommandNameResolver(74, '<town>%0%</town> を購入'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)

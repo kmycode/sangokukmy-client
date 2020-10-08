@@ -44,6 +44,7 @@
             <a class="dropdown-item" href="#" @click.prevent.stop="isOpenSecretaryPopup = false; $emit('open', 'secretary-remove')">解任</a>
           </div>
         </button>
+        <!-- <button v-if="canBuyTown" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-buy')">都市購入</button> -->
       </div>
       <!-- 軍事コマンド -->
       <div v-show="selectedCommandCategory === 2" class="commands">
@@ -86,7 +87,6 @@
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(0)">何もしない</button>
         <button v-if="!list.store.character.countryId" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
         <button v-if="list.store.character.countryId && list.canInputResign" type="button" class="btn btn-danger" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(69)">下野</button>
-        <!-- <button type="button" class="btn btn-light">下野</button> -->
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
@@ -239,6 +239,7 @@ export default class CommandListView extends Vue {
   @Prop() private canSecretary!: boolean;
   @Prop() private canCommandComment!: boolean;
   @Prop() private canSubBuilding!: boolean;
+  @Prop() private canBuyTown!: boolean;
   @Prop() private gameDate!: api.GameDateTime;
   private selectedCommandCategory: number = 0;
   private isMultiCommandsSelection: boolean = false;
