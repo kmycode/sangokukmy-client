@@ -418,7 +418,7 @@ export default class EntryPage extends Vue {
   private isApp = false;
 
   private get canEntryAsBeginner(): boolean {
-    return this.extraData.countryData.some((c) => !c.isJoinLimited);
+    return this.extraData.countryData.some((c) => !c.isJoinLimited && this.towns.some((t) => t.countryId === c.countryId));
   }
 
   private get formations(): def.FormationType[] {
