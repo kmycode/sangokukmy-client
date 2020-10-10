@@ -1206,3 +1206,15 @@ export const RELIGION_TYPES: string[] = [
   '道教',
   '仏教',
 ];
+
+export class CountryBattlePolicyType {
+  public constructor(public id: number,
+                     public name: string,
+                     public description: string) {}
+}
+export const COUNTRY_BATTLE_POLICY_TYPES: CountryBattlePolicyType[] = [
+  new CountryBattlePolicyType(0, 'なし', ''),
+  new CountryBattlePolicyType(1, '統一重視', '統一を重視し、積極的に行動します。君主や軍師による積極的な指示・効率的な役割分担が期待されます'),
+  new CountryBattlePolicyType(2, 'まったり', '統一をそれほど重要視せず、マイペースで行動します。君主や軍師による指示はそれほど期待されません'),
+  new CountryBattlePolicyType(3, '放任主義', '君主はあまり動かず、部下の意思を尊重します。部下が君主を積極的に補佐し、立ち回ることになります'),
+];

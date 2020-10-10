@@ -241,7 +241,12 @@
                  v-for="country in countries"
                  :key="country.id"
                  v-show="!country.hasOverthrown">
-              <div :class="'col-md-3 country-name country-color-' + country.colorId">{{ country.name }}<br>宗教: <strong>{{ getReligionName(country.religion) }}</strong><br><span v-if="getExtraData(country.id).isJoinLimited" class="is-limited">人数制限のため入国不可</span></div>
+              <div :class="'col-md-3 country-name country-color-' + country.colorId">
+                {{ country.name }}<br>
+                宗教: <strong>{{ getReligionName(country.religion) }}</strong><br>
+                方針: <strong>{{ getCountryBattlePolicyType(country.policy).name }}</strong>
+                <span v-if="getExtraData(country.id).isJoinLimited" class="is-limited"><br>入国不可</span>
+              </div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
                 <div class="icon"><CharacterIcon :icon="getCountryMessage(country).writerIcon"/></div>
                 <div class="message">
@@ -301,6 +306,18 @@
           </div>
           <div class="detail">
             国の色を決めてください。他の国と同じ色にはできません
+          </div>
+        </div>
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryPolicy, }">
+          <div class="label">方針</div>
+          <div class="field">
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 1, 'btn-secondary': country.policy === 1, }" @click="country.policy = 1">統一重視</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 2, 'btn-secondary': country.policy === 2, }" @click="country.policy = 2">まったり</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 3, 'btn-secondary': country.policy === 3, }" @click="country.policy = 3">放任主義</button>
+            <div>{{ getCountryBattlePolicyType(country.policy).description }}</div>
+          </div>
+          <div class="detail">
+            国の運営方針を決めてください
           </div>
         </div>
       </div>
@@ -488,6 +505,10 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
+  private get isOkCountryPolicy(): boolean {
+    return !this.isPublish || this.country.policy !== 0;
+  }
+
   private get isFirstReligion(): boolean {
     return this.system.ruleSet === 2 || !this.countries.some((c) => c.religion === this.country.religion);
   }
@@ -539,6 +560,7 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
+      this.isOkCountryPolicy &&
       this.isOkFrom &&
       this.isOkFormation &&
       this.isOkStrong &&
@@ -618,6 +640,14 @@ export default class EntryPage extends Vue {
 
   private getCountryPostName(post: number): string {
     return ValueUtil.getPostName(post);
+  }
+
+  private getCountryBattlePolicyType(id: number): def.CountryBattlePolicyType {
+    const type = def.COUNTRY_BATTLE_POLICY_TYPES.find((t) => t.id === id);
+    if (type) {
+      return type;
+    }
+    return def.COUNTRY_BATTLE_POLICY_TYPES[0];
   }
 
   private created() {
