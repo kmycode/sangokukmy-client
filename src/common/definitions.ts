@@ -1118,7 +1118,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(11, '商人 Lv.1', 'アイテム上限 +2、米売買時貢献 +15', 0, (_) => false),
   new CharacterSkillType(12, '商人 Lv.2', 'コマンド 都市投資', 280, (skills) => skills.some((s) => s.type === 11)),
   new CharacterSkillType(13, '商人 Lv.3', '米売買上限 +15000', 360, (skills) => skills.some((s) => s.type === 12)),
-  new CharacterSkillType(14, '商人 Lv.a4', 'アイテム上限 +2、内政時出現 +8%', 400, (skills) => !skills.some((s) => s.type === 55) && skills.some((s) => s.type === 13)),
+  new CharacterSkillType(14, '商人 Lv.a4', 'アイテム上限 +2、内政時出現 +20%', 400, (skills) => !skills.some((s) => s.type === 55) && skills.some((s) => s.type === 13)),
   new CharacterSkillType(15, '商人 Lv.a5', 'アイテム上限 +2、アイテム購入価格 -20%', 360, (skills) => skills.some((s) => s.type === 14)),
   new CharacterSkillType(55, '商人 Lv.b4', '米売買上限 +15000', 400, (skills) => !skills.some((s) => s.type === 14) && skills.some((s) => s.type === 13)),
   new CharacterSkillType(56, '商人 Lv.b5', '建築物 商業組合', 360, (skills) => skills.some((s) => s.type === 55)),
