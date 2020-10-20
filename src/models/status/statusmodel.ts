@@ -1736,7 +1736,8 @@ export default class StatusModel {
   public get canCountrySetting(): boolean {
     // 自分が国の設定を行う権限を持つか
     return Enumerable.from(this.getCountry(this.character.countryId).posts)
-      .any((p) => p.characterId === this.character.id && (p.type === 1 || p.type === 2 || p.type === 3));
+      .any((p) => p.characterId === this.character.id &&
+                  (p.type === 1 || p.type === 2 || p.type === 3 || p.type === 14));
   }
 
   public get canCountrySettingExceptForCommands(): boolean {
