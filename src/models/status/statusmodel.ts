@@ -506,7 +506,7 @@ export default class StatusModel {
   }
 
   public get isTownMayBeAppendReligionFarmers(): boolean {
-    if (this.town.ricePrice === undefined) {
+    if (this.town.ricePrice === undefined || this.systemData.ruleSet !== api.SystemData.ruleSetReligion) {
       return false;
     }
     const war = this.store.wars

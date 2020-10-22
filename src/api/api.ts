@@ -228,6 +228,7 @@ export class SystemData {
   public static readonly ruleSetNormal = 0;
   public static readonly ruleSetWandering = 1;
   public static readonly ruleSetSimpleBattle = 2;
+  public static readonly ruleSetReligion = 5;
 
   public constructor(public isDebug: boolean = false,
                      public period: number = 0,
