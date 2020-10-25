@@ -122,10 +122,6 @@ export default class CommandList {
     return skills.some((s) => s === 61 || s === 66 || s === 71);
   }
 
-  public get canInputResign(): boolean {
-    return this.store.systemData.isWaitingReset;
-  }
-
   public get canInputSkillPointTraining(): boolean {
     return this.store.character.countryId === 0 &&
       !this.commands.filter((c) => c.isSelected === true).some((c) => c.gameDate.year >= 36);
