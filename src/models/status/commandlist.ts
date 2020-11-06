@@ -23,7 +23,7 @@ export default class CommandList {
   }
 
   public get canReligion(): boolean {
-    return this.store.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle;
+    return this.store.systemData.ruleSet === api.SystemData.ruleSetReligion;
   }
 
   public get canUseCountrySafe(): boolean {
