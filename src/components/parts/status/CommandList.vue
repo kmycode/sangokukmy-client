@@ -86,7 +86,7 @@
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(62)">探索</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(0)">何もしない</button>
         <button v-if="!list.store.character.countryId" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
-        <button v-if="list.store.character.countryId" type="button" class="btn btn-danger" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(69)">下野</button>
+        <button v-if="list.store.character.countryId" type="button" class="btn btn-danger" :disabled="!list.inputer.canInput" @click="onResignCommand">下野</button>
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
@@ -306,6 +306,13 @@ export default class CommandListView extends Vue {
         this.list.inputer.selectSingleCommand(command);
       }
     }
+  }
+
+  private onResignCommand() {
+    this.$emit('yesno', {
+      message: '下野すると数日間他国に仕官できなくなります。本当に下野しますか？',
+      onYes: () => this.list.inputer.inputCommand(69),
+    });
   }
 
   private scrollToNumber(num: number) {

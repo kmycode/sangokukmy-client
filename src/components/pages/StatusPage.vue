@@ -272,7 +272,8 @@
                            :canBuyTown="model.canPolicy"
                            :gameDate="model.gameDate"
                            @open="openCommandDialog($event)"
-                           @open-commander-message="isOpenCommandersDialog = true"/>
+                           @open-commander-message="isOpenCommandersDialog = true"
+                           @yesno="openYesno($event)"/>
         </div>
         <!-- 手紙 -->
         <div v-show="selectedActionTab === 1" class="right-side-content content-chat" style="display:flex;flex-direction:column">
