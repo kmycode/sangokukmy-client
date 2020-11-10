@@ -337,7 +337,8 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
                                    type.numberValue === api.Character.aiSecretaryPioneer ? '農商官' :
                                    type.numberValue === api.Character.aiSecretaryUnitLeader ? '部隊長' :
                                    type.numberValue === api.Character.aiSecretaryScouter ? '斥候' :
-                                   type.numberValue === api.Character.aiSecretaryEvangelist ? '伝道師' : '不明')
+                                   type.numberValue === api.Character.aiSecretaryEvangelist ? '伝道師' :
+                                   type.numberValue === api.Character.aiSecretaryTrader ? '交易商' : '不明')
                    .replace('{2}', type.numberValue !== api.Character.aiSecretaryUnitLeader ? ' <town>%0%</town> で ' : '');
     } else {
       return 'エラー (39:1)';
@@ -583,6 +584,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(72, '異教弾圧'),
   new CommandNameResolver(73, '自教布教'),
   new CommandNameResolver(74, '<town>%0%</town> を購入'),
+  new CommandNameResolver(75, '交易'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)

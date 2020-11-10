@@ -374,6 +374,7 @@ export class Character implements IIdentitiedEntity {
   public static readonly aiSecretaryUnitLeader = 27;
   public static readonly aiSecretaryScouter = 29;
   public static readonly aiSecretaryEvangelist = 32;
+  public static readonly aiSecretaryTrader = 35;
 
   public static readonly typeStrong = 1;
   public static readonly typeIntellect = 2;

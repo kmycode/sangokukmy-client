@@ -326,7 +326,8 @@ export default class StatusModel {
                     c.aiType === api.Character.aiSecretaryPioneer ||
                     c.aiType === api.Character.aiSecretaryUnitLeader ||
                     c.aiType === api.Character.aiSecretaryScouter ||
-                    c.aiType === api.Character.aiSecretaryEvangelist)
+                    c.aiType === api.Character.aiSecretaryEvangelist ||
+                    c.aiType === api.Character.aiSecretaryTrader)
       .toArray();
   }
 
