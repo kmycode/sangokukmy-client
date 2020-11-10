@@ -588,6 +588,7 @@ export default class StatusModel {
     // 自国の金庫の最大容量
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
+      .where((p) => p.status === api.CountryPolicy.statusAvailable)
       .count((p) => p.type === 1 || p.type === 10 || p.type === 11 || p.type === 12) * 100_0000;
   }
 
@@ -726,6 +727,10 @@ export default class StatusModel {
       .where((s) => s.subjectAppear === undefined || s.subjectAppear(this.store.skills))
       .where((s) => s.point <= this.character.skillPoint);
     return newSkillTypes.count();
+  }
+
+  public get canReligion(): boolean {
+    return this.systemData.ruleSet === api.SystemData.ruleSetReligion;
   }
 
   // #endregion
