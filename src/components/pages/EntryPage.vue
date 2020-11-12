@@ -112,7 +112,7 @@
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 3, 'btn-secondary': character.from === 3, }" @click="onFromChanged(3)">商人</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 9, 'btn-secondary': character.from === 9, }" @click="onFromChanged(9)">学者</button>
             <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 10, 'btn-secondary': character.from === 10, }" @click="onFromChanged(10)">参謀</button>
-            <span v-show="system.ruleSet === 5">
+            <span v-show="system.ruleSet !== 2">
               <br>宗教系<br>
               <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 11, 'btn-secondary': character.from === 11, }" @click="onFromChanged(11)">儒家</button>
               <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': character.from !== 12, 'btn-secondary': character.from === 12, }" @click="onFromChanged(12)">道家</button>

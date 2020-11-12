@@ -732,7 +732,7 @@ export default class StatusModel {
   }
 
   public get canReligion(): boolean {
-    return this.systemData.ruleSet === api.SystemData.ruleSetReligion;
+    return this.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle;
   }
 
   // #endregion
