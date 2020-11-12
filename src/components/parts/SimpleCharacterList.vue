@@ -134,6 +134,9 @@
                 <span class="skill-name">{{ info.name }}</span> - <span class="description">{{ info.description }}</span>
               </div>
             </div>
+            <div class="detail-logs" v-if="chara.detail.logs">
+              <MapLogList :logs="chara.detail.logs" type="character-log"/>
+            </div>
             <div class="loading" v-show="chara.isLoadingDetail"><div class="loading-icon"></div></div>
           </div>
         </div>
@@ -156,6 +159,7 @@ import { Component, Vue, Prop } from 'vue-property-decorator';
 import CharacterIcon from '@/components/parts/CharacterIcon.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import KmyLogTagText from '@/components/parts/KmyLogTagText.vue';
+import MapLogList from '@/components/parts/MapLogList.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
 import ArrayUtil from '@/models/common/arrayutil';
@@ -167,6 +171,7 @@ import NotificationService from '../../services/notificationservice';
     CharacterIcon,
     KmyChatTagText,
     KmyLogTagText,
+    MapLogList,
   },
 })
 export default class SimpleCharacterList extends Vue {
