@@ -827,6 +827,7 @@
                         :isSending="model.isSendingAlliance"
                         :canEdit="model.canDiplomacy"
                         :isShow="isOpenAllianceDialog"
+                        :canReligion="model.canReligion"
                         style="flex:1"/>
         </div>
         <div class="dialog-footer">
@@ -1100,7 +1101,7 @@
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 8, 'btn-secondary': selectedSecretaryType === 8, }" @click="selectedSecretaryType = 8">仁官 (2)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 9, 'btn-secondary': selectedSecretaryType === 9, }" @click="selectedSecretaryType = 9">集合官 (1)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 11, 'btn-secondary': selectedSecretaryType === 11, }" @click="selectedSecretaryType = 11">農商官 (1)</button>
-            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 35, 'btn-secondary': selectedSecretaryType === 35, }" @click="selectedSecretaryType = 35">交易商 (1)</button>
+            <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 35, 'btn-secondary': selectedSecretaryType === 35, }" @click="selectedSecretaryType = 35">交易商 (2)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 32, 'btn-secondary': selectedSecretaryType === 32, }" @click="selectedSecretaryType = 32" v-if="model.canReligion">伝道師 (1)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 27, 'btn-secondary': selectedSecretaryType === 27, }" @click="selectedSecretaryType = 27" v-if="model.canSecretaryUnitLeader">部隊長 (1)</button>
             <button :class="{ 'btn': true, 'btn-outline-secondary': selectedSecretaryType !== 29, 'btn-secondary': selectedSecretaryType === 29, }" @click="selectedSecretaryType = 29" v-if="model.canSecretaryScouter">斥候 (1)</button>
