@@ -62,7 +62,8 @@
           <div v-show="mapShowType === 2" :class="'character-information country-color-' + model.characterCountryColor" @scroll="onCharacterLogScrolled($event)">
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="alert alert-warning" v-show="model.hasPendingItems">保留中のアイテムがあります</div>
-            <div class="alert alert-warning" v-if="model.character.countryId === 0">現在 無所属 です。どこかの国に仕官しましょう</div>
+            <div class="alert alert-warning" v-if="model.character.countryId === 0 && model.gameDate.year >= 36">現在 無所属 です。どこかの国に仕官しましょう</div>
+            <div class="alert alert-danger" v-if="model.character.countryId === 0 && model.gameDate.year < 36">現在 無所属 です。どこかの国に仕官しましょう。無所属のまま戦闘解除を迎えるとペナルティを受けます</div>
             <div class="alert alert-warning" v-if="model.selectableSkillCount > 1">選択可能な技能が 2 以上あるため自動獲得されません。手動で獲得しましょう</div>
             <div class="commands">
               <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
@@ -158,6 +159,7 @@
             <button v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>
             <button v-if="false" v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="mapDialogMode = 6; isOpenMapDialog = true">割譲</button>
             <button v-show="model.town.countryId && model.country.id !== model.character.countryId && model.canDiplomacy && !model.country.aiType" type="button" class="btn btn-warning" @click="readyOtherCountryChat(model.country)">国宛</button>
+            <button v-show="model.town.countryId && !model.character.countryId && !model.country.aiType && model.systemData.gameDateTime.year < 36" type="button" class="btn btn-primary loading-container" @click="model.joinCountry()">仕官<div v-show="model.isJoiningCountry" class="loading"><div class="loading-icon"></div></div></button>
           </div>
         </div>
         <!-- データ -->

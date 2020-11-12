@@ -1105,6 +1105,7 @@ export class CharacterSkill {
   public static readonly typeId: number = 37;
 
   public static readonly statusAvailable = 1;
+  public static readonly statusRemoved = 2;
 
   public static readonly typeStrong = 1;
   public static readonly typeIntellect = 2;
@@ -1996,6 +1997,14 @@ export class Api {
       }
       const result = await axios.post<CharacterIcon>(def.API_HOST + 'icons', form, this.authHeader);
       return result.data;
+    } catch (ex) {
+      throw Api.pickException(ex);
+    }
+  }
+
+  public static async joinCountry(id: number): Promise<any> {
+    try {
+      await axios.put(def.API_HOST + 'country/join/' + id, {}, this.authHeader);
     } catch (ex) {
       throw Api.pickException(ex);
     }

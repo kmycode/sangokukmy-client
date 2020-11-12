@@ -624,6 +624,10 @@ export default class NotificationService {
     '登用拒否',
     '{0} は、あなたからの登用を拒否しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly joinFailedBecauseCountryLimited = new NotificationServiceItem(
+    '仕官失敗',
+    '仕官に失敗しました。その国への仕官は現在制限されています。戦闘解除をお待ち下さい',
+    NotificationServiceItemDefaultType.error);
   public static readonly promotionFailed = new NotificationServiceItem(
     '登用文操作失敗',
     '登用文の操作に失敗しました',
@@ -864,6 +868,10 @@ export default class NotificationService {
     '技能獲得',
     '技能 {0} を獲得しました',
     NotificationServiceItemDefaultType.information);
+  public static readonly skillRemoved = new NotificationServiceItem(
+    '技能喪失',
+    '技能 {0} を喪失しました',
+    NotificationServiceItemDefaultType.warning);
   public static readonly commandInserted = new NotificationServiceItem(
     'コマンド挿入',
     'コマンドの挿入に成功しました',

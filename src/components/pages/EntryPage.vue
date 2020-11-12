@@ -221,6 +221,9 @@
           <div class="label">無所属として出現</div>
           <div class="field">
             <button type="button" :class="{ 'btn': true, 'btn-toggle': true, 'selected': isCountryFree, }" @click="isCountryFree ^= true">無所属として出現</button>
+            <div class="alert alert-warning" v-if="isCountryFree && system.gameDateTime.year < 36">
+              戦闘解除（36 年）までにどこかの国に仕官しないと、能力値低下などのペナルティを受けます。あらかじめご注意ください
+            </div>
           </div>
           <div class="detail">
             （上級者向け）無所属として登録する場合は、ボタンをONにしてください

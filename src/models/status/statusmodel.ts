@@ -82,6 +82,7 @@ export default class StatusModel {
   public isUpdatingSkills: boolean = false;
   public isUpdatingAccount: boolean = false;
   public isUpdatingRegularlyCommands: boolean = false;
+  public isJoiningCountry: boolean = false;
   public isScouting: boolean = false;
   public isAppointing: boolean = false;
   public isSendingAlliance: boolean = false;
@@ -1433,6 +1434,17 @@ export default class StatusModel {
     }
   }
 
+  public joinCountry() {
+    this.isJoiningCountry = true;
+    api.Api.joinCountry(this.country.id)
+      .catch(() => {
+        NotificationService.joinFailedBecauseCountryLimited.notify();
+      })
+      .finally(() => {
+        this.isJoiningCountry = false;
+      });
+  }
+
   // #endregion
 
   // #region CountryMessage
@@ -2531,13 +2543,19 @@ export default class StatusModel {
 
   private onCharacterSkillReceived(item: api.CharacterSkill) {
     const info = Enumerable.from(def.CHARACTER_SKILL_TYPES).firstOrDefault((i) => i.id === item.type);
-    ArrayUtil.addItem(this.store.skills, item);
+    if (item.status === api.CharacterSkill.statusAvailable) {
+      ArrayUtil.addItem(this.store.skills, item);
+    } else if (item.status === api.CharacterSkill.statusRemoved) {
+      this.store.skills = this.store.skills.filter((s) => s.type !== item.type);
+    }
 
     if (this.store.hasInitialized &&
-        item.status === api.CharacterSkill.statusAvailable &&
-        item.characterId === this.character.id) {
-      if (info) {
+        item.characterId === this.character.id &&
+        info) {
+      if (item.status === api.CharacterSkill.statusAvailable) {
         NotificationService.skillGot.notifyWithParameter(info.name);
+      } else if (item.status === api.CharacterSkill.statusRemoved) {
+        NotificationService.skillRemoved.notifyWithParameter(info.name);
       }
     }
   }
