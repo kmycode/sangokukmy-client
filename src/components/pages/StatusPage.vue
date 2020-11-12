@@ -63,7 +63,7 @@
             <h4 :class="'country-color-' + model.characterCountryColor"><CharacterIcon :icons="model.characterIcons"/>{{ model.character.name }}</h4>
             <div class="alert alert-warning" v-show="model.hasPendingItems">保留中のアイテムがあります</div>
             <div class="alert alert-warning" v-if="model.character.countryId === 0 && model.gameDate.year >= 36">現在 無所属 です。どこかの国に仕官しましょう</div>
-            <div class="alert alert-danger" v-if="model.character.countryId === 0 && model.gameDate.year < 36">現在 無所属 です。どこかの国に仕官しましょう。無所属のまま戦闘解除を迎えるとペナルティを受けます</div>
+            <div class="alert alert-danger" v-if="model.character.countryId === 0 && model.gameDate.year < 36">現在 無所属 です。どこかの国に仕官しましょう。無所属のまま戦闘解除を迎えると、ペナルティ（存在するいずれかの国への強制仕官）を受けます</div>
             <div class="alert alert-warning" v-if="model.selectableSkillCount > 1">選択可能な技能が 2 以上あるため自動獲得されません。手動で獲得しましょう</div>
             <div class="commands">
               <button type="button" class="btn btn-info" @click="isOpenSkillDialog = true">技能</button>
