@@ -1093,7 +1093,7 @@ export default class StatusModel {
       ps.push(new RangedStatusParameter('技術', town.technology, town.technologyMax));
       ps.push(new RangedStatusParameter('城壁', town.wall, town.wallMax));
       ps.push(new NoRangeStatusParameter('防衛投資', town.takeoverDefensePoint));
-      if (this.systemData.ruleSet === api.SystemData.ruleSetReligion) {
+      if (this.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle) {
         ps.push(new NoRangeStatusParameter('儒教', town.confucianism));
         ps.push(new NoRangeStatusParameter('道教', town.taoism));
         ps.push(new NoRangeStatusParameter('仏教', town.buddhism));
@@ -1282,9 +1282,7 @@ export default class StatusModel {
     const ps: StatusParameter[] = [];
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('首都', capital.name));
-    if (this.systemData.ruleSet === api.SystemData.ruleSetReligion) {
-      ps.push(new TextStatusParameter('国教', def.RELIGION_TYPES[country.religion]));
-    }
+    ps.push(new TextStatusParameter('国教', def.RELIGION_TYPES[country.religion]));
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&
