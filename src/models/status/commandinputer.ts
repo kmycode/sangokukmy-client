@@ -67,6 +67,13 @@ export default class CommandInputer {
     });
   }
 
+  public inputBattleCommand(commandType: number, townId?: number, isMoveIfFailed?: boolean) {
+    this.inputCommandPrivate(commandType, (c) => {
+      c.parameters.push(new api.CharacterCommandParameter(1, townId || this.store.town.id));
+      c.parameters.push(new api.CharacterCommandParameter(2, isMoveIfFailed ? 1 : 0));
+    });
+  }
+
   public inputTrainingCommand(commandType: number, trainingType: number) {
     this.inputCommandPrivate(commandType, (c) => {
       c.parameters.push(new api.CharacterCommandParameter(1, trainingType));

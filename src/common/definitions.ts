@@ -233,7 +233,16 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   }),
   new CommandNameResolver(11, '兵士訓練'),
   new CommandNameResolver(12, '城の守備'),
-  new CommandNameResolver(13, '<town>%0%</town> へ侵攻'),
+  new CommandNameResolver(13, '<town>%0%</town> へ侵攻{0}', (format, params) => {
+    if (params) {
+      const p = Enumerable.from(params);
+      const isMoveIfFailed = p.firstOrDefault((pp) => pp.type === 2);
+      if (isMoveIfFailed && isMoveIfFailed.numberValue) {
+        return format.replace('{0}', ' [失敗時: 移動]');
+      }
+    }
+    return format.replace('{0}', '');
+  }),
   new CommandNameResolver(14, '集合'),
   new CommandNameResolver(15, '<character>%読込中%</character> を登用'),
   new CommandNameResolver(17, '<town>%0%</town> へ移動'),
@@ -843,7 +852,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
     1, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
 
-  new CountryPolicyType(4, 3000, '人材開発', '政務官ポイント +2', 2),
+  new CountryPolicyType(4, 3000, '人材開発', '政務官ポイント +3', 2),
   new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
   new CountryPolicyType(15, 2000, '文官国家', '文官数につき毎ターン政策ポイント +4',
