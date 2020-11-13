@@ -7,7 +7,7 @@
           <div id="system-button-group">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <a :class="{'nav-link': true, 'active': mapShowType === 0}" href="#" @click.prevent.stop="mapShowType = 0">地図</a>
+                <a :class="{'nav-link': true, 'active': mapShowType === 0 || mapShowType === 3}" href="#" @click.prevent.stop="mapShowType = 0"><span v-if="mapShowType === 0">勢力</span><span v-else>宗教</span></a>
               </li>
               <li class="nav-item">
                 <a :class="{'nav-link': true, 'active': mapShowType === 1}" href="#" @click.prevent.stop="mapShowType = 1">ON</a>
@@ -36,6 +36,16 @@
             v-show="mapShowType === 0"
             :towns="model.towns"
             :countries="model.countries"
+            :town="model.town"
+            :currentTown="model.characterTown"
+            :mode="mapMode"
+            :store="model.store"
+            isMonarchIcon="true"
+            @selected="model.selectTown($event)"/>
+          <Map
+            v-show="mapShowType === 3"
+            :towns="model.religionVirtualTowns"
+            :countries="model.religionVirtualCountries"
             :town="model.town"
             :currentTown="model.characterTown"
             :mode="mapMode"
@@ -178,12 +188,13 @@
           </h4>
           <div class="content-main">
             <div class="buttons">
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 0, 'btn-outline-secondary': mapMode !== 0}" @click="mapMode = 0">なし</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 9, 'btn-outline-secondary': mapMode !== 9}" @click="mapMode = 9">一覧</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1, 'btn-outline-secondary': mapMode !== 1}" @click="mapMode = 1">滞</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3, 'btn-outline-secondary': mapMode !== 3}" @click="mapMode = 3">数</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2, 'btn-outline-secondary': mapMode !== 2}" @click="mapMode = 2">守</button>
-              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4, 'btn-outline-secondary': mapMode !== 4}" @click="mapMode = 4">数</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 0 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 0 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 0">なし</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 9 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 9 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 9">一覧</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 1 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 1 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 1">滞</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 3 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 3 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 3">数</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 2 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 2 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 2">守</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapMode === 4 && mapShowType === 0, 'btn-outline-secondary': mapMode !== 4 || mapShowType !== 0}" @click="mapShowType = 0; mapMode = 4">数</button>
+              <button type="button" :class="{'btn': true, 'btn-secondary': mapShowType === 3, 'btn-outline-secondary': mapShowType !== 3}" @click="mapShowType = 3; mapMode = 0">宗教</button>
             </div>
             <div v-show="mapMode !== 9">
               <h3>滞在武将</h3>

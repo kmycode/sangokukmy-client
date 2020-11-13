@@ -1218,6 +1218,14 @@ export const RELIGION_TYPES: string[] = [
   '仏教',
 ];
 
+export const RELIGION_VIRTUAL_COUNTRIES: api.Country[] = [
+  { id: 0, name: '', colorId: 0, } as api.Country,
+  { id: 1, name: '', colorId: 0, } as api.Country,
+  { id: 2, name: '儒教', colorId: 1, } as api.Country,
+  { id: 3, name: '道教', colorId: 2, } as api.Country,
+  { id: 4, name: '仏教', colorId: 3, } as api.Country,
+];
+
 export class CountryBattlePolicyType {
   public constructor(public id: number,
                      public name: string,

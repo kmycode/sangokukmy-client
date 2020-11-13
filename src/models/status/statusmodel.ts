@@ -491,6 +491,14 @@ export default class StatusModel {
                                                               !c.hasOverthrown);
   }
 
+  public get religionVirtualCountries(): api.Country[] {
+    return def.RELIGION_VIRTUAL_COUNTRIES;
+  }
+
+  public get religionVirtualTowns(): api.Town[] {
+    return this.towns.map((t) => new api.Town(t.id, t.type, t.subType, t.religion, t.name, t.x, t.y));
+  }
+
   public get isTownMayBeAppendFarmers(): boolean {
     if (this.town.ricePrice === undefined) {
       return false;
