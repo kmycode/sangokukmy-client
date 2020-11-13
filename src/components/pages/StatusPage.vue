@@ -1655,6 +1655,9 @@
               <div class="alert alert-warning">
                 所在都市のタテ・ヨコ・ナナメに隣接する都市に移動または侵攻できます。部隊に入っている場合は注意してください
               </div>
+              <div v-if="mapDialogMode === 1">
+                <button :class="{ 'btn': true, 'btn-toggle': true, 'selected': isMoveIfFailed, }" @click="isMoveIfFailed ^= true">自国だった場合は移動</button>
+              </div>
             </div>
             <div v-if="mapDialogMode === 6">
               <div class="alert alert-warning">
@@ -1993,6 +1996,7 @@ export default class StatusPage extends Vue {
   public selectedSecretaryType: number = 0;
   public soldierMode: number = 0;
   public isOpenCharacterHelpPopup: boolean = false;
+  public isMoveIfFailed: boolean = false;
 
   public soldierNumber: number = 1;
   public battleLogId: number = 0;
@@ -2196,7 +2200,7 @@ export default class StatusPage extends Vue {
     if (this.mapDialogMode === 0) {
       this.model.commands.inputer.inputMoveCommand(17, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 1) {
-      this.model.commands.inputer.inputMoveCommand(13, this.mapDialogSelectedTown.id);
+      this.model.commands.inputer.inputBattleCommand(13, this.mapDialogSelectedTown.id, this.isMoveIfFailed);
     } else if (this.mapDialogMode === 2) {
       this.model.commands.inputer.inputSecretaryMoveCommand(47, this.targetSecretary.id, this.mapDialogSelectedTown.id);
     } else if (this.mapDialogMode === 5) {
