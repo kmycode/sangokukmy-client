@@ -483,7 +483,7 @@ export default class StatusModel {
   }
 
   public get townCountForReligionWin(): number {
-    return Math.floor(this.store.towns.length * 3 / 4);
+    return Math.floor(this.store.towns.length * 4 / 5);
   }
 
   public get sameReligionCountryCount(): number {
