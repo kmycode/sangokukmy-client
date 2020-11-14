@@ -261,9 +261,6 @@
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 8; isOpenRightSidePopupMenu = false">アカウント</a>
                 <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 9; isOpenRightSidePopupMenu = false"><span class="tab-text">BBS<span class="tab-notify" v-show="model.isIssueBbsUnread"></span></span></a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 6; isOpenRightSidePopupMenu = false">模擬戦闘</a>
-                <a class="dropdown-item" href="#" @click.prevent.stop="selectedActionTab = 3; selectedActionTabSubPanel = 7; isOpenRightSidePopupMenu = false">模擬米施し</a>
-                <div class="dropdown-divider"></div>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
                 <a v-if="!isApp" class="dropdown-item" href="https://sangokukmy-doc.herokuapp.com/open.knowledge/view/1?offset=0" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
@@ -566,14 +563,6 @@
         <!-- 全国会議室 -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 2" class="right-side-content content-meeting">
           <ThreadBbs :countries="model.countries" :threads="model.globalThreadBbs.threads" :bbsType="2" :characterId="model.character.id" :canRemoveAll="false" :mutes="model.store.mutes" :muteKeyword="model.store.muteKeyword"/>
-        </div>
-        <!-- 戦闘シミュレータ -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 6" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
-          <BattleSimulatorView/>
-        </div>
-        <!-- 米施しシミュレータ -->
-        <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 7" class="right-side-content content-soldier" style="display:flex;flex-direction:column">
-          <RiceSimulatorView/>
         </div>
         <!-- アカウント -->
         <div v-show="selectedActionTab === 3 && selectedActionTabSubPanel === 8" class="right-side-content content-setting" style="display:flex;flex-direction:column">
@@ -1898,8 +1887,6 @@ import QueueList from '@/components/parts/QueueList.vue';
 import TownSubBuildingList from '@/components/parts/TownSubBuildingList.vue';
 import CharacterItemList from '@/components/parts/CharacterItemList.vue';
 import GenerateItemTypePicker from '@/components/parts/GenerateItemTypePicker.vue';
-import BattleSimulatorView from '@/components/parts/status/BattleSimulatorView.vue';
-import RiceSimulatorView from '@/components/parts/status/RiceSimulatorView.vue';
 import KmyChatTagText from '@/components/parts/KmyChatTagText.vue';
 import * as api from '@/api/api';
 import * as def from '@/common/definitions';
@@ -1932,7 +1919,6 @@ import EventObject from '@/models/common/EventObject';
     TownWarView,
     UnitListView,
     KmyChatTagText,
-    BattleSimulatorView,
     CountryPolicyList,
     FormationList,
     CharacterItemList,
@@ -1940,7 +1926,6 @@ import EventObject from '@/models/common/EventObject';
     SkillList,
     QueueList,
     TownSubBuildingList,
-    RiceSimulatorView,
   },
 })
 export default class StatusPage extends Vue {
