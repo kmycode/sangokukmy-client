@@ -43,7 +43,7 @@
             isMonarchIcon="true"
             @selected="model.selectTown($event)"/>
           <Map
-            v-show="mapShowType === 3"
+            v-if="mapShowType === 3"
             :towns="model.religionVirtualTowns"
             :countries="model.religionVirtualCountries"
             :town="model.town"
@@ -266,7 +266,7 @@
                 <div class="dropdown-divider"></div>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/10.html" target="_blank" @click="isOpenRightSidePopupMenu = false">説明書</a>
                 <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/" target="_blank" @click="isOpenRightSidePopupMenu = false">Wiki</a>
-                <a v-if="!isApp" class="dropdown-item" href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
+                <a v-if="!isApp" class="dropdown-item" href="https://sangokukmy-doc.herokuapp.com/open.knowledge/view/1?offset=0" target="_blank" @click="isOpenRightSidePopupMenu = false">初心者向け解説</a>
                 <a v-if="isApp" class="dropdown-item" href="#" @click="reloadPage()">画面更新</a>
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" @click.prevent.stop="model.logout(); $router.push('home');">ログアウト</a>
@@ -1806,8 +1806,9 @@
         <div class="dialog-content dialog-content-welcome">
           <div v-if="!isApp" class="dialog-content-welcome-main">
             <h3>三国志NETは初めてですか？</h3>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-primary" style="margin-left:8px">スライド解説</a>
-            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-light">初心者向け解説</a>
+            <a href="https://sangokukmy-doc.herokuapp.com/open.knowledge/view/1?offset=0" target="_blank" class="btn btn-primary" style="margin-left:8px">初心者向け解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/105.html" target="_blank" class="btn btn-light" style="margin-left:8px">スライド解説</a>
+            <a href="https://w.atwiki.jp/sangokukmy9/pages/77.html" target="_blank" class="btn btn-light">初心者向け（旧）</a>
             <div class="alert alert-info" style="margin-top:16px">
               初心者向け解説は、このダイアログを閉じた後も、いつでも「メニュー」から表示することができます。<br>
               スライド解説は、初心者向け解説ページから移動することができます。<br>
