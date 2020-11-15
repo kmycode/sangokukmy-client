@@ -7,7 +7,7 @@
           <div id="system-button-group">
             <ul class="nav nav-pills">
               <li class="nav-item">
-                <a :class="{'nav-link': true, 'active': mapShowType === 0 || mapShowType === 3}" href="#" @click.prevent.stop="mapShowType = 0"><span v-if="mapShowType === 0">勢力</span><span v-else>宗教</span></a>
+                <a :class="{'nav-link': true, 'active': mapShowType === 0 || mapShowType === 3}" href="#" @click.prevent.stop="mapShowType = 0">地図</a>
               </li>
               <li class="nav-item">
                 <a :class="{'nav-link': true, 'active': mapShowType === 1}" href="#" @click.prevent.stop="mapShowType = 1">ON</a>
@@ -48,9 +48,7 @@
             :countries="model.religionVirtualCountries"
             :town="model.town"
             :currentTown="model.characterTown"
-            :mode="mapMode"
             :store="model.store"
-            isMonarchIcon="true"
             @selected="model.selectTown($event)"/>
           <div v-show="mapShowType === 1" class="online-list">
             <div class="alert alert-info">
