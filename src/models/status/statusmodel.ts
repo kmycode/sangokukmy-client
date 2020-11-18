@@ -567,7 +567,9 @@ export default class StatusModel {
       .where((p) => p.countryId === this.character.countryId && p.status === api.CountryPolicy.statusAvailable)
       .sum((p) => p.type === 4 ? 3 :
                   p.type === 2 ? 1 :
-                  p.type === 34 ? 1 : 0);
+                  p.type === 34 ? 1 :
+                  p.type === 50 ? 1 :
+                  p.type === 54 ? 1 : 0);
   }
 
   public get currentSecretaryPoint(): number {
@@ -592,6 +594,12 @@ export default class StatusModel {
     return Enumerable.from(this.store.policies)
       .where((p) => p.countryId === this.character.countryId)
       .any((p) => p.type === 2 && p.status === api.CountryPolicy.statusAvailable);
+  }
+
+  public get canSecretaryEvangelist(): boolean {
+    return Enumerable.from(this.store.policies)
+      .where((p) => p.countryId === this.character.countryId)
+      .any((p) => p.type === 50 && p.status === api.CountryPolicy.statusAvailable);
   }
 
   public get safeMaxValue(): number {

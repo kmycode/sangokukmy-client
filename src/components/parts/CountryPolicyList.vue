@@ -5,6 +5,7 @@
       <button :class="{'btn': true, 'btn-secondary': category === 1, 'btn-outline-secondary': category !== 1,}" @click="category = 1">経済</button>
       <button :class="{'btn': true, 'btn-secondary': category === 2, 'btn-outline-secondary': category !== 2,}" @click="category = 2">人材</button>
       <button :class="{'btn': true, 'btn-secondary': category === 4, 'btn-outline-secondary': category !== 4,}" @click="category = 4">軍事</button>
+      <button :class="{'btn': true, 'btn-secondary': category === 5, 'btn-outline-secondary': category !== 5,}" @click="category = 5">宗教</button>
       <button :class="{'btn': true, 'btn-secondary': category === 3, 'btn-outline-secondary': category !== 3,}" @click="category = 3">特殊</button>
     </div>
     <div class="contents">
