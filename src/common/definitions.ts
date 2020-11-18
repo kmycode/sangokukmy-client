@@ -852,7 +852,7 @@ export const COUNTRY_POLICY_TYPES: CountryPolicyType[] = [
   new CountryPolicyType(28, 2000, '復興支援', '洪水、地震発生時、民忠 +10、都市につき政策ポイント +30',
     1, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 6)),
 
-  new CountryPolicyType(4, 3000, '人材開発', '政務官ポイント +3', 2),
+  new CountryPolicyType(4, 3000, '人材開発', '政務官雇用可能、政務官ポイント +2', 2),
   new CountryPolicyType(14, 1500, '武官国家', '武官数につき毎ターン政策ポイント +2',
     2, (ps) => ps.some((p) => p.status === api.CountryPolicy.statusAvailable && p.type === 4)),
   new CountryPolicyType(15, 2000, '文官国家', '文官数につき毎ターン政策ポイント +4',
