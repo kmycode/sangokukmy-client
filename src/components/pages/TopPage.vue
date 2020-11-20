@@ -85,6 +85,13 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="top-auto-login-form col-sm-6 offset-sm-3 loading-container">
+          <div class="alert alert-warning" style="margin-top:8px">
+            <a href="https://note.com/askyqq/n/nc68449464d50" target="_blank">第26期中止に関するお知らせ</a><br>
+          </div>
+        </div>
+      </div>
       <div v-show="selectedTab === 1">
         <EntryPage :system="system"
                    :countries="countries"
