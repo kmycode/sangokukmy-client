@@ -127,6 +127,11 @@ export default class CommandList {
     return skills.some((s) => s === 61 || s === 66 || s === 71);
   }
 
+  public get canInputDefendOrWall(): boolean {
+    const skills = this.store.skills.filter((s) => s.characterId === this.store.character.id).map((s) => s.type);
+    return skills.some((s) => s === 73);
+  }
+
   public get canInputSkillPointTraining(): boolean {
     return this.store.character.countryId === 0 &&
       !this.commands.filter((c) => c.isSelected === true).some((c) => c.gameDate.year >= 36);

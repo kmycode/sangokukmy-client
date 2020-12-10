@@ -594,6 +594,7 @@ export const COMMAND_NAMES: CommandNameResolver[] = [
   new CommandNameResolver(73, '自教布教'),
   new CommandNameResolver(74, '<town>%0%</town> を購入'),
   new CommandNameResolver(75, '交易'),
+  new CommandNameResolver(76, '守備強化'),
 ];
 export function getCommandNameByType(type: number): CommandNameResolver | undefined {
   return Enumerable.from(COMMAND_NAMES)
@@ -1118,6 +1119,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, true),
   new CharacterItemType(88, 500000, '都市計画書', '使用で都市敷地最大 +1', false, true, true),
   new CharacterItemType(89, 500000, '大都市計画書', '使用で都市敷地最大 +3', false, true, true),
+  new CharacterItemType(90, 500000, '守備強化の書', '技能「守備強化」獲得', true, true, true),
 ];
 
 /**
@@ -1200,6 +1202,7 @@ export const CHARACTER_SKILL_TYPES: CharacterSkillType[] = [
   new CharacterSkillType(70, '仏僧 Lv.3', '国教を信仰する都市の内政効果 +100%、滞在都市の布教 +4', 600, (skills) => skills.some((s) => s.type === 69)),
   new CharacterSkillType(71, '仏僧 Lv.4', 'コマンド 異教弾圧、攻撃力 +30', 500, (skills) => skills.some((s) => s.type === 70)),
   new CharacterSkillType(72, '仏僧 Lv.5', '建築物 聖堂', 200, (skills) => skills.some((s) => s.type === 71)),
+  new CharacterSkillType(73, '守備強化', 'コマンド「守備強化」実行可能', 0, (_) => false),
 ];
 
 /**

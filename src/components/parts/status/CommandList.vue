@@ -110,6 +110,7 @@
           </div>
         </button> -->
         <button v-if="list.canInputChangeTime" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(65)">静養</button>
+        <button v-if="list.canInputDefendOrWall" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(76)">守備強化</button>
         <button v-if="list.canInputCreateTown" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-create')">都市建設</button>
         <button type="button" class="btn btn-info" @click="$emit('open', 'queue')">キュー</button>
         <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput || !list.canSetRegularly" @click="list.inputer.setRegularlyCommand()">定期実行</button>
