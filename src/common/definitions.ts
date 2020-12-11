@@ -1119,7 +1119,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, true),
   new CharacterItemType(88, 500000, '都市計画書', '使用で都市敷地最大 +1', false, true, true),
   new CharacterItemType(89, 500000, '大都市計画書', '使用で都市敷地最大 +3', false, true, true),
-  new CharacterItemType(90, 500000, '守備強化の書', '技能「守備強化」獲得', true, true, true),
+  new CharacterItemType(90, 500000, '守備強化の書', '使用で技能「守備強化」獲得', true, true, true),
 ];
 
 /**
