@@ -52,6 +52,7 @@
         <button v-if="list.canReligion" type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'soldier-religion')">使徒徴兵</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(11)"><span class="redundant-text">兵士</span>訓練</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(12)"><span class="redundant-text">城の</span>守備</button>
+        <button v-if="list.canInputDefendOrWall" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(76)">守備強化</button>
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-war')">戦争</button>
         <button class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenFormationPopup = !isOpenFormationPopup">陣形
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenFormationPopup && list.inputer.canInput ? 'block' : 'none' }">
@@ -86,7 +87,6 @@
         <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(62)">探索</button>
         <button type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(0)">何もしない</button>
         <button v-if="!list.store.character.countryId" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="list.inputer.inputMoveCommand(23)">仕官</button>
-        <button v-if="list.store.character.countryId" type="button" class="btn btn-danger" :disabled="!list.inputer.canInput" @click="onResignCommand">下野</button>
       </div>
       <!-- 特殊コマンド -->
       <div v-show="selectedCommandCategory === 5" class="commands">
@@ -110,11 +110,11 @@
           </div>
         </button> -->
         <button v-if="list.canInputChangeTime" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(65)">静養</button>
-        <button v-if="list.canInputDefendOrWall" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(76)">守備強化</button>
         <button v-if="list.canInputCreateTown" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'town-create')">都市建設</button>
         <button type="button" class="btn btn-info" @click="$emit('open', 'queue')">キュー</button>
         <button type="button" class="btn btn-primary" :disabled="!list.inputer.canInput || !list.canSetRegularly" @click="list.inputer.setRegularlyCommand()">定期実行</button>
         <button v-if="canCommandComment" type="button" class="btn btn-primary" :disabled="!list.inputer.canInput" @click="$emit('open', 'command-comment')">コメント</button>
+        <button v-if="list.store.character.countryId" type="button" class="btn btn-danger" :disabled="!list.inputer.canInput" @click="onResignCommand">下野</button>
       </div>
       <div class="loading" v-show="list.inputer.isInputing"><div class="loading-icon"></div></div>
     </div>
