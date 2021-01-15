@@ -1116,7 +1116,7 @@ export const CHARACTER_ITEM_TYPES: CharacterItemType[] = [
   new CharacterItemType(84, 10000, '時の番人', '静養コマンド使用可能。使用で資源 1 消費', true, true, false, true, 10, true),
   new CharacterItemType(85, 30, '武神（仮）', '戦闘時攻撃力 +40。戦闘ターン 1 につき資源 1 消費', true, true, false, true, 100),
   new CharacterItemType(86, 500000, '真実の鏡', '使用で本物の玉璽を持っている国が判明（武将ログに出力）', false, false, true),
-  new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, true),
+  new CharacterItemType(87, 500000, '城の設計図', '都市建設コマンド使用可能。使用で消費', false, false),
   new CharacterItemType(88, 500000, '都市計画書', '使用で都市敷地最大 +1', false, true, true),
   new CharacterItemType(89, 500000, '大都市計画書', '使用で都市敷地最大 +3', false, true, true),
   new CharacterItemType(90, 500000, '守備強化の書', '使用で技能「守備強化」獲得', true, true, true),
