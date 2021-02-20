@@ -184,6 +184,12 @@ export default class StatusModel {
       .toArray();
   }
 
+  public get countryGyokujiYear(): number {
+    // 選択中の国の玉璽発動年
+    const year = this.country.gyokujiGameDate.year + 10 * 12;
+    return Math.max(168, year);
+  }
+
   public get characterCountryPolicies(): api.CountryPolicy[] {
     // 選択中の国の政策
     return Enumerable.from(this.store.policies)
