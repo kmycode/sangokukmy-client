@@ -668,8 +668,7 @@ export abstract class TownBase implements IIdentitiedEntity {
                      public religion: number = 0,
                      public confucianism: number = 0,
                      public taoism: number = 0,
-                     public buddhism: number = 0,
-                     public isMayBeBought: boolean = false) {}
+                     public buddhism: number = 0) {}
 }
 
 /**
@@ -1391,16 +1390,6 @@ export class Api {
     try {
       await axios.post
         (def.API_HOST + 'town/scout', {}, this.authHeader);
-    } catch (ex) {
-      throw Api.pickException(ex);
-    }
-  }
-
-  public static async getTownBuyCost(townId: number): Promise<{ country: Country, cost: number }[]> {
-    try {
-      const result = await axios.get
-        (def.API_HOST + 'town/buycost/' + townId, this.authHeader);
-      return result.data;
     } catch (ex) {
       throw Api.pickException(ex);
     }

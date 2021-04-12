@@ -232,14 +232,6 @@ export default class NotificationService {
     '都市購入',
     '{0} を購入しました',
     NotificationServiceItemDefaultType.succeed);
-  public static readonly townBuyFailed = new NotificationServiceItem(
-    '都市購入失敗',
-    '{0} の購入に失敗しました',
-    NotificationServiceItemDefaultType.error);
-  public static readonly townBuyFailedBecauseNotBorder = new NotificationServiceItem(
-    '都市購入失敗',
-    '{0} の購入に失敗しました。隣接していない都市は購入できません',
-    NotificationServiceItemDefaultType.error);
   public static readonly countryChanged = new NotificationServiceItem(
     '所属国変更',
     'あなたの所属国が変わりました',

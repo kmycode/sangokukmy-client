@@ -51,8 +51,6 @@ export default class StatusModel {
   public newWarData: api.CountryWar = new api.CountryWar();
   public countrySolicitationMessage: api.CountryMessage = new api.CountryMessage();
   public countryUnifiedMessage: api.CountryMessage = new api.CountryMessage();
-  public townBuyCosts: { country: api.Country, cost: number }[] = [];
-  public townBuyCost: number = 0;
   public onlineCount: number = 0;
 
   public get gameDateTimeNumber(): number {
@@ -70,7 +68,6 @@ export default class StatusModel {
   }
   public isUpdatingTownCharacters: boolean = false;
   public isUpdatingTownDefenders: boolean = false;
-  public isUpdatingTownBuyCost: boolean = false;
   public isUpdatingCountryCharacters: boolean = false;
   public isUpdatingCountrySettings: boolean = false;
   public isUpdatingReinforcement: boolean = false;
@@ -1194,39 +1191,6 @@ export default class StatusModel {
     if (this.town.id === item.townId) {
       this.setTown(this.town);
     }
-  }
-
-  public updateTownBuyCost() {
-    this.isUpdatingTownBuyCost = true;
-    api.Api.getTownBuyCost(this.town.id)
-      .then((cost) => {
-        this.townBuyCosts = cost.filter((c) => !c.country.aiType && c.country.id !== this.character.countryId);
-        const myCountryData = cost.find((c) => c.country.id === this.character.countryId);
-        if (myCountryData) {
-          this.townBuyCost = myCountryData.cost;
-        }
-      })
-      .catch(() => {
-        NotificationService.townCostUpdateFailed.notify();
-      })
-      .finally(() => {
-        this.isUpdatingTownBuyCost = false;
-      });
-  }
-
-  public addBuyTownCost() {
-    this.isUpdatingTownBuyCost = true;
-    api.Api.addBuyTownCost(this.town.id)
-      .then((cost) => {
-        this.updateTownBuyCost();
-        NotificationService.townCostAdded.notifyWithParameter(this.town.name);
-      })
-      .catch(() => {
-        NotificationService.townCostAddFailed.notifyWithParameter(this.town.name);
-      })
-      .finally(() => {
-        this.isUpdatingTownBuyCost = false;
-      });
   }
 
   // #endregion

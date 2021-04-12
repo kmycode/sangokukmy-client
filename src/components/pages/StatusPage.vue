@@ -128,7 +128,6 @@
             <MiniCharacterList
               :countries="model.countries"
               :characters="model.townCharacters"/>
-            <div v-show="model.town.isMayBeBought" class="alert alert-info">この都市は将来、周辺の国に購入される可能性があります</div>
             <div v-if="model.isTownMayBeAppendFarmers" class="alert alert-warning">この都市で農民反乱が発生する可能性があります</div>
             <div v-if="model.isTownMayBeAppendReligionFarmers" class="alert alert-warning">この都市で宗教による農民反乱が発生する可能性があります</div>
           </div>
@@ -141,7 +140,6 @@
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(17)">移動<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button type="button" class="btn btn-secondary loading-container" @click="model.commands.inputer.inputMoveCommand(13)">戦争<div v-show="model.isCommandInputing" class="loading"><div class="loading-icon"></div></div></button>
             <button v-show="model.character.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode && model.systemData.ruleSet !== 2" type="button" class="btn btn-info" @click="isOpenTownWarDialog = true">攻略</button>
-            <button v-if="false" type="button" class="btn btn-info" v-show="model.character.countryId && model.systemData.ruleSet !== 2" @click="model.updateTownBuyCost(); isOpenBuyTownDialog = true">購入</button>
           </div>
         </div>
         <!-- 国情報 -->
@@ -1742,51 +1740,6 @@
           </div>
         </div>
       </div>
-      <!-- 都市購入 -->
-      <div v-if="isOpenBuyTownDialog" class="dialog-body">
-        <h2 :class="'dialog-title country-color-' + model.characterCountryColor">
-          <div class="header">都市購入</div>
-        </h2>
-        <div class="dialog-content loading-container">
-          <div v-show="model.town.countryId === model.character.countryId">
-            <h3>各国が購入に必要な政策ポイント</h3>
-            <div style="margin: 16px 16px 32px">
-              <div v-for="data in model.townBuyCosts" :key="data.country.id">
-                {{ data.country.name }} - <strong>{{ data.cost }}</strong>
-              </div>
-            </div>
-            <div v-show="model.canPolicy">
-              <h3>防衛投資</h3>
-              <div class="alert alert-info">以下のボタンを押すと、政策ポイント 1000 を消費して、購入に必要な政策ポイントを加算します</div>
-              <button type="button" class="btn btn-secondary" @click="model.addBuyTownCost()">加算</button>
-              <div v-show="model.town.isMayBeBought" class="alert alert-warning">この都市は将来、周辺の国に購入される可能性があります</div>
-            </div>
-          </div>
-          <div v-show="model.town.countryId !== model.character.countryId">
-            <h4>購入に必要な政策ポイント: <strong>{{ model.townBuyCost }}</strong></h4>
-            <h4>現在の政策ポイント: {{ model.characterCountry.policyPoint }}</h4>
-            <div class="alert alert-danger" v-show="model.townBuyCost > model.characterCountry.policyPoint">購入に必要な政策ポイントが足りません</div>
-            <div class="alert alert-danger" v-show="!model.town.countryId">無所属都市は購入できません</div>
-            <div class="alert alert-danger" v-show="model.gameDate.year < 48">48 年より前は購入できません</div>
-            <div class="alert alert-info" v-show="model.townBuyCost <= model.characterCountry.policyPoint">都市を購入可能です</div>
-          </div>
-          <div class="alert alert-info">
-            都市購入の費用は、おもに以下によって変動します。<br>
-            ・購入を行う国の都市数、武将数<br>
-            ・自国と相手国が戦争関係にあるか<br>
-            ・自国と相手国との国教が異なり、都市の宗教が国教と同じか<br>
-            また、同盟締結中の国の都市は購入できません
-          </div>
-          <div class="loading" v-show="model.isUpdatingTownBuyCost"><div class="loading-icon"></div></div>
-        </div>
-        <div class="dialog-footer">
-          <div class="left-side">
-          </div>
-          <div class="right-side">
-            <button class="btn btn-light" @click="isOpenBuyTownDialog = false">閉じる</button>
-          </div>
-        </div>
-      </div>
       <!-- ようこそ -->
       <div v-if="isOpenWelcomeDialog" class="dialog-body">
         <h2 :class="'dialog-title country-color-' + model.characterCountryColor">ようこそ</h2>
@@ -1979,7 +1932,6 @@ export default class StatusPage extends Vue {
   public isOpenRemoveFlyingColumnDialog: boolean = false;
   public isOpenQueueDialog: boolean = false;
   public isOpenCreateTownDialog: boolean = false;
-  public isOpenBuyTownDialog: boolean = false;
   public isOpenCommanderTargetCharacterDialog: boolean = false;
   public isOpenImage: boolean = false;
   public isYesno: boolean = false;
@@ -2055,7 +2007,7 @@ export default class StatusPage extends Vue {
       || this.isOpenMapDialog || this.isOpenWelcomeDialog || this.isOpenBuildTownSubBuildingDialog
       || this.isOpenRemoveTownSubBuildingDialog || this.isOpenImage || this.isOpenCustomizeFlyingColumnDialog
       || this.isOpenRemoveFlyingColumnDialog || this.isOpenQueueDialog || this.isOpenCreateTownDialog
-      || this.isOpenBuyTownDialog || this.isOpenCommanderTargetCharacterDialog;
+      || this.isOpenCommanderTargetCharacterDialog;
   }
 
   public yesnoEvent: () => void = () => undefined;
@@ -2188,7 +2140,7 @@ export default class StatusPage extends Vue {
       this.isOpenCommandCommentDialog = this.isOpenMapDialog = this.isOpenWelcomeDialog =
       this.isOpenBuildTownSubBuildingDialog = this.isOpenRemoveTownSubBuildingDialog = this.isOpenImage =
       this.isOpenCustomizeFlyingColumnDialog = this.isOpenRemoveFlyingColumnDialog = this.isOpenQueueDialog =
-      this.isOpenCreateTownDialog = this.isOpenBuyTownDialog = this.isOpenCommanderTargetCharacterDialog = false;
+      this.isOpenCreateTownDialog = this.isOpenCommanderTargetCharacterDialog = false;
   }
 
   public closeMapDialog() {
