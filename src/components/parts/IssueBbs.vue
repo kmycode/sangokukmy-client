@@ -129,7 +129,8 @@
         </div>
         <div v-else>
           <div class="alert alert-warning">
-            書き込みするには、アカウントを作成またはログインする必要があります
+            <!-- 書き込みするには、アカウントを作成またはログインする必要があります -->
+            BBSに書き込みすることはできません。閲覧のみとなっています。
           </div>
         </div>
         <div class="thread-items">
