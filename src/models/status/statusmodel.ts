@@ -566,13 +566,7 @@ export default class StatusModel {
 
   public get secretaryMaxValue(): number {
     // 自国の政務官の最大
-    return Enumerable.from(this.store.policies)
-      .where((p) => p.countryId === this.character.countryId && p.status === api.CountryPolicy.statusAvailable)
-      .sum((p) => p.type === 4 ? 2 :
-                  p.type === 2 ? 1 :
-                  p.type === 34 ? 1 :
-                  p.type === 50 ? 1 :
-                  p.type === 54 ? 1 : 0);
+    return 4;
   }
 
   public get currentSecretaryPoint(): number {
@@ -607,10 +601,7 @@ export default class StatusModel {
 
   public get safeMaxValue(): number {
     // 自国の金庫の最大容量
-    return Enumerable.from(this.store.policies)
-      .where((p) => p.countryId === this.character.countryId)
-      .where((p) => p.status === api.CountryPolicy.statusAvailable)
-      .count((p) => p.type === 1 || p.type === 10 || p.type === 11 || p.type === 12) * 100_0000;
+    return 1000_0000;
   }
 
   public get selectableSoldierTypes(): def.SoldierType[] {

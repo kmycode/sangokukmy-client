@@ -159,7 +159,7 @@
           </div>
           <div class="commands">
             <button type="button" class="btn btn-info" @click="model.updateCountryCharacters(); isOpenCountryCharactersDialog = true">武将</button>
-            <button v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
+            <button v-if="false" v-show="model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="isOpenPoliciesDialog = true">政策</button>
             <button v-show="model.character.countryId && model.town.countryId && model.country.id === model.character.countryId" type="button" class="btn btn-info" @click="model.unitModel.updateUnits(); isOpenUnitsDialog = true">部隊</button>
             <button v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && !model.country.aiType && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenAllianceDialog = true">同盟</button>
             <button v-show="model.character.countryId && model.town.countryId && model.country.id !== model.character.countryId && !model.systemData.isBattleRoyaleMode" type="button" class="btn btn-info" @click="isOpenWarDialog = true; selectedWarStatus = -1">戦争</button>

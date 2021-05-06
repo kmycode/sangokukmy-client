@@ -28,7 +28,6 @@
       </div>
       <!-- 増強コマンド -->
       <div v-show="selectedCommandCategory === 1" class="commands">
-        <button type="button" :class="{ 'btn': true, 'btn-light': list.isCountryCharacter, 'btn-outline-success': !list.isCountryCharacter }" :disabled="!list.inputer.canInput" @click="list.inputer.inputCommand(44)">政策<span class="redundant-text">開発</span></button>
         <button v-if="list.canUseCountrySafe && !canSafeOut" type="button" class="btn btn-light" :disabled="!list.inputer.canInput" @click="$emit('open', 'safe')">国庫納入</button>
         <button v-if="list.canUseCountrySafe && canSafeOut" class="btn btn-secondary dropdown-toggle dropdown-toggle-custom" :disabled="!list.inputer.canInput" @click="isOpenSafePopup = !isOpenSafePopup">国庫
           <div class="dropdown-menu dropdown-menu-custom" :style="{ 'display': isOpenSafePopup && list.inputer.canInput ? 'block' : 'none' }">

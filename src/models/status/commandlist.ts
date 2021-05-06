@@ -28,17 +28,14 @@ export default class CommandList {
 
   public get canUseCountrySafe(): boolean {
     // 国庫を使えるか
-    return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
-  }
-
-  public get canUseCountrySoldier(): boolean {
-    // 兵種研究を使えるか
-    return this.isPolicyEnabled(api.CountryPolicy.typeSoldierDevelopment);
+    return true;
+    // return this.isPolicyEnabled(api.CountryPolicy.typeStorage);
   }
 
   public get canUseCountrySecretary(): boolean {
     // 政務官を使えるか
-    return this.isPolicyEnabled(api.CountryPolicy.typeHumanDevelopment);
+    return true;
+    // return this.isPolicyEnabled(api.CountryPolicy.typeHumanDevelopment);
   }
 
   public get isFewRemaining(): boolean {
