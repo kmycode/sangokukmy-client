@@ -476,6 +476,14 @@ export default class StatusModel {
     }
   }
 
+  public get countryCivilization(): def.CountryCivilizationType {
+    const civilization = def.COUNTRY_CIVILIZATION_TYPES.find((c) => c.id === this.country.civilization);
+    if (civilization) {
+      return civilization;
+    }
+    return def.COUNTRY_CIVILIZATION_TYPES[0];
+  }
+
   public get isAllTownHaveReligion(): boolean {
     return !this.towns.some((t) => t.religion === 0 || t.religion === 1);
   }
@@ -1259,6 +1267,9 @@ export default class StatusModel {
     const capital = this.getTown(country.capitalTownId);
     ps.push(new TextStatusParameter('首都', capital.name));
     ps.push(new TextStatusParameter('国教', def.RELIGION_TYPES[country.religion]));
+    if (this.systemData.ruleSet !== api.SystemData.ruleSetSimpleBattle) {
+      ps.push(new TextStatusParameter('文明', this.countryCivilization.name));
+    }
     if (country.id > 0 &&
         country.lastMoneyIncomes !== undefined &&
         country.lastRiceIncomes !== undefined &&

@@ -1261,3 +1261,15 @@ export const COUNTRY_BATTLE_POLICY_TYPES: CountryBattlePolicyType[] = [
   new CountryBattlePolicyType(2, 'まったり', '統一をそれほど重要視せず、マイペースで行動します。君主や軍師による指示はそれほど期待されません'),
   new CountryBattlePolicyType(3, '放任主義', '君主はあまり動かず、部下の意思を尊重します。部下が君主を積極的に補佐し、立ち回ることになります'),
 ];
+
+export class CountryCivilizationType {
+  public constructor(public id: number,
+                     public name: string,
+                     public description: string) {}
+}
+export const COUNTRY_CIVILIZATION_TYPES: CountryCivilizationType[] = [
+  new CountryCivilizationType(0, 'なし', ''),
+  new CountryCivilizationType(1, 'A', '武将収入 +10%'),
+  new CountryCivilizationType(2, 'B', '知力補正をもつ兵種の徴兵費用 -8%'),
+  new CountryCivilizationType(3, 'C', '戦闘時攻撃力 +30'),
+];
