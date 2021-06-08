@@ -1912,7 +1912,6 @@ export class Api {
           name: country.name,
           colorId: country.colorId,
           religion: country.religion,
-          policy: country.policy,
           civilization: country.civilization,
         },
         invitationCode,

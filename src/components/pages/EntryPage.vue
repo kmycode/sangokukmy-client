@@ -247,7 +247,7 @@
               <div :class="'col-md-3 country-name country-color-' + country.colorId">
                 {{ country.name }}<br>
                 宗教: <strong>{{ getReligionName(country.religion) }}</strong><br>
-                文明: <strong>{{ getCountryCivilizationType(country.policy).name }}</strong>　{{ getCountryCivilizationType(country.policy).description }}
+                文明: <strong>{{ getCountryCivilizationType(country.civilization).name }}</strong>　{{ getCountryCivilizationType(country.civilization).description }}
                 <span v-if="getExtraData(country.id).isJoinLimited" class="is-limited"><br>入国不可</span>
               </div>
               <div :class="'col-md-9 country-message country-color-' + country.colorId">
@@ -311,13 +311,13 @@
             国の色を決めてください。他の国と同じ色にはできません
           </div>
         </div>
-        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryPolicy, }">
+        <div v-show="isPublish" :class="{ 'form-row': true, 'error': !isOkCountryCivilization, }">
           <div class="label">文明</div>
           <div class="field">
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 1, 'btn-secondary': country.policy === 1, }" @click="country.policy = 1">A</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 2, 'btn-secondary': country.policy === 2, }" @click="country.policy = 2">B</button>
-            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.policy !== 3, 'btn-secondary': country.policy === 3, }" @click="country.policy = 3">C</button>
-            <div>{{ getCountryCivilizationType(country.policy).description }}</div>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.civilization !== 1, 'btn-secondary': country.civilization === 1, }" @click="country.civilization = 1">A</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.civilization !== 2, 'btn-secondary': country.civilization === 2, }" @click="country.civilization = 2">B</button>
+            <button type="button" :class="{ 'btn': true, 'btn-outline-secondary': country.civilization !== 3, 'btn-secondary': country.civilization === 3, }" @click="country.civilization = 3">C</button>
+            <div>{{ getCountryCivilizationType(country.civilization).description }}</div>
           </div>
           <div class="detail">
             国の運営方針を決めてください
@@ -508,8 +508,8 @@ export default class EntryPage extends Vue {
        !Enumerable.from(this.countries).any((c) => c.colorId === this.country.colorId));
   }
 
-  private get isOkCountryPolicy(): boolean {
-    return !this.isPublish || this.country.policy !== 0;
+  private get isOkCountryCivilization(): boolean {
+    return !this.isPublish || this.country.civilization !== 0;
   }
 
   private get isFirstReligion(): boolean {
@@ -563,7 +563,7 @@ export default class EntryPage extends Vue {
       this.isOkEstablishSelection &&
       this.isOkCountryName &&
       this.isOkCountryColor &&
-      this.isOkCountryPolicy &&
+      this.isOkCountryCivilization &&
       this.isOkFrom &&
       this.isOkFormation &&
       this.isOkStrong &&
