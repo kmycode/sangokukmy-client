@@ -1269,7 +1269,7 @@ export class CountryCivilizationType {
 }
 export const COUNTRY_CIVILIZATION_TYPES: CountryCivilizationType[] = [
   new CountryCivilizationType(0, 'なし', ''),
-  new CountryCivilizationType(1, 'A', '武将収入 +10%'),
-  new CountryCivilizationType(2, 'B', '知力補正をもつ兵種の徴兵費用 -8%'),
+  new CountryCivilizationType(1, 'A', '武将収入 +20%'),
+  new CountryCivilizationType(2, 'B', '徴兵費用 -5%、徴兵による農民減少 -5%'),
   new CountryCivilizationType(3, 'C', '戦闘時攻撃力 +30'),
 ];

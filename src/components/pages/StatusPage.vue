@@ -152,7 +152,7 @@
             <div v-if="!model.systemData.isWaitingReset">
               <div v-if="model.systemData.ruleSet !== 2">
                 <div v-show="model.country.isHaveGyokuji" class="alert alert-info">この国は玉璽を持っています。<strong>{{ model.countryGyokujiYear }}</strong> 年 <strong>{{ model.country.gyokujiGameDate.month }}</strong> 月 までに所有すると統一勝利する可能性があります</div>
-                <div class="alert alert-info">宗教勝利の進捗状況　都市: <strong>{{ model.countryReligionTownCount }}</strong> / <strong>{{ model.townCountForReligionWin }}</strong> 、国: <strong>1</strong> / <strong>{{ model.sameReligionCountryCount }}</strong><span v-if="!model.isAllTownHaveReligion"><br>まだすべての都市が宗教を信仰していません</span><span v-if="model.gameDate.year < 180"><br>宗教勝利は、<strong>180</strong> 年 1 月以降発動します</span></div>
+                <div class="alert alert-info">宗教勝利の進捗状況　都市: <strong>{{ model.countryReligionTownCount }}</strong> / <strong>{{ model.townCountForReligionWin }}</strong> 、国: <strong>1</strong> / <strong>{{ model.sameReligionCountryCount }}</strong><span v-if="!model.isAllTownHaveReligion"><br>まだすべての都市が宗教を信仰していません</span><span v-if="model.gameDate.year < 240"><br>宗教勝利は、<strong>240</strong> 年 1 月以降発動します</span></div>
                 <div class="alert alert-info">文明: <strong>{{ model.countryCivilization.name }}</strong> - {{ model.countryCivilization.description }}</div>
               </div>
               <div v-if="model.country.isWarPenalty" class="alert alert-warning">この国は過剰援軍によるペナルティを受けています</div>
