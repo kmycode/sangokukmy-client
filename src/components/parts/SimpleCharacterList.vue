@@ -58,10 +58,12 @@
                 <span class="parameter-name">陣形</span>
                 <span class="parameter-value">{{ getCharacterFormationName(chara) }}</span>
               </span>
+              <!--
               <span class="parameter-item">
                 <span class="parameter-name">属性</span>
                 <span class="parameter-value">{{ getCharacterFormationType(chara) }}</span>
               </span>
+              -->
               <span class="parameter-item">
                 <span class="parameter-name">Lv</span>
                 <span class="parameter-value">{{ chara.formationLevel }}</span>

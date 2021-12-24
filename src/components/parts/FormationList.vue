@@ -6,7 +6,7 @@
         <div class="standard">
           <div class="name responsive-header">{{ currentFormationTypeInfo.name }}</div>
             <div v-show="isShowChangePoint" class="point">
-              <span class="value-name">属性</span> <span class="value">{{ currentFormationTypeInfo.type }}</span>
+              <!-- <span class="value-name">属性</span> <span class="value">{{ currentFormationTypeInfo.type }}</span> -->
               <span class="value-name">レベル</span> <span class="value">{{ currentFormation.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ currentFormation.experience }}</span>
             </div>
@@ -26,7 +26,7 @@
           <div class="standard">
             <div class="name responsive-header">{{ formation.type.name }}</div>
             <div v-show="isShowChangePoint" class="point">
-              <span class="value-name">属性</span> <span class="value">{{ formation.type.type }}</span>
+              <!-- <span class="value-name">属性</span> <span class="value">{{ formation.type.type }}</span> -->
               <span class="value-name">レベル</span> <span class="value">{{ formation.data.level }}</span>
               <span class="value-name">Ex</span> <span class="value">{{ formation.data.experience }}</span>
             </div>
@@ -50,7 +50,7 @@
         <div class="formation-info">
           <div class="standard">
             <div class="name responsive-header">{{ formation.name }}</div>
-            <div class="point"><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div>
+            <!-- <div class="point"><span class="value-name">属性</span> <span class="value">{{ formation.type }}</span></div> -->
             <div :class="{ 'description': true, 'current': 0 === index }"
                 v-for="(description, index) in formation.descriptions"
                 :key="description"><span v-if="0 === index">現在の効果 ＞ </span>{{ formation.descriptions[index] }}</div>
@@ -113,7 +113,7 @@ export default class FormationList extends Vue {
   }
 
   public get formationMax(): number {
-    return this.skills.some((s) => s.type === 36) ? 5 : 3;
+    return this.skills.some((s) => s.type === 36) ? 4 : 2;
   }
 
   @Watch('formations')

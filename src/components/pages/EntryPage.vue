@@ -425,7 +425,7 @@ export default class EntryPage extends Vue {
   }
 
   private get formations(): def.FormationType[] {
-    return def.FORMATION_TYPES.filter((f) => f.id);
+    return def.FORMATION_TYPES.filter((f) => f.canGet);
   }
 
   private get sumOfAttributes(): number {
